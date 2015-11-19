@@ -1,0 +1,97 @@
+﻿<Window x:Class="WireCloudTerminal.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:local="clr-namespace:WireCloudTerminal"
+        Title="Chmura Kablowa" 
+        Height="459.6" 
+        Width="482.6"
+        >
+    <Window.Resources>
+        <local:TerminalViewModel x:Key="Cloud"/>
+    </Window.Resources>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CloseAllConections, Source={StaticResource Cloud}}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid RenderTransformOrigin="0.5,0.5" Height="426" VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform/>
+                <SkewTransform/>
+                <RotateTransform Angle="0.123"/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </Grid.RenderTransform>
+        <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="110" Margin="48,291,0,0" Stroke="Black" VerticalAlignment="Top" Width="169"/>
+        <ListBox HorizontalAlignment="Left" 
+                 Height="200" 
+                 Margin="48,60,0,0" 
+                 VerticalAlignment="Top" 
+                 Width="387" 
+                 ItemsSource="{Binding Links, Source={StaticResource Cloud}}" 
+                 DisplayMemberPath="Id"
+                 ItemContainerStyle="{StaticResource ActiveItem}"
+                 SelectedItem="{Binding SelectedLink, Source={StaticResource Cloud}}"/>
+        <Label Content="Lista istniejących portów" HorizontalAlignment="Left" Height="25" Margin="48,30,0,0" VerticalAlignment="Top" Width="207"/>
+        <ComboBox HorizontalAlignment="Left" 
+                  Height="21" 
+                  Margin="48,265,0,0" 
+                  VerticalAlignment="Top" 
+                  Width="272" 
+                  ItemsSource="{Binding LinkActions, Source={StaticResource Cloud}}" 
+                  DisplayMemberPath="Label"
+                  SelectedItem="{Binding SelectedAction, Source={StaticResource Cloud}}">
+        </ComboBox>
+        <Button HorizontalAlignment="Left" 
+                Height="21" 
+                Margin="325,265,0,0" 
+                VerticalAlignment="Top" 
+                Width="110" 
+                Content="Wykonaj" 
+                Command="{Binding PerformLinkAction, Mode=OneWay, Source={StaticResource Cloud}}"/>
+        <TextBox HorizontalAlignment="Left" 
+                 Height="18" 
+                 Margin="103,334,0,0" 
+                 TextWrapping="Wrap" 
+                 VerticalAlignment="Top" 
+                 Width="95" Text="{Binding Destination, Source={StaticResource Cloud}}"/>
+        <TextBox HorizontalAlignment="Left" 
+                 Height="18" 
+                 Margin="103,311,0,0" 
+                 TextWrapping="Wrap" 
+                 VerticalAlignment="Top"
+                 Width="95" Text="{Binding Source, Source={StaticResource Cloud}}"/>
+        <Label Content="Źródło" 
+               HorizontalAlignment="Left" 
+               Height="28" 
+               Margin="48,308,0,0" 
+               VerticalAlignment="Top" 
+               Width="49"/>
+        <Label Content="Cel" 
+               HorizontalAlignment="Left" 
+               Height="28" 
+               Margin="67,330,0,0" 
+               VerticalAlignment="Top" 
+               Width="30"/>
+        <TextBox HorizontalAlignment="Left" 
+                 Height="78" 
+                 Margin="229,323,0,0" 
+                 TextWrapping="Wrap" 
+                 VerticalAlignment="Top" 
+                 Width="206" Text="{Binding ConsoleMessage, Source={StaticResource Cloud}}"/>
+        <Button HorizontalAlignment="Left" 
+                Height="21" 
+                Margin="87,363,0,0" 
+                VerticalAlignment="Top" 
+                Width="110" 
+                Content="Stwórz" Command="{Binding CreateLink, Mode=OneWay, Source={StaticResource Cloud}}"/>
+        <Label Content="Konsola" HorizontalAlignment="Left" Height="27" Margin="229,291,0,0" VerticalAlignment="Top" Width="207"/>
+    </Grid>
+</Window>

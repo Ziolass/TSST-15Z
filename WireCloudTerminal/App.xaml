@@ -1,0 +1,20 @@
+﻿<Application x:Class="WireCloudTerminal.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <SolidColorBrush x:Key="ItemBrush" Color="Transparent" />
+        <SolidColorBrush x:Key="SelectedItemBrush" Color="LightBlue" />
+        <SolidColorBrush x:Key="HoverItemBrush" Color="Azure" />
+        <Style x:Key="ActiveItem" TargetType="{x:Type ListBoxItem}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Active}" Value="false">
+                    <Setter Property="Background" Value="Green"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Active}" Value="true">
+                    <Setter Property="Background" Value="Yellow"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Application.Resources>
+</Application>
