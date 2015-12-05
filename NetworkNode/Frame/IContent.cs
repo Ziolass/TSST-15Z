@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.Frame
 {
-    interface IContent
+    public interface IContent
     {
-        ContentType Type { get; private set; }
+        ContentType Type { get; set; }
     }
 }
