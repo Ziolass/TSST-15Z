@@ -45,6 +45,7 @@ namespace NetworkNode.TTF
             }
             //TODO inicjalizacja buildera
             this.spi.HandleInputData += new HandleInputData(getInputData);
+            builder = new FrameBuilder();
         }
 
         private void getInputData(object sender, InputDataArgs args)

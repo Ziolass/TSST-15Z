@@ -15,6 +15,7 @@ namespace NetworkNode.Ports
     {
         private ManualResetEvent allDone = new ManualResetEvent(false);
         private List<byte[]> inputBuffer;
+        private Thread listeningThread;
 
 
         public event HandleIncomingData HandleIncomingData;
@@ -27,9 +28,13 @@ namespace NetworkNode.Ports
             InputPort = port;
         }
 
-        
+        public void TurnOn()
+        {
+            listeningThread = new Thread(new ThreadStart(startListening));
+            listeningThread.Start();
+        }
        
-        public void startListening()
+        private void startListening()
         {
             try
             {

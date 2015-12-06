@@ -24,8 +24,6 @@ namespace NetworkNode
         {
             List<Input> inputs = new List<Input>();
             Dictionary<int, Output> outputs = new Dictionary<int, Output>();
-            
-            //IoSlot managementInterface = null;
             int nodeNumber = -1;
             String nodeType = null;
             while (configReader.Read())
@@ -36,24 +34,32 @@ namespace NetworkNode
                     {
                         if (configReader.Name == "port")
                         {
-                            string portType = configReader.GetAttribute("portType");
-                            int portNumber = int.Parse(configReader.GetAttribute("portNumber"));
+                            string portType = configReader.GetAttribute("type");
+                            int portNumber = int.Parse(configReader.GetAttribute("number"));
 
-                            if (configReader.Name.Equals("input"))
+                            switch (portType)
                             {
-                                inputs.Add(new Input(portNumber));
+                                case "input":
+                                    {
+                                        Input input = new Input(portNumber);
+                                        inputs.Add(input);
+                                        input.TurnOn();
+                                        break;
+                                    }
+                                case "output":
+                                    {
+                                        outputs.Add(portNumber, new Output(portNumber));
+                                        break;
+                                    }
                             }
-
-                            if (configReader.Name.Equals("output"))
-                            {
-                                outputs.Add(portNumber, new Output(portNumber));
-                            }
+                            
+                            
 
                         }
                         else if (configReader.Name == "node" && configReader.IsStartElement())
                         {
                             nodeNumber = int.Parse(configReader.GetAttribute("number"));
-                            nodeType = configReader.GetAttribute("nodeType");
+                            nodeType = configReader.GetAttribute("type");
                         }
                     }
 
@@ -66,7 +72,7 @@ namespace NetworkNode
             
             //ManagementCenter managementCenter = new ManagementCenter(managementInterface, ttf, hpc, nodeNumber);
 
-            return new NetworkNode(null, hpc);
+            return new NetworkNode(hpc);
         }
 
         private NodeMode getMode(string mode)

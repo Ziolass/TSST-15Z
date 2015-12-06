@@ -22,6 +22,7 @@ namespace NetworkNode.HPC
             this.forwardingTable = new Dictionary<int, List<ForwardingRecord>>();
             this.ttf = ttf;
             this.ttf.HandleInputFrame += new HandleInputFrame(handleIncomFrame);
+            builder = new FrameBuilder();
         }
 
 
@@ -53,13 +54,13 @@ namespace NetworkNode.HPC
             {
                 if (!outputFrames.ContainsKey(record.OutputPort))
                 {
-                    outputFrames.Add(record.OutputPort, builder.BuildFrame(null));
+                    outputFrames.Add(record.OutputPort, builder.BuildEmptyFrame());
                 }
 
                 IFrame outputFrame = outputFrames[record.OutputPort];
-                IContent vContainer = frame.GetVirtualConteiner(record.ContainerLevel, record.VcNumberIn);
+                IContent vContainer = frame.GetVirtualContainer(record.ContainerLevel, record.VcNumberIn);
                 
-                outputFrame.SetVirtualConteiner(record.ContainerLevel, record.VcNumberOut, vContainer);
+                outputFrame.SetVirtualContainer(record.ContainerLevel, record.VcNumberOut, vContainer);
             }
         }
 

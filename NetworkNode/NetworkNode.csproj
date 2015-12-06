@@ -45,9 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Frame\IFrame.cs" />
-    <Compile Include="Frame\IFrameBuilder.cs" />
-    <Compile Include="Frame\IContent.cs" />
     <Compile Include="NetworkNodeSetupProcess.cs" />
     <Compile Include="ElementConfigurator.cs" />
     <Compile Include="HPC\HigherOrderPathConnection.cs" />
@@ -55,6 +52,14 @@
     <Compile Include="MenagmentModule\ManagementCenter.cs" />
     <Compile Include="NetworkNode.cs" />
     <Compile Include="Ports\ManagementPort.cs" />
+    <Compile Include="Frame\FrameImp\Container.cs" />
+    <Compile Include="Frame\FrameImp\Frame.cs" />
+    <Compile Include="Frame\FrameImp\FrameBuilder.cs" />
+    <Compile Include="Frame\IContent.cs" />
+    <Compile Include="Frame\IFrame.cs" />
+    <Compile Include="Frame\IFrameBuilder.cs" />
+    <Compile Include="Frame\FrameImp\TributaryUnit.cs" />
+    <Compile Include="Frame\FrameImp\VirtualContainer.cs" />
     <Compile Include="SocketUtils\LocalSocektBuilder.cs" />
     <Compile Include="SocketUtils\StateObject.cs" />
     <Compile Include="TTF\SectionTerminator.cs" />

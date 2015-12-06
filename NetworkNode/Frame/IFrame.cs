@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.Frame
 {
-    public enum ContainerLevel { AU4, TUG3, TUG2, TUG12, UNDEF }
-    public enum ContentType { CONTAINER, DATA, UNDEF }
+    public enum ContainerLevel { TUG12, TUG2, TUG3, AU4, UNDEF }
+    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER }
 
     public interface IFrame
     {
-        String Msoh { get; set; }
-        String Rsoh { get; set; }
-        IContent GetVirtualConteiner(ContainerLevel level, int number);
-        void SetVirtualConteiner(ContainerLevel level, int number, IContent content); 
+         String Msoh { get; set; }
+         String Rsoh { get; set; }
+         IContent GetVirtualContainer(ContainerLevel level, int number);
+         void SetVirtualContainer(ContainerLevel level, int number, IContent content);
     }
 }

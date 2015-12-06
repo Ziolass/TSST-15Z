@@ -8,6 +8,7 @@ namespace NetworkNode.Frame
 {
     public interface IContent
     {
-        ContentType Type { get; set; }
+        ContentType Type { get; }
+
     }
 }

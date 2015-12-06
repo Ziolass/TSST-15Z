@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NetworkNode.Frame;
+using NetworkNode.HPC;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,10 +20,21 @@ namespace NetworkNode
             }
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("nodeConfig" + id + ".xml");
             NetworkNode node = setUpProcess.startNodeProcess();
-            //To jest na potrzeby emulowania stacji zarządzania,
-            //Poniższe polecenie zestawia połączenie wewnątrz routera
+
+
+         
+            List<ForwardingRecord> records = new List<ForwardingRecord>();
+            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 1, 1));
+            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 2, 2));
+            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 3, 3));
+            
+            foreach (ForwardingRecord record in records)
+            {
+                node.AddForwardingRecord(record);
+            }
+
             Console.WriteLine("Start emulation");
-            node.emulateManagement("sub-conection-HPC|1002-2003#|");
+            //node.emulateManagement("sub-conection-HPC|1002-2003#|");
         }
     }
 }

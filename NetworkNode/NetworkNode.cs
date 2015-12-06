@@ -10,17 +10,15 @@ namespace NetworkNode
 {
     public class NetworkNode
     {
-        private ManagementCenter managementCenter;
         private HigherOrderPathConnection hpc;
-        public NetworkNode(ManagementCenter managementCenter, HigherOrderPathConnection hpc)
+        public NetworkNode(HigherOrderPathConnection hpc)
         {
-            this.managementCenter = managementCenter;
             this.hpc = hpc;
         }
 
-        public void emulateManagement(String request)
+        public void AddForwardingRecord(ForwardingRecord record)
         {
-            managementCenter.PerformManagementAction(request);
+            hpc.AddForwardingRecord(record);
         }
     }
 }
