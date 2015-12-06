@@ -19,11 +19,11 @@ namespace NetworkNode.Frame
         {
             Frame returnFrame = new Frame();
             metadata = JObject.Parse(textFrame);
-            returnFrame.Msoh = metadata["Msoh"].ToObject<string>();
-            returnFrame.Rsoh = metadata["Rsoh"].ToObject<string>();
-            if (FrameBuilder.isJArray(metadata["Content"]))
+            returnFrame.Msoh = metadata["MSOH"].ToObject<string>();
+            returnFrame.Rsoh = metadata["RSOH"].ToObject<string>();
+            if (FrameBuilder.isJArray(metadata["CONTENT"]))
             {
-                returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["Content"]);
+                returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["CONTENT"]);
             }
             else return null;
             return returnFrame;
@@ -75,15 +75,15 @@ namespace NetworkNode.Frame
         {
             try
             {
-                if (FrameBuilder.isVC(content["Type"])) //VirtualContainer
+                if (FrameBuilder.isVC(content["TYPE"])) //VirtualContainer
                 {
                     //Create new VC with level from JSON file
-                    VirtualContainer newVC = new VirtualContainer(FrameBuilder.getVCLevel(content["Level"]));
-                    newVC.Pointer = content["Pointer"].ToString();
+                    VirtualContainer newVC = new VirtualContainer(FrameBuilder.getVCLevel(content["LEVEL"]));
+                    newVC.Pointer = content["POINTER"].ToString();
                     newVC.POH = content["POH"].ToString();
-                    if (FrameBuilder.isObjectOfContainer(content["Content"])) //Check if "Content" has value and is type of Container
+                    if (FrameBuilder.isObjectOfContainer(content["CONTENT"])) //Check if "Content" has value and is type of Container
                     {
-                        Container newContainer = (Container)FrameBuilder.evaluateContent((JObject)content["Content"]);
+                        Container newContainer = (Container)FrameBuilder.evaluateContent((JObject)content["CONTENT"]);
                         if (newContainer != null)
                         {
                             newVC.Content = newContainer;
@@ -97,9 +97,9 @@ namespace NetworkNode.Frame
                         return newVC;
                     }
                 }
-                else if (FrameBuilder.isContainer(content["Type"]))
+                else if (FrameBuilder.isContainer(content["TYPE"]))
                 {
-                    Container newContainer = new Container(content["Content"].ToString());
+                    Container newContainer = new Container(content["CONTENT"].ToString());
                     return newContainer;
                 }
                 else return null;
@@ -118,7 +118,7 @@ namespace NetworkNode.Frame
         /// <returns></returns>
         private static bool isObjectOfContainer(JToken jToken)
         {
-            if (!jToken.HasValues || !FrameBuilder.isContainer(jToken["Type"]))
+            if (!jToken.HasValues || !FrameBuilder.isContainer(jToken["TYPE"]))
                 return false;
             else
                 return true;
