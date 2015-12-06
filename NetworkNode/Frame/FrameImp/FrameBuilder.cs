@@ -2,9 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace NetworkNode.Frame
@@ -12,6 +9,7 @@ namespace NetworkNode.Frame
     public class FrameBuilder : IFrameBuilder
     {
         private static JObject metadata;
+
         /// <summary>
         /// Builds the frame.
         /// </summary>
@@ -21,99 +19,113 @@ namespace NetworkNode.Frame
         {
             Frame returnFrame = new Frame();
             metadata = JObject.Parse(textFrame);
-            returnFrame.Msoh = metadata["MSOH"].ToObject<string>();
-            returnFrame.Rsoh = metadata["RSOH"].ToObject<string>();
-
-            if (FrameBuilder.isJArray(metadata["CONTENT"]))
+            returnFrame.Msoh = metadata["Msoh"].ToObject<string>();
+            returnFrame.Rsoh = metadata["Rsoh"].ToObject<string>();
+            if (FrameBuilder.isJArray(metadata["Content"]))
             {
-                returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["CONTENT"]);
-                return returnFrame;
+                returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["Content"]);
             }
-            else 
-            {
-                return null;
-            }
-        }
-        public String BuildLiteral(IFrame textFrame) {
-            String JFrame = String.Empty;
-            JFrame = JsonConvert.SerializeObject(textFrame);
-            return JsonConvert.SerializeObject(textFrame);         
+            else return null;
+            return returnFrame;
         }
 
+        /// <summary>
+        /// Builds the empty frame.
+        /// </summary>
+        /// <returns></returns>
         public IFrame BuildEmptyFrame()
         {
             return new Frame();
         }
-        
+
         /// <summary>
         /// Builds the frame from file.
         /// </summary>
-        /// <param name="pathToJson">The path to json.</param>
+        /// <param name="pathToJson">The path to JSON file.</param>
         /// <returns></returns>
         public IFrame BuildFrameFromFile(string pathToJson)
         {
-            return BuildFrame(File.ReadAllText(pathToJson));
+            try
+            {
+                return BuildFrame(File.ReadAllText(pathToJson));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
+
+        /// <summary>
+        /// Builds the literal.
+        /// </summary>
+        /// <param name="textFrame">The frame object.</param>
+        /// <returns></returns>
+        public String BuildLiteral(IFrame textFrame)
+        {
+            return JsonConvert.SerializeObject(textFrame);
+        }
+
+        /// <summary>
+        /// Evaluates the content. Read JSON object create IContent
+        /// </summary>
+        /// <param name="content">The content.</param>
+        /// <returns></returns>
         private static IContent evaluateContent(JObject content)
         {
-            if (FrameBuilder.isVC(content["TYPE"])) //VirtualContainer
+            try
             {
-                VirtualContainer newVC = new VirtualContainer(FrameBuilder.getVCLevel(content["LEVEL"]));
-                newVC.Pointer = content["POINTER"].ToString();
-                newVC.POH = content["POH"].ToString();
-                if (FrameBuilder.isObjectOfContainer(content["CONTENT"]))
+                if (FrameBuilder.isVC(content["Type"])) //VirtualContainer
                 {
-                    Container newContainer = (Container)FrameBuilder.evaluateContent((JObject)content["CONTENT"]);
-                    if (newContainer != null)
+                    //Create new VC with level from JSON file
+                    VirtualContainer newVC = new VirtualContainer(FrameBuilder.getVCLevel(content["Level"]));
+                    newVC.Pointer = content["Pointer"].ToString();
+                    newVC.POH = content["POH"].ToString();
+                    if (FrameBuilder.isObjectOfContainer(content["Content"])) //Check if "Content" has value and is type of Container
                     {
-                        newVC.Content = newContainer;
+                        Container newContainer = (Container)FrameBuilder.evaluateContent((JObject)content["Content"]);
+                        if (newContainer != null)
+                        {
+                            newVC.Content = newContainer;
+                            return newVC;
+                        }
+                        else return null;
+                    }
+                    else //There is no value Content of VC is null
+                    {
+                        newVC.Content = null;
                         return newVC;
                     }
-                    else return null;
                 }
-                else
+                else if (FrameBuilder.isContainer(content["Type"]))
                 {
-                    newVC.Content = null;
-                    return newVC;
+                    Container newContainer = new Container(content["Content"].ToString());
+                    return newContainer;
                 }
+                else return null;
             }
-            else if (FrameBuilder.isContainer(content["TYPE"]))
+            catch (Exception e)
             {
-                Container newContainer = new Container(content["CONTENT"].ToString());
-                return newContainer;
+                Console.WriteLine(e.Message);
+                return null;
             }
-            else return null;
         }
-        private static IContent evaluateContent(JArray content)
-        {
-            if (content.Count == 1)
-            {
-                return evaluateContent((JObject)content[0]);
-            }
-            else return null;
-        }
-        private static bool isJArrayOfVC(JToken jToken)
-        {
-            if (FrameBuilder.isJArray(jToken))
-            {
-                foreach (var item in ((JArray)jToken))
-                {
-                    if (!FrameBuilder.isVC(item["TYPE"]))
-                        return false;
-                }
-                return true;
-            }
-            else return false;
-        }
+
+        /// <summary>
+        /// Determines whether the specified jToken is object of container.
+        /// </summary>
+        /// <param name="jToken">The jToken.</param>
+        /// <returns></returns>
         private static bool isObjectOfContainer(JToken jToken)
         {
-            if (!jToken.HasValues || !FrameBuilder.isContainer(jToken["TYPE"]))
-                        return false;
-                    else
+            if (!jToken.HasValues || !FrameBuilder.isContainer(jToken["Type"]))
+                return false;
+            else
                 return true;
         }
+
         /// <summary>
-        /// Evaluates the contents. Iterate through the JArray to find containers and data
+        /// Evaluates the contents. Iterate through the JArray to create IContent
         /// </summary>
         /// <param name="content">The content.</param>
         /// <returns></returns>
@@ -124,16 +136,16 @@ namespace NetworkNode.Frame
             {
                 if (item.HasValues)
                 {
-
                     returnList.Add(FrameBuilder.evaluateContent((JObject)item));
                 }
-                else
+                else //Index in Frame.Content is free or occupied by larger VC then VC12
                 {
                     returnList.Add(null);
                 }
             }
             return returnList;
         }
+
         /// <summary>
         /// Determines whether the specified token is JArray.
         /// </summary>
@@ -145,8 +157,9 @@ namespace NetworkNode.Frame
                 return true;
             else return false;
         }
+
         /// <summary>
-        /// Determines whether the specified token is container.
+        /// Determines whether the specified token is VirtualContainer.
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns></returns>
@@ -158,35 +171,39 @@ namespace NetworkNode.Frame
                     return true;
                 else return false;
             }
-            catch
-            {
-                return false;
-            }
-        }
-        private static bool isTU(JToken token)
-        {
-            try
-            {
-                if (getContentType(token) == ContentType.TRIBUTARYUNIT)
-                    return true;
-                else return false;
-            }
             catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 return false;
             }
         }
+
         /// <summary>
-        /// Determines whether the specified token is data.
+        /// Determines whether the specified JSON token is Container.
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns></returns>
         private static bool isContainer(JToken token)
         {
-            if (getContentType(token) == ContentType.CONTAINER)
-                return true;
-            else return false;
+            try
+            {
+                if (getContentType(token) == ContentType.CONTAINER)
+                    return true;
+                else return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
+
+        /// <summary>
+        /// Gets the type of the content.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">ERROR FrameBuilder: Could not read content type of given token</exception>
         private static ContentType getContentType(JToken token)
         {
             ContentType contentType;
@@ -195,6 +212,13 @@ namespace NetworkNode.Frame
             else
                 throw new Exception("ERROR FrameBuilder: Could not read content type of given token");
         }
+
+        /// <summary>
+        /// Gets the vc level.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">ERROR FrameBuilder: Could not read level of given token</exception>
         private static VirtualContainerLevel getVCLevel(JToken token)
         {
             VirtualContainerLevel containerLevel;
@@ -203,6 +227,13 @@ namespace NetworkNode.Frame
             else
                 throw new Exception("ERROR FrameBuilder: Could not read level of given token");
         }
+
+        /// <summary>
+        /// Gets the tu level.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">ERROR FrameBuilder: Could not read level of given token</exception>
         private static ContainerLevel getTULevel(JToken token)
         {
             ContainerLevel containerLevel;
