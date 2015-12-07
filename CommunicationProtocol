@@ -1,0 +1,45 @@
+(wzorowane na metodach z NetworkNode/MenagementModule/ManagementCenter)
+(OK można zastąpić czymkolwiek innym, równie dobrze każde polecenie może mieć 
+indywidualne potwierdzenie np. Link-established ale nie wiem czy jest specjalnie sens)
+
+Legenda:
+Management = M
+Router = R
+-> = kierunek komunikatu
+| oraz # = znaki specjalne oddzielające wartości
+_______________________________________________________________________________________
+1. Wyłączenie węzła:
+M->R: disable-node|
+R->M: OK
+
+2. 
+(tego nie jestem pewny, wygląda w Nodzie jakby interface miał jakiś numer swój więc załóżmy:)
+M->R: shutdown-interface|{1}#{2}
+R->M: OK
+	
+3. Dodanie połączenia
+M->R: sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
+R->M: OK
+(tu na razie opcja dla jednego połączenia, dla wielu będzie to:
+ sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}|{port_z2}#{port_do2}#{poziom_z2}#{poziom_do2}#{typ_konteneru2}
+(wartości oddzielone # w kolejności:
+-port z którego wychodzi
+-port na który ma wejść
+-poziom z którego przekłada
+-poziom do którego przekłada
+-typ kontera
+poszczególne połączenia oddzielone |
+
+4. Podanie listy połączeń
+M->R: get-connection-list|
+R->M: {higher_connection1}#{lower_connection1}|{higer_connection2}#{lower_connection2}
+(wartości w parze oddzielone #, pary oddzielone | )
+
+5. Podanie listy portów
+M->R: get-ports|
+R->M: {IN1}#{IN2}#{IN3}|{OUT1}#{OUT2}#{OUT3}
+(najpierw porty wejściowe oddzielone # , następnie | i porty wyjściowe oddzielone #)
+
+6. Przypadek gdy router nie jest w stanie wykonać polecenia
+M->R: <polecenie>
+R->M: ERROR
