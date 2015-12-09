@@ -59,7 +59,7 @@ namespace MockupClient
 
         public static int Main(String[] args)
         {
-            StartClient("data.json");
+            StartClient("../../../Configs/data.json");
             return 0;
         }
     }
