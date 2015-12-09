@@ -1,0 +1,29 @@
+﻿<Window x:Class="SDHManagement2.AdditionalWindows.AddConnectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SDHManagement2.AdditionalWindows"
+        mc:Ignorable="d" Height="300" Width="300" WindowStyle="ToolWindow" BorderThickness="2" Background="#FFB4A7A7" ResizeMode="NoResize">
+    <Grid>
+        <Button x:Name="button" Content="Add" HorizontalAlignment="Left" Margin="87,225,0,0" VerticalAlignment="Top" Width="104" Click="button_Click" Height="27"/>
+        <Label x:Name="label" Content="Ports" HorizontalAlignment="Left" Margin="37,35,0,0" VerticalAlignment="Top" FontSize="16" Width="52"/>
+        <Canvas HorizontalAlignment="Left" Height="91" Margin="14,64,0,0" VerticalAlignment="Top" Width="95" Background="#FF746868">
+            <Label x:Name="label2" Content="OUT" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="51"/>
+            <Label x:Name="label1" Content="IN" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="10"/>
+            <ListBox x:Name="inportBox" Height="52" Canvas.Left="10" Canvas.Top="26" Width="28"/>
+            <ListBox x:Name="outportBox" Height="52" Canvas.Left="54" Canvas.Top="26" Width="31"/>
+        </Canvas>
+        <Label x:Name="label3" Content="Existing connections" HorizontalAlignment="Left" Margin="151,38,0,0" VerticalAlignment="Top"/>
+        <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="91" Margin="165,58,0,0" VerticalAlignment="Top" Width="92" IsEnabled="False"/>
+        <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Height="37" Width="270" FontSize="18.667" FontWeight="Bold" HorizontalContentAlignment="Center"/>
+        <Label x:Name="label4" Content="Contener type" HorizontalAlignment="Left" Margin="18,155,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="16,181,0,0" VerticalAlignment="Top" Width="93"/>
+        <Label x:Name="label5" Content="Levele // co to te levele!?" HorizontalAlignment="Left" Margin="139,149,0,0" VerticalAlignment="Top" Width="151"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="151,180,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="50"/>
+        <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="229,180,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"/>
+        <Label x:Name="label6" Content="Begin" HorizontalAlignment="Left" Margin="155,158,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label7" Content="End" HorizontalAlignment="Left" Margin="235,158,0,0" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>
