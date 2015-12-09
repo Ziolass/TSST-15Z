@@ -61,6 +61,7 @@
     <Compile Include="Frame\FrameImp\VirtualContainer.cs" />
     <Compile Include="SocketUtils\LocalSocektBuilder.cs" />
     <Compile Include="SocketUtils\StateObject.cs" />
+    <Compile Include="TTF\BinaryInterleavedParity.cs" />
     <Compile Include="TTF\SectionTerminator.cs" />
     <Compile Include="Ports\Input.cs" />
     <Compile Include="Program.cs" />
