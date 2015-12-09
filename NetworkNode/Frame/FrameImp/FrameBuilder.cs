@@ -11,7 +11,7 @@ namespace NetworkNode.Frame
         private static JObject metadata;
 
         /// <summary>
-        /// Builds the frame.
+        /// Builds the frame from JSON text
         /// </summary>
         /// <param name="textFrame">The text of JSON frame.</param>
         /// <returns></returns>
@@ -39,7 +39,7 @@ namespace NetworkNode.Frame
         }
 
         /// <summary>
-        /// Builds the frame from file.
+        /// Builds the frame from JSON file.
         /// </summary>
         /// <param name="pathToJson">The path to JSON file.</param>
         /// <returns></returns>

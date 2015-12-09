@@ -20,7 +20,17 @@
             this.Level = level;
             this.Type = ContentType.VICONTAINER;
         }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VirtualContainer"/> class.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="content">The content.</param>
+        public VirtualContainer(VirtualContainerLevel level, Container content)
+        {
+            this.Level = level;
+            this.Type = ContentType.VICONTAINER;
+            this.Content = content;
+        }
         /// <summary>
         /// Determines whether the specified content is virtual container.
         /// </summary>

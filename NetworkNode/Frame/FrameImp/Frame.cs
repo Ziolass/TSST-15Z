@@ -41,23 +41,51 @@ namespace NetworkNode.Frame
 
         /// <summary>
         /// Sets the virtual container. This overwrite the <see cref="Content"/> list member.
+        /// Content must by VirtualContainer!
         /// </summary>
         /// <param name="level">The level.</param>
         /// <param name="number">The number.</param>
-        /// <param name="content">The content.</param>
+        /// <param name="content">The content. Virtual Container</param>
         public void SetVirtualContainer(ContainerLevel level, int number, IContent content)
         {
-            if (this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level))
+            VirtualContainerLevel VCLevel = Frame.ContainerLevelConvert(level);
+            if (VirtualContainer.isVirtualContainer(content))
             {
-                if (Frame.ContainerLevelConvert(level) == VirtualContainerLevel.VC4)
+                VirtualContainer contentVC = (VirtualContainer)content;
+                if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level))
                 {
-                    this.Content.Add(content);
-                }
-                else
-                {
-                    this.Content[GetContainerIndex(Frame.ContainerLevelConvert(level), number)] = content;
+                    if (VCLevel == VirtualContainerLevel.VC4)
+                    {
+                        this.Content.Add(content);
+                    }
+                    else
+                    {
+                        if (TestContainerSpace(VCLevel, number))
+                        {
+                            this.Content[GetContainerIndex(VCLevel, number)] = content;
+                        }
+                    }
                 }
             }
+        }
+
+        private bool TestContainerSpace(VirtualContainerLevel level, int index)
+        {
+            switch (level)
+            {
+                case VirtualContainerLevel.VC12:
+                    GetContainerIndex(level, index);
+                    break;
+                case VirtualContainerLevel.VC2:
+                    break;
+                case VirtualContainerLevel.VC3:
+                    break;
+                case VirtualContainerLevel.VC4:
+                    break;
+                default:
+                    break;
+            }
+            return true;
         }
 
         /// <summary>
