@@ -58,7 +58,6 @@
     <Compile Include="Frame\IContent.cs" />
     <Compile Include="Frame\IFrame.cs" />
     <Compile Include="Frame\IFrameBuilder.cs" />
-    <Compile Include="Frame\FrameImp\TributaryUnit.cs" />
     <Compile Include="Frame\FrameImp\VirtualContainer.cs" />
     <Compile Include="SocketUtils\LocalSocektBuilder.cs" />
     <Compile Include="SocketUtils\StateObject.cs" />
