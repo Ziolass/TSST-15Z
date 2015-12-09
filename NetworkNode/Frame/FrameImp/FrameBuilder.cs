@@ -19,8 +19,8 @@ namespace NetworkNode.Frame
         {
             Frame returnFrame = new Frame();
             metadata = JObject.Parse(textFrame);
-            returnFrame.Msoh = metadata["Msoh"].ToObject<string>();
-            returnFrame.Rsoh = metadata["Rsoh"].ToObject<string>();
+            returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Msoh"]);
+            returnFrame.Rsoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
             if (FrameBuilder.isJArray(metadata["Content"]))
             {
                 returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["Content"]);
@@ -101,6 +101,13 @@ namespace NetworkNode.Frame
                 {
                     Container newContainer = new Container(content["Content"].ToString());
                     return newContainer;
+                }
+                else if (FrameBuilder.isHeader(content["Type"]))
+                {
+                    string checksum = content["Checksum"].ToString();
+                    string eow = content["EOW"].ToString();
+                    Header newHeader = new Header(checksum, eow);
+                    return newHeader;
                 }
                 else return null;
             }
@@ -198,6 +205,25 @@ namespace NetworkNode.Frame
             }
         }
 
+        /// <summary>
+        /// Determines whether the specified token is header.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        private static bool isHeader(JToken token)
+        {
+            try
+            {
+                if (getContentType(token) == ContentType.HEADER)
+                    return true;
+                else return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
         /// <summary>
         /// Gets the type of the content.
         /// </summary>

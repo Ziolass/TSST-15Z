@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace NetworkNode.Frame
 {
     public enum ContainerLevel { TUG12, TUG2, TUG3, AU4, UNDEF }
-    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER }
+    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER }
 
     public interface IFrame
     {
-         String Msoh { get; set; }
-         String Rsoh { get; set; }
+         Header Msoh { get; set; }
+         Header Rsoh { get; set; }
          IContent GetVirtualContainer(ContainerLevel level, int number);
          bool SetVirtualContainer(ContainerLevel level, int number, IContent content);
     }

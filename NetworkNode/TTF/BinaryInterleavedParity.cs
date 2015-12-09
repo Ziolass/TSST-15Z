@@ -36,6 +36,29 @@ namespace NetworkNode.TTF
             return checksum;
         }
         /// <summary>
+        /// Generates the BIP checksum.
+        /// </summary>
+        /// <param name="var">The variable.</param>
+        /// <param name="blockCount">The block count.</param>
+        /// <returns></returns>
+        public static string generateBIP(object var, int blockCount)
+        {
+            String checksum = String.Empty;
+            byte[] bitFrame = BinaryInterleavedParity.ObjectToByteArray(var.ToString());
+            int hopSize = bitFrame.Length / blockCount;
+            for (int z = 0; z < blockCount; z++)
+            {
+                byte block = 0;
+                for (int x = z; x < z * hopSize && x < bitFrame.Length; x++)
+                {
+                    block = (byte)(block + bitFrame[x]);
+                }
+                block = (byte)(block % 2);
+                checksum += block.ToString();
+            }
+            return checksum;
+        }
+        /// <summary>
         /// Objects to byte array.
         /// </summary>
         /// <param name="obj">The object.</param>

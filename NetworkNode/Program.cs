@@ -13,6 +13,18 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
+            Frame.Frame frame = new Frame.Frame();
+            frame.Msoh = new Header("test", "test2");
+            frame.Rsoh = new Header("test", "test2");
+            frame.SetVirtualContainer(ContainerLevel.TUG12, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC12));
+            frame.SetVirtualContainer(ContainerLevel.TUG2, 0, new VirtualContainer(Frame.VirtualContainerLevel.VC2));
+            frame.SetVirtualContainer(ContainerLevel.TUG2, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC2));
+            frame.SetVirtualContainer(ContainerLevel.TUG3, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC3));
+
+            FrameBuilder fmb = new Frame.FrameBuilder();
+            string var = fmb.BuildLiteral(frame);
+
+            frame = (Frame.Frame)fmb.BuildFrame(var);
 
             String id = "0";
             if (args.Length == 0)

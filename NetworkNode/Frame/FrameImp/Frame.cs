@@ -10,8 +10,8 @@ namespace NetworkNode.Frame
 
     public class Frame : IFrame
     {
-        public String Msoh { get; set; }
-        public String Rsoh { get; set; }
+        public Header Msoh { get; set; }
+        public Header Rsoh { get; set; }
         public List<IContent> Content { get; set; }
 
         /// <summary>
