@@ -14,6 +14,6 @@ namespace NetworkNode.Frame
          String Msoh { get; set; }
          String Rsoh { get; set; }
          IContent GetVirtualContainer(ContainerLevel level, int number);
-         void SetVirtualContainer(ContainerLevel level, int number, IContent content);
+         bool SetVirtualContainer(ContainerLevel level, int number, IContent content);
     }
 }
