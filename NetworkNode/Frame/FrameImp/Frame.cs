@@ -40,13 +40,14 @@ namespace NetworkNode.Frame
         }
 
         /// <summary>
-        /// Sets the virtual container. This overwrite the <see cref="Content"/> list member.
+        /// Sets the virtual container. This overwrite the <see cref="Content" /> list member.
         /// Content must by VirtualContainer!
         /// </summary>
         /// <param name="level">The level.</param>
         /// <param name="number">The number.</param>
         /// <param name="content">The content. Virtual Container</param>
-        public void SetVirtualContainer(ContainerLevel level, int number, IContent content)
+        /// <returns>True - success, False - fail</returns>
+        public bool SetVirtualContainer(ContainerLevel level, int number, IContent content)
         {
             VirtualContainerLevel VCLevel = Frame.ContainerLevelConvert(level);
             if (VirtualContainer.isVirtualContainer(content))
@@ -54,38 +55,184 @@ namespace NetworkNode.Frame
                 VirtualContainer contentVC = (VirtualContainer)content;
                 if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level))
                 {
-                    if (VCLevel == VirtualContainerLevel.VC4)
+                    if (TestContainerSpace(VCLevel, number))
                     {
-                        this.Content.Add(content);
-                    }
-                    else
-                    {
-                        if (TestContainerSpace(VCLevel, number))
-                        {
-                            this.Content[GetContainerIndex(VCLevel, number)] = content;
-                        }
+                        this.Content[GetContainerIndex(VCLevel, number)] = content;
+                        return true;
                     }
                 }
+                else return false;
             }
+            return false;
         }
 
+        /// <summary>
+        /// Tests adding the container to frame space.
+        /// Check if Virtual Container have TU-space for itself
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         private bool TestContainerSpace(VirtualContainerLevel level, int index)
         {
+            bool testUp = false;
+            bool testDown = false;
             switch (level)
             {
                 case VirtualContainerLevel.VC12:
-                    GetContainerIndex(level, index);
+                    if (this.CheckContainerUp(level, index))
+                        testUp = true;
+                    testDown = true;
                     break;
                 case VirtualContainerLevel.VC2:
+                    if (this.CheckContainerUp(level, index))
+                        testUp = true;
+                    if (this.CheckContainerDown(level, index))
+                        testDown = true;
                     break;
                 case VirtualContainerLevel.VC3:
+                    if (this.CheckContainerUp(level, index))
+                        testUp = true;
+                    if (this.CheckContainerDown(level, index))
+                        testDown = true;
                     break;
                 case VirtualContainerLevel.VC4:
-                    break;
-                default:
+                    if (this.CheckContainerDown(level, index))
+                        testDown = true;
+                    testUp = true;
                     break;
             }
-            return true;
+            if (testUp && testDown)
+                return true;
+            else return false;
+        }
+        /// <summary>
+        /// Checks if upper virtual container exists and has higher level.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        private bool CheckContainerUp(VirtualContainerLevel level, int index)
+        {
+            bool returnVal = false;
+            int contentPosition;
+            int parentPostion;
+            switch (level)
+            {
+                case VirtualContainerLevel.VC12:
+                    contentPosition = GetContainerIndex(level, index);
+                    parentPostion = index / 3;
+                    if (CheckContainerUp(VirtualContainerLevel.VC2, parentPostion))
+                    {
+                        if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC12)
+                            returnVal = false;
+                        else returnVal = true;
+                    }
+                    else returnVal = false;
+                    break;
+                case VirtualContainerLevel.VC2:
+                    contentPosition = GetContainerIndex(level, index);
+                    parentPostion = index / 7;
+                    if (CheckContainerUp(VirtualContainerLevel.VC3, parentPostion))
+                    {
+                        if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC2)
+                            returnVal = false;
+                        else returnVal = true;
+                    }
+                    else returnVal = false;
+                    break;
+                case VirtualContainerLevel.VC3:
+                    contentPosition = GetContainerIndex(level, index);
+                    if (CheckContainerUp(VirtualContainerLevel.VC4, 0))
+                    {
+                        if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC3)
+                            returnVal = false;
+                        else returnVal = true;
+                    }
+                    else returnVal = false;
+                    break;
+                case VirtualContainerLevel.VC4:
+                    if (this.Content[0] != null && ((VirtualContainer)this.Content[0]).Level == VirtualContainerLevel.VC4)
+                        returnVal = false;
+                    else returnVal = true;
+                    break;
+            }
+            return returnVal;
+        }
+        /// <summary>
+        /// Checks the lower virtual container exists and has lower virtual containers.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        private bool CheckContainerDown(VirtualContainerLevel level, int index)
+        {
+            bool returnVal = false;
+            int contentPosition;
+            int childPosition;
+            switch (level)
+            {
+                case VirtualContainerLevel.VC12:
+                    if (this.Content[index] != null && ((VirtualContainer)this.Content[index]).Level == VirtualContainerLevel.VC12)
+                        returnVal = false;
+                    else returnVal = true;
+                    break;
+                case VirtualContainerLevel.VC2:
+                    contentPosition = GetContainerIndex(level, index);
+                    childPosition = index * 3;
+                    for (int i = childPosition; i < childPosition + 3; i++)
+                    {
+                        if (CheckContainerDown(VirtualContainerLevel.VC12, i))
+                        {
+                            if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC2)
+                                returnVal = false;
+                            else returnVal = true;
+                        }
+                        else
+                        {
+                            returnVal = false;
+                            break;
+                        }
+                    }
+                    break;
+                case VirtualContainerLevel.VC3:
+                    contentPosition = GetContainerIndex(level, index);
+                    childPosition = index * 7;
+                    for (int i = childPosition; i < childPosition + 7; i++)
+                    {
+                        if (CheckContainerDown(VirtualContainerLevel.VC2, i))
+                        {
+                            if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC3)
+                                returnVal = false;
+                            else returnVal = true;
+                        }
+                        else
+                        {
+                            returnVal = false;
+                            break;
+                        }
+                    }
+                    break;
+                case VirtualContainerLevel.VC4:
+                    contentPosition = GetContainerIndex(level, index);
+                    childPosition = index * 3;
+                    for (int i = childPosition; i < childPosition + 3; i++)
+                    {
+                        if (CheckContainerDown(VirtualContainerLevel.VC3, i))
+                        {
+                            if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC4)
+                                returnVal = false;
+                            else returnVal = true;
+                        }
+                        else
+                        {
+                            returnVal = false;
+                            break;
+                        }
+                    }
+                    break;
+            }
+            return returnVal;
         }
 
         /// <summary>
@@ -116,7 +263,6 @@ namespace NetworkNode.Frame
                     break;
 
                 case VirtualContainerLevel.VC2:
-
                     for (int i = 0; i < Content.Count; i += 3)
                     {
                         if (counter == index)
