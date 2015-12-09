@@ -13,6 +13,19 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
+
+            FrameBuilder fmb = new Frame.FrameBuilder();
+
+            Frame.Frame frame = new Frame.Frame();
+            VirtualContainer newVC = new Frame.VirtualContainer(Frame.VirtualContainerLevel.VC3);
+            newVC.Content = new Frame.Container("test");
+            frame.SetVirtualContainer(ContainerLevel.TUG3, 0, newVC);
+            frame.SetVirtualContainer(ContainerLevel.TUG3, 1, newVC);
+            frame.SetVirtualContainer(ContainerLevel.TUG3, 2, newVC);
+
+            String var = fmb.BuildLiteral(frame);
+            //
+
             String id = "0";
             if (args.Length == 0)
             {
@@ -25,9 +38,9 @@ namespace NetworkNode
 
 
             List<ForwardingRecord> records = new List<ForwardingRecord>();
+            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 0, 0));
             records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 1, 1));
             records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 2, 2));
-            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 3, 3));
 
             foreach (ForwardingRecord record in records)
             {

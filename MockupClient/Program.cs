@@ -20,7 +20,7 @@ namespace MockupClient
 
         string data = File.ReadAllText(json);
         Console.WriteLine("Pressto send JSON");
-        Console.ReadLine();
+        Console.ReadKey();
         try {
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];

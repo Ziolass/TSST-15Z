@@ -10,6 +10,6 @@ namespace NetworkNode.TTF
     interface SectionTerminator
     {
         void evaluateHeader(IFrame sdhFrame);
-        void generateHeader(IFrame sdhFrame);
+        void generateHeader(ref IFrame sdhFrame);
     }
 }

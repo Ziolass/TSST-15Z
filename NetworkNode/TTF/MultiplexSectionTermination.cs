@@ -14,9 +14,18 @@ namespace NetworkNode.TTF
 
         }
 
-        public void generateHeader(IFrame sdhFrame)
+        /// <summary>
+        /// Generates the MSOH header.
+        /// </summary>
+        /// <param name="sdhFrame">The SDH frame.</param>
+        public void generateHeader(ref IFrame sdhFrame)
         {
-        
+            Frame.Frame tempFrame = (Frame.Frame)sdhFrame;
+
+            //byte bitFrame = Convert.ToByte(tempFrame);
+
+
+            ((Frame.Frame)sdhFrame).Msoh = "";
         }
     }
 }

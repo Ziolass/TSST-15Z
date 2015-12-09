@@ -14,7 +14,7 @@ namespace NetworkNode.TTF
 
         }
 
-        public void generateHeader(IFrame sdhFrame)
+        public void generateHeader(ref IFrame sdhFrame)
         {
 
         }

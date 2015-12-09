@@ -115,12 +115,15 @@ namespace NetworkNode.Frame
         private bool CheckContainerUp(VirtualContainerLevel level, int index)
         {
             bool returnVal = false;
-            int contentPosition;
+            int contentPosition = contentPosition = GetContainerIndex(level, index);
             int parentPostion;
+            if (contentPosition == -1)
+            {
+                return false;
+            }
             switch (level)
             {
                 case VirtualContainerLevel.VC12:
-                    contentPosition = GetContainerIndex(level, index);
                     parentPostion = index / 3;
                     if (CheckContainerUp(VirtualContainerLevel.VC2, parentPostion))
                     {
@@ -131,7 +134,6 @@ namespace NetworkNode.Frame
                     else returnVal = false;
                     break;
                 case VirtualContainerLevel.VC2:
-                    contentPosition = GetContainerIndex(level, index);
                     parentPostion = index / 7;
                     if (CheckContainerUp(VirtualContainerLevel.VC3, parentPostion))
                     {
@@ -142,7 +144,6 @@ namespace NetworkNode.Frame
                     else returnVal = false;
                     break;
                 case VirtualContainerLevel.VC3:
-                    contentPosition = GetContainerIndex(level, index);
                     if (CheckContainerUp(VirtualContainerLevel.VC4, 0))
                     {
                         if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC3)
@@ -168,8 +169,12 @@ namespace NetworkNode.Frame
         private bool CheckContainerDown(VirtualContainerLevel level, int index)
         {
             bool returnVal = false;
-            int contentPosition;
+            int contentPosition = GetContainerIndex(level, index);
             int childPosition;
+            if (contentPosition == -1)
+            {
+                return false;
+            }
             switch (level)
             {
                 case VirtualContainerLevel.VC12:
@@ -177,8 +182,7 @@ namespace NetworkNode.Frame
                         returnVal = false;
                     else returnVal = true;
                     break;
-                case VirtualContainerLevel.VC2:
-                    contentPosition = GetContainerIndex(level, index);
+                case VirtualContainerLevel.VC2:                 
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
                     {
@@ -196,7 +200,6 @@ namespace NetworkNode.Frame
                     }
                     break;
                 case VirtualContainerLevel.VC3:
-                    contentPosition = GetContainerIndex(level, index);
                     childPosition = index * 7;
                     for (int i = childPosition; i < childPosition + 7; i++)
                     {
@@ -214,7 +217,6 @@ namespace NetworkNode.Frame
                     }
                     break;
                 case VirtualContainerLevel.VC4:
-                    contentPosition = GetContainerIndex(level, index);
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
                     {
@@ -248,7 +250,7 @@ namespace NetworkNode.Frame
         private int GetContainerIndex(VirtualContainerLevel level, int index)
         {
             int counter = 0;
-            int returnValue = 0;
+            int returnValue = -1;
             switch (level)
             {
                 case VirtualContainerLevel.VC12:
