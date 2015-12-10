@@ -19,8 +19,6 @@ R->M: OK
 3. Dodanie połączenia
 M->R: sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
 R->M: OK
-(tu na razie opcja dla jednego połączenia, dla wielu będzie to:
- sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}|{port_z2}#{port_do2}#{poziom_z2}#{poziom_do2}#{typ_konteneru2}
 (wartości oddzielone # w kolejności:
 -port z którego wychodzi
 -port na który ma wejść
@@ -31,8 +29,7 @@ poszczególne połączenia oddzielone |
 
 4. Podanie listy połączeń
 M->R: get-connection-list|
-R->M: {higher_connection1}#{lower_connection1}|{higer_connection2}#{lower_connection2}
-(wartości w parze oddzielone #, pary oddzielone | )
+R->M: {port_wejsciowy1}#{port_wwyjsciowy1}#{poziom_wejsciowy1}#{poziom_wyjsciowy1}#{typ_konteneru1}|{port_wejsciowy2}#{port_wwyjsciowy2}#{poziom_wejsciowy2}#{poziom_wyjsciowy2}#{typ_konteneru2} itd
 
 5. Podanie listy portów
 M->R: get-ports|
