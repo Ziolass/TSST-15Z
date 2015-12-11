@@ -19,8 +19,16 @@ namespace NetworkNode.Frame
         {
             Frame returnFrame = new Frame();
             metadata = JObject.Parse(textFrame);
-            returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Msoh"]);
-            returnFrame.Rsoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
+            if (FrameBuilder.isHeader(metadata["Msoh"]))
+            {
+                returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Msoh"]);
+
+            }
+            if (FrameBuilder.isHeader(metadata["Rsoh"]))
+            {
+                returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
+
+            }
             if (FrameBuilder.isJArray(metadata["Content"]))
             {
                 returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["Content"]);
