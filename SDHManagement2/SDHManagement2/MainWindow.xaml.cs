@@ -12,15 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using GraphX.Controls;
-using GraphX.Controls.Animations;
-using GraphX.Controls.Models;
-using GraphX.PCL.Common.Enums;
-using GraphX.PCL.Logic.Algorithms.LayoutAlgorithms;
+
 using SDHManagement2.FileUtils;
 using SDHManagement2.Models;
 using SDHManagement2.SocketUtils;
 using SDHManagement2.AdditionalWindows;
+using Autodesk.Maya;
 
 namespace SDHManagement2
 {
@@ -38,13 +35,23 @@ namespace SDHManagement2
             "get-connection-list",
             "get-ports"
         };
+        // Krosownica
+        private string [] actionaNameList =
+            {"Dezaktywuj krosownice",
+            "Usuń istniejące połączenie",
+            "Dodaj nowe połączenie",
+            "Pobierz listę istniejących połączeń",
+            "Pobierz listę dostępnych portów"
+        };
         private string[] clientAction =
             {"resource-location"};
+        private string[] clientNameAction =
+            {"Przydział zasobów" };
 
         private string[] selection =
             {
-             "node",
-             "client"
+             "Krosownica",
+             "Klient"
             };
 
         public List<Router> routerList { get; set; }
@@ -54,9 +61,11 @@ namespace SDHManagement2
         public MainWindow()
         {
             InitializeComponent();
+            MayaTheme.Initialize(null);
             console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt") + ": Management console");
             selectionBox.ItemsSource = selection.ToList();
-            actionBox.ItemsSource = actionList.ToList();
+            // actionBox.ItemsSource = actionList.ToList();
+            actionBox.ItemsSource = actionaNameList.ToList();
             button2.IsEnabled = false;
             addNewButton.IsEnabled = false;
         //    socketHandler = new SocketHandler(routerList, this);
@@ -136,8 +145,8 @@ namespace SDHManagement2
             string action;
 
             nodeName = nodeBox.Text;
-            action = actionBox.Text;
-
+            //action = actionBox.Text;
+            action = actionList[actionBox.SelectedIndex];
             socketHandler.commandHandle(action,nodeName);
 
 
@@ -163,9 +172,9 @@ namespace SDHManagement2
                 console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt")
                                     + ":\n"
                                     +name
-                                    +"'s available ports"
-                                    + "\nIn: " + inports
-                                    + "\nOut: " + outports);
+                                    +": Dostępne porty"
+                                    + "\nWejściowe: " + inports
+                                    + "\nWyjściowe: " + outports);
                 
 
             }
@@ -288,20 +297,24 @@ namespace SDHManagement2
 
         private void selectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             if(!initialised)
             {
                 nodeBox.ItemsSource = new List<string>();
+                return;
 
             }
             switch (selectionBox.SelectedItem.ToString())
             {
-                case "client":
-                    nodeBox.ItemsSource = socketHandler.clientNameList;
-                    actionBox.ItemsSource = clientAction.ToList();
+                case "Klient":
+                   nodeBox.ItemsSource = socketHandler.clientNameList;
+
+                    actionBox.ItemsSource = clientNameAction.ToList();
+                    //actionBox.ItemsSource = clientAction.ToList();
                     break;
-                case "node" :
+                case "Krosownica" :
                     nodeBox.ItemsSource = socketHandler.nodelist;
-                    actionBox.ItemsSource = actionList.ToList();
+                    actionBox.ItemsSource = actionaNameList.ToList();
                     break;
                 default:
                     break;

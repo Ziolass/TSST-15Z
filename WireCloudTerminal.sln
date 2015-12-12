@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WireCloudTerminal", "WireCloudTerminal\WireCloudTerminal.csproj", "{BFF94DB1-E883-4B5E-9ACE-75A3973A7322}"
 EndProject
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockupServer", "MockupServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode", "NetworkNode\NetworkNode.csproj", "{F2453730-6933-4343-856C-273A9FA16B6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHManagement2", "SDHManagement2\SDHManagement2.csproj", "{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHManagement2", "SDHManagement2\SDHManagement2\SDHManagement2.csproj", "{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

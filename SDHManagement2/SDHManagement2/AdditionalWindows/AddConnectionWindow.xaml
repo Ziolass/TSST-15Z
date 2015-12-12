@@ -4,25 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SDHManagement2.AdditionalWindows"
-        mc:Ignorable="d" Height="300" Width="300" WindowStyle="ToolWindow" BorderThickness="2" Background="#FFB4A7A7" ResizeMode="NoResize">
+        mc:Ignorable="d" Height="350" Width="350" WindowStyle="ToolWindow" BorderThickness="2" Background="#FFB4A7A7" ResizeMode="NoResize">
     <Grid>
-        <Button x:Name="button" Content="Add" HorizontalAlignment="Left" Margin="87,225,0,0" VerticalAlignment="Top" Width="104" Click="button_Click" Height="27"/>
-        <Label x:Name="label" Content="Ports" HorizontalAlignment="Left" Margin="44,36,0,0" VerticalAlignment="Top" FontSize="16" Width="52"/>
-        <Canvas HorizontalAlignment="Left" Height="91" Margin="14,64,0,0" VerticalAlignment="Top" Width="116" Background="#FF746868">
-            <Label x:Name="label2" Content="OUT" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="69"/>
-            <Label x:Name="label1" Content="IN" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="18"/>
-            <ListBox x:Name="inportBox" Height="52" Canvas.Left="10" Canvas.Top="26" Width="37"/>
-            <ListBox x:Name="outportBox" Height="52" Canvas.Left="69" Canvas.Top="26" Width="37"/>
+        <Button x:Name="button" Content="Dodaj" HorizontalAlignment="Left" Margin="118,286,0,0" VerticalAlignment="Top" Width="104" Click="button_Click" Height="27"/>
+        <Label x:Name="label" Content="Ports" HorizontalAlignment="Left" Margin="51,61,0,0" VerticalAlignment="Top" FontSize="16" Width="52"/>
+        <Canvas HorizontalAlignment="Left" Height="116" Margin="10,93,0,0" VerticalAlignment="Top" Width="136" Background="#FF746868">
+            <Label x:Name="label2" Content="OUT" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="83"/>
+            <Label x:Name="label1" Content="IN" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="25"/>
+            <ListBox x:Name="inportBox" Height="80" Canvas.Left="10" Canvas.Top="26" Width="54"/>
+            <ListBox x:Name="outportBox" Height="80" Canvas.Left="72" Canvas.Top="26" Width="54"/>
         </Canvas>
-        <Label x:Name="label3" Content="Existing connections" HorizontalAlignment="Left" Margin="150,39,0,0" VerticalAlignment="Top" FontSize="13.333"/>
-        <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="91" Margin="176,64,0,0" VerticalAlignment="Top" Width="81" IsEnabled="False"/>
+        <Label x:Name="label3" Content="Existing connections" HorizontalAlignment="Left" Margin="174,41,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="115" Margin="172,72,0,0" VerticalAlignment="Top" Width="158" IsEnabled="False"/>
         <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Height="37" Width="270" FontSize="18.667" FontWeight="Bold" HorizontalContentAlignment="Center"/>
-        <Label x:Name="label4" Content="Contener type" HorizontalAlignment="Left" Margin="18,155,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="contenerTypeBox" HorizontalAlignment="Left" Margin="16,181,0,0" VerticalAlignment="Top" Width="93" SelectionChanged="contenerTypeBox_SelectionChanged"/>
-        <ComboBox x:Name="startLevelBox" HorizontalAlignment="Left" Margin="144,181,0,0" VerticalAlignment="Top" Width="55"/>
-        <ComboBox x:Name="endLevelBox" HorizontalAlignment="Left" Margin="214,181,0,0" VerticalAlignment="Top" Width="55"/>
-        <Label x:Name="label5" Content="From" HorizontalAlignment="Left" Margin="154,155,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label6" Content="To" HorizontalAlignment="Left" Margin="234,155,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label4" Content="Kontener" HorizontalAlignment="Left" Margin="99,216,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="contenerTypeBox" HorizontalAlignment="Left" Margin="97,242,0,0" VerticalAlignment="Top" Width="65" SelectionChanged="contenerTypeBox_SelectionChanged"/>
+        <ComboBox x:Name="STNComboBox" HorizontalAlignment="Left" Margin="10,242,0,0" VerticalAlignment="Top" Width="70"/>
+        <Label x:Name="label7" Content="Moduł" HorizontalAlignment="Left" Margin="22,216,0,0" VerticalAlignment="Top"/>
+        <Canvas HorizontalAlignment="Left" Height="69" Margin="186,198,0,0" VerticalAlignment="Top" Width="139" Background="#FF746868">
+            <ComboBox x:Name="startLevelBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Canvas.Left="7" Canvas.Top="44"/>
+            <ComboBox x:Name="endLevelBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Canvas.Left="80" Canvas.Top="44"/>
+            <Label x:Name="label5" Content="Początkowa" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="2" Canvas.Top="18"/>
+            <Label x:Name="label6" Content="Docelowa" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="78" Canvas.Top="18"/>
+            <Label x:Name="label8" Content="Szczeliny" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="13.333" Canvas.Left="40"/>
+        </Canvas>
 
     </Grid>
 </Window>
