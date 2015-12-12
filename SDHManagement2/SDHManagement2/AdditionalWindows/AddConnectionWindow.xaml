@@ -7,16 +7,16 @@
         mc:Ignorable="d" Height="350" Width="350" WindowStyle="ToolWindow" BorderThickness="2" Background="#FFB4A7A7" ResizeMode="NoResize">
     <Grid>
         <Button x:Name="button" Content="Dodaj" HorizontalAlignment="Left" Margin="118,286,0,0" VerticalAlignment="Top" Width="104" Click="button_Click" Height="27"/>
-        <Label x:Name="label" Content="Ports" HorizontalAlignment="Left" Margin="51,61,0,0" VerticalAlignment="Top" FontSize="16" Width="52"/>
+        <Label x:Name="label" Content="Porty" HorizontalAlignment="Left" Margin="51,61,0,0" VerticalAlignment="Top" FontSize="16" Width="52"/>
         <Canvas HorizontalAlignment="Left" Height="116" Margin="10,93,0,0" VerticalAlignment="Top" Width="136" Background="#FF746868">
             <Label x:Name="label2" Content="OUT" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="83"/>
             <Label x:Name="label1" Content="IN" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="25"/>
             <ListBox x:Name="inportBox" Height="80" Canvas.Left="10" Canvas.Top="26" Width="54"/>
             <ListBox x:Name="outportBox" Height="80" Canvas.Left="72" Canvas.Top="26" Width="54"/>
         </Canvas>
-        <Label x:Name="label3" Content="Existing connections" HorizontalAlignment="Left" Margin="174,41,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Label x:Name="label3" Content="Istniejące połączenia" HorizontalAlignment="Left" Margin="174,41,0,0" VerticalAlignment="Top" FontSize="16"/>
         <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="115" Margin="172,72,0,0" VerticalAlignment="Top" Width="158" IsEnabled="False"/>
-        <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Height="37" Width="270" FontSize="18.667" FontWeight="Bold" HorizontalContentAlignment="Center"/>
+        <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="37" Width="320" FontSize="18.667" FontWeight="Bold" HorizontalContentAlignment="Center"/>
         <Label x:Name="label4" Content="Kontener" HorizontalAlignment="Left" Margin="99,216,0,0" VerticalAlignment="Top"/>
         <ComboBox x:Name="contenerTypeBox" HorizontalAlignment="Left" Margin="97,242,0,0" VerticalAlignment="Top" Width="65" SelectionChanged="contenerTypeBox_SelectionChanged"/>
         <ComboBox x:Name="STNComboBox" HorizontalAlignment="Left" Margin="10,242,0,0" VerticalAlignment="Top" Width="70"/>
