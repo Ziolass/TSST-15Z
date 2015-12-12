@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WireCloudTerminal", "WireCloudTerminal\WireCloudTerminal.csproj", "{BFF94DB1-E883-4B5E-9ACE-75A3973A7322}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockupServer", "MockupServer\MockupServer.csproj", "{D5E40A56-2C69-4C47-8B23-EF4C9C10994E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode", "NetworkNode\NetworkNode.csproj", "{F2453730-6933-4343-856C-273A9FA16B6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHManagement2", "SDHManagement2\SDHManagement2.csproj", "{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{F2453730-6933-4343-856C-273A9FA16B6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2453730-6933-4343-856C-273A9FA16B6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2453730-6933-4343-856C-273A9FA16B6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
