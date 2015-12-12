@@ -52,7 +52,7 @@ namespace NetworkNode.MenagmentModule
                     }
                 case "sub-conection-HPC":
                     {
-                        response = establishLink(requestArguments);
+                        response = addForwardingRecord(requestArguments);
                         break;
                     }
                 case "get-connection-list":
@@ -78,31 +78,62 @@ namespace NetworkNode.MenagmentModule
         private string shutdownInterface(string[] testPort)
         {
             int port = int.Parse(testPort[0]);
-            return node.DisableInterface(port) ? "OK" : "ERROR";
+            return node.ShudownInterface(port) ? "OK" : "ERROR";
         }
         private string getPortList()
         {
-            return null;
+            List<List<int>> inOutPorts = node.GetPorts();
+            StringBuilder builder = new StringBuilder();
+            int mainIndex = 0;
+            foreach (List<int> ports in inOutPorts)
+            {
+                int index = 0;
+                foreach (int port in ports)
+                {
+
+                    builder.Append(port);
+                    if (index < ports.Count - 1)
+                    {
+                        builder.Append("#");
+                    } 
+                }
+
+                if (mainIndex < inOutPorts.Count - 1)
+                {
+                    builder.Append("|");
+                }
+            }
+            return builder.ToString(); ;
         }
         private string getConnectionList()
         {
-            /*List<ForwardingRecord> allConnections = node.GetCommutation();
-            StringBuilder sb = new StringBuilder();
-            sb.Append("OK|");
-            foreach(ForwardingRecord connection in allConnections)
+            List<ForwardingRecord> records = node.GetForwardingRecords();
+            StringBuilder builder = new StringBuilder();
+            int index = 0;
+            foreach (ForwardingRecord record in records)
             {
-                InOutPair highierConnection = connection.SlotPair;
-                InOutPair lowerConnection = connection.ContainerPair;
-                appendConnection(sb, highierConnection);
-                sb.Append("#");
-                appendConnection(sb, lowerConnection);
-                sb.Append("|");
+                builder.Append(record.InputPort);
+                builder.Append("#");
+                builder.Append(record.OutputPort);
+                builder.Append("#");
+                builder.Append(record.VcNumberIn);
+                builder.Append("#");
+                builder.Append(record.VcNumberOut);
+                builder.Append("#");
+                builder.Append(record.ContainerLevel);
+                
+                if (index < records.Count-1)
+                {
+                    builder.Append("|");
+                }
+                
+                index++;
             }
-            managmentInterface.sendFrameBytes(sb.ToString());*/
-            return null;
+
+            return builder.ToString();
         }
 
-        private string appendConnection(StringBuilder sb)
+        private string addForwardingRecord(StringBuilder sb)
         {
             /*if (pair == null)
             {

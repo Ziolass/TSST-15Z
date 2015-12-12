@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.HPC
 {
-    
+
     public class ForwardingRecord
     {
         public ContainerLevel ContainerLevel { get; private set; }
@@ -16,7 +16,9 @@ namespace NetworkNode.HPC
         public int VcNumberOut { get; private set; }
         public int OutputPort { get; private set; }
         public int InputPort { get; private set; }
-        public ForwardingRecord(int inputPort, int outputPort, ContainerLevel containerLevel, int vcNumberIn, int vcNumberOut)
+        public StmLevel Stm { get; private set; }
+
+        public ForwardingRecord(int inputPort, int outputPort, StmLevel stm, ContainerLevel containerLevel, int vcNumberIn, int vcNumberOut)
         {
             OutputPort = outputPort;
             InputPort = inputPort;
@@ -24,6 +26,7 @@ namespace NetworkNode.HPC
             VcNumberIn = vcNumberIn;
             VcNumberOut = vcNumberOut;
             InputPort = inputPort;
+            Stm = stm;
         }
 
     }

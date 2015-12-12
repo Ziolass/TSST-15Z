@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.Frame
 {
+    public enum StmLevel { STM1, STM4, STM16, STM64, STM256 }
     public enum ContainerLevel { TUG12, TUG2, TUG3, AU4, UNDEF }
     public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER }
 

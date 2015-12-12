@@ -1,5 +1,6 @@
 ﻿using NetworkNode.HPC;
 using NetworkNode.MenagmentModule;
+using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,11 @@ namespace NetworkNode
     public class NetworkNode
     {
         private HigherOrderPathConnection hpc;
-        public NetworkNode(HigherOrderPathConnection hpc)
+        private SynchronousPhysicalInterface spi;
+
+        public NetworkNode(HigherOrderPathConnection hpc, SynchronousPhysicalInterface spi)
         {
+            this.spi = spi;
             this.hpc = hpc;
         }
 
@@ -21,19 +25,24 @@ namespace NetworkNode
             hpc.AddForwardingRecord(record);
         }
 
-        public bool DisableNode()
+        public bool ShudownInterface(int number)
         {
-            return true;
-        }
-
-        public bool DisableInterface(int number)
-        {
-            return true;
+            return spi.ShudownInterface(number);
         }
 
         public List<ForwardingRecord> GetForwardingRecords()
         {
             return hpc.GetForwardingRecords();
+        }
+
+        public List<List<int>> GetPorts()
+        {
+            return spi.GetPorts();
+        }
+
+        internal bool DisableNode()
+        {
+            return true;
         }
     }
 }
