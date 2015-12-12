@@ -395,9 +395,22 @@ namespace NetworkNode.SDHFrame
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public string ToString()
         {
             string returnString = string.Empty;
+            returnString += this.Level.ToString() + "|";
+            if (this.Msoh != null)
+                returnString += "MSOH|";
+            else returnString += "null|";
+            if (this.Rsoh != null)
+                returnString += "RSOH";
+            else returnString += "null";
             foreach (IContent item in this.Content)
             {
                 if (item != null && VirtualContainer.isVirtualContainer(item))

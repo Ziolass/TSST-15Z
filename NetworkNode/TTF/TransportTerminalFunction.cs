@@ -92,12 +92,11 @@ namespace NetworkNode.TTF
             foreach (int outputPort in outputFrames.Keys)
             {
                 IFrame frame = outputFrames[outputPort];
-                rst.generateHeader(ref frame);
+                rst.generateHeader(frame);
                 if (nodeMode == NodeMode.MULTIPLEXER)
                 {
-                    mst.generateHeader(ref frame);
-                }
-                
+                    mst.generateHeader(frame);
+                }                
                 String textForm = builder.BuildLiteral(frame);
                 spi.SendFrame(textForm, outputPort);               
             }

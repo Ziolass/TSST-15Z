@@ -36,5 +36,20 @@ namespace NetworkNode.SDHFrame
                 return true;
             else return false;
         }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString()
+        {
+            string returnString = string.Empty;
+            returnString += "Parity" + this.Checksum + "\n";
+            returnString += "EOW" + this.EOW + "\n";
+            returnString += "DCC" + this.DCC + "\n";            
+            return returnString;
+        }
     }
 }

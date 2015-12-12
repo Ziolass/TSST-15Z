@@ -1,4 +1,4 @@
-﻿using NetworkNode.SDHFrame;
+using NetworkNode.SDHFrame;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,19 +11,22 @@ namespace NetworkNode.TTF
 {
     class RegeneratorSectionTermination : SectionTerminator
     {
-        public void evaluateHeader(IFrame sdhFrame)
+        public bool evaluateHeader(IFrame sdhFrame)
         {
-            if (sdhFrame.Rsoh.Checksum == BinaryInterleavedParity.generateBIP(((SDHFrame.Frame)sdhFrame).Content, 24))
-            {
-            }
-            else { }
+            //Remove RSOH header from tempFrame 
+            Frame tempFrame = (Frame)sdhFrame;
+            tempFrame.Rsoh = null;
+            //Check BIP
+            if (sdhFrame.Rsoh.Checksum == BinaryInterleavedParity.generateBIP(((Frame)tempFrame), 24))
+                return true;
+            else return false;
         }
 
-        public void generateHeader(ref IFrame sdhFrame)
+        public void generateHeader(IFrame sdhFrame)
         {
             SDHFrame.Frame tempFrame = (SDHFrame.Frame)sdhFrame;
-            ((SDHFrame.Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame.Content, 24);
+            tempFrame.Rsoh = null;
+            ((SDHFrame.Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 24);
         }
-
     }
 }
