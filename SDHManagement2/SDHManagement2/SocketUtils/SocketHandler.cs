@@ -14,15 +14,19 @@ namespace SDHManagement2.SocketUtils
     {
         private MainWindow mainWindow;
         private List<Router> rList;
-        private List<string> nodelist;
+        private List<Router> cList;
+        public List<string> nodelist { get; set; }
+        public List<string> clientNameList { get; set; }
 
-        public SocketHandler(List<Router> routerList , MainWindow main)
+        public SocketHandler(List<Router> routerList, List<Router> clientList, MainWindow main)
         {
             rList = routerList;
+            cList = clientList;
             mainWindow = main;
             nodelist = new List<string>();
+            clientNameList = new List<string>();
             refresh();
-           
+
 
         }
 
@@ -41,23 +45,44 @@ namespace SDHManagement2.SocketUtils
                 }
 
             }
+            foreach (var client in cList)
+            {
+                if (client.identifier.Equals(name))
+                {
+                    return client.socket;
+                }
+            }
+            return null;
+        }
+        public RouterSocket getClientSocket(String name)
+        {
+            if (cList == null)
+            {
+                return null;
+            }
+
+            foreach (var client in cList)
+            {
+                if (client.identifier.Equals(name))
+                {
+                    return client.socket;
+                }
+
+            }
             return null;
         }
 
         public String sendCommand(String name, String command,bool append)
         {
 
-            if (name.Length < 1)
-            {
-                mainWindow.appendConsole("None node specified, try again",null,null);
-                return null;
-            }
+            
 
-            RouterSocket targetRouterSocket = GetRouterSocket(name);
+            RouterSocket targetSocket = GetRouterSocket(name);
             byte [] bytes = new byte[100000];
             string response=null;
-            Socket conversationSocket = targetRouterSocket.GetSocket();
-
+            targetSocket.InitConversation();
+            Socket conversationSocket = targetSocket.GetSocket();
+            
             try
             {
                 byte[] msg = Encoding.ASCII.GetBytes(command);
@@ -93,21 +118,32 @@ namespace SDHManagement2.SocketUtils
 
         public string commandHandle(string command, string node)
         {
+            if (node.Length < 1)
+            {
+                mainWindow.appendConsole("None node specified, try again", null, null);
+                return null;
+            }
             switch (command)
             {
+                case "resource-location":
+                    string portresponse = sendCommand(node, "get-ports|", false);
+                    ResourceRelocationWindow relocationwindow = new ResourceRelocationWindow(this, node,portresponse);
+                    relocationwindow.ShowDialog();
+                    return "DONE";
                 case "disable-node":
                     return sendCommand(node, command+"|",true);
 
                 case "shutdown-interface":
-                    string connresponse = sendCommand(node, "get-connection-list",false);
+                    string connresponse = sendCommand(node, "get-connection-list|",false);
+
                     DropConnectionWindow dropWindow = new DropConnectionWindow(this,connresponse,node,mainWindow);
                     dropWindow.ShowDialog();
                     return "DONE";
 
                 case "sub-connection-HPC":
-                    string portresponse = sendCommand(node, "get-ports",false);
-                    string connectionresponse = sendCommand(node, "get-connection-list",false);
-                    AddConnectionWindow window = new AddConnectionWindow(this,portresponse,connectionresponse,node);
+                    string port_response = sendCommand(node, "get-ports|",false);
+                    string connectionresponse = sendCommand(node, "get-connection-list|",false);
+                    AddConnectionWindow window = new AddConnectionWindow(this,port_response,connectionresponse,node);
                     window.ShowDialog();
                     return "DONE";
 
@@ -153,7 +189,31 @@ namespace SDHManagement2.SocketUtils
                 }
             }
         }
-            mainWindow.nodeBox.ItemsSource = nodelist;
+            foreach (var client in cList)
+            {
+                if (!client.connected)
+                {
+                    mainWindow.appendConsole(string.Format("Trying to reach {0} on port {1}", client.identifier,
+                        client.port), null, null);
+
+                    try
+                    {
+                        client.socket = new RouterSocket(client.port, client.identifier);
+                        client.socket.TurnOn();
+                        client.connected = true;
+                        clientNameList.Add(client.identifier);
+                        mainWindow.appendConsole(string.Format("Connection to {0} succeeded", client.identifier), null, null);
+
+                    }
+                    catch (Exception e)
+                    {
+                        mainWindow.appendConsole("Could not connect to: " + client.identifier, null, null);
+                    }
+                }
+            }
+
+            //mainWindow.nodeBox.ItemsSource = nodelist;
+            
         }
         public string addSingleNode(string name, int port_)
         {
@@ -166,7 +226,10 @@ namespace SDHManagement2.SocketUtils
                 r.socket.TurnOn();
                 r.connected = true;
                 nodelist.Add(r.identifier);
+                
                 rList.Add(r);
+                mainWindow.nodeBox.ItemsSource = nodelist;
+
                 mainWindow.appendConsole(string.Format("Connection to {0} succeeded", r.identifier), null, null);
 
             }

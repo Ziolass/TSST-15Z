@@ -40,8 +40,13 @@ namespace SDHManagement2.AdditionalWindows
 
             for (int i = 0; i < connectionsWithSharp.Length; i++)
             {
+                int position = i + 1;
                 string[] tmp = connectionsWithSharp[i].Split('#');
-                connections[i] = tmp[0] + " --> " + tmp[1];
+                connections[i] = "Polaczanie " + position + ".\n" +
+                    "z: " + tmp[0] + " do " + tmp[1] + "\n" +
+                    "z pozycji " + tmp[2] + ". na pozycje " + tmp[3] + ".\n" +
+                    "obsługiwany kontener: " + tmp[4];
+
             }
             connectionsBox.ItemsSource = connections.ToList();
 

@@ -30,16 +30,11 @@ namespace SDHManagement2.SocketUtils
             //personalThread = new Thread(new ThreadStart(initConversation));
            // personalThread.Start();
            client = new TcpClient();
-           initConversation();
         }
 
-        private void initConversation()
+        public void InitConversation()
         {
-            
                 socket = LocalSocektBuilder.Instance.getTcpSocket(port);
-
-
-
         }
 
         public Socket GetSocket()

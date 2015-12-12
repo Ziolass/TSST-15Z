@@ -28,14 +28,16 @@
         <ListBox x:Name="console" HorizontalAlignment="Left" Height="153" Margin="10,284,0,0" VerticalAlignment="Top" Width="672" FontSize="18.667" BorderThickness="5"/>
         <Label x:Name="label1" Content="Console" HorizontalAlignment="Left" Margin="270,228,0,0" VerticalAlignment="Top" Height="51" Width="132" FontSize="29.333"/>
         <Canvas HorizontalAlignment="Left" Height="144" Margin="10,510,0,0" VerticalAlignment="Top" Width="672" Background="#FFF4F4F5">
-            <ComboBox x:Name="nodeBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="184" Height="35" Canvas.Left="23" Canvas.Top="85"/>
-            <ComboBox x:Name="actionBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="226" Height="38" Canvas.Left="241" Canvas.Top="85"/>
-            <Label x:Name="label" Content="Node" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Canvas.Left="81" Canvas.Top="58"/>
-            <Label x:Name="label_Copy" Content="Action" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Width="102" Height="33" Canvas.Left="312" Canvas.Top="58"/>
-            <Button x:Name="button" Content="Confirm" HorizontalAlignment="Left" VerticalAlignment="Top" Width="141" Height="37" Click="button_Click" FontSize="18.667" Canvas.Left="512" Canvas.Top="85"/>
-            <Button x:Name="button1" Content="Initialise" HorizontalAlignment="Left" VerticalAlignment="Top" Width="134" Height="25" Click="button1_Click" Canvas.Left="46" Canvas.Top="33"/>
-            <Button x:Name="button2" Content="Refresh" HorizontalAlignment="Left" VerticalAlignment="Top" Width="142" Height="25" Click="button2_Click" Canvas.Left="206" Canvas.Top="33"/>
-            <Button x:Name="addNewButton" Content="Connect new node" HorizontalAlignment="Left" VerticalAlignment="Top" Width="142" Height="25" Click="addNewButton_Click" Canvas.Left="373" Canvas.Top="33"/>
+            <ComboBox x:Name="nodeBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Height="38" Canvas.Left="144" Canvas.Top="85" SelectionChanged="nodeBox_SelectionChanged"/>
+            <ComboBox x:Name="actionBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="173" Height="38" Canvas.Left="312" Canvas.Top="85" SelectionChanged="actionBox_SelectionChanged"/>
+            <Label x:Name="label" Content="Node" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Canvas.Left="184" Canvas.Top="56"/>
+            <Label x:Name="label_Copy" Content="Action" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Width="102" Height="33" Canvas.Left="361" Canvas.Top="58"/>
+            <Button x:Name="button" Content="Confirm" HorizontalAlignment="Left" VerticalAlignment="Top" Width="121" Height="37" Click="button_Click" FontSize="18.667" Canvas.Left="532" Canvas.Top="85"/>
+            <Button x:Name="button1" Content="Initialise" HorizontalAlignment="Left" VerticalAlignment="Top" Width="134" Height="25" Click="button1_Click" Canvas.Left="23" Canvas.Top="16"/>
+            <Button x:Name="button2" Content="Refresh" HorizontalAlignment="Left" VerticalAlignment="Top" Width="142" Height="25" Click="button2_Click" Canvas.Left="184" Canvas.Top="16"/>
+            <Button x:Name="addNewButton" Content="Connect new node" HorizontalAlignment="Left" VerticalAlignment="Top" Width="142" Height="25" Click="addNewButton_Click" Canvas.Left="350" Canvas.Top="16"/>
+            <ComboBox x:Name="selectionBox" Canvas.Left="19" Canvas.Top="85" Width="103" Height="37" SelectionChanged="selectionBox_SelectionChanged"/>
+            <Label x:Name="labell" Content="Client / Node" Canvas.Left="17" Canvas.Top="58" FontSize="16"/>
         </Canvas>
 
     </Grid>

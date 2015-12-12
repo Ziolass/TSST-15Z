@@ -43,7 +43,20 @@ namespace SDHManagement2.SocketUtils
             IPEndPoint endPoint = new IPEndPoint(ipAddress, port);
             Socket socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
-            socket.Connect(remoteEP);
+
+            IAsyncResult result = socket.BeginConnect(remoteEP,null,null);
+
+            bool success = result.AsyncWaitHandle.WaitOne(100, true);
+
+            if (!success)
+            {
+                // NOTE, MUST CLOSE THE SOCKET
+
+                socket.Close();
+                throw new Exception("Failed to connect server.");
+            }
+
+          //  socket.Connect(remoteEP);
             return socket;
         }
         public Socket getTcpSocket()

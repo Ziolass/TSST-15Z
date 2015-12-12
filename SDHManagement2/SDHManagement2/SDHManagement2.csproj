@@ -93,6 +93,9 @@
     <Compile Include="AdditionalWindows\DropConnectionWindow.xaml.cs">
       <DependentUpon>DropConnectionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AdditionalWindows\ResourceRelocationWindow.xaml.cs">
+      <DependentUpon>ResourceRelocationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FileUtils\ConfigReader.cs" />
     <Compile Include="Models\Router.cs" />
     <Compile Include="SocketUtils\LocalSocektBuilder.cs" />
@@ -107,6 +110,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AdditionalWindows\DropConnectionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdditionalWindows\ResourceRelocationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

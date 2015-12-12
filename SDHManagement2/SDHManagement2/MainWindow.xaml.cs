@@ -38,12 +38,24 @@ namespace SDHManagement2
             "get-connection-list",
             "get-ports"
         };
+        private string[] clientAction =
+            {"resource-location"};
+
+        private string[] selection =
+            {
+             "node",
+             "client"
+            };
 
         public List<Router> routerList { get; set; }
+        public List<Router> clientList { get; set; }
+        private bool initialised = false;
+
         public MainWindow()
         {
             InitializeComponent();
             console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt") + ": Management console");
+            selectionBox.ItemsSource = selection.ToList();
             actionBox.ItemsSource = actionList.ToList();
             button2.IsEnabled = false;
             addNewButton.IsEnabled = false;
@@ -201,7 +213,11 @@ namespace SDHManagement2
             for (int i = 0; i < temp_connections.Length; i++)
             {
                 string[] tmp = temp_connections[i].Split('#');
-                connections[i] = tmp[0] + " --> " + tmp[1];
+                int position = i + 1;
+                connections[i] = "Polaczanie "+position+".\n"+
+                    "z: "+tmp[0] + " do " + tmp[1]+"\n"+
+                    "z pozycji "+tmp[2]+". na pozycje "+tmp[3]+".\n"+
+                    "obsługiwany kontener: "+tmp[4];
             }
             return connections;
         }
@@ -209,10 +225,13 @@ namespace SDHManagement2
         {
 
             Dictionary<string, int> portDictionary = ConfigReader.readConfig("\\managementConfigFile.xml");
+            Dictionary<string, int> clientDictionary = ConfigReader.readClientConfig("\\managementConfigFile.xml");
+
             routerList = new List<Router>();
+            clientList = new List<Router>();
 
             
-            if (portDictionary==null)
+            if (portDictionary==null || clientDictionary==null)
             {
                 appendConsole("Error reading configuration file. Try again",null,null);
                 return;
@@ -229,12 +248,23 @@ namespace SDHManagement2
                 routerList.Add(router);
 
             }
+            foreach(var client in clientDictionary)
+            {
+                Router clientNode = new Router()
+                {
+                    identifier = client.Key,
+                      connected = false,
+                      port = client.Value
+                };
+                clientList.Add(clientNode);
+            }
 
-            socketHandler = new SocketHandler(routerList, this);
+            socketHandler = new SocketHandler(routerList,clientList, this);
+            
             button1.IsEnabled = false;
             button2.IsEnabled = true;
             addNewButton.IsEnabled = true;
-
+            initialised = true;
 
 
         }
@@ -248,6 +278,38 @@ namespace SDHManagement2
             AddNewRouterWindow newRouter = new AddNewRouterWindow(this,socketHandler);
             newRouter.ShowDialog();
             return;
+
+        }
+
+        private void nodeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+        }
+
+        private void selectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(!initialised)
+            {
+                nodeBox.ItemsSource = new List<string>();
+
+            }
+            switch (selectionBox.SelectedItem.ToString())
+            {
+                case "client":
+                    nodeBox.ItemsSource = socketHandler.clientNameList;
+                    actionBox.ItemsSource = clientAction.ToList();
+                    break;
+                case "node" :
+                    nodeBox.ItemsSource = socketHandler.nodelist;
+                    actionBox.ItemsSource = actionList.ToList();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void actionBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
 
         }
     }
