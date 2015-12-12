@@ -8,6 +8,15 @@ Router = R
 -> = kierunek komunikatu
 | oraz # = znaki specjalne oddzielające wartości
 _______________________________________________________________________________________
+0. Identyfikacja
+a) router
+M->R: identify|
+R->M: router|<name>
+
+b)
+M->C: identify|
+C->M: client|<name>
+
 1. Wyłączenie węzła:
 M->R: disable-node|
 R->M: OK
