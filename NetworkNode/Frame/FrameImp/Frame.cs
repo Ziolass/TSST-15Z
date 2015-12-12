@@ -18,7 +18,7 @@ namespace NetworkNode.SDHFrame
         public Frame(STMLevel stmLevel)
         {
             Content = new List<IContent>();
-            this.Level = Level;
+            this.Level = stmLevel;
             for (int x = 0; x < ConvertSTMLevel(Level); x++)
             {
                 for (int i = 0; i < 63; i++)
@@ -175,7 +175,7 @@ namespace NetworkNode.SDHFrame
                     else returnVal = false;
                     break;
                 case VirtualContainerLevel.VC32:
-                    parentPostion = index / 21 ;
+                    parentPostion = index / 3 ;
                     if (CheckContainerUp(VirtualContainerLevel.VC4, parentPostion))
                     {
                         if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC32)
@@ -365,7 +365,7 @@ namespace NetworkNode.SDHFrame
                     }
                 }
             }
-            int freeSpace = 63;
+            int freeSpace = 63 * this.ConvertSTMLevel(this.Level);
             freeSpace = freeSpace - (VC12Count + VC2Count * 3 + VC3Count * 21 + VC4Count * 63);
             return freeSpace;
         }
