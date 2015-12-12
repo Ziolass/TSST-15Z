@@ -29,15 +29,15 @@ namespace NetworkNode.MenagmentModule
         public string PerformManagementAction(string request)
         {
             string[] departedRequest = request.Split('|');
-            string[] requestArguments = {};
             int argLength = departedRequest.Length - 1;
             string requestType = departedRequest[0];
-            
-            if (argLength > 0)
+            List<List<string>> arguments = new List<List<string>>();
+
+            for (int i = 1; i < departedRequest.Length; i++)
             {
-                requestArguments = new string[argLength];
-                Array.Copy(departedRequest, 1, requestArguments, 0, argLength);
+                arguments.Add(new List<string>(departedRequest[i].Split('#')));
             }
+
             String response = "ERROR";
             switch (requestType)
             {
@@ -48,12 +48,12 @@ namespace NetworkNode.MenagmentModule
                     }
                 case "shutdown-interface":
                     {
-                        response = shutdownInterface(requestArguments);
+                        response = shutdownInterface(arguments);
                         break;
                     }
                 case "sub-conection-HPC":
                     {
-                        response = addForwardingRecord(requestArguments);
+                        response = addForwardingRecord(arguments);
                         break;
                     }
                 case "get-connection-list":
@@ -76,11 +76,14 @@ namespace NetworkNode.MenagmentModule
         {
             return node.DisableNode() ? "OK" : "ERROR";
         }
-        private string shutdownInterface(string[] testPort)
+
+        private string shutdownInterface(List<List<string>> testPort)
         {
-            int port = int.Parse(testPort[0]);
+
+            int port = int.Parse(testPort[0][0]);
             return node.ShudownInterface(port) ? "OK" : "ERROR";
         }
+
         private string getPortList()
         {
             List<List<int>> inOutPorts = node.GetPorts();

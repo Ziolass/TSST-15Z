@@ -15,51 +15,62 @@ namespace NetworkNode.Ports
         private Socket menagementPort;
         private ManagementCenter center;
 
-        public ManagementPort(int port, ManagementCenter center) 
+        public ManagementPort(int port)
         {
             builder = LocalSocektBuilder.Instance;
             menagementPort = builder.getTcpSocket(port);
+        }
+
+        public void SetManagementCenter(ManagementCenter center)
+        {
             this.center = center;
         }
 
-        public void StartListening() {
-        byte[] bytes = new Byte[100000];
+        public void StartListening()
+        {
+            byte[] bytes = new Byte[100000];
 
-        try {
-            
-            menagementPort.Listen(1);
+            try
+            {
 
-            // Start listening for connections.
-            while (true) {
-                Console.WriteLine("Menagement waiting for a connection...");
-                Socket handler = menagementPort.Accept();
-                string data = null;
+                menagementPort.Listen(1);
 
-                // An incoming connection needs to be processed.
-                while (true) {
-                    bytes = new byte[1024];
-                    int bytesRec = handler.Receive(bytes);
-                    data += Encoding.ASCII.GetString(bytes,0,bytesRec);
-                    if (data.IndexOf("<EOF>") > -1) {
-                        break;
+                // Start listening for connections.
+                while (true)
+                {
+                    Console.WriteLine("Menagement waiting for a connection...");
+                    Socket handler = menagementPort.Accept();
+                    string data = null;
+
+                    // An incoming connection needs to be processed.
+                    while (true)
+                    {
+                        bytes = new byte[1024];
+                        int bytesRec = handler.Receive(bytes);
+                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        if (data.IndexOf("<EOF>") > -1)
+                        {
+                            break;
+                        }
                     }
+
+                    string response = center.PerformManagementAction(data);
+
+                    // Echo the data back to the client.
+                    byte[] msg = Encoding.ASCII.GetBytes(response);
+
+                    handler.Send(msg);
+                    handler.Shutdown(SocketShutdown.Both);
+                    handler.Close();
                 }
 
-                string response = center.PerformManagementAction(data);
-
-                // Echo the data back to the client.
-                byte[] msg = Encoding.ASCII.GetBytes(response);
-
-                handler.Send(msg);
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
             }
-
-        } catch (Exception e) {
-            Console.WriteLine(e.ToString());
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
-    }
 
- 
+
     }
 }

@@ -52,7 +52,7 @@ namespace NetworkNode.Frame
             if (VirtualContainer.isVirtualContainer(content))
             {
                 VirtualContainer contentVC = (VirtualContainer)content;
-                if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= SDHFrame.ContainerSpaceConverter(level))
+                if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= SDHFrame.ContainerSpaceConverter(VCLevel))
                 {
                     if (TestContainerSpace(VCLevel, number))
                     {
@@ -364,17 +364,17 @@ namespace NetworkNode.Frame
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static int ContainerSpaceConverter(ContainerLevel value)
+        public static int ContainerSpaceConverter(VirtualContainerLevel value)
         {
             switch (value)
             {
-                case ContainerLevel.TUG12:
+                case VirtualContainerLevel.VC4:
                     return 1;
 
-                case ContainerLevel.TUG2:
+                case VirtualContainerLevel.VC3:
                     return 3;
 
-                case ContainerLevel.TUG3:
+                case VirtualContainerLevel.VC2:
                     return 21;
 
                 default:

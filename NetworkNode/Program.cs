@@ -13,18 +13,7 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
-            Frame.SDHFrame frame = new Frame.SDHFrame();
-            frame.Msoh = new Header("test", "test2");
-            frame.Rsoh = new Header("test", "test2");
-            frame.SetVirtualContainer(ContainerLevel.TUG12, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC12));
-            frame.SetVirtualContainer(ContainerLevel.TUG2, 0, new VirtualContainer(Frame.VirtualContainerLevel.VC2));
-            frame.SetVirtualContainer(ContainerLevel.TUG2, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC2));
-            frame.SetVirtualContainer(ContainerLevel.TUG3, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC3));
-
-            FrameBuilder fmb = new Frame.FrameBuilder();
-            string var = fmb.BuildLiteral(frame);
-
-            frame = (Frame.SDHFrame)fmb.BuildFrame(var);
+           
 
             String id = "0";
             if (args.Length == 0)
@@ -33,16 +22,6 @@ namespace NetworkNode
             }
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("nodeConfig" + id + ".xml");
             NetworkNode node = setUpProcess.startNodeProcess();
-
-            List<ForwardingRecord> records = new List<ForwardingRecord>();
-            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 0, 0));
-            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 1, 1));
-            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 2, 2));
-
-            foreach (ForwardingRecord record in records)
-            {
-                node.AddForwardingRecord(record);
-            }
 
             Console.WriteLine("Start emulation");
             //node.emulateManagement("sub-conection-HPC|1002-2003#|");

@@ -13,7 +13,7 @@ M->R: disable-node|
 R->M: OK
 
 2. 
-M->R: shutdown-interface|{higher_connection}#{lower_connections}
+M->R: shutdown-interface|{interface_number}
 R->M: OK
 	
 3. Dodanie połączenia
