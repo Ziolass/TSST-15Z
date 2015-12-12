@@ -17,7 +17,6 @@ using SDHManagement2.FileUtils;
 using SDHManagement2.Models;
 using SDHManagement2.SocketUtils;
 using SDHManagement2.AdditionalWindows;
-using Autodesk.Maya;
 
 namespace SDHManagement2
 {
@@ -61,7 +60,6 @@ namespace SDHManagement2
         public MainWindow()
         {
             InitializeComponent();
-            MayaTheme.Initialize(null);
             console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt") + ": Management console");
             selectionBox.ItemsSource = selection.ToList();
             // actionBox.ItemsSource = actionList.ToList();

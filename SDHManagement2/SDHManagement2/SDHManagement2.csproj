@@ -77,7 +77,6 @@
     <Compile Include="SocketUtils\LocalSocektBuilder.cs" />
     <Compile Include="SocketUtils\RouterSocket.cs" />
     <Compile Include="SocketUtils\SocketHandler.cs" />
-    <Compile Include="TestingUtils\MayaWpfTheme.cs" />
     <Page Include="AdditionalWindows\AddConnectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
