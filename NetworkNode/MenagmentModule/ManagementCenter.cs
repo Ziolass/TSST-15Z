@@ -1,4 +1,5 @@
 ﻿
+using NetworkNode.Frame;
 using NetworkNode.HPC;
 using NetworkNode.Ports;
 using NetworkNode.TTF;
@@ -133,98 +134,23 @@ namespace NetworkNode.MenagmentModule
             return builder.ToString();
         }
 
-        private string addForwardingRecord(StringBuilder sb)
+        private string addForwardingRecord(List<List<string>> literalRecords)
         {
-            /*if (pair == null)
+            List<ForwardingRecord> records = new List<ForwardingRecord>();
+            foreach (List<string> literalRecord in literalRecords)
             {
-                sb.Append("?");
-                return;
+                int inPort = int.Parse(literalRecord[0]);
+                int outPort = int.Parse(literalRecord[1]);
+                int inContainer= int.Parse(literalRecord[2]);
+                int outContainer = int.Parse(literalRecord[3]);
+                VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[4]);
+                StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
+                records.Add(new ForwardingRecord(inPort, outPort, stm,level,inContainer,outContainer));
             }
+            ExecutionResult result = node.AddForwardingRecords(records);
 
-            sb.Append(pair.inputIdentifier);
-            sb.Append("-");
-            sb.Append(pair.outputIdentifier);*/
-            return null;
+            return result.Result ? "OK" : "ERROR " + result.Msg;
         }
 
-        private string establishLink(String[] requestArguments)
-        {
-            /*foreach(String connection in requestArguments){
-                if (connection.Equals("")) { continue; }
-                String[] multiLevelSwitching = connection.Split('#');
-                
-
-                if (multiLevelSwitching.Length > 2 || multiLevelSwitching.Length <1)
-                {
-                   // throw Exception();
-                }
-                String interfaceLevelConnection = multiLevelSwitching[0];
-                String containerLevelConnection = multiLevelSwitching.Length == 2 && multiLevelSwitching[1] != ""? multiLevelSwitching[1] : null;
-                
-                InOutPair interfacePair = transformToPair(interfaceLevelConnection,MultiplexationLevel.SLOTS);
-                //TODO to trzeba zminić multiplexation level musi być generyczny
-                //InOutPair containerPair = transformToPair(containerLevelConnection, MultiplexationLevel.VC4);
-
-                ForwardingRecord muxConnection = new ForwardingRecord(interfacePair, null);
-                hpc.addConnection(muxConnection);
-                
-            }*/
-            return null;
-        }
-
-        /*private InOutPair transformToPair(String pair, MultiplexationLevel muxLevel)
-        {
-            if (pair == null || pair.Equals(""))
-            {
-                return null;
-            }
-            InOutPair result = new InOutPair();
-            String[] partedPair = pair.Split('-');
-            result.inputIdentifier = int.Parse(partedPair[0]);
-            result.outputIdentifier = int.Parse(partedPair[1]);
-            result.level = muxLevel;
-            return result;
-        }
-
-        private void sendPortList()
-        {
-            Dictionary<int, IoSlot> interfaces = ttf.getInterfaces();
-            StringBuilder sb = new StringBuilder();
-            if(interfaces.Count > 0) {
-                sb.Append("OK|");
-            } else {
-                sb.Append("ERROR|Any of ports doesn't exist");
-            }
-
-            foreach (KeyValuePair<int, IoSlot> networkInterface in interfaces)
-            {
-                sb.Append("interface:[");
-                sb.Append(networkInterface.Key);
-                sb.Append("],in:[");
-                sb.Append(networkInterface.Value.getIputPort());
-                sb.Append("].out:[");
-                sb.Append(networkInterface.Value.getOutputPort());
-                sb.Append("]|");
-            }
-            managmentInterface.sendFrameBytes(sb.ToString());
-        } */
-        private List<int> prapreInterfaceList(string[] departedRequest)
-        {
-            List<int> interfacesToShut = new List<int>();
-            string[] ports= new string[departedRequest.Length-1];
-            Array.Copy(departedRequest, 1, ports, 0, departedRequest.Length - 1);
-
-            foreach(String stringNumber in ports){
-                try
-                {
-                    interfacesToShut.Add(Int32.Parse(stringNumber));
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
-            return interfacesToShut;
-        }
     }
 }

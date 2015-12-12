@@ -11,14 +11,14 @@ namespace NetworkNode.HPC
 
     public class ForwardingRecord
     {
-        public ContainerLevel ContainerLevel { get; private set; }
+        public VirtualContainerLevel ContainerLevel { get; private set; }
         public int VcNumberIn { get; private set; }
         public int VcNumberOut { get; private set; }
         public int OutputPort { get; private set; }
         public int InputPort { get; private set; }
         public StmLevel Stm { get; private set; }
 
-        public ForwardingRecord(int inputPort, int outputPort, StmLevel stm, ContainerLevel containerLevel, int vcNumberIn, int vcNumberOut)
+        public ForwardingRecord(int inputPort, int outputPort, StmLevel stm, VirtualContainerLevel containerLevel, int vcNumberIn, int vcNumberOut)
         {
             OutputPort = outputPort;
             InputPort = inputPort;

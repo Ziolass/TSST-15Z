@@ -17,7 +17,7 @@ namespace NetworkNode.Frame
         /// <returns></returns>
         public IFrame BuildFrame(String textFrame)
         {
-            Frame returnFrame = new Frame();
+            SDHFrame returnFrame = new SDHFrame();
             metadata = JObject.Parse(textFrame);
             if (FrameBuilder.isHeader(metadata["Msoh"]))
             {
@@ -43,7 +43,7 @@ namespace NetworkNode.Frame
         /// <returns></returns>
         public IFrame BuildEmptyFrame()
         {
-            return new Frame();
+            return new SDHFrame();
         }
 
         /// <summary>

@@ -6,19 +6,19 @@ namespace NetworkNode.Frame
     /// <summary>
     /// Levels of Virtual Container
     /// </summary>
-    public enum VirtualContainerLevel { VC12, VC2, VC3, VC4 }
+    public enum VirtualContainerLevel { VC12, VC2, VC3, VC4, UNDEF }
 
-    public class Frame : IFrame
+    public class SDHFrame : IFrame
     {
         public Header Msoh { get; set; }
         public Header Rsoh { get; set; }
         public List<IContent> Content { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Frame"/> class.
+        /// Initializes a new instance of the <see cref="SDHFrame"/> class.
         /// This create empty Content List
         /// </summary>
-        public Frame()
+        public SDHFrame()
         {
             Content = new List<IContent>();
             for (int i = 0; i < 63; i++)
@@ -33,9 +33,9 @@ namespace NetworkNode.Frame
         /// <param name="level">The level of Virtual Container</param>
         /// <param name="number">The number (index).</param>
         /// <returns></returns>
-        public IContent GetVirtualContainer(ContainerLevel level, int number)
+        public IContent GetVirtualContainer(VirtualContainerLevel level, int number)
         {
-            IContent returnContent = this.Content[GetContainerIndex(ContainerLevelConvert(level), number)];
+            IContent returnContent = this.Content[GetContainerIndex(level, number)];
             return returnContent;
         }
 
@@ -47,13 +47,12 @@ namespace NetworkNode.Frame
         /// <param name="number">The number.</param>
         /// <param name="content">The content. Virtual Container</param>
         /// <returns>True - success, False - fail</returns>
-        public bool SetVirtualContainer(ContainerLevel level, int number, IContent content)
+        public bool SetVirtualContainer(VirtualContainerLevel VCLevel, int number, IContent content)
         {
-            VirtualContainerLevel VCLevel = Frame.ContainerLevelConvert(level);
             if (VirtualContainer.isVirtualContainer(content))
             {
                 VirtualContainer contentVC = (VirtualContainer)content;
-                if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level))
+                if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= SDHFrame.ContainerSpaceConverter(level))
                 {
                     if (TestContainerSpace(VCLevel, number))
                     {
@@ -294,7 +293,7 @@ namespace NetworkNode.Frame
         }
 
         /// <summary>
-        /// Calculates the free space in <see cref="Frame"/>
+        /// Calculates the free space in <see cref="SDHFrame"/>
         /// </summary>
         /// <returns></returns>
         private int CalculateFreeSpace()
@@ -361,7 +360,7 @@ namespace NetworkNode.Frame
         }
 
         /// <summary>
-        /// Convert <see cref="ContainerLevel"/> enum to space occupied in <see cref="Frame"/>
+        /// Convert <see cref="ContainerLevel"/> enum to space occupied in <see cref="SDHFrame"/>
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>

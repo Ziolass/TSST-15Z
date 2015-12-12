@@ -343,7 +343,7 @@ namespace Client
         public string unpack(string container,VirtualContainerLevel level, byte number)//pobiera kontener, zwraca czysty string
         {
             FrameBuilder fb = new FrameBuilder();
-            Frame f = (Frame)fb.BuildFrame(container);
+            SDHFrame f = (SDHFrame)fb.BuildFrame(container);
             //Frame result = new Frame();
             string data = "";
             foreach (VirtualContainer vc in f.Content) if(vc != null && vc.Content.Content != null) data += vc.Content.Content; 
@@ -352,8 +352,8 @@ namespace Client
             return data;
 
         }
-        public List<Frame> pack(string raw_data, VirtualContainerLevel level, byte number) {
-            List<Frame> frames = new List<Frame>();
+        public List<SDHFrame> pack(string raw_data, VirtualContainerLevel level, byte number) {
+            List<SDHFrame> frames = new List<SDHFrame>();
             int size = 0;
             number = (byte)Math.Abs(number); // nie moze byc ujemne
             if (level == VirtualContainerLevel.VC12 && number > 62) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V12");
@@ -384,7 +384,7 @@ namespace Client
                 
                 for (int a = 0; (a < ( Math.Ceiling((decimal)(index / (decimal)size)))); a++)
                 {
-                    frames.Add(new Frame());
+                    frames.Add(new SDHFrame());
                     VirtualContainer newVC = new VirtualContainer(level);
                     if (index1 + size < raw_data.Length)
                     {
@@ -426,7 +426,7 @@ namespace Client
                 if (d == '}' || d == '{' || d == '[' || d == ']') d = ' ';
                 data += (char)d;
             }
-            List<Frame> frames  = new List<Frame>();
+            List<SDHFrame> frames  = new List<SDHFrame>();
             try {frames = pack(data, info.level, number);
             }
             catch(IndexOutOfRangeException) { Console.WriteLine("Klient: Error: level o podanym numerze nie jest dostępny w ramce tego typu, zmien w menagerze"); return; }
@@ -437,10 +437,10 @@ namespace Client
 
                 if (output.Value.Port == port)
                 {
-                    foreach (Frame frame in frames)
+                    foreach (SDHFrame frame in frames)
                     {
                         MD5 myHash = new MD5CryptoServiceProvider();
-                        Frame frame2 = frame;
+                        SDHFrame frame2 = frame;
                         FrameBuilder fb = new FrameBuilder();
                         List<byte> bytes_1 = new List<byte>();
 

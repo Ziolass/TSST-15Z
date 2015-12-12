@@ -52,6 +52,7 @@
     <Compile Include="HPC\ForwardingRecord.cs" />
     <Compile Include="MenagmentModule\ManagementCenter.cs" />
     <Compile Include="NetworkNode.cs" />
+    <Compile Include="Ports\IDisposable.cs" />
     <Compile Include="Ports\ManagementPort.cs" />
     <Compile Include="Frame\FrameImp\Container.cs" />
     <Compile Include="Frame\FrameImp\Frame.cs" />

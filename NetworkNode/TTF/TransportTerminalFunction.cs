@@ -74,19 +74,10 @@ namespace NetworkNode.TTF
             return frame;
         }
 
-       /* public Dictionary<int, IFrame> GetBufferedFrame()
+        public List<List<int>> GetPorts()
         {
-            Dictionary<int, string> bufferedData = spi.GetBufferedData();
-            Dictionary<int, IFrame> result = new Dictionary<int, IFrame>();
-
-            foreach (int inputPort in bufferedData.Keys) 
-            {
-                IFrame frame = beginFrameEvaluation(bufferedData[inputPort]);
-                result.Add(inputPort, frame);
-            }
-            return result;
-        }*/
-
+            return spi.GetPorts();
+        }
         public void PassDataToInterfaces(Dictionary<int,IFrame> outputFrames)
         {
             foreach (int outputPort in outputFrames.Keys)

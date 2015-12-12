@@ -25,8 +25,8 @@ namespace NetworkNode.TTF
         /// <param name="sdhFrame">The SDH frame.</param>
         public void generateHeader(ref IFrame sdhFrame)
         {
-            Frame.Frame tempFrame = (Frame.Frame)sdhFrame;          
-            ((Frame.Frame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
+            Frame.SDHFrame tempFrame = (Frame.SDHFrame)sdhFrame;          
+            ((Frame.SDHFrame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
         }
     }
 }

@@ -17,7 +17,7 @@ M->R: shutdown-interface|{higher_connection}#{lower_connections}
 R->M: OK
 	
 3. Dodanie połączenia
-M->R: sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
+M->R: sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{typ_stm}
 R->M: OK
 (wartości oddzielone # w kolejności:
 -port z którego wychodzi

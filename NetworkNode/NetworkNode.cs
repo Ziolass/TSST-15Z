@@ -20,9 +20,9 @@ namespace NetworkNode
             this.hpc = hpc;
         }
 
-        public void AddForwardingRecord(ForwardingRecord record)
+        public ExecutionResult AddForwardingRecords(List<ForwardingRecord> records)
         {
-            hpc.AddForwardingRecord(record);
+            return hpc.AddForwardingRecords(records);
         }
 
         public bool ShudownInterface(int number)

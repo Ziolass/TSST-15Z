@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.Ports
 {
-    class IDisposable
+    public interface IDisposable
     {
         bool Active { get; set; }
     }
