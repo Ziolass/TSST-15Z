@@ -37,6 +37,17 @@ namespace NetworkNode.HPC
             forwardingTable[record.InputPort].Add(record);
         }
 
+        public List<ForwardingRecord> GetForwardingRecords()
+        {
+            List<ForwardingRecord> routerRecords = new List<ForwardingRecord>();
+            foreach (List<ForwardingRecord> portRecords in forwardingTable.Values)
+            {
+                routerRecords.AddRange(portRecords);
+            }
+
+            return routerRecords;
+        }
+
         private void handleIncomFrame(object sender, InputFrameArgs args)
         {
             IFrame bufferedFrame = args.Frame;

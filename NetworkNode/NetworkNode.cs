@@ -20,5 +20,20 @@ namespace NetworkNode
         {
             hpc.AddForwardingRecord(record);
         }
+
+        public bool DisableNode()
+        {
+            return true;
+        }
+
+        public bool DisableInterface(int number)
+        {
+            return true;
+        }
+
+        public List<ForwardingRecord> GetForwardingRecords()
+        {
+            return hpc.GetForwardingRecords();
+        }
     }
 }

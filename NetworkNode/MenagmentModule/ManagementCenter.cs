@@ -47,7 +47,7 @@ namespace NetworkNode.MenagmentModule
                     }
                 case "shutdown-interface":
                     {
-                        response = shutdownInterface(prapreInterfaceList(requestArguments));
+                        response = shutdownInterface(requestArguments);
                         break;
                     }
                 case "sub-conection-HPC":
@@ -73,11 +73,12 @@ namespace NetworkNode.MenagmentModule
 
         private string disableNode()
         {
-            return null;
+            return node.DisableNode() ? "OK" : "ERROR";
         }
-        private string shutdownInterface(List<int> ports)
+        private string shutdownInterface(string[] testPort)
         {
-            return null;
+            int port = int.Parse(testPort[0]);
+            return node.DisableInterface(port) ? "OK" : "ERROR";
         }
         private string getPortList()
         {
