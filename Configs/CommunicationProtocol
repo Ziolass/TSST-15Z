@@ -36,6 +36,10 @@ M->R: get-ports|
 R->M: {IN1}#{IN2}#{IN3}|{OUT1}#{OUT2}#{OUT3}
 (najpierw porty wejściowe oddzielone # , następnie | i porty wyjściowe oddzielone #)
 
-6. Przypadek gdy router nie jest w stanie wykonać polecenia
+6. Przedstaianie
+M->R: get-id
+R->M: id#type
+
+7. Przypadek gdy router nie jest w stanie wykonać polecenia
 M->R: <polecenie>
 R->M: ERROR
