@@ -29,6 +29,8 @@ namespace NetworkNode
             
             frame = (SDHFrame.Frame)fmb.BuildFrame(var);
 
+            Console.WriteLine(frame.ToString());
+
             String id = "0";
             if (args.Length == 0)
             {

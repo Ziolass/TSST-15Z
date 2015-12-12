@@ -39,8 +39,13 @@ namespace NetworkNode.SDHFrame
                 Content.Add(null);
             }
         }
-                
-        public int ConvertSTMLevel(STMLevel stmLevel) {
+        /// <summary>
+        /// Converts the STM level.
+        /// </summary>
+        /// <param name="stmLevel">The STM level.</param>
+        /// <returns></returns>
+        public int ConvertSTMLevel(STMLevel stmLevel)
+        {
             switch (stmLevel)
             {
                 case STMLevel.STM1:
@@ -56,7 +61,6 @@ namespace NetworkNode.SDHFrame
                 default:
                     return 1;
             }
-
         }
 
         /// <summary>
@@ -175,7 +179,7 @@ namespace NetworkNode.SDHFrame
                     else returnVal = false;
                     break;
                 case VirtualContainerLevel.VC32:
-                    parentPostion = index / 3 ;
+                    parentPostion = index / 3;
                     if (CheckContainerUp(VirtualContainerLevel.VC4, parentPostion))
                     {
                         if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC32)
@@ -214,7 +218,7 @@ namespace NetworkNode.SDHFrame
                         returnVal = false;
                     else returnVal = true;
                     break;
-                case VirtualContainerLevel.VC21:                 
+                case VirtualContainerLevel.VC21:
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
                     {
@@ -389,6 +393,20 @@ namespace NetworkNode.SDHFrame
                 default:
                     return 63;
             }
+        }
+
+        public string ToString()
+        {
+            string returnString = string.Empty;
+            foreach (IContent item in this.Content)
+            {
+                if (item != null && VirtualContainer.isVirtualContainer(item))
+                {
+                    returnString += "|" + ((VirtualContainer)item).Level.ToString();
+                }
+            }
+            returnString += "|";
+            return returnString;
         }
     }
 }
