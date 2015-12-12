@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace NetworkNode.Frame
+namespace NetworkNode.SDHFrame
 {
     public class FrameBuilder : IFrameBuilder
     {
@@ -22,12 +22,10 @@ namespace NetworkNode.Frame
             if (FrameBuilder.isHeader(metadata["Msoh"]))
             {
                 returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Msoh"]);
-
             }
             if (FrameBuilder.isHeader(metadata["Rsoh"]))
             {
                 returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
-
             }
             if (FrameBuilder.isJArray(metadata["Content"]))
             {
@@ -114,7 +112,8 @@ namespace NetworkNode.Frame
                 {
                     string checksum = content["Checksum"].ToString();
                     string eow = content["EOW"].ToString();
-                    Header newHeader = new Header(checksum, eow);
+                    string dcc = content["DCC"].ToString();
+                    Header newHeader = new Header(checksum, eow, dcc);
                     return newHeader;
                 }
                 else return null;
@@ -268,10 +267,10 @@ namespace NetworkNode.Frame
         /// <param name="token">The token.</param>
         /// <returns></returns>
         /// <exception cref="Exception">ERROR FrameBuilder: Could not read level of given token</exception>
-        private static ContainerLevel getTULevel(JToken token)
+        private static VirtualContainerLevel getTULevel(JToken token)
         {
-            ContainerLevel containerLevel;
-            if (Enum.TryParse<ContainerLevel>(token.ToString(), out containerLevel))
+            VirtualContainerLevel containerLevel;
+            if (Enum.TryParse<VirtualContainerLevel>(token.ToString(), out containerLevel))
                 return containerLevel;
             else
                 throw new Exception("ERROR FrameBuilder: Could not read level of given token");

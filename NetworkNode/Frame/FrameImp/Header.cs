@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetworkNode.Frame
+namespace NetworkNode.SDHFrame
 {
     public class Header : IContent
     {
         public string Checksum { get; set; }
+        public string DCC { get; set; } //Data communication chanel
         public string EOW { get; set; } //Engineering Orderwire Serivce - kanał dla komunikacji służbowej
         public ContentType Type { get; private set; }
 
@@ -17,10 +18,11 @@ namespace NetworkNode.Frame
         /// </summary>
         /// <param name="checksum">The checksum.</param>
         /// <param name="eow">The eow.</param>
-        public Header(string checksum, string eow)
+        public Header(string checksum, string eow, string dcc)
         {
             this.Checksum = checksum;
             this.EOW = eow;
+            this.DCC = dcc;
             this.Type = ContentType.HEADER;
         }
         /// <summary>

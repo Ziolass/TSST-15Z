@@ -4,16 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetworkNode.Frame
+namespace NetworkNode.SDHFrame
 {
-    public enum ContainerLevel { TUG12, TUG2, TUG3, AU4, UNDEF }
     public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER }
+
+    public enum VirtualContainerLevel { VC12, VC21, VC32, VC4 }
+    public enum STMLevel { STM1, STM4, STM16, STM64, STM256 }
 
     public interface IFrame
     {
-         Header Msoh { get; set; }
-         Header Rsoh { get; set; }
-         IContent GetVirtualContainer(ContainerLevel level, int number);
-         bool SetVirtualContainer(ContainerLevel level, int number, IContent content);
+        Header Msoh { get; set; }
+        Header Rsoh { get; set; }
+        IContent GetVirtualContainer(VirtualContainerLevel level, int number);
+        bool SetVirtualContainer(VirtualContainerLevel level, int number, IContent content);
+        //int ConvertSTMLevel(SynchronousTransportModuleLevel stmLevel);
     }
 }

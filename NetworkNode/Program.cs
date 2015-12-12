@@ -1,11 +1,10 @@
-﻿using NetworkNode.Frame;
+﻿using NetworkNode.SDHFrame;
 using NetworkNode.HPC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NetworkNode.Frame;
 
 namespace NetworkNode
 {
@@ -13,18 +12,18 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
-            Frame.Frame frame = new Frame.Frame();
-            frame.Msoh = new Header("test", "test2");
-            frame.Rsoh = new Header("test", "test2");
-            frame.SetVirtualContainer(ContainerLevel.TUG12, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC12));
-            frame.SetVirtualContainer(ContainerLevel.TUG2, 0, new VirtualContainer(Frame.VirtualContainerLevel.VC2));
-            frame.SetVirtualContainer(ContainerLevel.TUG2, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC2));
-            frame.SetVirtualContainer(ContainerLevel.TUG3, 1, new VirtualContainer(Frame.VirtualContainerLevel.VC3));
+            Frame frame = new Frame(STMLevel.STM4);
+            frame.Msoh = new Header("test", "test2", "test");
+            frame.Rsoh = new Header("test", "test2", "test");
+            frame.SetVirtualContainer(VirtualContainerLevel.VC12, 1, new VirtualContainer(SDHFrame.VirtualContainerLevel.VC12));
+            frame.SetVirtualContainer(VirtualContainerLevel.VC21, 0, new VirtualContainer(SDHFrame.VirtualContainerLevel.VC21));
+            frame.SetVirtualContainer(VirtualContainerLevel.VC21, 1, new VirtualContainer(SDHFrame.VirtualContainerLevel.VC21));
+            frame.SetVirtualContainer(VirtualContainerLevel.VC21, 1, new VirtualContainer(SDHFrame.VirtualContainerLevel.VC32));
 
-            FrameBuilder fmb = new Frame.FrameBuilder();
+            FrameBuilder fmb = new SDHFrame.FrameBuilder();
             string var = fmb.BuildLiteral(frame);
-
-            frame = (Frame.Frame)fmb.BuildFrame(var);
+            
+            frame = (SDHFrame.Frame)fmb.BuildFrame(var);
 
             String id = "0";
             if (args.Length == 0)
@@ -35,9 +34,9 @@ namespace NetworkNode
             NetworkNode node = setUpProcess.startNodeProcess();
 
             List<ForwardingRecord> records = new List<ForwardingRecord>();
-            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 0, 0));
-            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 1, 1));
-            records.Add(new ForwardingRecord(4000, 5000, ContainerLevel.TUG3, 2, 2));
+            records.Add(new ForwardingRecord(4000, 5000, VirtualContainerLevel.VC32, 0, 0));
+            records.Add(new ForwardingRecord(4000, 5000, VirtualContainerLevel.VC32, 1, 1));
+            records.Add(new ForwardingRecord(4000, 5000, VirtualContainerLevel.VC32, 2, 2));
 
             foreach (ForwardingRecord record in records)
             {

@@ -1,4 +1,4 @@
-﻿using NetworkNode.Frame;
+﻿using NetworkNode.SDHFrame;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,8 +25,8 @@ namespace NetworkNode.TTF
         /// <param name="sdhFrame">The SDH frame.</param>
         public void generateHeader(ref IFrame sdhFrame)
         {
-            Frame.Frame tempFrame = (Frame.Frame)sdhFrame;          
-            ((Frame.Frame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
+            SDHFrame.Frame tempFrame = (SDHFrame.Frame)sdhFrame;          
+            ((SDHFrame.Frame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
         }
     }
 }
