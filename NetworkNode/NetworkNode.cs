@@ -14,10 +14,13 @@ namespace NetworkNode
         private HigherOrderPathConnection hpc;
         private SynchronousPhysicalInterface spi;
 
-        public NetworkNode(HigherOrderPathConnection hpc, SynchronousPhysicalInterface spi)
+        public int Id { get; private set; }
+
+        public NetworkNode(HigherOrderPathConnection hpc, SynchronousPhysicalInterface spi, int id)
         {
             this.spi = spi;
             this.hpc = hpc;
+            Id = id;
         }
 
         public ExecutionResult AddForwardingRecords(List<ForwardingRecord> records)

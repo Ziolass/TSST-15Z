@@ -75,10 +75,11 @@ namespace NetworkNode
             SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(inputs, outputs);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, getMode(nodeType));
             HigherOrderPathConnection hpc = new HigherOrderPathConnection(ttf);
-            NetworkNode node = new NetworkNode(hpc, spi);
+            NetworkNode node = new NetworkNode(hpc, spi, nodeNumber);
             
             ManagementCenter managementCenter = new ManagementCenter(managementPort,node);
             managementPort.SetManagementCenter(managementCenter);
+            managementPort.StartListening();
             
             return node;
         }

@@ -62,11 +62,21 @@ namespace NetworkNode.MenagmentModule
                     {
                         response = getPortList();
                         break;
-                    }       
+                    }
+                case "identify":
+                    {
+                        response = identify();
+                        break;
+                    }
 
             }
 
             return response;
+        }
+
+        private string identify()
+        {
+            return node.Id.ToString(); ;
         }
 
         private string disableNode()
