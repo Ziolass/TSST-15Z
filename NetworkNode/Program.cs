@@ -39,7 +39,10 @@ namespace NetworkNode
             }
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("nodeConfig" + id);
             NetworkNode node = setUpProcess.startNodeProcess();
-
+            ForwardingRecord record = new ForwardingRecord(4000, 6000, StmLevel.STM1, VirtualContainerLevel.VC32, 0, 1);
+            List<ForwardingRecord> records = new List<ForwardingRecord>();
+            records.Add(record);
+            node.AddForwardingRecords(records);
             Console.WriteLine("Start emulation");
             //node.emulateManagement("sub-conection-HPC|1002-2003#|");
 

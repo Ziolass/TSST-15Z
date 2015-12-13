@@ -77,7 +77,7 @@ namespace NetworkNode.TTF
         private void raportFrame(IFrame frame, string raprtHeader)
         {
             Console.WriteLine(raprtHeader);
-            Console.WriteLine(frame.ToString());
+            Console.WriteLine(((Frame) frame).ToString());
         }
 
         public List<List<int>> GetPorts()

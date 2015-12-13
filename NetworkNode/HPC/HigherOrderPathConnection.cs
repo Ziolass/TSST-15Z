@@ -70,7 +70,7 @@ namespace NetworkNode.HPC
         {
             VirtualContainer vc = new VirtualContainer(record.ContainerLevel);
             return portsCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc) &&
-                portsCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc);
+                portsCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc);
         }
 
         public List<ForwardingRecord> GetForwardingRecords()

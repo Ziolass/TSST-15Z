@@ -13,7 +13,7 @@ namespace NetworkNode.TTF
     {
         public void evaluateHeader(IFrame sdhFrame)
         {
-            if (sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(sdhFrame, 8))
+            if (sdhFrame.Msoh !=null && sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(sdhFrame, 8))
             {
             }
             else { }
@@ -25,6 +25,10 @@ namespace NetworkNode.TTF
         /// <param name="sdhFrame">The SDH frame.</param>
         public void generateHeader(ref IFrame sdhFrame)
         {
+            if (sdhFrame.Msoh == null)
+            {
+                return;
+            }
             SDHFrame.Frame tempFrame = (SDHFrame.Frame)sdhFrame;          
             ((SDHFrame.Frame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
         }

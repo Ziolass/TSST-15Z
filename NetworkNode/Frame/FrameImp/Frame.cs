@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace NetworkNode.SDHFrame
 {
@@ -423,16 +424,22 @@ namespace NetworkNode.SDHFrame
 
         public string ToString()
         {
-            string returnString = string.Empty;
+            StringBuilder builder = new StringBuilder();
             foreach (IContent item in this.Content)
             {
                 if (item != null && VirtualContainer.isVirtualContainer(item))
                 {
-                    returnString += "|" + ((VirtualContainer)item).Level.ToString();
+                    VirtualContainer vc = (VirtualContainer) item;
+                    int localDenom = Content.Count / ContainerSpaceConverter(vc.Level);
+                    builder.Append("|");
+                    builder.Append(vc.Level.ToString());
+                    builder.Append(" [");
+                    builder.Append(Content.IndexOf(item) / localDenom);
+                    builder.Append("] ");
                 }
             }
-            returnString += "|";
-            return returnString;
+            builder.Append("|");
+            return builder.ToString();
         }
     }
 }
