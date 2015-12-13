@@ -34,7 +34,7 @@ namespace NetworkNode.HPC
 
             foreach (int port in allPorts)
             {
-                portsCredentials.Add(port, new SDHFrame());
+                portsCredentials.Add(port, new Frame());
             }
         }
 

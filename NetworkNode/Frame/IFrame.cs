@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace NetworkNode.SDHFrame
 {
 
-    public enum StmLevel { STM1, STM4, STM16, STM64, STM256, UNDEF }    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER }
+    public enum StmLevel { STM1, STM4, STM16, STM64, STM256, UNDEF }    
+    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER }
 
     public class VirtualContainerLevelExt 
     {
@@ -21,11 +22,11 @@ namespace NetworkNode.SDHFrame
                     }
                 case "VC2":
                     {
-                        return VirtualContainerLevel.VC2;
+                        return VirtualContainerLevel.VC21;
                     }
                 case "VC3":
                     {
-                        return VirtualContainerLevel.VC3;
+                        return VirtualContainerLevel.VC32;
                     }
                 case "VC4":
                     {

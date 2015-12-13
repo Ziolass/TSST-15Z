@@ -6,13 +6,13 @@ namespace NetworkNode.SDHFrame
     /// <summary>
     /// Levels of Virtual Container
     /// </summary>
-    public enum VirtualContainerLevel { VC12, VC2, VC3, VC4, UNDEF }
+    public enum VirtualContainerLevel { VC12, VC21, VC32, VC4, UNDEF }
 
-    public class SDHFrame : IFrame
+    public class Frame : IFrame
     {
         public Header Msoh { get; set; }
         public Header Rsoh { get; set; }
-        public STMLevel Level { get; set; }
+        public StmLevel Level { get; set; }
         public List<IContent> Content { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace NetworkNode.SDHFrame
         /// This create empty Content List
         /// </summary>
         /// <param name="stmLevel">The STM level.</param>
-        public Frame(STMLevel stmLevel)
+        public Frame(StmLevel stmLevel)
         {
             Content = new List<IContent>();
             this.Level = stmLevel;
@@ -49,19 +49,19 @@ namespace NetworkNode.SDHFrame
         /// </summary>
         /// <param name="stmLevel">The STM level.</param>
         /// <returns></returns>
-        public int ConvertSTMLevel(STMLevel stmLevel)
+        public int ConvertSTMLevel(StmLevel stmLevel)
         {
             switch (stmLevel)
             {
-                case STMLevel.STM1:
+                case StmLevel.STM1:
                     return 1;
-                case STMLevel.STM4:
+                case StmLevel.STM4:
                     return 4;
-                case STMLevel.STM16:
+                case StmLevel.STM16:
                     return 16;
-                case STMLevel.STM64:
+                case StmLevel.STM64:
                     return 64;
-                case STMLevel.STM256:
+                case StmLevel.STM256:
                     return 256;
                 default:
                     return 1;
@@ -94,7 +94,7 @@ namespace NetworkNode.SDHFrame
             if (VirtualContainer.isVirtualContainer(content))
             {
                 VirtualContainer contentVC = (VirtualContainer)content;
-                if (level == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level))
+                if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(VCLevel))
                 {
                     if (TestContainerSpace(VCLevel, number))
                     {
@@ -409,11 +409,11 @@ namespace NetworkNode.SDHFrame
                     return 1;
 
 
-                case VirtualContainerLevel.VC3:
+                case VirtualContainerLevel.VC32:
                     return 3;
 
 
-                case VirtualContainerLevel.VC2:
+                case VirtualContainerLevel.VC21:
                     return 21;
 
                 default:

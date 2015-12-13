@@ -1,3 +1,36 @@
+<<<<<<< HEAD
+﻿using NetworkNode.Frame;
+using NetworkNode.HPC;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NetworkNode.Frame;
+
+namespace NetworkNode
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+           
+
+            String id = "0";
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Input parameter missing");
+            }
+            NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("nodeConfig" + id + ".xml");
+            NetworkNode node = setUpProcess.startNodeProcess();
+
+            Console.WriteLine("Start emulation");
+            //node.emulateManagement("sub-conection-HPC|1002-2003#|");
+
+        }
+    }
+}
+=======
 ﻿using NetworkNode.SDHFrame;
 using NetworkNode.HPC;
 using System;
@@ -12,10 +45,9 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
-            Frame frame = new Frame(StmLevel.STM4);
+            Frame frame = new Frame(STMLevel.STM4);
             frame.Msoh = new Header("test", "test2", "test");
             frame.Rsoh = new Header("test", "test2", "test");
-           
 
             frame.SetVirtualContainer(VirtualContainerLevel.VC4, 0, new VirtualContainer(VirtualContainerLevel.VC4));
             frame.SetVirtualContainer(VirtualContainerLevel.VC4, 1, new VirtualContainer(VirtualContainerLevel.VC4));
@@ -40,9 +72,20 @@ namespace NetworkNode
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("nodeConfig" + id + ".xml");
             NetworkNode node = setUpProcess.startNodeProcess();
 
+            List<ForwardingRecord> records = new List<ForwardingRecord>();
+            records.Add(new ForwardingRecord(4000, 5000, VirtualContainerLevel.VC32, 0, 0));
+            records.Add(new ForwardingRecord(4000, 5000, VirtualContainerLevel.VC32, 1, 1));
+            records.Add(new ForwardingRecord(4000, 5000, VirtualContainerLevel.VC32, 2, 2));
+
+            foreach (ForwardingRecord record in records)
+            {
+                node.AddForwardingRecord(record);
+            }
+
             Console.WriteLine("Start emulation");
             //node.emulateManagement("sub-conection-HPC|1002-2003#|");
 
         }
     }
 }
+>>>>>>> dev
