@@ -11,10 +11,7 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.MenagmentModule
 {
-    enum menagementProtocol{
-
-    }
-
+ 
     public class ManagementCenter
     {
         ManagementPort managementPort;
@@ -124,8 +121,9 @@ namespace NetworkNode.MenagmentModule
                 builder.Append("#");
                 builder.Append(record.VcNumberOut);
                 builder.Append("#");
-                builder.Append(record.ContainerLevel);
-                
+                builder.Append(record.ContainerLevel.ToString());
+                builder.Append("#");
+                builder.Append(record.Stm.ToString());
                 if (index < records.Count-1)
                 {
                     builder.Append("|");

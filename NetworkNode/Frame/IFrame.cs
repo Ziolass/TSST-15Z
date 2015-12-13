@@ -47,23 +47,23 @@ namespace NetworkNode.SDHFrame
         {
             switch (literalContainer)
             {
-                case "STM-1":
+                case "STM1":
                     {
                         return StmLevel.STM1;
                     }
-                case "STM-4":
+                case "STM4":
                     {
                         return StmLevel.STM4;
                     }
-                case "STM-16":
+                case "STM16":
                     {
                         return StmLevel.STM16;
                     }
-                case "STM-64":
+                case "STM64":
                     {
                         return StmLevel.STM64;
                     }
-                case "STM-256":
+                case "STM256":
                     {
                         return StmLevel.STM256;
                     }
@@ -77,7 +77,6 @@ namespace NetworkNode.SDHFrame
 
     public interface IFrame
     {
-
          Header Msoh { get; set; }
          Header Rsoh { get; set; }
          IContent GetVirtualContainer(VirtualContainerLevel level, int number);

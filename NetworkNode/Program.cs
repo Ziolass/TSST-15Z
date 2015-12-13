@@ -37,7 +37,7 @@ namespace NetworkNode
             {
                 Console.WriteLine("Input parameter missing");
             }
-            NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("nodeConfig" + id + ".xml");
+            NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("nodeConfig" + id);
             NetworkNode node = setUpProcess.startNodeProcess();
 
             Console.WriteLine("Start emulation");

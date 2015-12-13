@@ -43,7 +43,6 @@ namespace NetworkNode.TTF
             {
                 mst = new MultiplexSectionTermination();
             }
-            //TODO inicjalizacja buildera
             this.spi.HandleInputData += new HandleInputData(getInputData);
             builder = new FrameBuilder();
         }
@@ -70,8 +69,15 @@ namespace NetworkNode.TTF
             {
                 mst.evaluateHeader(frame);
             }
+            raportFrame(frame, "Input Frame:");
 
             return frame;
+        }
+
+        private void raportFrame(IFrame frame, string raprtHeader)
+        {
+            Console.WriteLine(raprtHeader);
+            Console.WriteLine(frame.ToString());
         }
 
         public List<List<int>> GetPorts()
@@ -90,7 +96,8 @@ namespace NetworkNode.TTF
                 }
                 
                 String textForm = builder.BuildLiteral(frame);
-                spi.SendFrame(textForm, outputPort);               
+                spi.SendFrame(textForm, outputPort);
+                raportFrame(frame,"Output Frame");
             }
             //TODO tu może być zgłaszanie zdarzeia wysłania i powiadaomienie zegara zewnętrznego że wysyłamy ramkę.
         }
