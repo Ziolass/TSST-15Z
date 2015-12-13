@@ -1,4 +1,4 @@
-﻿namespace NetworkNode.Frame
+﻿namespace NetworkNode.SDHFrame
 {
     /// <summary>
     /// Container is the like data in SDH Frame

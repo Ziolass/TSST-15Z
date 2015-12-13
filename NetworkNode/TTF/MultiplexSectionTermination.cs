@@ -1,4 +1,4 @@
-﻿using NetworkNode.Frame;
+using NetworkNode.SDHFrame;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,22 +11,23 @@ namespace NetworkNode.TTF
 {
     class MultiplexSectionTermination : SectionTerminator
     {
-        public void evaluateHeader(IFrame sdhFrame)
+        public bool evaluateHeader(IFrame sdhFrame)
         {
-            if (sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(sdhFrame, 8))
-            {
-            }
-            else { }
+            Frame tempFrame = (Frame)sdhFrame;
+            tempFrame.Msoh = null;
+            if (sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(((VirtualContainer)sdhFrame).Content, 8))
+                return true;
+            else return false;
         }
 
         /// <summary>
         /// Generates the MSOH header.
         /// </summary>
         /// <param name="sdhFrame">The SDH frame.</param>
-        public void generateHeader(ref IFrame sdhFrame)
+        public void generateHeader(IFrame sdhFrame)
         {
-            Frame.Frame tempFrame = (Frame.Frame)sdhFrame;          
-            ((Frame.Frame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
+            Frame tempFrame = (Frame)sdhFrame;          
+            ((SDHFrame.Frame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(((VirtualContainer)sdhFrame).Content , 8);
         }
     }
 }

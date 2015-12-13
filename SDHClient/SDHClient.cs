@@ -11,7 +11,7 @@ using System.Threading;
 using System.Windows.Forms;
 using WireCloud;
 using NetworkNode.Ports;
-using NetworkNode.Frame;
+using NetworkNode.SDHFrame;
 using System.Security.Cryptography;
 
 namespace Client
@@ -217,10 +217,11 @@ namespace Client
             bool ok = false;
             int index1 = str.IndexOf('|');
             int index2 = str.IndexOf('#', index1);
-            int index3 = str.IndexOf('#', index2+1);
-            int index4 = str.IndexOf('#', index3+1);
-            int index5 = str.IndexOf('#', index4+1);
-            int index6 = str.IndexOf('#', index5+1);
+            int index3 = str.IndexOf('#', index2 + 1);
+            int index4 = str.IndexOf('#', index3 + 1);
+            int index5 = str.IndexOf('#', index4 + 1);
+            int index6 = str.IndexOf('#', index5 + 1);
+            int index7 = str.IndexOf('#', index6 + 1);
             if (index1 != -1 && index2 != -1  && index3 != -1  && index4 != -1 &&  index5 != -1 && index6 != -1)ok = true;
             try
             {
@@ -233,8 +234,7 @@ namespace Client
                 switch (level)
                 {
                     case "VC12": vc = VirtualContainerLevel.VC12; break;
-                    case "VC3": vc = VirtualContainerLevel.VC3; break;
-                    case "VC2": vc = VirtualContainerLevel.VC2; break;
+                    case "VC32": vc = VirtualContainerLevel.VC32; break;
                     case "VC4": vc = VirtualContainerLevel.VC4; break;
 
                 }
@@ -286,8 +286,8 @@ namespace Client
                     switch (level)
                     {
                         case "VC12": vc = VirtualContainerLevel.VC12; break;
-                        case "VC3": vc = VirtualContainerLevel.VC3; break;
-                        case "VC2": vc = VirtualContainerLevel.VC2; break;
+                        case "VC32": vc = VirtualContainerLevel.VC32; break;
+                        case "VC21": vc = VirtualContainerLevel.VC21; break;
                         case "VC4": vc = VirtualContainerLevel.VC4; break;
 
                     }
@@ -380,11 +380,11 @@ namespace Client
             int size = 0;
             number = (byte)Math.Abs(number); // nie moze byc ujemne
             if (level == VirtualContainerLevel.VC12 && number > 62) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V12");
-            if (level == VirtualContainerLevel.VC2 && number > 21) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V2");
-            if (level == VirtualContainerLevel.VC3 && number > 2) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V3");
+            if (level == VirtualContainerLevel.VC21 && number > 21) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V2");
+            if (level == VirtualContainerLevel.VC32 && number > 2) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V3");
             if (level == VirtualContainerLevel.VC4 && number > 1) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V4");
 
-            ContainerLevel cl = new ContainerLevel();
+          /*  ContainerLevel cl = new ContainerLevel();
             if (level == VirtualContainerLevel.VC12) {
                 cl = ContainerLevel.TUG12; size = 28;
             }
@@ -398,7 +398,7 @@ namespace Client
             if (level == VirtualContainerLevel.VC4) {
                 cl = ContainerLevel.AU4; size = 261;
             }
-
+            */
             int index = raw_data.IndexOf('\0');
             if (index == -1) index = raw_data.Length;
             int no_frame = 0;
@@ -412,15 +412,15 @@ namespace Client
                     VirtualContainer newVC = new VirtualContainer(level);
                     if (index1 + size < raw_data.Length)
                     {
-                        newVC.Content = new NetworkNode.Frame.Container(raw_data.Substring(index1, size));
+                        newVC.Content = new NetworkNode.SDHFrame.Container(raw_data.Substring(index1, size));
                         index1 += size;
-                        frames[no_frame].SetVirtualContainer(cl, number, newVC);
+                        frames[no_frame].SetVirtualContainer(level, number, newVC);
                     }
                     else if (index1 < raw_data.Length)
                     {
-                        newVC.Content = new NetworkNode.Frame.Container(raw_data.Substring(index1, raw_data.Length - index1));
+                        newVC.Content = new NetworkNode.SDHFrame.Container(raw_data.Substring(index1, raw_data.Length - index1));
                         index1 += (raw_data.Length - index1);
-                        frames[no_frame].SetVirtualContainer(cl, number, newVC);
+                        frames[no_frame].SetVirtualContainer(level, number, newVC);
                     }
                     else
                     {
