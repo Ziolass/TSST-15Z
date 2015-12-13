@@ -7,5 +7,5 @@
 <port type="output" number="5031"/>
 <port type="output" number="5033"/>
 
-<managment-port  number="5300"/>
+<managment-port  number="6530"/>
 </node>

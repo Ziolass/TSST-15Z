@@ -9,5 +9,5 @@
 <port type="output" number="5003"/>
 <port type="output" number="5005"/>
 
-<managment-port  number="5000"/>
+<managment-port  number="6500"/>
 </node>

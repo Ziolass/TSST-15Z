@@ -1,0 +1,1 @@
+call ..\NetworkNode\bin\Debug\NetworkNode.exe 1

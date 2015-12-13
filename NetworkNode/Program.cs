@@ -12,6 +12,7 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
+            /*
             Frame frame = new Frame(StmLevel.STM256);
             frame.Msoh = new Header("test", "test2", "test");
             frame.Rsoh = new Header("test", "test2", "test");
@@ -22,7 +23,7 @@ namespace NetworkNode
 
             FrameBuilder fmb = new SDHFrame.FrameBuilder();
             string var = fmb.BuildLiteral(frame);
-
+            */
             
             if (args.Length == 0)
             {
@@ -31,14 +32,15 @@ namespace NetworkNode
             else
             {
                 String id = args[0];
-                NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("../../../Configs/nodeConfig" + id + ".xml");
+                NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("nodeConfig" + id + ".xml");
+//                NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\nodeConfig" + id + ".xml");
 
                 //Add forwarding records
                 ForwardingRecord record = new ForwardingRecord(4000, 6000, StmLevel.STM1, VirtualContainerLevel.VC32, 0, 1);
-                List<ForwardingRecord> records = new List<ForwardingRecord>();
-                records.Add(record);
+                //List<ForwardingRecord> records = new List<ForwardingRecord>();
+                //records.Add(record);
                 NetworkNode node = setUpProcess.startNodeProcess();
-                node.AddForwardingRecords(records);
+                //node.AddForwardingRecords(records);
 
                 Console.WriteLine("Start emulation");
             }

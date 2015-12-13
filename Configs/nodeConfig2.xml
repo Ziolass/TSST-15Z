@@ -11,5 +11,5 @@
 <port type="output" number="5015"/>
 <port type="output" number="5017"/>
 
-<managment-port  number="5100"/>
+<managment-port  number="6510"/>
 </node>
