@@ -293,7 +293,7 @@ namespace Client
                     }
 
                     connections.Add(new ConnInfo(port_in, port_out, from, to, vc));
-                    Console.WriteLine("Klient: przyjęto port_in{0}, port_out{1}, poziom_z{2},poziom_do{3},kontener{4} ", port_in, port_out, from, to, level);
+                   // Console.WriteLine("Klient: przyjęto port_in{0}, port_out{1}, poziom_z{2},poziom_do{3},kontener{4} ", port_in, port_out, from, to, level);
                 }
                 catch (Exception) { ok = false; }
 
@@ -403,8 +403,13 @@ namespace Client
             if (index == -1) index = raw_data.Length;
             int no_frame = 0;
             int index1 = 0;
-           
-                
+
+            ////////////////////////////////////////////////////
+            size = 261;
+            //////////////////////////////////////////////////////    
+
+
+
                 for (int a = 0; (a < ( Math.Ceiling((decimal)(index / (decimal)size)))); a++)
                 {
                 FrameBuilder fbb = new FrameBuilder();
