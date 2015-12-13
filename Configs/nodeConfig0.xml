@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<node type="mux" number="1">
+  
+<port type="input" number="4000"/>
+<port type="input" number="4001"/>
+<port type="input" number="4003"/>
+  
+<port type="output" number="6000"/>
+<port type="output" number="6001"/>
+<port type="output" number="6003"/>
+
+
+<managment-port  number="5000"/>
+</node>

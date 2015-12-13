@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -22,10 +22,12 @@ namespace NetworkNode.SDHFrame
             if (FrameBuilder.isHeader(metadata["Msoh"]))
             {
                 returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Msoh"]);
+
             }
             if (FrameBuilder.isHeader(metadata["Rsoh"]))
             {
                 returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
+
             }
             if (FrameBuilder.isJArray(metadata["Content"]))
             {

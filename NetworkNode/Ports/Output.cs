@@ -10,12 +10,14 @@ using TsstSdh.SocketUtils;
 
 namespace NetworkNode.Ports
 {
-    public class Output
+    public class Output : IDisposable
     {
         private LocalSocektBuilder socketBuilder;
         private ManualResetEvent connectDone = new ManualResetEvent(false);
         private ManualResetEvent sendDone = new ManualResetEvent(false);
         private int outputPort;
+
+        public bool Active { get; set; }
         public Output(int port)
         {
             socketBuilder = LocalSocektBuilder.Instance;
