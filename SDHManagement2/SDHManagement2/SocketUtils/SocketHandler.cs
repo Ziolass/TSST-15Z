@@ -13,13 +13,120 @@ namespace SDHManagement2.SocketUtils
     public class SocketHandler
     {
         private MainWindow mainWindow;
+        private List<Router> endPointsList;
         private List<Router> rList;
         private List<Router> cList;
         public List<string> nodelist { get; set; }
         public List<string> clientNameList { get; set; }
 
+        public SocketHandler(List<int> portList, MainWindow main)
+        {
+            rList = new List<Router>();
+            cList = new List<Router>();
+            mainWindow = main;
+            nodelist = new List<string>();
+            clientNameList = new List<string>();
+            endPointsList = new List<Router>();
+
+            foreach(int port_ in portList)
+            {
+                Router temp = new Router { port = port_, connected = false };
+                endPointsList.Add(temp);
+            }
+
+            discoverPorts(endPointsList);
+
+        }
+        private void discoverPorts(List<Router> routerList)
+        {
+            foreach(Router r in routerList)
+            {
+                r.socket = new RouterSocket(r.port);
+                r.socket.TurnOn();
+                r.identifier = identify(r);
+
+                if(r.identifier ==null){
+                    continue;
+                }
+                if (r.nodetype.Equals("router"))
+                {
+                    rList.Add(r);
+                }
+                else if (r.nodetype.Equals("client"))
+                {
+                    cList.Add(r);
+                }
+                nodelist.Add(r.identifier);
+
+            }
+
+        }
+        private string identify(Router r)
+        {
+            RouterSocket targetSocket = r.socket;
+            byte[] bytes = new byte[100000];
+            string response = null;
+            Socket conversationSocket = null;
+            try {
+                
+                targetSocket.InitConversation();
+                conversationSocket = targetSocket.GetSocket();
+            }
+            catch (Exception e)
+            {
+                mainWindow.appendConsole("Could not connect to specified endpoint", null, null);
+            }
+            try
+            {
+                byte[] msg = Encoding.ASCII.GetBytes("identify|");
+
+                conversationSocket.Send(msg);
+
+
+                bytes = new byte[1024];
+                int bytesrec = 0;
+                if (conversationSocket.Poll(50000, SelectMode.SelectRead))
+                {
+                    bytesrec = conversationSocket.Receive(bytes); // This call will not block
+                }
+                else
+                {
+                    mainWindow.appendConsole("Could not reach endpoint on port " + r.socket + ". Try again", null, null);
+
+                }
+                response += Encoding.ASCII.GetString(bytes, 0, bytesrec);
+
+                r.connected = true;
+
+                string[] responseArray = response.Split('|');
+
+                if (responseArray[0].Equals("router"))
+                {
+                    string routerName = responseArray[1];
+                    r.nodetype = "router";
+                    return routerName;
+                }
+                else if (responseArray[0].Equals("client"))
+                {
+                    string clientName = responseArray[1];
+                    r.nodetype = "client";
+                    return clientName;
+                }
+                else
+                {
+                    mainWindow.appendConsole("Endpoint " + r.port + " provided corrupted response. Try again", null, null);
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            
+          }
         public SocketHandler(List<Router> routerList, List<Router> clientList, MainWindow main)
         {
+
             rList = routerList;
             cList = clientList;
             mainWindow = main;
@@ -29,8 +136,7 @@ namespace SDHManagement2.SocketUtils
 
 
         }
-
-        public RouterSocket GetRouterSocket(String name)
+        public Router GetRouter(String name)
         {
             if (rList == null)
             {
@@ -41,7 +147,7 @@ namespace SDHManagement2.SocketUtils
             {
                 if (router.identifier.Equals(name))
                 {
-                    return router.socket;
+                    return router;
                 }
 
             }
@@ -49,7 +155,7 @@ namespace SDHManagement2.SocketUtils
             {
                 if (client.identifier.Equals(name))
                 {
-                    return client.socket;
+                    return client;
                 }
             }
             return null;
@@ -71,16 +177,31 @@ namespace SDHManagement2.SocketUtils
             }
             return null;
         }
-
         public String sendCommand(String name, String command,bool append)
         {
 
             
 
-            RouterSocket targetSocket = GetRouterSocket(name);
+            Router  targetRouter = GetRouter(name);
+            RouterSocket targetSocket = null;
             byte [] bytes = new byte[100000];
             string response=null;
-            targetSocket.InitConversation();
+            try {
+                targetSocket = targetRouter.socket; 
+                targetSocket.InitConversation();
+            }catch(Exception e)
+            {
+                rList.Remove(targetRouter);
+                cList.Remove(targetRouter);
+                nodelist.Remove(targetRouter.identifier);
+                mainWindow.nodeBox.ItemsSource = nodelist;
+                int selected = mainWindow.selectionBox.SelectedIndex;
+
+                mainWindow.selectionBox.SelectedIndex = (selected == 1 ? 0 : 1);
+                targetRouter.connected = false;
+                mainWindow.appendConsole(string.Format("{0} nie odpowiada. Spróbuj ponownie po odświeżeniu.", name), null, null);
+                return null;
+            }
             Socket conversationSocket = targetSocket.GetSocket();
             
             try
@@ -95,6 +216,7 @@ namespace SDHManagement2.SocketUtils
                     bytes=new byte[1024];
                     int bytesRec = conversationSocket.Receive(bytes);
                     response += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+
                     if (append)
                     {
                         mainWindow.appendConsole(response, name, command);
@@ -110,17 +232,16 @@ namespace SDHManagement2.SocketUtils
             }
             catch (Exception e)
             {
-                mainWindow.appendConsole("Command could not be send. Try again",null,null);
+                mainWindow.appendConsole("Polecenie nie mogło być zrealizowane. Spróbuj ponownie",null,null);
             }
             // TODO zmienić to
             return response;
         }
-
         public string commandHandle(string command, string node)
         {
             if (node.Length < 1)
             {
-                mainWindow.appendConsole("None node specified, try again", null, null);
+                mainWindow.appendConsole("Nie wybrano docelowego punktu końcowego", null, null);
                 return null;
             }
             switch (command)
@@ -154,65 +275,57 @@ namespace SDHManagement2.SocketUtils
                     return sendCommand(node, command + "|",true);
 
                 default:
-                    mainWindow.appendConsole("Unimaginable happened",null,null);
+                    mainWindow.appendConsole("Stało się niemożliwe",null,null);
                     return "ERROR";
 
             }
-        }
-        public void responseHandle(string response)
-        {
-
         }
         public void refresh()
         {
             //List<String> nodeList = new List<string>();
 
-            foreach (var router in rList)
+            foreach (var router in endPointsList)
             {
                 if (!router.connected)
                 { 
-                    mainWindow.appendConsole(string.Format("Trying to reach {0} on port {1}", router.identifier,
+                    mainWindow.appendConsole(string.Format("Próba połączenia na porcie {0}",
                         router.port),null,null);
 
                 try
-                {
-                    router.socket = new RouterSocket(router.port, router.identifier);
-                    router.socket.TurnOn();
-                    router.connected = true;
-                    nodelist.Add(router.identifier);
-                    mainWindow.appendConsole(string.Format("Connection to {0} succeeded", router.identifier),null,null);
+                    {
+                        router.socket = new RouterSocket(router.port);
+                        router.socket.TurnOn();
+                        string name = identify(router);
+
+                        if (name == null)
+                        {
+                            continue;
+                        }
+                        router.identifier = name;
+                        router.connected = true;
+
+                        
+                        if (router.nodetype.Equals("router"))
+                        {
+                            rList.Add(router);
+                        }
+                        else if (router.nodetype.Equals("client"))
+                        {
+                            cList.Add(router);
+                        }
+
+                        nodelist.Add(router.identifier);
+                    mainWindow.appendConsole(string.Format("Połączenie z {0} na porcoe {1} zakończone pomyślnie", router.identifier,router.port),null,null);
 
                 }
                 catch (Exception e)
                 {
-                    mainWindow.appendConsole("Could not connect to: " + router.identifier,null,null);
+                    mainWindow.appendConsole("Nie można było połączyć się z  " + router.identifier,null,null);
                 }
             }
         }
-            foreach (var client in cList)
-            {
-                if (!client.connected)
-                {
-                    mainWindow.appendConsole(string.Format("Trying to reach {0} on port {1}", client.identifier,
-                        client.port), null, null);
-
-                    try
-                    {
-                        client.socket = new RouterSocket(client.port, client.identifier);
-                        client.socket.TurnOn();
-                        client.connected = true;
-                        clientNameList.Add(client.identifier);
-                        mainWindow.appendConsole(string.Format("Connection to {0} succeeded", client.identifier), null, null);
-
-                    }
-                    catch (Exception e)
-                    {
-                        mainWindow.appendConsole("Could not connect to: " + client.identifier, null, null);
-                    }
-                }
-            }
-
-            //mainWindow.nodeBox.ItemsSource = nodelist;
+       
+            mainWindow.nodeBox.ItemsSource = nodelist;
             
         }
         public string addSingleNode(string name, int port_)

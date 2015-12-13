@@ -24,6 +24,11 @@ namespace SDHManagement2.SocketUtils
             port = _port;
             identifier = name;
         }
+        public RouterSocket(int _port)
+        {
+            inputBuffer = new List<byte[]>();
+            port = _port;
+        }
 
         public void TurnOn()
         {
@@ -34,7 +39,12 @@ namespace SDHManagement2.SocketUtils
 
         public void InitConversation()
         {
+            try {
                 socket = LocalSocektBuilder.Instance.getTcpSocket(port);
+            }catch(Exception e)
+            {
+                throw   e;
+            }
         }
 
         public Socket GetSocket()

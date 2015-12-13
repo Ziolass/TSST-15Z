@@ -37,7 +37,7 @@ namespace SDHManagement2.AdditionalWindows
 
             if(!int.TryParse(textBox1.Text,out port))
             {
-                MessageBox.Show("Only numeric values allowed, please try again");
+                MessageBox.Show("Dozwolone są tylko wartości liczbowe!");
                 textBox1.Text = "";
                 return;
             }
