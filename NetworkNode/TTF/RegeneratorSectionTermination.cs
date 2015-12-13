@@ -17,7 +17,7 @@ namespace NetworkNode.TTF
             Frame tempFrame = (Frame)sdhFrame;
             tempFrame.Rsoh = null;
             //Check BIP
-            if (sdhFrame.Rsoh.Checksum == BinaryInterleavedParity.generateBIP(((Frame)tempFrame), 24))
+            if (sdhFrame.Rsoh != null && sdhFrame.Rsoh.Checksum == BinaryInterleavedParity.generateBIP(((Frame)tempFrame), 8))
                 return true;
             else return false;
         }
@@ -26,7 +26,14 @@ namespace NetworkNode.TTF
         {
             SDHFrame.Frame tempFrame = (SDHFrame.Frame)sdhFrame;
             tempFrame.Rsoh = null;
-            ((SDHFrame.Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 24);
+            if (sdhFrame.Rsoh != null)
+            {
+                ((Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
+            }
+            else
+            {
+                ((Frame)sdhFrame).Rsoh = new Header(BinaryInterleavedParity.generateBIP(tempFrame, 8), null, null);
+            }
         }
     }
 }

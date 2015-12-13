@@ -1,4 +1,4 @@
-﻿using NetworkNode.HPC;
+using NetworkNode.HPC;
 using NetworkNode.MenagmentModule;
 using NetworkNode.Ports;
 using NetworkNode.TTF;
@@ -57,7 +57,7 @@ namespace NetworkNode
                             
 
                         }
-                        else if (configReader.Name == "management-port")
+                        else if (configReader.Name == "managment-port")
                         {
                             int portNumber = int.Parse(configReader.GetAttribute("number"));
                             managementPort = new ManagementPort(portNumber);
@@ -79,7 +79,7 @@ namespace NetworkNode
             
             ManagementCenter managementCenter = new ManagementCenter(managementPort,node);
             managementPort.SetManagementCenter(managementCenter);
-            managementPort.StartListening();
+            //managementPort.StartListening();
             
             return node;
         }
