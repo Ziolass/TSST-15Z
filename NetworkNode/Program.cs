@@ -12,7 +12,7 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
-            /*Frame frame = new Frame(StmLevel.STM1);
+            Frame frame = new Frame(StmLevel.STM256);
             frame.Msoh = new Header("test", "test2", "test");
             frame.Rsoh = new Header("test", "test2", "test");
 
@@ -23,7 +23,7 @@ namespace NetworkNode
             FrameBuilder fmb = new SDHFrame.FrameBuilder();
             string var = fmb.BuildLiteral(frame);
 
-            */
+            
             if (args.Length == 0)
             {
                 Console.WriteLine("Input parameter missing");
