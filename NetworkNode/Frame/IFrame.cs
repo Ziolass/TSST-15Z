@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetworkNode.Frame
+namespace NetworkNode.SDHFrame
 {
-    public enum StmLevel { STM1, STM4, STM16, STM64, STM256, UNDEF }
-    public enum ContainerLevel { TUG12, TUG2, TUG3, AU4, UNDEF }
-    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER }
+
+    public enum StmLevel { STM1, STM4, STM16, STM64, STM256, UNDEF }    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER }
 
     public class VirtualContainerLevelExt 
     {
@@ -77,6 +76,7 @@ namespace NetworkNode.Frame
 
     public interface IFrame
     {
+
          Header Msoh { get; set; }
          Header Rsoh { get; set; }
          IContent GetVirtualContainer(VirtualContainerLevel level, int number);

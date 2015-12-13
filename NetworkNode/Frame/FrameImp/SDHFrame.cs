@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NetworkNode.Frame
+namespace NetworkNode.SDHFrame
 {
     /// <summary>
     /// Levels of Virtual Container
@@ -12,18 +12,59 @@ namespace NetworkNode.Frame
     {
         public Header Msoh { get; set; }
         public Header Rsoh { get; set; }
+        public STMLevel Level { get; set; }
         public List<IContent> Content { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SDHFrame"/> class.
+        /// Initializes a new instance of the <see cref="Frame" /> class.
         /// This create empty Content List
         /// </summary>
-        public SDHFrame()
+        /// <param name="stmLevel">The STM level.</param>
+        public Frame(STMLevel stmLevel)
+        {
+            Content = new List<IContent>();
+            this.Level = stmLevel;
+            for (int x = 0; x < ConvertSTMLevel(Level); x++)
+            {
+                for (int i = 0; i < 63; i++)
+                {
+                    Content.Add(null);
+                }
+            }
+        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Frame"/> class. STM-1
+        /// This create empty Content List.
+        /// </summary>
+        public Frame()
         {
             Content = new List<IContent>();
             for (int i = 0; i < 63; i++)
             {
                 Content.Add(null);
+            }
+        }
+        /// <summary>
+        /// Converts the STM level.
+        /// </summary>
+        /// <param name="stmLevel">The STM level.</param>
+        /// <returns></returns>
+        public int ConvertSTMLevel(STMLevel stmLevel)
+        {
+            switch (stmLevel)
+            {
+                case STMLevel.STM1:
+                    return 1;
+                case STMLevel.STM4:
+                    return 4;
+                case STMLevel.STM16:
+                    return 16;
+                case STMLevel.STM64:
+                    return 64;
+                case STMLevel.STM256:
+                    return 256;
+                default:
+                    return 1;
             }
         }
 
@@ -35,6 +76,7 @@ namespace NetworkNode.Frame
         /// <returns></returns>
         public IContent GetVirtualContainer(VirtualContainerLevel level, int number)
         {
+
             IContent returnContent = this.Content[GetContainerIndex(level, number)];
             return returnContent;
         }
@@ -52,7 +94,7 @@ namespace NetworkNode.Frame
             if (VirtualContainer.isVirtualContainer(content))
             {
                 VirtualContainer contentVC = (VirtualContainer)content;
-                if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= SDHFrame.ContainerSpaceConverter(VCLevel))
+                if (level == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level))
                 {
                     if (TestContainerSpace(VCLevel, number))
                     {
@@ -83,13 +125,13 @@ namespace NetworkNode.Frame
                         testUp = true;
                     testDown = true;
                     break;
-                case VirtualContainerLevel.VC2:
+                case VirtualContainerLevel.VC21:
                     if (this.CheckContainerUp(level, index))
                         testUp = true;
                     if (this.CheckContainerDown(level, index))
                         testDown = true;
                     break;
-                case VirtualContainerLevel.VC3:
+                case VirtualContainerLevel.VC32:
                     if (this.CheckContainerUp(level, index))
                         testUp = true;
                     if (this.CheckContainerDown(level, index))
@@ -124,7 +166,7 @@ namespace NetworkNode.Frame
             {
                 case VirtualContainerLevel.VC12:
                     parentPostion = index / 3;
-                    if (CheckContainerUp(VirtualContainerLevel.VC2, parentPostion))
+                    if (CheckContainerUp(VirtualContainerLevel.VC21, parentPostion))
                     {
                         if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC12)
                             returnVal = false;
@@ -132,27 +174,32 @@ namespace NetworkNode.Frame
                     }
                     else returnVal = false;
                     break;
-                case VirtualContainerLevel.VC2:
+
+                case VirtualContainerLevel.VC21:
                     parentPostion = index / 7;
-                    if (CheckContainerUp(VirtualContainerLevel.VC3, parentPostion))
+
+                    if (CheckContainerUp(VirtualContainerLevel.VC32, parentPostion))
                     {
-                        if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC2)
+
+                        if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC21)
                             returnVal = false;
                         else returnVal = true;
                     }
                     else returnVal = false;
                     break;
-                case VirtualContainerLevel.VC3:
-                    if (CheckContainerUp(VirtualContainerLevel.VC4, 0))
+                case VirtualContainerLevel.VC32:
+                    parentPostion = index / 3;
+                    if (CheckContainerUp(VirtualContainerLevel.VC4, parentPostion))
                     {
-                        if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC3)
+                        if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC32)
                             returnVal = false;
                         else returnVal = true;
                     }
                     else returnVal = false;
                     break;
                 case VirtualContainerLevel.VC4:
-                    if (this.Content[0] != null && ((VirtualContainer)this.Content[0]).Level == VirtualContainerLevel.VC4)
+
+                    if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC4)
                         returnVal = false;
                     else returnVal = true;
                     break;
@@ -181,13 +228,15 @@ namespace NetworkNode.Frame
                         returnVal = false;
                     else returnVal = true;
                     break;
-                case VirtualContainerLevel.VC2:                 
+
+                case VirtualContainerLevel.VC21:
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
                     {
                         if (CheckContainerDown(VirtualContainerLevel.VC12, i))
                         {
-                            if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC2)
+
+                            if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC21)
                                 returnVal = false;
                             else returnVal = true;
                         }
@@ -198,13 +247,16 @@ namespace NetworkNode.Frame
                         }
                     }
                     break;
-                case VirtualContainerLevel.VC3:
+
+                case VirtualContainerLevel.VC32:
                     childPosition = index * 7;
                     for (int i = childPosition; i < childPosition + 7; i++)
                     {
-                        if (CheckContainerDown(VirtualContainerLevel.VC2, i))
+
+                        if (CheckContainerDown(VirtualContainerLevel.VC21, i))
                         {
-                            if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC3)
+
+                            if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC32)
                                 returnVal = false;
                             else returnVal = true;
                         }
@@ -219,7 +271,8 @@ namespace NetworkNode.Frame
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
                     {
-                        if (CheckContainerDown(VirtualContainerLevel.VC3, i))
+
+                        if (CheckContainerDown(VirtualContainerLevel.VC32, i))
                         {
                             if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC4)
                                 returnVal = false;
@@ -263,7 +316,8 @@ namespace NetworkNode.Frame
                     }
                     break;
 
-                case VirtualContainerLevel.VC2:
+
+                case VirtualContainerLevel.VC21:
                     for (int i = 0; i < Content.Count; i += 3)
                     {
                         if (counter == index)
@@ -274,7 +328,8 @@ namespace NetworkNode.Frame
                     }
                     break;
 
-                case VirtualContainerLevel.VC3:
+
+                case VirtualContainerLevel.VC32:
                     for (int i = 0; i < Content.Count; i += 21)
                     {
                         if (counter == index)
@@ -286,14 +341,21 @@ namespace NetworkNode.Frame
                     break;
 
                 case VirtualContainerLevel.VC4:
-                    returnValue = 0;
+                    for (int i = 0; i < Content.Count; i += 63)
+                    {
+                        if (counter == index)
+                        {
+                            returnValue = i;
+                        }
+                        counter++;
+                    }
                     break;
             }
             return returnValue;
         }
 
         /// <summary>
-        /// Calculates the free space in <see cref="SDHFrame"/>
+
         /// </summary>
         /// <returns></returns>
         private int CalculateFreeSpace()
@@ -314,65 +376,42 @@ namespace NetworkNode.Frame
                             VC12Count++;
                             break;
 
-                        case VirtualContainerLevel.VC2:
+                        case VirtualContainerLevel.VC21:
                             VC2Count++;
                             break;
 
-                        case VirtualContainerLevel.VC3:
+                        case VirtualContainerLevel.VC32:
                             VC3Count++;
                             break;
-
                         case VirtualContainerLevel.VC4:
                             VC4Count++;
                             break;
                     }
                 }
             }
-            int freeSpace = 63;
+
+            int freeSpace = 63 * this.ConvertSTMLevel(this.Level);
             freeSpace = freeSpace - (VC12Count + VC2Count * 3 + VC3Count * 21 + VC4Count * 63);
             return freeSpace;
         }
-
         /// <summary>
-        /// Conver <see cref="ContainerLevel"/> enum to <see cref="VirtualContainerLevel"/>
+        /// Convert <see cref="ContainerLevel"/> enum to space occupied in <see cref="Frame"/>
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static VirtualContainerLevel ContainerLevelConvert(ContainerLevel value)
-        {
-            switch (value)
-            {
-                case ContainerLevel.TUG12:
-                    return VirtualContainerLevel.VC12;
 
-                case ContainerLevel.TUG2:
-                    return VirtualContainerLevel.VC2;
-
-                case ContainerLevel.TUG3:
-                    return VirtualContainerLevel.VC3;
-
-                case ContainerLevel.AU4:
-                    return VirtualContainerLevel.VC4;
-
-                default:
-                    return VirtualContainerLevel.VC4;
-            }
-        }
-
-        /// <summary>
-        /// Convert <see cref="ContainerLevel"/> enum to space occupied in <see cref="SDHFrame"/>
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns></returns>
         public static int ContainerSpaceConverter(VirtualContainerLevel value)
         {
             switch (value)
             {
+
                 case VirtualContainerLevel.VC4:
                     return 1;
 
+
                 case VirtualContainerLevel.VC3:
                     return 3;
+
 
                 case VirtualContainerLevel.VC2:
                     return 21;
@@ -380,6 +419,20 @@ namespace NetworkNode.Frame
                 default:
                     return 63;
             }
+        }
+
+        public string ToString()
+        {
+            string returnString = string.Empty;
+            foreach (IContent item in this.Content)
+            {
+                if (item != null && VirtualContainer.isVirtualContainer(item))
+                {
+                    returnString += "|" + ((VirtualContainer)item).Level.ToString();
+                }
+            }
+            returnString += "|";
+            return returnString;
         }
     }
 }

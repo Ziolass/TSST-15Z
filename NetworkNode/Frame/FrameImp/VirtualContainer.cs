@@ -1,4 +1,4 @@
-﻿namespace NetworkNode.Frame
+﻿namespace NetworkNode.SDHFrame
 {
     /// <summary>
     /// THis class represent Virtual Container (VC) of SDH frame
