@@ -42,7 +42,7 @@ namespace Client
             lc = configloader.getLinks();
             this.textBox2.Text = configloader.Name;
             this.Show();
-           
+            this.label1.Text = "Port komunikacji z zarządzaniem:" +lc.management_in.InputPort.ToString();
             adapt = new Adaptation(lc,configloader.Name);
             //adapt.client_no = ;                //ostatecznie do wywalneia
             timer1.Enabled = true;

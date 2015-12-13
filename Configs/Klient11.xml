@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<client>
+<port type="input" number="3021"></port>  
+<port type="output" number="3020"> </port>
+<name value="Klient1"/>
+<management_port_in number ="6000"></management_port_in>
+<management_port_out number ="6001"></management_port_out>
+</client>
+
+ 

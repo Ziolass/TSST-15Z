@@ -15,9 +15,10 @@ namespace ClientsLoader
 
             static void Main(string[] args)
         {
-            DirectoryInfo di = new DirectoryInfo(Directory.GetCurrentDirectory());
+            string path = Directory.GetCurrentDirectory();
+            DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(path).Parent).Parent).Parent).FullName+"\\Configs");
             bool any_found = false;
-
+            if(di.Exists)
             foreach (FileInfo fi in di.GetFiles("Klient*.xml"))
             {
 
@@ -27,8 +28,9 @@ namespace ClientsLoader
                 
                  
             }
+            if (!any_found) { Console.WriteLine("KLIENT: Nie znaleziono żadnego pliku konf. klienta");  }
+
             Application.Run();
-            if (!any_found) { MessageBox.Show("Klient: Nie znaleziono żadnego pliku konfiguracyjnego xml"); }
             
         }
     }

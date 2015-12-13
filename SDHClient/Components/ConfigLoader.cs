@@ -30,7 +30,7 @@ namespace Client
         {
             List<Input> inputs = new List<Input>();
             Dictionary<int, Output> outputs = new Dictionary<int, Output>();
-            int man_in=0, man_out=0;
+            int manag = 0;
             while (configReader.Read())
             {
                 //if (configReader.IsStartElement())
@@ -41,12 +41,6 @@ namespace Client
                         {
                             string portType = configReader.GetAttribute("type");
                             int portNumber = int.Parse(configReader.GetAttribute("number"));
-                            /*if (portNumber < 10000)
-                            {
-                                Console.WriteLine("KLIENT:Próbowano użyć portu nr:{0}", portNumber);
-                                Console.WriteLine("Przedział portów klient - router: > 10000 - aby uniknąć kolizji z portami wewnątrz SDH");
-                                continue;
-                            }*/
 
                             switch (portType)
                             {
@@ -71,18 +65,17 @@ namespace Client
                         {
                             name = configReader.GetAttribute("value");
                         }
-                        else if (configReader.Name == "management_port_in")
-                            man_in = Int32.Parse(configReader.GetAttribute("number"));
-                        else if (configReader.Name == "management_port_out")
-                            man_out = Int32.Parse(configReader.GetAttribute("number"));
+                        else if (configReader.Name == "management_port")
+                            manag = Int32.Parse(configReader.GetAttribute("number"));
+                        
                     }
                    // resource - location |{ port_we}#{port_wy}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
 
                 }
             }
 
-            if (man_in != 0 && man_out != 0)
-                return new LinkCollection(inputs, outputs, name, new Input(man_in), new Output(man_out));
+            if (manag== 0 )
+                return new LinkCollection(inputs, outputs, name, new Input(manag), new Output(manag));
             else
                 throw new NotImplementedException("Nie odczytano wartosci portow management");
             
