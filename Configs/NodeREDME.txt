@@ -1,0 +1,6 @@
+Ma³e wyjaœnienie co jest czym odnoœnie schematu na prezentacji
+SDXC 1 = nodeConfig1.xml
+SDXC 2 = nodeConfig2.xml
+Regenerator = nodeConfig3.xml
+SDXC 3 = nodeConfig4.xml
+SDXC 4 = nodeConfig5.xml

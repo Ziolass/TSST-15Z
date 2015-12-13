@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<node type="mux" number="3">
+  
+<port type="input" number="5030"/>
+<port type="input" number="5032"/>
+  
+<port type="output" number="5031"/>
+<port type="output" number="5033"/>
+
+<managment-port  number="5300"/>
+</node>
