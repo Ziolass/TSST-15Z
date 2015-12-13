@@ -74,7 +74,7 @@ namespace Client
                 }
             }
 
-            if (manag== 0 )
+            if (manag!= 0 )
                 return new LinkCollection(inputs, outputs, name, new Input(manag), new Output(manag));
             else
                 throw new NotImplementedException("Nie odczytano wartosci portow management");

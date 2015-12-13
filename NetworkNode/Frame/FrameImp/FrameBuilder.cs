@@ -81,8 +81,8 @@ namespace NetworkNode.Frame
         /// <returns></returns>
         private static IContent evaluateContent(JObject content)
         {
-            try
-            {
+           try
+           {
                 if (FrameBuilder.isVC(content["Type"])) //VirtualContainer
                 {
                     //Create new VC with level from JSON file
@@ -121,8 +121,8 @@ namespace NetworkNode.Frame
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                return null;
+               Console.WriteLine(e.Message);
+               return null;
             }
         }
 

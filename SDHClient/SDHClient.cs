@@ -122,7 +122,29 @@ namespace Client
         }
         private void listBox1_Click(object sender, EventArgs e)
         {
+            if(sender != null && ((ListBox)sender).SelectedItem != null)
             MessageBox.Show((((ListBox)sender).SelectedItem).ToString());
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            Random r = new Random();
+            for (int a = 0; a < 10; a++) textBox1.Text += (char)r.Next(40, 90);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            Random r = new Random();
+            for (int a = 0; a < 100; a++) textBox1.Text += (char)r.Next(40, 90);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            Random r = new Random();
+            for (int a = 0; a < 1000; a++) textBox1.Text += (char)r.Next(40, 90);
         }
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
@@ -325,6 +347,7 @@ namespace Client
                         str += "]}";
                         
                         log.Add("Odebrano od: " + i.InputPort + ":  " + unpack(str,info.level,(byte)info.level_from));
+                        Console.WriteLine("Odebrano od: " + i.InputPort + ":  " + unpack(str, info.level, (byte)info.level_from));
                         str = "";
                         break;
                     }
@@ -384,7 +407,8 @@ namespace Client
                 
                 for (int a = 0; (a < ( Math.Ceiling((decimal)(index / (decimal)size)))); a++)
                 {
-                    frames.Add(new Frame());
+                FrameBuilder fbb = new FrameBuilder();
+                    frames.Add((Frame)(fbb.BuildEmptyFrame()));
                     VirtualContainer newVC = new VirtualContainer(level);
                     if (index1 + size < raw_data.Length)
                     {
