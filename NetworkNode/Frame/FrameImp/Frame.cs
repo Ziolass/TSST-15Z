@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace NetworkNode.SDHFrame
@@ -7,7 +7,7 @@ namespace NetworkNode.SDHFrame
     {
         public Header Msoh { get; set; }
         public Header Rsoh { get; set; }
-        public STMLevel Level { get; set; }
+        public StmLevel Level { get; set; }
         public List<IContent> Content { get; set; }
 
         /// <summary>
@@ -15,7 +15,7 @@ namespace NetworkNode.SDHFrame
         /// This create empty Content List
         /// </summary>
         /// <param name="stmLevel">The STM level.</param>
-        public Frame(STMLevel stmLevel)
+        public Frame(StmLevel stmLevel)
         {
             Content = new List<IContent>();
             this.Level = stmLevel;
@@ -44,19 +44,19 @@ namespace NetworkNode.SDHFrame
         /// </summary>
         /// <param name="stmLevel">The STM level.</param>
         /// <returns></returns>
-        public int ConvertSTMLevel(STMLevel stmLevel)
+        public int ConvertSTMLevel(StmLevel stmLevel)
         {
             switch (stmLevel)
             {
-                case STMLevel.STM1:
+                case StmLevel.STM1:
                     return 1;
-                case STMLevel.STM4:
+                case StmLevel.STM4:
                     return 4;
-                case STMLevel.STM16:
+                case StmLevel.STM16:
                     return 16;
-                case STMLevel.STM64:
+                case StmLevel.STM64:
                     return 64;
-                case STMLevel.STM256:
+                case StmLevel.STM256:
                     return 256;
                 default:
                     return 1;

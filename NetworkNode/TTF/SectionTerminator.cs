@@ -1,4 +1,4 @@
-﻿using NetworkNode.SDHFrame;
+using NetworkNode.SDHFrame;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace NetworkNode.TTF
 {
     interface SectionTerminator
     {
-        void evaluateHeader(IFrame sdhFrame);
+        bool evaluateHeader(IFrame sdhFrame);
         void generateHeader(IFrame sdhFrame);
     }
 }
