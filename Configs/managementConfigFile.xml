@@ -4,5 +4,12 @@
 		<port value="5000"/>
 		<port value="7000"/>  
 		<port value="9000"/>  
+	
+<port value="6001"/>
+		<port value="6002"/>  
+		<port value="6003"/>
+<port value="6004"/>
+  
 	</ports>
+
 </management-ports>

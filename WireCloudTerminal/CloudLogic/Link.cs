@@ -117,11 +117,14 @@ namespace WireCloud
                 IPEndPoint endpoint = socketBuilder.getLocalEndpoint(Destination);
                 sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
                 connectDone.WaitOne();
-
-                sendData(sender, state.buffer);
-                sendDone.WaitOne();
-                sender.Shutdown(SocketShutdown.Both);
-                sender.Close();
+                try
+                {
+                    sendData(sender, state.buffer);
+                    sendDone.WaitOne();
+                    sender.Shutdown(SocketShutdown.Both);
+                    sender.Close();
+                }
+                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
             //TODO wprowadzić jakąś sekwencje końcową albo ograniczoną liczbębajtówktórą będziemy przesyłać  
             //Tu może wystąpić błąd związany ze zbyt dużm blokeim danych dlatego przyda się else który wywoła jeszcze raz StartReadingData

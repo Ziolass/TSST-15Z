@@ -45,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\ConfigLoader.cs" />
+    <Compile Include="Components\LocalSocektBuilder.cs" />
+    <Compile Include="Components\ManagementCenter.cs" />
+    <Compile Include="Components\ManagementPort.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDHClient.cs">
@@ -79,6 +82,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NetworkNode\NetworkNode.csproj">
+      <Project>{f2453730-6933-4343-856c-273a9fa16b6e}</Project>
+      <Name>NetworkNode</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WireCloudTerminal\WireCloudTerminal.csproj">
       <Project>{bff94db1-e883-4b5e-9ace-75a3973a7322}</Project>
       <Name>WireCloudTerminal</Name>

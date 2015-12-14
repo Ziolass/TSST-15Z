@@ -91,7 +91,7 @@ namespace SDHManagement2.SocketUtils
                 }
                 else
                 {
-                    mainWindow.appendConsole("Could not reach endpoint on port " + r.socket + ". Try again", null, null);
+                    mainWindow.appendConsole("Could not reach endpoint on port " + r.socket.port + ". Try again", null, null);
 
                 }
                 response += Encoding.ASCII.GetString(bytes, 0, bytesrec);

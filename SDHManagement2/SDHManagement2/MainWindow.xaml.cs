@@ -156,7 +156,7 @@ namespace SDHManagement2
                 action = clientAction[actionBox.SelectedIndex];
             }
 
-            action = actionList[actionBox.SelectedIndex];
+            //action = actionList[actionBox.SelectedIndex];
             socketHandler.commandHandle(action,nodeName);
             
         }

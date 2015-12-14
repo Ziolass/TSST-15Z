@@ -35,6 +35,7 @@ namespace NetworkNode.Ports
         public void sendData(byte[] dataToSend)
         {
             Socket sender = socketBuilder.getTcpSocket();
+            sender.DontFragment = true;
             IPEndPoint endpoint = socketBuilder.getLocalEndpoint(outputPort);
             sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
             connectDone.WaitOne();
