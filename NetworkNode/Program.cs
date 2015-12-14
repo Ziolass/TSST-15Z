@@ -12,28 +12,14 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
-            /*
-            Frame frame = new Frame(StmLevel.STM256);
-            frame.Msoh = new Header("test", "test2", "test");
-            frame.Rsoh = new Header("test", "test2", "test");
-
-            frame.SetVirtualContainer(VirtualContainerLevel.VC32, 0, new VirtualContainer(VirtualContainerLevel.VC32));
-            frame.SetVirtualContainer(VirtualContainerLevel.VC21, 10, new VirtualContainer(VirtualContainerLevel.VC21));
-
-
-            FrameBuilder fmb = new SDHFrame.FrameBuilder();
-            string var = fmb.BuildLiteral(frame);
-            */
-            
-            
             if (args.Length == 0)
             {
                 Console.WriteLine("Input parameter missing");
             }
 
-			String id = args[0];
-
-//         	NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\nodeConfig" + id + ".xml");
+			//String id = args[0];
+            String id = "0";
+            NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\nodeConfig" + id + ".xml");
 
 
             NetworkNode node = setUpProcess.startNodeProcess();
