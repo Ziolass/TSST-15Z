@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SDHManagement2.AdditionalWindows"
-        mc:Ignorable="d" Height="200" Width="200" WindowStyle="ToolWindow" Background="#FFB4A7A7">
+        mc:Ignorable="d" Height="200" Width="200" WindowStyle="ToolWindow" Background="#FFB4A7A7" WindowStartupLocation="CenterScreen">
     <Grid>
         <Label x:Name="label" Content="Nazwa" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="36,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>

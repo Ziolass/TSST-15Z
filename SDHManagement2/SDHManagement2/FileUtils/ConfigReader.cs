@@ -69,7 +69,36 @@ namespace SDHManagement2.FileUtils
                     return null;
                 }
         }
+        public static List<int> readPortsFromConfig (string configurationFileName)
+        {
+            List<int> portList = new List<int>();
 
+            string defaultDirectoryPath = Directory.GetCurrentDirectory();
+            configurationFilePath = setupDirectoryPath(defaultDirectoryPath, configurationFileName);
+            using (
+            configReader = XmlReader.Create(configurationFilePath))
+                try
+                {
+                    while (configReader.Read())
+                    {
+                        if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "port"))
+                        {
+                            if (configReader.HasAttributes)
+                            {
+                                portList.Add(int.Parse(configReader.GetAttribute("value")));
+                            }
+                        }
+
+                    }
+                    return portList;
+
+                }
+                catch
+                    (Exception e)
+                {
+                    return null;
+                }
+        }
         public static Dictionary<string, int> readClientConfig (string configurationFileName)
         {
             Dictionary<string, int> clientPortDictionary = new Dictionary<string, int>();

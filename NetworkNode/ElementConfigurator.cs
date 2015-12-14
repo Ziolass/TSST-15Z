@@ -1,4 +1,4 @@
-﻿using NetworkNode.HPC;
+using NetworkNode.HPC;
 using NetworkNode.MenagmentModule;
 using NetworkNode.Ports;
 using NetworkNode.TTF;
@@ -26,6 +26,7 @@ namespace NetworkNode
             Dictionary<int, Output> outputs = new Dictionary<int, Output>();
             int nodeNumber = -1;
             String nodeType = null;
+            ManagementPort managementPort = null;
             while (configReader.Read())
             {
                 if (configReader.IsStartElement())
@@ -56,6 +57,11 @@ namespace NetworkNode
                             
 
                         }
+                        else if (configReader.Name == "managment-port")
+                        {
+                            int portNumber = int.Parse(configReader.GetAttribute("number"));
+                            managementPort = new ManagementPort(portNumber);
+                        } 
                         else if (configReader.Name == "node" && configReader.IsStartElement())
                         {
                             nodeNumber = int.Parse(configReader.GetAttribute("number"));
@@ -69,10 +75,13 @@ namespace NetworkNode
             SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(inputs, outputs);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, getMode(nodeType));
             HigherOrderPathConnection hpc = new HigherOrderPathConnection(ttf);
+            NetworkNode node = new NetworkNode(hpc, spi, nodeNumber);
             
-            //ManagementCenter managementCenter = new ManagementCenter(managementInterface, ttf, hpc, nodeNumber);
-
-            return new NetworkNode(hpc);
+            ManagementCenter managementCenter = new ManagementCenter(managementPort,node);
+            managementPort.SetManagementCenter(managementCenter);
+            //managementPort.StartListening();
+            
+            return node;
         }
 
         private NodeMode getMode(string mode)

@@ -9,11 +9,14 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using SDHManagement2.SocketUtils;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using Microsoft.Win32;
+using System.IO;
 
 namespace SDHManagement2.AdditionalWindows
 {
@@ -26,32 +29,22 @@ namespace SDHManagement2.AdditionalWindows
         private string [] connections;
         private string [] inports;
         private string[] outports;
-        private string[] conteners = { "VC4", "VC3", "VC2", "VC12" };
+        private string[] conteners = {"VC4", "VC3", "VC2", "VC12"};
+        private string[] modules = {"STM1", "STM4", "STM16","STM64","STM256"};
+        private int[] modulesInt = { 1, 4, 16, 64, 256 };
         private int[] vc3levels = { 0,1,2};
         private int[] vc4levels = { 0 };
         private int[] vc2levels;
         private int []vc12levels;
 
-        // 10 poniższych linii służy wyłączeniu 'x' w oknie
-        private const int GWL_STYLE = -16;
-        private const int WS_SYSMENU = 0x80000;
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll")]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            var hwnd = new WindowInteropHelper(this).Handle;
-            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
-        }
+       
 
         public AddConnectionWindow(SocketHandler handler_, string port_response, string connection_response,string name)
         {
             InitializeComponent();
             contenerTypeBox.ItemsSource = conteners.ToList();
+            STMComboBox.ItemsSource = modules.ToList();
+            STMComboBox.SelectedIndex =0;
             handler = handler_;
             nodeNameLabel.Content = name;
             stringToPortArray(port_response);
@@ -80,8 +73,18 @@ namespace SDHManagement2.AdditionalWindows
 
             for (int i = 0; i < connections.Length; i++)
             {
+
                 string[] tmp = temp_connections[i].Split('#');
-                connections[i] = tmp[0] + " --> " + tmp[1];
+                int temp = i + 1;
+                // connections[i] = "Połączenie "+temp+".\n"+
+                // +tmp[0] + " --> " + tmp[1];
+                connections[i] = "Połączenie " + temp + ".\n" +
+                    "Z portu " + tmp[0] + ". na port " + tmp[1] + ".\n" +
+                    "Ze szczeliny " + tmp[2] + ". do szczeliny " + tmp[3] + ".\n" +
+                    "Moduł: " + tmp[5] + "\n" +
+                    "Kontener: " + tmp[4];
+
+
             }
             connectionsBox.ItemsSource = connections.ToList();
 
@@ -98,7 +101,7 @@ namespace SDHManagement2.AdditionalWindows
                 if ((int.TryParse(inportBox.SelectedItem.ToString(), out inport)) && int.TryParse(outportBox.SelectedItem.ToString(), out outport) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel))
                 {
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-                    string command = "sub-connection-HPC|" + inport + "#" + outport + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString();
+                    string command = "sub-connection-HPC|" + inport + "#" + outport + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString() + "#" + STMComboBox.SelectedItem.ToString() ;
                     handler.sendCommand(nodeNameLabel.Content.ToString(), command, true);
 
                     this.Close();
@@ -106,16 +109,63 @@ namespace SDHManagement2.AdditionalWindows
 
                 else
                 {
-                    MessageBox.Show("Values must be numeric only, try again");
+                    MessageBox.Show("Dozwolone są tylko wartości numeryczne");
                     return;
                 }
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Values must be numeric only, try again");
+                MessageBox.Show("Dozwolone są tylko wartości numeryczne");
                 return;
             }
         }
+        private void reInitvc12()
+        {
+
+            int SMIdentifier = modulesInt[ STMComboBox.SelectedIndex];
+
+            vc12levels = new int[21 * SMIdentifier];
+
+            for (int i = 0; i < vc12levels.Length; i++)
+            {
+                vc12levels[i] = i;
+            }
+
+        }
+        private void reInitvc2()
+        {
+            int SMIdentifier = modulesInt[STMComboBox.SelectedIndex];
+            vc2levels = new int[63 * SMIdentifier];
+
+            for (int j = 0; j < vc2levels.Length; j++)
+            {
+                vc2levels[j] = j;
+            }
+        }
+        private void reInitvc3()
+        {
+            int SMIdentifier = modulesInt[STMComboBox.SelectedIndex];
+            vc3levels = new int[3 * SMIdentifier];
+
+
+            for (int j = 0; j < vc3levels.Length; j++)
+            {
+                vc3levels[j] = j;
+            }
+        }
+        private void reInitvc4()
+        {
+            int SMIdentifier = modulesInt[STMComboBox.SelectedIndex];
+            vc4levels = new int[1 * SMIdentifier];
+
+
+            for (int j = 0; j < vc4levels.Length; j++)
+            {
+                vc4levels[j] = j;
+            }
+        }
+
+
         private void initArrays()
         {
             vc12levels = new int[21];
@@ -136,19 +186,23 @@ namespace SDHManagement2.AdditionalWindows
             switch (contenerTypeBox.SelectedItem.ToString())
             {
                 case "VC4":
+                    reInitvc4();
                     endLevelBox.ItemsSource = vc4levels.ToList();
                     startLevelBox.ItemsSource = vc4levels.ToList();
                     break;
                 case "VC3":
+                    reInitvc3();
                     endLevelBox.ItemsSource = vc3levels.ToList();
                     startLevelBox.ItemsSource = vc3levels.ToList();
                     break;
 
                 case "VC2":
+                    reInitvc2();
                     endLevelBox.ItemsSource = vc2levels.ToList();
                     startLevelBox.ItemsSource = vc2levels.ToList();
                     break;
                 case "VC12":
+                    reInitvc12();
                     endLevelBox.ItemsSource = vc12levels.ToList();
                     startLevelBox.ItemsSource = vc12levels.ToList();
                     break;
@@ -156,6 +210,35 @@ namespace SDHManagement2.AdditionalWindows
                   
                     break;
             }
+        }
+
+        private void STMComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            string path = Directory.GetCurrentDirectory();
+            openFileDialog.InitialDirectory = path;
+            openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog.FilterIndex = 2;
+            openFileDialog.RestoreDirectory = true;
+
+                try
+                {
+
+                string result = "";
+                if (openFileDialog.ShowDialog() == true)
+                result = File.ReadAllText(openFileDialog.FileName);
+                handler.sendCommand(nodeNameLabel.Content.ToString(), result, true);
+                this.Close();
+                }
+                catch(Exception ex)
+                {
+                
+                }
         }
     }
 }

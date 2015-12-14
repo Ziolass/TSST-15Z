@@ -7,8 +7,10 @@ using SDHManagement2.SocketUtils;
 
 namespace SDHManagement2.Models
 {
+    
    public class Router
     {
+        public string nodetype { get; set; }
         public string identifier { get; set; }
         public int port { get; set; }
         public bool connected { get; set; }

@@ -15,7 +15,7 @@ namespace NetworkNode.TTF
         {
             Frame tempFrame = (Frame)sdhFrame;
             tempFrame.Msoh = null;
-            if (sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(((VirtualContainer)sdhFrame).Content, 8))
+            if (sdhFrame.Msoh != null && (sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(((VirtualContainer)sdhFrame).Content, 21)))
                 return true;
             else return false;
         }
@@ -26,8 +26,15 @@ namespace NetworkNode.TTF
         /// <param name="sdhFrame">The SDH frame.</param>
         public void generateHeader(IFrame sdhFrame)
         {
-            Frame tempFrame = (Frame)sdhFrame;          
-            ((SDHFrame.Frame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(((VirtualContainer)sdhFrame).Content , 8);
+            Frame tempFrame = (Frame)sdhFrame;
+            if (sdhFrame.Msoh != null)
+            {
+                sdhFrame.Msoh.Checksum = BinaryInterleavedParity.generateBIP(((Frame)sdhFrame).Content, 21);
+            }
+            else
+            {
+                sdhFrame.Msoh = new Header(BinaryInterleavedParity.generateBIP(((Frame)sdhFrame).Content, 21), null, null);
+            }
         }
     }
 }

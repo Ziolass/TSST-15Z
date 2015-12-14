@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<node type="reg" number="1">
+  
+<port type="input" number="5020"/>
+<port type="input" number="5022"/>
+  
+<port type="output" number="5021"/>
+<port type="output" number="5023"/>
+
+<managment-port  number="6520"/>
+</node>

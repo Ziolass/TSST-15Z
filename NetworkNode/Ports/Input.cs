@@ -11,12 +11,13 @@ using TsstSdh.SocketUtils;
 namespace NetworkNode.Ports
 {
     public delegate void HandleIncomingData(object sender, EventArgs args);
-    public class Input
+    public class Input : IDisposable
     {
         private ManualResetEvent allDone = new ManualResetEvent(false);
         private List<byte[]> inputBuffer;
         private Thread listeningThread;
 
+        public bool Active { get; set; }
 
         public event HandleIncomingData HandleIncomingData;
         public int InputPort { get; private set; }

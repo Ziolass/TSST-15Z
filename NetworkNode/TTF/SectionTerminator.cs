@@ -1,4 +1,4 @@
-﻿using NetworkNode.SDHFrame;
+using NetworkNode.SDHFrame;
 using System;
 using System.Collections.Generic;
 using System.Linq;

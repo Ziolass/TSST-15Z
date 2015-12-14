@@ -24,19 +24,25 @@ namespace NetworkNode.TTF
     {
         private Dictionary<int, List<string>> buffers;
         private Dictionary<int, Output> outputs;
+        private Dictionary<int, Input> inputs;
         public String ReceivedFrame { get; private set; }
         public event HandleInputData HandleInputData;
 
         public SynchronousPhysicalInterface(List<Input> inputs, Dictionary<int, Output> outputs)
         {
+
             this.outputs = outputs;
             buffers = new Dictionary<int, List<string>>();
+            this.inputs = new Dictionary<int, Input>();
             foreach (Input input in inputs)
             {
                 buffers.Add(input.InputPort, new List<string>());
+                this.inputs.Add(input.InputPort, input);
                 input.HandleIncomingData += new HandleIncomingData(pullData);
             }
         }
+
+
 
         private void pullData(object sender, EventArgs args)
         {
@@ -75,9 +81,36 @@ namespace NetworkNode.TTF
             return result;
         }
 
-        public void ShudownInterface()
+        public bool ShudownInterface(int number)
         {
-            //TODO 
+            try
+            {
+                if (outputs.ContainsKey(number))
+                {
+                    outputs[number].Active = false;
+                    return true;
+                }
+
+                if (inputs.ContainsKey(number))
+                {
+                    inputs[number].Active = false;
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public List<List<int>> GetPorts()
+        {
+            List<List<int>> results = new List<List<int>>();
+            results.Add(new List<int>(inputs.Keys));
+            results.Add(new List<int>(outputs.Keys));
+            return results;
         }
     }
 }

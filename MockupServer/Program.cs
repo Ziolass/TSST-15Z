@@ -22,7 +22,7 @@ namespace MockupServer
  
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5000);
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 6000);
             Socket listener = new Socket(AddressFamily.InterNetwork,
             SocketType.Stream, ProtocolType.Tcp);
 
