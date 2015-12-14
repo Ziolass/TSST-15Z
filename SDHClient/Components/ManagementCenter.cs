@@ -49,12 +49,24 @@ namespace Client
                         response = identify();
                         break;
                     }
-                default:
-                   
-                        load(request);
+                case "resource-location":
+
+                       response =  load(request);
 
                     break;
+                case "resource - location":
+                   response =  load(request);
+                    break;
 
+                case "resource- location":
+                   response =  load(request);
+                    break;
+                case "resource -location":
+                    response= load(request);
+                    break;
+                default:
+                    Console.WriteLine("To nie powinno się zdarzyć: management prosi o: " + requestType);
+                    break;
             }
 
             return response;
@@ -84,7 +96,7 @@ namespace Client
             bool ok = true;
             try
             {
-                
+                str = response;
                 int index1 = str.IndexOf('|');
                 int index2 = str.IndexOf('#', index1);
                 int index3 = str.IndexOf('#', index2 + 1);
@@ -97,7 +109,9 @@ namespace Client
                 int port_out = Int32.Parse(str.Substring(index2 + 1, index3 - (index2 + 1)));
                 int from = Int32.Parse(str.Substring(index3 + 1, index4 - (index3 + 1)));
                 int to = Int32.Parse(str.Substring(index4 + 1, index5 - (index4 + 1)));
-                VirtualContainerLevel vc = VirtualContainerLevel.VC12; ;
+                VirtualContainerLevel vc = VirtualContainerLevel.UNDEF ;
+                StmLevel stm = StmLevel.UNDEF;
+               
                 string level = str.Substring(index5 + 1, index6 - (index5 + 1));
                 switch (level)
                 {
@@ -108,9 +122,18 @@ namespace Client
 
                 }
                 string level2 = str.Substring(index6 + 1, str.Length - (index6 + 1));
+                switch (level2)
+                {
+                    case "STM16": stm = StmLevel.STM16; break;
+                    case "STM1": stm = StmLevel.STM1; break;
+                    case "STM256": stm = StmLevel.STM256; break;
+                    case "STM4": stm = StmLevel.STM4; break;
+                    case "STM64": stm = StmLevel.STM64; break;
 
-                adapt.connections.Add(new ConnInfo(port_in, port_out, from, to, vc));
-                 Console.WriteLine("Klient: przyjęto port_in{0}, port_out{1}, poziom_z{2},poziom_do{3},kontener{4} ", port_in, port_out, from, to, level);
+
+                }
+                adapt.connections.Add(new ConnInfo(port_in, port_out, from, to, vc,stm));
+                 Console.WriteLine("Klient: przyjęto port_in{0}, port_out{1}, poziom_z{2},poziom_do{3},kontener{4},trakt{5} ", port_in, port_out, from, to, level,level2);
                 return "OK";
             }
             catch (Exception) { return "ERROR"; }

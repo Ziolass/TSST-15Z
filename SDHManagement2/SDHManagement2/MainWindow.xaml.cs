@@ -148,7 +148,10 @@ namespace SDHManagement2
 
             nodeName = nodeBox.Text;
             //action = actionBox.Text;
+            if(selectionBox.SelectedIndex == 0)
             action = actionList[actionBox.SelectedIndex];
+            else
+                action = clientAction[actionBox.SelectedIndex];
             socketHandler.commandHandle(action,nodeName);
 
 

@@ -160,15 +160,17 @@ namespace Client
         public int level_from;
       public   int level_to;
      public    VirtualContainerLevel level;
+        public StmLevel stmlevel;
         
         public ConnInfo() { }
-        public ConnInfo(int in_,int out_,int from, int to, VirtualContainerLevel level)
+        public ConnInfo(int in_,int out_,int from, int to, VirtualContainerLevel level,StmLevel stm)
         {
             port_in = in_;
             port_out= out_;
             level_from = from;
             level_to = to;
             this.level = level;
+            this.stmlevel = stm;
         }
     }
     public class Adaptation
@@ -199,8 +201,8 @@ namespace Client
             bw.RunWorkerAsync();
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            if (client_no == "Klient1")Test( "resource - location |3021#3020#0#1#VC2");
-            if(client_no == "Klient2") Test("resource - location |3020#3021#1#0#VC2"); //10  
+           // if (client_no == "Klient1")Test( "resource - location |3021#3020#0#1#VC2");
+         //   if(client_no == "Klient2") Test("resource - location |3020#3021#1#0#VC2"); //10  
             //////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -225,7 +227,7 @@ namespace Client
         {
             mp.StartListening(cmc);
         }
-
+/*
         private void Test(string str)
         {
             
@@ -261,7 +263,7 @@ namespace Client
 
 
 
-        }
+        }*/
         private void Management_in_HandleIncomingData(object sender, EventArgs args)
         {
             //resource-location|{port_we}#{port_wy}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{}

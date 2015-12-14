@@ -24,7 +24,8 @@ namespace SDHManagement2.AdditionalWindows
         private string[] connections;
         private string[] inports;
         private string[] outports;
-        private string[] conteners = { "VC4", "VC3", "VC2", "VC12" };
+        private string[] conteners = { "VC4", "VC32", "VC21", "VC12" };
+        
         private string[] modules = { "STM1", "STM4", "STM16", "STM64", "STM256" };
         private int[] modulesInt = { 1, 4, 16, 64, 256 };
 
@@ -166,13 +167,13 @@ namespace SDHManagement2.AdditionalWindows
                     endLevelBox.ItemsSource = vc4levels.ToList();
                     startLevelBox.ItemsSource = vc4levels.ToList();
                     break;
-                case "VC3":
+                case "VC32":
                     reInitvc3();
                     endLevelBox.ItemsSource = vc3levels.ToList();
                     startLevelBox.ItemsSource = vc3levels.ToList();
                     break;
 
-                case "VC2":
+                case "VC21":
                     reInitvc2();
                     endLevelBox.ItemsSource = vc2levels.ToList();
                     startLevelBox.ItemsSource = vc2levels.ToList();
