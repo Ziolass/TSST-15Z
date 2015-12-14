@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<management-ports>
+	<ports>
+		<port value="5000"/>
+		<port value="6500"/>  
+		<port value="6510"/>  
+		<port value="6520"/>
+		<port value="6530"/>  
+		<port value="6540"/>  
+	</ports>
+</management-ports>

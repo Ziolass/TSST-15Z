@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,7 +11,7 @@ using System.Threading;
 using System.Windows.Forms;
 using WireCloud;
 using NetworkNode.Ports;
-using NetworkNode.Frame;
+using NetworkNode.SDHFrame;
 using System.Security.Cryptography;
 
 namespace Client

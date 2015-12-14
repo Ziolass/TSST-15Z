@@ -36,8 +36,6 @@ namespace SDHManagement2.SocketUtils
         }
 
 
-
-
         public Socket getTcpSocket(int port)
         {
             IPEndPoint endPoint = new IPEndPoint(ipAddress, port);
@@ -53,6 +51,7 @@ namespace SDHManagement2.SocketUtils
                 // NOTE, MUST CLOSE THE SOCKET
 
                 socket.Close();
+                
                 throw new Exception("Failed to connect server.");
             }
 

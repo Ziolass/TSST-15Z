@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +26,15 @@ namespace NetworkNode.SDHFrame
             this.Type = ContentType.HEADER;
         }
         /// <summary>
+        /// Initializes a new empty instance of the <see cref="Header"/> class.
+        /// </summary>
+        public Header()
+        {
+            this.Checksum = null;
+            this.EOW = null;
+            this.Type = ContentType.HEADER;
+        }
+        /// <summary>
         /// Determines whether the specified content is header.
         /// </summary>
         /// <param name="content">The content.</param>
@@ -35,6 +44,21 @@ namespace NetworkNode.SDHFrame
             if (content != null && content.Type == ContentType.HEADER)
                 return true;
             else return false;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString()
+        {
+            string returnString = string.Empty;
+            returnString += "Parity" + this.Checksum + "\n";
+            returnString += "EOW" + this.EOW + "\n";
+            returnString += "DCC" + this.DCC + "\n";            
+            return returnString;
         }
     }
 }

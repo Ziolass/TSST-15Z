@@ -60,6 +60,10 @@ namespace SDHManagement2
         public MainWindow()
         {
             InitializeComponent();
+            selectionBox.IsEnabled = false;
+            actionBox.IsEnabled = false;
+            nodeBox.IsEnabled = false;
+
             console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt") + ": Management console");
             selectionBox.ItemsSource = selection.ToList();
             // actionBox.ItemsSource = actionList.ToList();
@@ -224,26 +228,31 @@ namespace SDHManagement2
                 connections[i] = "Polaczanie "+position+".\n"+
                     "z: "+tmp[0] + " do " + tmp[1]+"\n"+
                     "z pozycji "+tmp[2]+". na pozycje "+tmp[3]+".\n"+
-                    "obsługiwany kontener: "+tmp[4];
+                    "obsługiwany kontener: "+tmp[4]+
+                    "moduł: " + tmp[5];
             }
             return connections;
         }
         private void button1_Click(object sender, RoutedEventArgs e)
         {
 
-            Dictionary<string, int> portDictionary = ConfigReader.readConfig("\\managementConfigFile.xml");
-            Dictionary<string, int> clientDictionary = ConfigReader.readClientConfig("\\managementConfigFile.xml");
-
+            Dictionary<string, int> portDictionary = new Dictionary<string, int>();
+            Dictionary<string, int> clientDictionary = new Dictionary<string, int>();
+            List<int> portList = ConfigReader.readPortsFromConfig("\\managementConfigFile.xml");
             routerList = new List<Router>();
             clientList = new List<Router>();
 
             
-            if (portDictionary==null || clientDictionary==null)
+            if (portList==null)
             {
                 appendConsole("Error reading configuration file. Try again",null,null);
                 return;
             }
 
+
+
+
+            /*
             foreach (var VARIABLE in portDictionary)
             {
                 Router router = new Router()
@@ -264,10 +273,12 @@ namespace SDHManagement2
                       port = client.Value
                 };
                 clientList.Add(clientNode);
-            }
-
-            socketHandler = new SocketHandler(routerList,clientList, this);
-            
+            }*/
+            socketHandler = new SocketHandler(portList, this);
+            //socketHandler = new SocketHandler(routerList,clientList, this);
+            actionBox.IsEnabled = true;
+            nodeBox.IsEnabled = true;
+            selectionBox.IsEnabled = true;
             button1.IsEnabled = false;
             button2.IsEnabled = true;
             addNewButton.IsEnabled = true;

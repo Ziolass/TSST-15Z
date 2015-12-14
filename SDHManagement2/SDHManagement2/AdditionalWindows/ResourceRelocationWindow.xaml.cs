@@ -25,6 +25,9 @@ namespace SDHManagement2.AdditionalWindows
         private string[] inports;
         private string[] outports;
         private string[] conteners = { "VC4", "VC3", "VC2", "VC12" };
+        private string[] modules = { "STM1", "STM4", "STM16", "STM64", "STM256" };
+        private int[] modulesInt = { 1, 4, 16, 64, 256 };
+
         private int[] vc3levels = { 0, 1, 2 };
         private int[] vc4levels = { 0 };
         private int[] vc2levels;
@@ -34,6 +37,7 @@ namespace SDHManagement2.AdditionalWindows
         {
             InitializeComponent();
             contenerTypeBox.ItemsSource = conteners.ToList();
+            ModuleComboBox.ItemsSource = modules.ToList();
             handler = handler_;
             stringToPortArray(port_response);
 
@@ -74,7 +78,7 @@ namespace SDHManagement2.AdditionalWindows
                 if ((int.TryParse(inportBox.SelectedItem.ToString(), out inport)) && int.TryParse(outportBox.SelectedItem.ToString(), out outport) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel))
                 {
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-                    string command = "resource-location|" + inport + "#" + outport + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString();
+                    string command = "resource-location|" + inport + "#" + outport + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString()+"#"+ModuleComboBox.SelectedItem.ToString();
                     handler.sendCommand(nodeNameLabel.Content.ToString(), command, true);
 
                     this.Close();
@@ -82,13 +86,13 @@ namespace SDHManagement2.AdditionalWindows
 
                 else
                 {
-                    MessageBox.Show("Values must be numeric only, try again");
+                    MessageBox.Show("Dopuszczalne są tylko wartości numeryczne");
                     return;
                 }
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Values must be numeric only, try again");
+                MessageBox.Show("Dopuszczalne są tylko wartości numeryczne");
                 return;
             }
         }
@@ -106,6 +110,51 @@ namespace SDHManagement2.AdditionalWindows
                 vc2levels[j] = j;
             }
         }
+        private void reInitvc12()
+        {
+
+            int SMIdentifier = modulesInt[ModuleComboBox.SelectedIndex];
+
+            vc12levels = new int[21 * SMIdentifier];
+
+            for (int i = 0; i < vc12levels.Length; i++)
+            {
+                vc12levels[i] = i;
+            }
+
+        }
+        private void reInitvc2()
+        {
+            int SMIdentifier = modulesInt[ModuleComboBox.SelectedIndex];
+            vc2levels = new int[63 * SMIdentifier];
+
+            for (int j = 0; j < vc2levels.Length; j++)
+            {
+                vc2levels[j] = j;
+            }
+        }
+        private void reInitvc3()
+        {
+            int SMIdentifier = modulesInt[ModuleComboBox.SelectedIndex];
+            vc3levels = new int[3 * SMIdentifier];
+
+
+            for (int j = 0; j < vc3levels.Length; j++)
+            {
+                vc3levels[j] = j;
+            }
+        }
+        private void reInitvc4()
+        {
+            int SMIdentifier = modulesInt[ModuleComboBox.SelectedIndex];
+            vc4levels = new int[1 * SMIdentifier];
+
+
+            for (int j = 0; j < vc4levels.Length; j++)
+            {
+                vc4levels[j] = j;
+            }
+        }
 
         private void contenerTypeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -113,19 +162,23 @@ namespace SDHManagement2.AdditionalWindows
             switch (contenerTypeBox.SelectedItem.ToString())
             {
                 case "VC4":
+                    reInitvc4();
                     endLevelBox.ItemsSource = vc4levels.ToList();
                     startLevelBox.ItemsSource = vc4levels.ToList();
                     break;
                 case "VC3":
+                    reInitvc3();
                     endLevelBox.ItemsSource = vc3levels.ToList();
                     startLevelBox.ItemsSource = vc3levels.ToList();
                     break;
 
                 case "VC2":
+                    reInitvc2();
                     endLevelBox.ItemsSource = vc2levels.ToList();
                     startLevelBox.ItemsSource = vc2levels.ToList();
                     break;
                 case "VC12":
+                    reInitvc12();
                     endLevelBox.ItemsSource = vc12levels.ToList();
                     startLevelBox.ItemsSource = vc12levels.ToList();
                     break;

@@ -1,14 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NetworkNode.SDHFrame
 {
-    /// <summary>
-    /// Levels of Virtual Container
-    /// </summary>
-    public enum VirtualContainerLevel { VC12, VC21, VC32, VC4, UNDEF }
-
     public class Frame : IFrame
     {
         public Header Msoh { get; set; }
@@ -32,6 +26,8 @@ namespace NetworkNode.SDHFrame
                     Content.Add(null);
                 }
             }
+            this.Msoh = new Header();
+            this.Rsoh = new Header();
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="Frame"/> class. STM-1
@@ -40,10 +36,13 @@ namespace NetworkNode.SDHFrame
         public Frame()
         {
             Content = new List<IContent>();
+            this.Level = StmLevel.STM1;
             for (int i = 0; i < 63; i++)
             {
                 Content.Add(null);
             }
+            this.Msoh = new Header();
+            this.Rsoh = new Header();
         }
         /// <summary>
         /// Converts the STM level.
@@ -77,7 +76,6 @@ namespace NetworkNode.SDHFrame
         /// <returns></returns>
         public IContent GetVirtualContainer(VirtualContainerLevel level, int number)
         {
-
             IContent returnContent = this.Content[GetContainerIndex(level, number)];
             return returnContent;
         }
@@ -90,16 +88,16 @@ namespace NetworkNode.SDHFrame
         /// <param name="number">The number.</param>
         /// <param name="content">The content. Virtual Container</param>
         /// <returns>True - success, False - fail</returns>
-        public bool SetVirtualContainer(VirtualContainerLevel VCLevel, int number, IContent content)
+        public bool SetVirtualContainer(VirtualContainerLevel level, int number, IContent content)
         {
             if (VirtualContainer.isVirtualContainer(content))
             {
                 VirtualContainer contentVC = (VirtualContainer)content;
-                if (VCLevel == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(VCLevel))
+                if (level == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level))
                 {
-                    if (TestContainerSpace(VCLevel, number))
+                    if (TestContainerSpace(level, number)) //Test if i can put in this location
                     {
-                        this.Content[GetContainerIndex(VCLevel, number)] = content;
+                        this.Content[GetContainerIndex(level, number)] = content;
                         return true;
                     }
                 }
@@ -175,13 +173,10 @@ namespace NetworkNode.SDHFrame
                     }
                     else returnVal = false;
                     break;
-
                 case VirtualContainerLevel.VC21:
                     parentPostion = index / 7;
-
                     if (CheckContainerUp(VirtualContainerLevel.VC32, parentPostion))
                     {
-
                         if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC21)
                             returnVal = false;
                         else returnVal = true;
@@ -199,7 +194,6 @@ namespace NetworkNode.SDHFrame
                     else returnVal = false;
                     break;
                 case VirtualContainerLevel.VC4:
-
                     if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC4)
                         returnVal = false;
                     else returnVal = true;
@@ -229,14 +223,12 @@ namespace NetworkNode.SDHFrame
                         returnVal = false;
                     else returnVal = true;
                     break;
-
                 case VirtualContainerLevel.VC21:
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
                     {
                         if (CheckContainerDown(VirtualContainerLevel.VC12, i))
                         {
-
                             if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC21)
                                 returnVal = false;
                             else returnVal = true;
@@ -248,15 +240,12 @@ namespace NetworkNode.SDHFrame
                         }
                     }
                     break;
-
                 case VirtualContainerLevel.VC32:
                     childPosition = index * 7;
                     for (int i = childPosition; i < childPosition + 7; i++)
                     {
-
                         if (CheckContainerDown(VirtualContainerLevel.VC21, i))
                         {
-
                             if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC32)
                                 returnVal = false;
                             else returnVal = true;
@@ -272,7 +261,6 @@ namespace NetworkNode.SDHFrame
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
                     {
-
                         if (CheckContainerDown(VirtualContainerLevel.VC32, i))
                         {
                             if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC4)
@@ -317,7 +305,6 @@ namespace NetworkNode.SDHFrame
                     }
                     break;
 
-
                 case VirtualContainerLevel.VC21:
                     for (int i = 0; i < Content.Count; i += 3)
                     {
@@ -328,7 +315,6 @@ namespace NetworkNode.SDHFrame
                         counter++;
                     }
                     break;
-
 
                 case VirtualContainerLevel.VC32:
                     for (int i = 0; i < Content.Count; i += 21)
@@ -356,7 +342,7 @@ namespace NetworkNode.SDHFrame
         }
 
         /// <summary>
-
+        /// Calculates the free space in <see cref="Frame"/>
         /// </summary>
         /// <returns></returns>
         private int CalculateFreeSpace()
@@ -376,11 +362,9 @@ namespace NetworkNode.SDHFrame
                         case VirtualContainerLevel.VC12:
                             VC12Count++;
                             break;
-
                         case VirtualContainerLevel.VC21:
                             VC2Count++;
                             break;
-
                         case VirtualContainerLevel.VC32:
                             VC3Count++;
                             break;
@@ -390,7 +374,6 @@ namespace NetworkNode.SDHFrame
                     }
                 }
             }
-
             int freeSpace = 63 * this.ConvertSTMLevel(this.Level);
             freeSpace = freeSpace - (VC12Count + VC2Count * 3 + VC3Count * 21 + VC4Count * 63);
             return freeSpace;
@@ -400,46 +383,48 @@ namespace NetworkNode.SDHFrame
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-
         public static int ContainerSpaceConverter(VirtualContainerLevel value)
         {
             switch (value)
             {
-
-                case VirtualContainerLevel.VC4:
+                case VirtualContainerLevel.VC12:
                     return 1;
-
-
-                case VirtualContainerLevel.VC32:
-                    return 3;
-
-
                 case VirtualContainerLevel.VC21:
+                    return 3;
+                case VirtualContainerLevel.VC32:
                     return 21;
-
+                case VirtualContainerLevel.VC4:
+                    return 63;
                 default:
                     return 63;
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public string ToString()
         {
-            StringBuilder builder = new StringBuilder();
+            string returnString = string.Empty;
+            returnString += this.Level.ToString() + "|";
+            if (this.Msoh != null)
+                returnString += "MSOH|";
+            else returnString += "null|";
+            if (this.Rsoh != null)
+                returnString += "RSOH";
+            else returnString += "null";
             foreach (IContent item in this.Content)
             {
                 if (item != null && VirtualContainer.isVirtualContainer(item))
                 {
-                    VirtualContainer vc = (VirtualContainer) item;
-                    int localDenom = Content.Count / ContainerSpaceConverter(vc.Level);
-                    builder.Append("|");
-                    builder.Append(vc.Level.ToString());
-                    builder.Append(" [");
-                    builder.Append(Content.IndexOf(item) / localDenom);
-                    builder.Append("] ");
+                    returnString += "|" + ((VirtualContainer)item).Level.ToString();
                 }
             }
-            builder.Append("|");
-            return builder.ToString();
+            returnString += "|";
+            return returnString;
         }
     }
 }

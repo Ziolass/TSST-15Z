@@ -1,4 +1,4 @@
-﻿using NetworkNode.SDHFrame;
+using NetworkNode.SDHFrame;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,26 +11,30 @@ namespace NetworkNode.TTF
 {
     class MultiplexSectionTermination : SectionTerminator
     {
-        public void evaluateHeader(IFrame sdhFrame)
+        public bool evaluateHeader(IFrame sdhFrame)
         {
-            if (sdhFrame.Msoh !=null && sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(sdhFrame, 8))
-            {
-            }
-            else { }
+            Frame tempFrame = (Frame)sdhFrame;
+            tempFrame.Msoh = null;
+            if (sdhFrame.Msoh != null && (sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(((VirtualContainer)sdhFrame).Content, 21)))
+                return true;
+            else return false;
         }
 
         /// <summary>
         /// Generates the MSOH header.
         /// </summary>
         /// <param name="sdhFrame">The SDH frame.</param>
-        public void generateHeader(ref IFrame sdhFrame)
+        public void generateHeader(IFrame sdhFrame)
         {
-            if (sdhFrame.Msoh == null)
+            Frame tempFrame = (Frame)sdhFrame;
+            if (sdhFrame.Msoh != null)
             {
-                return;
+                sdhFrame.Msoh.Checksum = BinaryInterleavedParity.generateBIP(((Frame)sdhFrame).Content, 21);
             }
-            SDHFrame.Frame tempFrame = (SDHFrame.Frame)sdhFrame;          
-            ((SDHFrame.Frame)sdhFrame).Msoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
+            else
+            {
+                sdhFrame.Msoh = new Header(BinaryInterleavedParity.generateBIP(((Frame)sdhFrame).Content, 21), null, null);
+            }
         }
     }
 }

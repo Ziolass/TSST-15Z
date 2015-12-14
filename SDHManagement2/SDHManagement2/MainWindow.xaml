@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:SDHManagement2"
         
         mc:Ignorable="d"
-        Title="Management" Height="700" Width="700" WindowStartupLocation="CenterScreen" Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}">
-    <Grid Background="White">
+        Title="Management" Height="700" Width="700" WindowStartupLocation="CenterScreen" Background="#FF746868">
+    <Grid Background="#FF746868">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -26,14 +26,14 @@
                 <Label x:Name="label2" Content="To be implemented" Canvas.Left="132" Canvas.Top="60" FontSize="48"/>
             </Canvas>
         </Border>
-        <ListBox x:Name="console" HorizontalAlignment="Left" Height="153" Margin="10,284,0,0" VerticalAlignment="Top" Width="672" FontSize="18.667" BorderThickness="5"/>
+        <ListBox x:Name="console" HorizontalAlignment="Left" Height="153" Margin="10,284,0,0" VerticalAlignment="Top" Width="672" FontSize="18.667" BorderThickness="5" Background="#FFB4A7A7"/>
         <Label x:Name="label1" Content="Konsola" HorizontalAlignment="Left" Margin="270,228,0,0" VerticalAlignment="Top" Height="51" Width="132" FontSize="29.333"/>
-        <Canvas HorizontalAlignment="Left" Height="144" Margin="10,510,0,0" VerticalAlignment="Top" Width="672" Background="#FFF4F4F5">
-            <ComboBox x:Name="nodeBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="114" Height="38" Canvas.Left="193" Canvas.Top="84" SelectionChanged="nodeBox_SelectionChanged"/>
-            <ComboBox x:Name="actionBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="185" Height="38" Canvas.Left="364" Canvas.Top="84" SelectionChanged="actionBox_SelectionChanged"/>
-            <Label x:Name="label" Content="Nazwa" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Canvas.Left="218" Canvas.Top="56"/>
-            <Label x:Name="label_Copy" Content="Akcja" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Width="59" Height="33" Canvas.Left="426" Canvas.Top="56"/>
-            <Button x:Name="button" Content="Ok" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Height="37" Click="button_Click" FontSize="18.667" Canvas.Left="576" Canvas.Top="85"/>
+        <Canvas HorizontalAlignment="Left" Height="144" Margin="10,510,0,0" VerticalAlignment="Top" Width="672" Background="#FFB4A7A7">
+            <ComboBox x:Name="nodeBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="114" Height="38" Canvas.Left="173" Canvas.Top="84" SelectionChanged="nodeBox_SelectionChanged"/>
+            <ComboBox x:Name="actionBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="223" Height="38" Canvas.Left="326" Canvas.Top="84" SelectionChanged="actionBox_SelectionChanged"/>
+            <Label x:Name="label" Content="Nazwa" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Canvas.Left="197" Canvas.Top="56"/>
+            <Label x:Name="label_Copy" Content="Akcja" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Width="59" Height="33" Canvas.Left="408" Canvas.Top="56"/>
+            <Button x:Name="button" Content="OK" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Height="37" Click="button_Click" FontSize="18.667" Canvas.Left="575" Canvas.Top="85"/>
             <Button x:Name="button1" Content="Inicjalizacja" HorizontalAlignment="Left" VerticalAlignment="Top" Width="134" Height="25" Click="button1_Click" Canvas.Left="23" Canvas.Top="16"/>
             <Button x:Name="button2" Content="Odśwież" HorizontalAlignment="Left" VerticalAlignment="Top" Width="142" Height="25" Click="button2_Click" Canvas.Left="184" Canvas.Top="16"/>
             <Button x:Name="addNewButton" Content="Dodaj nowe połączenie" HorizontalAlignment="Left" VerticalAlignment="Top" Width="142" Height="25" Click="addNewButton_Click" Canvas.Left="350" Canvas.Top="16"/>
