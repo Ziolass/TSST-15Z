@@ -19,7 +19,7 @@ namespace Client
     public partial class SDHClient : Form
     {
        
-        private string nazwa = "";
+        public string nazwa = "";
         public Adaptation adapt;
         private int last_length = 0,last_listview_count=0;
         LinkCollection lc;
@@ -160,6 +160,7 @@ namespace Client
         public int level_from;
       public   int level_to;
      public    VirtualContainerLevel level;
+        
         public ConnInfo() { }
         public ConnInfo(int in_,int out_,int from, int to, VirtualContainerLevel level)
         {
@@ -172,24 +173,33 @@ namespace Client
     }
     public class Adaptation
     {
+        public string client_name;
         string to_decode = "";
         public List<string> log;
         public List<ListViewItem> ports;
         public List<ConnInfo> connections;
-        LinkCollection links;
-        
+       public  LinkCollection links;
+        ClientManagementCenter cmc;
+        ClientManagementPort mp;
+        BackgroundWorker bw;
         public Adaptation(LinkCollection lc,string client_no)
         {
+            
+            client_name = client_no;
             log = new List<string>();
             ports = new List<ListViewItem>();
             connections = new List<ConnInfo>();
             links = lc;
-            links.management_in.TurnOn();
-            links.management_in.HandleIncomingData += Management_in_HandleIncomingData;//////////////////////////////////////
-
+            //links.management_in.TurnOn();
+            //links.management_in.HandleIncomingData += Management_in_HandleIncomingData;//////////////////////////////////////
+            mp = new ClientManagementPort(links.management_in.InputPort);
+            cmc = new ClientManagementCenter(mp, this);
+            bw = new BackgroundWorker();
+            bw.DoWork += Bw_DoWork;
+            bw.RunWorkerAsync();
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            if(client_no == "Klient1")Test( "resource - location |3021#3020#0#1#VC2");
+            if (client_no == "Klient1")Test( "resource - location |3021#3020#0#1#VC2");
             if(client_no == "Klient2") Test("resource - location |3020#3021#1#0#VC2"); //10  
             //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -210,6 +220,12 @@ namespace Client
 
 
         }
+
+        private void Bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            mp.StartListening(cmc);
+        }
+
         private void Test(string str)
         {
             
@@ -248,9 +264,9 @@ namespace Client
         }
         private void Management_in_HandleIncomingData(object sender, EventArgs args)
         {
-            //resource-location|{port_we}#{port_wy}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-            //                12      2e  3     3e  4        4e 5
-            bool ok = false;
+            //resource-location|{port_we}#{port_wy}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{}
+            //                1          2         3            4            5               6           
+           /* bool ok = false;
             Input i = (Input)sender;
             string str = "";
             byte[] data = i.GetDataFromBuffer();
@@ -264,11 +280,24 @@ namespace Client
                 to_send.Remove(to_send.Length - 1, 1);
                 to_send += '|';
                 foreach (KeyValuePair<int,Output> kv in links.output_ports) { to_send +=kv.Value.Port; to_send += "#"; }
+                List<byte> b = new List<byte>();
+                foreach(char c in to_send)                b.Add((byte)c);
+                Thread.Sleep(100);
+                links.management_out.sendData(b.ToArray<byte>());
+            }
+            else if (str.Contains("identify|"))
+            {
+                List<byte> b = new List<byte>();
+                foreach (char c in ("client|"+client_name)) b.Add((byte)c);
+                Thread.Sleep(100);
+                links.management_out.sendData(b.ToArray<byte>());
+
             }
             else
             {
                 try
                 {
+                    string str = "";
                     int index1 = str.IndexOf('|');
                     int index2 = str.IndexOf('#', index1);
                     int index3 = str.IndexOf('#', index2 + 1);
@@ -282,7 +311,7 @@ namespace Client
                     int from = Int32.Parse(str.Substring(index3 + 1, index4 - (index3 + 1)));
                     int to = Int32.Parse(str.Substring(index4 + 1, index5 - (index4 + 1)));
                     VirtualContainerLevel vc = VirtualContainerLevel.VC12; ;
-                    string level = str.Substring(index5 + 1, str.Length - (index5 + 1));
+                    string level = str.Substring(index5 + 1, index6 - (index5 + 1));
                     switch (level)
                     {
                         case "VC12": vc = VirtualContainerLevel.VC12; break;
@@ -291,6 +320,7 @@ namespace Client
                         case "VC4": vc = VirtualContainerLevel.VC4; break;
 
                     }
+                    string level2 = str.Substring(index6 + 1, str.Length - (index6 + 1));
 
                     connections.Add(new ConnInfo(port_in, port_out, from, to, vc));
                    // Console.WriteLine("Klient: przyjęto port_in{0}, port_out{1}, poziom_z{2},poziom_do{3},kontener{4} ", port_in, port_out, from, to, level);
@@ -312,6 +342,7 @@ namespace Client
                     links.management_out.sendData(b.ToArray<byte>());
                 }
             }
+            */
         }
         
 
