@@ -63,7 +63,7 @@ namespace SDHManagement2.AdditionalWindows
             }
 
             string selected = connectionsWithSharp[connectionsBox.SelectedIndex];
-            sockethandler.sendCommand(nodename, "shutdown-interface|" + selected,true);
+            sockethandler.sendCommand(nodename, "close-connection|" + selected,true);
             this.Close();
 
         }

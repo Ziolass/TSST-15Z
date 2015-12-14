@@ -24,13 +24,13 @@ namespace SDHManagement2.AdditionalWindows
         private string[] connections;
         private string[] inports;
         private string[] outports;
-        private string[] conteners = { "VC4", "VC3", "VC2", "VC12" };
+        private string[] conteners = { "VC4", "VC32", "VC21", "VC12" };
         private string[] modules = { "STM1", "STM4", "STM16", "STM64", "STM256" };
         private int[] modulesInt = { 1, 4, 16, 64, 256 };
 
-        private int[] vc3levels = { 0, 1, 2 };
+        private int[] vc32levels = { 0, 1, 2 };
         private int[] vc4levels = { 0 };
-        private int[] vc2levels;
+        private int[] vc21levels;
         private int[] vc12levels;
 
         public ResourceRelocationWindow(SocketHandler handler_, string name,string port_response)
@@ -98,16 +98,16 @@ namespace SDHManagement2.AdditionalWindows
         }
         private void initArrays()
         {
-            vc12levels = new int[21];
-            vc2levels = new int[63];
+            vc12levels = new int[63];
+            vc21levels = new int [21];
 
             for (int i = 0; i < vc12levels.Length; i++)
             {
                 vc12levels[i] = i;
             }
-            for (int j = 0; j < vc2levels.Length; j++)
+            for (int j = 0; j < vc21levels.Length; j++)
             {
-                vc2levels[j] = j;
+                vc21levels[j] = j;
             }
         }
         private void reInitvc12()
@@ -115,7 +115,7 @@ namespace SDHManagement2.AdditionalWindows
 
             int SMIdentifier = modulesInt[ModuleComboBox.SelectedIndex];
 
-            vc12levels = new int[21 * SMIdentifier];
+            vc12levels = new int[63 * SMIdentifier];
 
             for (int i = 0; i < vc12levels.Length; i++)
             {
@@ -123,25 +123,25 @@ namespace SDHManagement2.AdditionalWindows
             }
 
         }
-        private void reInitvc2()
+        private void reInitvc21()
         {
             int SMIdentifier = modulesInt[ModuleComboBox.SelectedIndex];
-            vc2levels = new int[63 * SMIdentifier];
+            vc21levels = new int[21 * SMIdentifier];
 
-            for (int j = 0; j < vc2levels.Length; j++)
+            for (int j = 0; j < vc21levels.Length; j++)
             {
-                vc2levels[j] = j;
+                vc21levels[j] = j;
             }
         }
-        private void reInitvc3()
+        private void reInitvc32()
         {
             int SMIdentifier = modulesInt[ModuleComboBox.SelectedIndex];
-            vc3levels = new int[3 * SMIdentifier];
+            vc32levels = new int[3 * SMIdentifier];
 
 
-            for (int j = 0; j < vc3levels.Length; j++)
+            for (int j = 0; j < vc32levels.Length; j++)
             {
-                vc3levels[j] = j;
+                vc32levels[j] = j;
             }
         }
         private void reInitvc4()
@@ -166,16 +166,16 @@ namespace SDHManagement2.AdditionalWindows
                     endLevelBox.ItemsSource = vc4levels.ToList();
                     startLevelBox.ItemsSource = vc4levels.ToList();
                     break;
-                case "VC3":
-                    reInitvc3();
-                    endLevelBox.ItemsSource = vc3levels.ToList();
-                    startLevelBox.ItemsSource = vc3levels.ToList();
+                case "VC31":
+                    reInitvc32();
+                    endLevelBox.ItemsSource = vc32levels.ToList();
+                    startLevelBox.ItemsSource = vc32levels.ToList();
                     break;
 
-                case "VC2":
-                    reInitvc2();
-                    endLevelBox.ItemsSource = vc2levels.ToList();
-                    startLevelBox.ItemsSource = vc2levels.ToList();
+                case "VC21":
+                    reInitvc21();
+                    endLevelBox.ItemsSource = vc21levels.ToList();
+                    startLevelBox.ItemsSource = vc21levels.ToList();
                     break;
                 case "VC12":
                     reInitvc12();

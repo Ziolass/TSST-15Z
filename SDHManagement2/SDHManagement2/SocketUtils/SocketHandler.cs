@@ -221,10 +221,7 @@ namespace SDHManagement2.SocketUtils
                     {
                         mainWindow.appendConsole(response, name, command);
                     }
-                   // if (response.IndexOf("<EOF>") > -1)
-                    //{
-                    //    break;
-                    //}
+                  
                 }
 
                 
@@ -254,7 +251,7 @@ namespace SDHManagement2.SocketUtils
                 case "disable-node":
                     return sendCommand(node, command+"|",true);
 
-                case "shutdown-interface":
+                case "close-connection":
                     string connresponse = sendCommand(node, "get-connection-list|",false);
 
                     DropConnectionWindow dropWindow = new DropConnectionWindow(this,connresponse,node,mainWindow);
