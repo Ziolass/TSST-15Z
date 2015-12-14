@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +23,15 @@ namespace NetworkNode.SDHFrame
             this.Checksum = checksum;
             this.EOW = eow;
             this.DCC = dcc;
+            this.Type = ContentType.HEADER;
+        }
+        /// <summary>
+        /// Initializes a new empty instance of the <see cref="Header"/> class.
+        /// </summary>
+        public Header()
+        {
+            this.Checksum = null;
+            this.EOW = null;
             this.Type = ContentType.HEADER;
         }
         /// <summary>

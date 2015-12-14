@@ -26,6 +26,8 @@ namespace NetworkNode.SDHFrame
                     Content.Add(null);
                 }
             }
+            this.Msoh = new Header();
+            this.Rsoh = new Header();
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="Frame"/> class. STM-1
@@ -34,10 +36,13 @@ namespace NetworkNode.SDHFrame
         public Frame()
         {
             Content = new List<IContent>();
+            this.Level = StmLevel.STM1;
             for (int i = 0; i < 63; i++)
             {
                 Content.Add(null);
             }
+            this.Msoh = new Header();
+            this.Rsoh = new Header();
         }
         /// <summary>
         /// Converts the STM level.
