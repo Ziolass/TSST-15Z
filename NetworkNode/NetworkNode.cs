@@ -47,5 +47,14 @@ namespace NetworkNode
         {
             return true;
         }
+
+        public void AddRsohContent(string rsoh)
+        {
+
+        }
+        public void AddMsohContent(string msoh)
+        {
+
+        }
     }
 }

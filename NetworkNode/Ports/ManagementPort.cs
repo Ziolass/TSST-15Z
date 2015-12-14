@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TsstSdh.SocketUtils;
 
@@ -14,11 +15,13 @@ namespace NetworkNode.Ports
         private LocalSocektBuilder builder;
         private Socket menagementPort;
         private ManagementCenter center;
+        private Thread managementThread;
 
         public ManagementPort(int port)
         {
             builder = LocalSocektBuilder.Instance;
             menagementPort = builder.getTcpSocket(port);
+            managementThread = new Thread(new ThreadStart(startAction));
         }
 
         public void SetManagementCenter(ManagementCenter center)
@@ -27,6 +30,12 @@ namespace NetworkNode.Ports
         }
 
         public void StartListening()
+        {
+            managementThread.Start();
+
+        }
+
+        private void startAction()
         {
             byte[] bytes = new Byte[100000];
 
