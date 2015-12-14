@@ -1,4 +1,4 @@
-﻿namespace NetworkNode.SDHFrame
+namespace NetworkNode.SDHFrame
 {
     /// <summary>
     /// Container is the like data in SDH Frame
@@ -28,6 +28,10 @@
             if (content != null && content.Type == ContentType.CONTAINER)
                 return true;
             else return false;
+        }
+        public string ToString()
+        {
+            return this.Content;
         }
     }
 }

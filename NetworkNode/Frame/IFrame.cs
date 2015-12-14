@@ -9,7 +9,7 @@ namespace NetworkNode.SDHFrame
 
     public enum StmLevel { STM1, STM4, STM16, STM64, STM256, UNDEF }
     public enum VirtualContainerLevel { VC12, VC21, VC32, VC4, UNDEF }
-    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER }
+    public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER, POH }
 
     public class VirtualContainerLevelExt 
     {

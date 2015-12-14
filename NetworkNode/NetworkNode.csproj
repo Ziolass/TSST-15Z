@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Frame\FrameImp\Frame.cs" />
     <Compile Include="Frame\FrameImp\Header.cs" />
+    <Compile Include="Frame\FrameImp\POH.cs" />
     <Compile Include="NetworkNodeSetupProcess.cs" />
     <Compile Include="ElementConfigurator.cs" />
     <Compile Include="HPC\HigherOrderPathConnection.cs" />

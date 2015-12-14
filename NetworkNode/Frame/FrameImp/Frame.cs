@@ -421,6 +421,7 @@ namespace NetworkNode.SDHFrame
                 if (item != null && VirtualContainer.isVirtualContainer(item))
                 {
                     returnString += "|" + ((VirtualContainer)item).Level.ToString();
+                    returnString += "+POH";
                 }
             }
             returnString += "|";

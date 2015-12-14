@@ -1,9 +1,42 @@
 {
-    "Msoh": { "Checksum": "test", "DCC": "test", "EOW": "test2", "Type": 3 },
-    "Rsoh": { "Checksum": "test", "DCC": "test", "EOW": "test2", "Type": 3 },
+    "Msoh": { "Checksum": null, "DCC": null, "EOW": null, "Type": 3 },
+    "Rsoh": { "Checksum": null, "DCC": null, "EOW": null, "Type": 3 },
     "Level": 0,
     "Content": [
-        { "Type": 0, "Level": 2, "Pointer": null, "POH": null, "Content": null },
+        {
+            "Type": 0,
+            "Level": 1,
+            "Pointer": "",
+            "POH": {
+                "Type": 4,
+                "SignalLabel": 6
+            },
+            "Content": { "Type": 2, "Content": "test" }
+        },
+        null,
+        null,
+        {
+            "Type": 0,
+            "Level": 1,
+            "Pointer": "",
+            "POH": {
+                "Type": 4,
+                "SignalLabel": 6
+            },
+            "Content": { "Type": 2, "Content": "test" }
+        },
+        null,
+        null,
+        {
+            "Type": 0,
+            "Level": 1,
+            "Pointer": "",
+            "POH": {
+                "Type": 4,
+                "SignalLabel": 6
+            },
+            "Content": { "Type": 2, "Content": "test" }
+        },
         null,
         null,
         null,
@@ -28,12 +61,6 @@
         null,
         null,
         null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        { "Type": 0, "Level": 1, "Pointer": null, "POH": null, "Content": null },
         null,
         null,
         null,

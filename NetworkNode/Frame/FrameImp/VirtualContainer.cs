@@ -1,4 +1,10 @@
-﻿namespace NetworkNode.SDHFrame
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NetworkNode.SDHFrame
 {
     /// <summary>
     /// THis class represent Virtual Container (VC) of SDH frame
@@ -8,7 +14,7 @@
         public ContentType Type { get; private set; }
         public VirtualContainerLevel Level { get; private set; }
         public string Pointer { get; set; }
-        public string POH { get; set; }
+        public POH POH { get; set; }
         public Container Content { get; set; }
 
         /// <summary>
@@ -19,6 +25,8 @@
         {
             this.Level = level;
             this.Type = ContentType.VICONTAINER;
+            this.POH = new POH();
+            this.Pointer = string.Empty;
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="VirtualContainer"/> class.
@@ -30,6 +38,8 @@
             this.Level = level;
             this.Type = ContentType.VICONTAINER;
             this.Content = content;
+            this.POH = new POH();
+            this.Pointer = string.Empty;
         }
         /// <summary>
         /// Determines whether the specified content is virtual container.
@@ -41,6 +51,16 @@
             if (content != null && content.Type == ContentType.VICONTAINER)
                 return true;
             else return false;
+        }
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString()
+        {
+            return this.Level.ToString() + " POH: " + this.POH.ToString() + " Cont: " + this.Content.ToString();
         }
     }
 }
