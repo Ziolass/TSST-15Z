@@ -227,127 +227,7 @@ namespace Client
         {
             mp.StartListening(cmc);
         }
-/*
-        private void Test(string str)
-        {
-            
-            
-            bool ok = false;
-            int index1 = str.IndexOf('|');
-            int index2 = str.IndexOf('#', index1);
-            int index3 = str.IndexOf('#', index2 + 1);
-            int index4 = str.IndexOf('#', index3 + 1);
-            int index5 = str.IndexOf('#', index4 + 1);
-            int index6 = str.IndexOf('#', index5 + 1);
-            int index7 = str.IndexOf('#', index6 + 1);
-            if (index1 != -1 && index2 != -1  && index3 != -1  && index4 != -1 &&  index5 != -1 && index6 != -1)ok = true;
-            try
-            {
-                int port_in = Int32.Parse(str.Substring(index1 + 1, index2 - (index1 + 1)));
-                int port_out = Int32.Parse(str.Substring(index2 + 1, index3 - (index2 + 1)));
-                int from = Int32.Parse(str.Substring(index3 + 1, index4 - (index3 + 1)));
-                int to = Int32.Parse(str.Substring(index4 + 1, index5 - (index4 + 1)));
-                VirtualContainerLevel vc = VirtualContainerLevel.VC12; ;
-                string level = str.Substring(index5 + 1, str.Length - (index5 + 1));
-                switch (level)
-                {
-                    case "VC12": vc = VirtualContainerLevel.VC12; break;
-                    case "VC32": vc = VirtualContainerLevel.VC32; break;
-                    case "VC4": vc = VirtualContainerLevel.VC4; break;
-
-                }
-
-                connections.Add(new ConnInfo(port_in, port_out, from, to, vc));
-            }
-            catch (Exception) { ok = false; }
-
-
-
-        }*/
-        private void Management_in_HandleIncomingData(object sender, EventArgs args)
-        {
-            //resource-location|{port_we}#{port_wy}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{}
-            //                1          2         3            4            5               6           
-           /* bool ok = false;
-            Input i = (Input)sender;
-            string str = "";
-            byte[] data = i.GetDataFromBuffer();
-            foreach (byte b in data) str += (char)b;
-
-
-            if (str.Contains("get") && str.Contains("ports")){
-                Console.WriteLine("Klient: management żąda: get ports");
-                string to_send = "";
-                foreach(Input ii in links.input_ports) { to_send += ii.InputPort; to_send += "#"; }
-                to_send.Remove(to_send.Length - 1, 1);
-                to_send += '|';
-                foreach (KeyValuePair<int,Output> kv in links.output_ports) { to_send +=kv.Value.Port; to_send += "#"; }
-                List<byte> b = new List<byte>();
-                foreach(char c in to_send)                b.Add((byte)c);
-                Thread.Sleep(100);
-                links.management_out.sendData(b.ToArray<byte>());
-            }
-            else if (str.Contains("identify|"))
-            {
-                List<byte> b = new List<byte>();
-                foreach (char c in ("client|"+client_name)) b.Add((byte)c);
-                Thread.Sleep(100);
-                links.management_out.sendData(b.ToArray<byte>());
-
-            }
-            else
-            {
-                try
-                {
-                    string str = "";
-                    int index1 = str.IndexOf('|');
-                    int index2 = str.IndexOf('#', index1);
-                    int index3 = str.IndexOf('#', index2 + 1);
-                    int index4 = str.IndexOf('#', index3 + 1);
-                    int index5 = str.IndexOf('#', index4 + 1);
-                    int index6 = str.IndexOf('#', index5 + 1);
-                    if (index1 != -1 && index2 != -1 && index3 != -1 && index4 != -1 && index5 != -1 && index6 != -1) ok = true;
-
-                    int port_in = Int32.Parse(str.Substring(index1 + 1, index2 - (index1 + 1)));
-                    int port_out = Int32.Parse(str.Substring(index2 + 1, index3 - (index2 + 1)));
-                    int from = Int32.Parse(str.Substring(index3 + 1, index4 - (index3 + 1)));
-                    int to = Int32.Parse(str.Substring(index4 + 1, index5 - (index4 + 1)));
-                    VirtualContainerLevel vc = VirtualContainerLevel.VC12; ;
-                    string level = str.Substring(index5 + 1, index6 - (index5 + 1));
-                    switch (level)
-                    {
-                        case "VC12": vc = VirtualContainerLevel.VC12; break;
-                        case "VC32": vc = VirtualContainerLevel.VC32; break;
-                        case "VC21": vc = VirtualContainerLevel.VC21; break;
-                        case "VC4": vc = VirtualContainerLevel.VC4; break;
-
-                    }
-                    string level2 = str.Substring(index6 + 1, str.Length - (index6 + 1));
-
-                    connections.Add(new ConnInfo(port_in, port_out, from, to, vc));
-                   // Console.WriteLine("Klient: przyjęto port_in{0}, port_out{1}, poziom_z{2},poziom_do{3},kontener{4} ", port_in, port_out, from, to, level);
-                }
-                catch (Exception) { ok = false; }
-
-                if (ok)
-                {
-                    string ok_ = "OK";
-                    List<byte> b = new List<byte>();
-                    foreach (char c in ok_) b.Add((byte)c);
-                    links.management_out.sendData(b.ToArray<byte>());
-                }
-                else
-                {
-                    string notok_ = "ERROR";
-                    List<byte> b = new List<byte>();
-                    foreach (char c in notok_) b.Add((byte)c);
-                    links.management_out.sendData(b.ToArray<byte>());
-                }
-            }
-            */
-        }
         
-
         private string pass = "";
         private void Input_HandleIncomingData(object sender, EventArgs args)
         {
@@ -379,7 +259,7 @@ namespace Client
 
                         str += "]}";
                         
-                        log.Add("Odebrano od: " + i.InputPort + ":  " + unpack(str,info.level,(byte)info.level_from));
+                        log.Add("Odebrano od: " + i.InputPort + " na poziomie "+ info.level_from +":" + unpack(str,info.level,(byte)info.level_from));
                         Console.WriteLine("Odebrano od: " + i.InputPort + ":  " + unpack(str, info.level, (byte)info.level_from));
                         str = "";
                         break;
@@ -408,45 +288,45 @@ namespace Client
             return data;
 
         }
-        public List<Frame> pack(string raw_data, VirtualContainerLevel level, byte number) {
+        public List<Frame> pack(string raw_data, VirtualContainerLevel level,StmLevel stm, byte number) {
             List<Frame> frames = new List<Frame>();
             int size = 0;
             number = (byte)Math.Abs(number); // nie moze byc ujemne
-            if (level == VirtualContainerLevel.VC12 && number > 62) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V12");
-            if (level == VirtualContainerLevel.VC21 && number > 21) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V2");
-            if (level == VirtualContainerLevel.VC32 && number > 2) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V3");
-            if (level == VirtualContainerLevel.VC4 && number > 1) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V4");
+           // if (level == VirtualContainerLevel.VC12 && number > 62) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V12");
+            //if (level == VirtualContainerLevel.VC21 && number > 21) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V2");
+            //if (level == VirtualContainerLevel.VC32 && number > 2) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V3");
+           // if (level == VirtualContainerLevel.VC4 && number > 1) throw new IndexOutOfRangeException("Przekroczono zakres poziomu kontenera V4");
 
-          /*  ContainerLevel cl = new ContainerLevel();
             if (level == VirtualContainerLevel.VC12) {
-                cl = ContainerLevel.TUG12; size = 28;
+                size = 28;
             }
-            if (level == VirtualContainerLevel.VC2) {
-                cl = ContainerLevel.TUG2; size = 11*9 ;
+            if (level == VirtualContainerLevel.VC21) {
+                size = 11*9 ;
             }
-            if (level == VirtualContainerLevel.VC3)
+            if (level == VirtualContainerLevel.VC32)
             {
-                cl = ContainerLevel.TUG3; size = 83*9 ;
+                 size = 83*9 ;
             }
             if (level == VirtualContainerLevel.VC4) {
-                cl = ContainerLevel.AU4; size = 261;
+                 size = 261;
             }
-            */
+            else
+            {
+                size = 28;
+            }
             int index = raw_data.IndexOf('\0');
             if (index == -1) index = raw_data.Length;
             int no_frame = 0;
             int index1 = 0;
-
-            ////////////////////////////////////////////////////
-            size = 261;
-            //////////////////////////////////////////////////////    
-
+            FrameBuilder fbb = new FrameBuilder();
+            frames.Add(new Frame(stm));
+            
 
 
                 for (int a = 0; (a < ( Math.Ceiling((decimal)(index / (decimal)size)))); a++)
                 {
-                FrameBuilder fbb = new FrameBuilder();
-                    frames.Add((Frame)(fbb.BuildEmptyFrame()));
+
+                if (a > 0) frames.Add(new Frame(stm));
                     VirtualContainer newVC = new VirtualContainer(level);
                     if (index1 + size < raw_data.Length)
                     {
@@ -489,7 +369,7 @@ namespace Client
                 data += (char)d;
             }
             List<Frame> frames  = new List<Frame>();
-            try {frames = pack(data, info.level, number);
+            try {frames = pack(data, info.level,info.stmlevel, number);
             }
             catch(IndexOutOfRangeException) { Console.WriteLine("Klient: Error: level o podanym numerze nie jest dostępny w ramce tego typu, zmien w menagerze"); return; }
             current_container++; data = ""; //osiągnięto koniec kontenera
