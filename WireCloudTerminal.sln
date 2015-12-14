@@ -5,7 +5,17 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHManagement2", "SDHManagement2\SDHManagement2\SDHManagement2.csproj", "{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode", "..\..\TSST-15Z-dev\NetworkNode\NetworkNode.csproj", "{F2453730-6933-4343-856C-273A9FA16B6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientsLoader", "ClientsLoader\ClientsLoader.csproj", "{505914EA-6A8A-461E-8FCA-2C33241B3CE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockupClient", "MockupClient\MockupClient.csproj", "{0450AB59-1D7D-4D0A-947E-29903FF02A46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockupServer", "MockupServer\MockupServer.csproj", "{D5E40A56-2C69-4C47-8B23-EF4C9C10994E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHClient", "SDHClient\SDHClient.csproj", "{6A9C4200-BBA3-4FE3-A2F2-10CDC79041E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WireCloudTerminal", "WireCloudTerminal\WireCloudTerminal.csproj", "{BFF94DB1-E883-4B5E-9ACE-75A3973A7322}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode", "NetworkNode\NetworkNode.csproj", "{F2453730-6933-4343-856C-273A9FA16B6E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +27,26 @@ Global
 		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{505914EA-6A8A-461E-8FCA-2C33241B3CE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{505914EA-6A8A-461E-8FCA-2C33241B3CE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{505914EA-6A8A-461E-8FCA-2C33241B3CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{505914EA-6A8A-461E-8FCA-2C33241B3CE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5E40A56-2C69-4C47-8B23-EF4C9C10994E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5E40A56-2C69-4C47-8B23-EF4C9C10994E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5E40A56-2C69-4C47-8B23-EF4C9C10994E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5E40A56-2C69-4C47-8B23-EF4C9C10994E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A9C4200-BBA3-4FE3-A2F2-10CDC79041E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A9C4200-BBA3-4FE3-A2F2-10CDC79041E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A9C4200-BBA3-4FE3-A2F2-10CDC79041E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A9C4200-BBA3-4FE3-A2F2-10CDC79041E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFF94DB1-E883-4B5E-9ACE-75A3973A7322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFF94DB1-E883-4B5E-9ACE-75A3973A7322}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFF94DB1-E883-4B5E-9ACE-75A3973A7322}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFF94DB1-E883-4B5E-9ACE-75A3973A7322}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2453730-6933-4343-856C-273A9FA16B6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2453730-6933-4343-856C-273A9FA16B6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2453730-6933-4343-856C-273A9FA16B6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
