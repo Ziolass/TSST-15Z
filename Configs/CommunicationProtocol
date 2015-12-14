@@ -28,7 +28,7 @@ M->R: disable-node|
 R->M: OK
 
 2. 
-M->R: shutdown-interface|{higher_connection}#{lower_connections}
+M->R: close-connection|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{typ_modulu1} 
 R->M: OK
 	
 3. Dodanie połączenia
