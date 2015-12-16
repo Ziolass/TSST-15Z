@@ -69,8 +69,25 @@ namespace NetworkNode.HPC
         private bool checkForwardingRecord(ForwardingRecord record)
         {
             VirtualContainer vc = new VirtualContainer(record.ContainerLevel);
-            return portsCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc) &&
-                portsCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc);
+            
+            if (portsCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+            {
+                if (portsCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+                {
+                    return true;
+                }
+
+                ((Frame)portsCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
+            } 
+
+            return false;
+        }
+
+        private bool clearCredentials(ForwardingRecord record)
+        {
+            
+            return ((Frame)portsCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn) &
+                ((Frame)portsCredentials[record.OutputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
         }
 
         public List<ForwardingRecord> GetForwardingRecords()
@@ -95,6 +112,11 @@ namespace NetworkNode.HPC
 
         private void commuteFrame(int input, IFrame frame, Dictionary<int, IFrame> outputFrames)
         {
+            if (!forwardingTable.ContainsKey(input))
+            {
+                return;
+            }
+
             List<ForwardingRecord> forwardingRules = forwardingTable[input];
 
             foreach (ForwardingRecord record in forwardingRules)
@@ -114,6 +136,33 @@ namespace NetworkNode.HPC
         private void transportData(Dictionary<int, IFrame> outputFrames)
         {
             ttf.PassDataToInterfaces(outputFrames);
+        }
+
+        internal bool RemoveRecord(ForwardingRecord record)
+        {
+            if(!forwardingTable.ContainsKey(record.InputPort)) 
+            {
+                return false;
+            }
+            List<ForwardingRecord> scope = forwardingTable[record.InputPort];
+            ForwardingRecord toRemove = null;
+            foreach (ForwardingRecord scopeRecord in scope)
+            {
+                if (record.Equals(scopeRecord))
+                {
+                    toRemove = scopeRecord;
+                    break;
+                }
+            }
+            
+            if (toRemove != null)
+            {
+               clearCredentials(toRemove);
+               forwardingTable[record.InputPort].Remove(toRemove);
+               return true;
+            }
+           
+            return false;
         }
     }
 }

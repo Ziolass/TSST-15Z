@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<node type="reg" number="1">
+<node type="reg" number="4">
   
-<port type="input" number="5020"/>
-<port type="input" number="5022"/>
-  
-<port type="output" number="5021"/>
-<port type="output" number="5023"/>
 
-<managment-port  number="6520"/>
+<port type="input" number="5040"/>
+<port type="input" number="5042"/>
+<port type="input" number="5044"/>
+  
+<port type="output" number="5041"/>
+<port type="output" number="5043"/>
+<port type="output" number="5045"/>
+
+<managment-port  number="7004"/>
 </node>

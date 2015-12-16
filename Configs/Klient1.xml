@@ -3,7 +3,7 @@
 <port type="input" number="3001"/>  
 <port type="output" number="3000"/> 
 <name value="Klient1"/>
-<management_port number ="6001"/>
+<management_port number ="9901"/>
 </client>
 
  

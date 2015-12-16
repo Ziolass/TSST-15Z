@@ -21,11 +21,11 @@ namespace NetworkNode.SDHFrame
                     {
                         return VirtualContainerLevel.VC12;
                     }
-                case "VC2":
+                case "VC21":
                     {
                         return VirtualContainerLevel.VC21;
                     }
-                case "VC3":
+                case "VC32":
                     {
                         return VirtualContainerLevel.VC32;
                     }

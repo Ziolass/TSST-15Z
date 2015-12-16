@@ -407,7 +407,7 @@ namespace Client
                         }
 
                         output.Value.sendData(bytes_2.ToArray<byte>());
-                        Thread.Sleep(50); // nie ruszać! bez tego ramki wysyłają się na raz i blokuje się socket
+                        Thread.Sleep(250); // nie ruszać! bez tego ramki wysyłają się na raz i blokuje się socket
                     }
                 }
             }

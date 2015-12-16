@@ -1,0 +1,39 @@
+<<<<<<< HEAD
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NetworkNode.SocketUtils
+{
+    class StateObject
+    {
+        public Socket workSocket = null;
+        public Socket sender = null;
+        public const int BufferSize = 10024;//TODO zmienić buffer na odpowiednio duży
+        public byte[] buffer = new byte[BufferSize];
+        public StringBuilder sb = new StringBuilder();
+    }
+}
+=======
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NetworkNode.SocketUtils
+{
+    class StateObject
+    {
+        public Socket workSocket = null;
+        public Socket sender = null;
+        public const int BufferSize = 4698;//TODO zmienić buffer na odpowiednio duży
+        public byte[] buffer = new byte[BufferSize];
+        public StringBuilder sb = new StringBuilder();
+    }
+}
+>>>>>>> 92266fe8846c35516be6d7a5a1a402926158febf

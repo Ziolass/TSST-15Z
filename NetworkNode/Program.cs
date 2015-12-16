@@ -23,10 +23,10 @@ namespace NetworkNode
 
 
             NetworkNode node = setUpProcess.startNodeProcess();
-            ForwardingRecord record = new ForwardingRecord(4000, 6000, StmLevel.STM1, VirtualContainerLevel.VC32, 0, 1);
+            /*ForwardingRecord record = new ForwardingRecord(4000, 6000, StmLevel.STM1, VirtualContainerLevel.VC32, 0, 1);
             List<ForwardingRecord> records = new List<ForwardingRecord>();
             records.Add(record);
-            node.AddForwardingRecords(records);
+            node.AddForwardingRecords(records);*/
             Console.WriteLine("Start emulation");
             startReadingCommands(node);
             //node.emulateManagement("sub-conection-HPC|1002-2003#|");

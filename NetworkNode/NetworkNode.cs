@@ -12,13 +12,13 @@ namespace NetworkNode
     public class NetworkNode
     {
         private HigherOrderPathConnection hpc;
-        private SynchronousPhysicalInterface spi;
+        private TransportTerminalFunction ttf;
 
         public int Id { get; private set; }
 
-        public NetworkNode(HigherOrderPathConnection hpc, SynchronousPhysicalInterface spi, int id)
+        public NetworkNode(HigherOrderPathConnection hpc, TransportTerminalFunction ttf, int id)
         {
-            this.spi = spi;
+            this.ttf = ttf;
             this.hpc = hpc;
             Id = id;
         }
@@ -30,7 +30,7 @@ namespace NetworkNode
 
         public bool ShudownInterface(int number)
         {
-            return spi.ShudownInterface(number);
+            return ttf.ShudownInterface(number);
         }
 
         public List<ForwardingRecord> GetForwardingRecords()
@@ -40,7 +40,7 @@ namespace NetworkNode
 
         public List<List<int>> GetPorts()
         {
-            return spi.GetPorts();
+            return ttf.GetPorts();
         }
 
         internal bool DisableNode()
@@ -48,13 +48,19 @@ namespace NetworkNode
             return true;
         }
 
-        public void AddRsohContent(string rsoh)
+        public void AddRsohContent(string dccContent)
         {
-
+            ttf.AddRsohContent(dccContent);
         }
-        public void AddMsohContent(string msoh)
-        {
 
+        public void AddMsohContent(string dccContent)
+        {
+            ttf.AddMsohContent(dccContent);
+        }
+
+        public bool RemoveRecord(ForwardingRecord record)
+        {
+            return hpc.RemoveRecord(record);
         }
     }
 }

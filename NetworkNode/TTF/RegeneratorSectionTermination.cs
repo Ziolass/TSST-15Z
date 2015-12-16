@@ -40,11 +40,11 @@ namespace NetworkNode.TTF
 
                 ((Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
             }
-
             else
             {
                 ((Frame)sdhFrame).Rsoh = new Header(BinaryInterleavedParity.generateBIP(tempFrame, 8), null, null);
             }
+            
             if (nextData.Count > 0)
             {
                 ((SDHFrame.Frame)sdhFrame).Rsoh.DCC = nextData[0];
@@ -53,6 +53,7 @@ namespace NetworkNode.TTF
 
             
         }
+
         public void SetNextData(string data)
         {
             nextData.Add(data);

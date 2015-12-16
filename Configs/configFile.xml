@@ -1,0 +1,18 @@
+<links>
+	<basic-network-link src="5001" dst="3001" />
+	<basic-network-link src="3000" dst="5000" />
+	<basic-network-link src="5041" dst="5002" />
+	<basic-network-link src="5003" dst="5040" />
+	<basic-network-link src="5043" dst="3031" />
+	<basic-network-link src="3030" dst="5042" />
+	<basic-network-link src="5045" dst="5012" />
+	<basic-network-link src="5013" dst="5044" />
+	<basic-network-link src="5017" dst="3017" />
+	<basic-network-link src="3010" dst="5016" />
+	<basic-network-link src="5015" dst="5020" />
+	<basic-network-link src="5021" dst="5014" />
+	<basic-network-link src="5023" dst="3021" />
+	<basic-network-link src="3020" dst="5022" />
+	<basic-network-link src="5005" dst="5010" />
+	<basic-network-link src="5011" dst="5004" />
+</links>

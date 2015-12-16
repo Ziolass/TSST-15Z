@@ -1,0 +1,34 @@
+﻿<Window x:Class="SDHManagement2.AdditionalWindows.AddConnectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SDHManagement2.AdditionalWindows"
+        mc:Ignorable="d" Height="350" Width="350" WindowStyle="ToolWindow" BorderThickness="2" Background="#FFB4A7A7" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Button x:Name="button" Content="Dodaj" HorizontalAlignment="Left" Margin="118,262,0,0" VerticalAlignment="Top" Width="104" Click="button_Click" Height="27"/>
+        <Label x:Name="label" Content="Porty" HorizontalAlignment="Left" Margin="51,51,0,0" VerticalAlignment="Top" FontSize="16" Width="52"/>
+        <Canvas HorizontalAlignment="Left" Height="116" Margin="10,83,0,0" VerticalAlignment="Top" Width="136" Background="#FF746868">
+            <Label x:Name="label2" Content="Wyjściowe" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="67"/>
+            <Label x:Name="label1" Content="Wejściowe" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="1"/>
+            <ListBox x:Name="inportBox" Height="80" Canvas.Left="10" Canvas.Top="26" Width="54"/>
+            <ListBox x:Name="outportBox" Height="80" Canvas.Left="72" Canvas.Top="26" Width="54"/>
+        </Canvas>
+        <Label x:Name="label3" Content="Istniejące połączenia" HorizontalAlignment="Left" Margin="174,31,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="115" Margin="172,62,0,0" VerticalAlignment="Top" Width="158" IsEnabled="False"/>
+        <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Height="37" Width="320" FontSize="18.667" FontWeight="Bold" HorizontalContentAlignment="Center"/>
+        <Label x:Name="label4" Content="Kontener" HorizontalAlignment="Left" Margin="99,206,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="contenerTypeBox" HorizontalAlignment="Left" Margin="97,232,0,0" VerticalAlignment="Top" Width="65" SelectionChanged="contenerTypeBox_SelectionChanged"/>
+        <ComboBox x:Name="STMComboBox" HorizontalAlignment="Left" Margin="10,232,0,0" VerticalAlignment="Top" Width="70" SelectionChanged="STMComboBox_SelectionChanged"/>
+        <Label x:Name="label7" Content="Moduł" HorizontalAlignment="Left" Margin="22,206,0,0" VerticalAlignment="Top"/>
+        <Canvas HorizontalAlignment="Left" Height="69" Margin="186,188,0,0" VerticalAlignment="Top" Width="139" Background="#FF746868">
+            <ComboBox x:Name="startLevelBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Canvas.Left="7" Canvas.Top="44"/>
+            <ComboBox x:Name="endLevelBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Canvas.Left="80" Canvas.Top="44"/>
+            <Label x:Name="label5" Content="Początkowa" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="2" Canvas.Top="18"/>
+            <Label x:Name="label6" Content="Docelowa" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="78" Canvas.Top="18"/>
+            <Label x:Name="label8" Content="Szczeliny" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="13.333" Canvas.Left="40"/>
+        </Canvas>
+        <Button x:Name="button1" Content="Podaj predefiniowany plik wejściowy" HorizontalAlignment="Left" Margin="51,289,0,0" VerticalAlignment="Top" Width="248" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF0F2A64" Click="button1_Click"/>
+
+    </Grid>
+</Window>

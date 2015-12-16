@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <management-ports>
 	<ports>
-		<port value="5000"/>
-		<port value="7000"/>  
-		<port value="9000"/>  
+		<port value="7001"/>
+		<port value="7002"/>  
+		<port value="7003"/>
+		<port value="7004"/>  
 	
-<port value="6001"/>
-		<port value="6002"/>  
-		<port value="6003"/>
-<port value="6004"/>
+		<port value="9901"/>
+		<port value="9902"/> 
+		<port value="9903"/>
+		<port value="9904"/>
   
 	</ports>
 

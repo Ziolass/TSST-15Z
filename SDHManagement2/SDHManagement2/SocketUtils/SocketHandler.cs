@@ -85,7 +85,8 @@ namespace SDHManagement2.SocketUtils
 
                 bytes = new byte[1024];
                 int bytesrec = 0;
-                if (conversationSocket.Poll(5000000, SelectMode.SelectRead))
+
+                if (conversationSocket.Poll(1000000, SelectMode.SelectRead))
                 {
                     bytesrec = conversationSocket.Receive(bytes); // This call will not block
                 }
@@ -221,7 +222,8 @@ namespace SDHManagement2.SocketUtils
                     {
                         mainWindow.appendConsole(response, name, command);
                     }
-                  
+
+                 
                 }
 
                 

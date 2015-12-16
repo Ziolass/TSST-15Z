@@ -43,10 +43,17 @@ namespace NetworkNode.Ports
                 Socket listener = LocalSocektBuilder.Instance.getTcpSocket(InputPort);
                 while (true)
                 {
-                    listener.Listen(1);
-                    allDone.Reset();
-                    listener.BeginAccept(new AsyncCallback(AcceptIncomingConnection), listener);
-                    allDone.WaitOne();
+                    try
+                    {
+                        listener.Listen(1);
+                        allDone.Reset();
+                        listener.BeginAccept(new AsyncCallback(AcceptIncomingConnection), listener);
+                        allDone.WaitOne();
+                    } 
+                    catch (Exception ex) 
+                    {
+
+                    }
                 }
             }
             catch (Exception e)

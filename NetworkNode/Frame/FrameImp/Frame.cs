@@ -106,6 +106,12 @@ namespace NetworkNode.SDHFrame
             return false;
         }
 
+        public bool ClearVirtualContainer(VirtualContainerLevel level, int number)
+        {
+            this.Content[GetContainerIndex(level, number)] = null;
+            return true; 
+        }
+
         /// <summary>
         /// Tests adding the container to frame space.
         /// Check if Virtual Container have TU-space for itself

@@ -18,7 +18,7 @@ namespace WireCloud
         {
             public Socket workSocket = null;
             public Socket sender = null;
-            public const int BufferSize = 1024;
+            public const int BufferSize = 10024;
             public byte[] buffer = new byte[BufferSize];
             public StringBuilder sb = new StringBuilder();
         }
@@ -70,7 +70,7 @@ namespace WireCloud
                 IsLinkActive = true;
                 while (running)
                 {
-                    listener.Listen(1);
+                    listener.Listen(10);
                     if (!IsLinkActive)
                     {
                         continue;
@@ -115,16 +115,20 @@ namespace WireCloud
             if (bytesRead > 0)
             {
                 IPEndPoint endpoint = socketBuilder.getLocalEndpoint(Destination);
-                sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
-                connectDone.WaitOne();
                 try
                 {
+                    sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
+                    connectDone.WaitOne();
+
                     sendData(sender, state.buffer);
                     sendDone.WaitOne();
                     sender.Shutdown(SocketShutdown.Both);
                     sender.Close();
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
+                catch (Exception ex)
+                {
+
+                }
             }
             //TODO wprowadzić jakąś sekwencje końcową albo ograniczoną liczbębajtówktórą będziemy przesyłać  
             //Tu może wystąpić błąd związany ze zbyt dużm blokeim danych dlatego przyda się else który wywoła jeszcze raz StartReadingData
@@ -134,13 +138,14 @@ namespace WireCloud
         {
             try
             {
+                Thread.Sleep(100);
                 Socket sender = (Socket)ar.AsyncState;
                 sender.EndConnect(ar);
                 connectDone.Set();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e.ToString());
+
             }
         }
 

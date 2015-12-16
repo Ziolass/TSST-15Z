@@ -11,6 +11,13 @@ namespace NetworkNode.TTF
 {
     class MultiplexSectionTermination : SectionTerminator
     {
+        private List<string> nextData;
+
+        public MultiplexSectionTermination()
+        {
+            nextData = new List<string>();
+        }
+
         public bool evaluateHeader(IFrame sdhFrame)
         {
             Frame tempFrame = (Frame)sdhFrame;
@@ -35,6 +42,19 @@ namespace NetworkNode.TTF
             {
                 sdhFrame.Msoh = new Header(BinaryInterleavedParity.generateBIP(((Frame)sdhFrame).Content, 21), null, null);
             }
+            
+            if (nextData.Count > 0)
+            {
+                ((SDHFrame.Frame)sdhFrame).Rsoh.DCC = nextData[0];
+                nextData.RemoveAt(0);
+            }
+
+
         }
+
+        public void SetNextData(string data)
+        {
+            nextData.Add(data);
+        } 
     }
 }

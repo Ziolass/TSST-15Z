@@ -1,0 +1,45 @@
+﻿<Window x:Class="SDHManagement2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SDHManagement2"
+        
+        mc:Ignorable="d"
+        Title="Management" Height="700" Width="700" WindowStartupLocation="CenterScreen" Background="#FF746868">
+    <Grid Background="#FF746868">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel LastChildFill="False" Grid.Row="1" Margin="3" Grid.ColumnSpan="2">
+            <StackPanel Orientation="Vertical"  DockPanel.Dock="Top" VerticalAlignment="Center">
+
+            </StackPanel>
+
+
+        </DockPanel>
+        <Border BorderBrush="Black" BorderThickness="5" HorizontalAlignment="Left" Height="213" Margin="10,10,0,0" VerticalAlignment="Top" Width="672">
+            <Canvas Margin="-5,5,5,-5">
+                <Label x:Name="label2" Content="To be implemented" Canvas.Left="132" Canvas.Top="60" FontSize="48"/>
+            </Canvas>
+        </Border>
+        <ListBox x:Name="console" HorizontalAlignment="Left" Height="153" Margin="10,284,0,0" VerticalAlignment="Top" Width="672" FontSize="18.667" BorderThickness="5" Background="#FFB4A7A7"/>
+        <Label x:Name="label1" Content="Konsola" HorizontalAlignment="Left" Margin="270,228,0,0" VerticalAlignment="Top" Height="51" Width="132" FontSize="29.333"/>
+        <Canvas HorizontalAlignment="Left" Height="144" Margin="10,510,0,0" VerticalAlignment="Top" Width="672" Background="#FFB4A7A7">
+            <ComboBox x:Name="nodeBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="114" Height="38" Canvas.Left="173" Canvas.Top="84" SelectionChanged="nodeBox_SelectionChanged"/>
+            <ComboBox x:Name="actionBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="223" Height="38" Canvas.Left="326" Canvas.Top="84" SelectionChanged="actionBox_SelectionChanged"/>
+            <Label x:Name="label" Content="Nazwa" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Canvas.Left="197" Canvas.Top="56"/>
+            <Label x:Name="label_Copy" Content="Akcja" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Width="59" Height="33" Canvas.Left="408" Canvas.Top="56"/>
+            <Button x:Name="button" Content="OK" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Height="37" Click="button_Click" FontSize="18.667" Canvas.Left="575" Canvas.Top="85"/>
+            <Button x:Name="button1" Content="Inicjalizacja" HorizontalAlignment="Left" VerticalAlignment="Top" Width="134" Height="25" Click="button1_Click" Canvas.Left="23" Canvas.Top="16"/>
+            <Button x:Name="button2" Content="Odśwież" HorizontalAlignment="Left" VerticalAlignment="Top" Width="142" Height="25" Click="button2_Click" Canvas.Left="184" Canvas.Top="16"/>
+            <Button x:Name="addNewButton" Content="Dodaj nowe połączenie" HorizontalAlignment="Left" VerticalAlignment="Top" Width="142" Height="25" Click="addNewButton_Click" Canvas.Left="350" Canvas.Top="16"/>
+            <ComboBox x:Name="selectionBox" Canvas.Left="19" Canvas.Top="85" Width="128" Height="37" SelectionChanged="selectionBox_SelectionChanged"/>
+            <Label x:Name="labell" Content="Klient / Pole" Canvas.Left="28" Canvas.Top="56" FontSize="18.667"/>
+        </Canvas>
+
+    </Grid>
+</Window>

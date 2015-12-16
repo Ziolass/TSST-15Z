@@ -34,16 +34,24 @@ namespace NetworkNode.Ports
 
         public void sendData(byte[] dataToSend)
         {
+            
             Socket sender = socketBuilder.getTcpSocket();
             sender.DontFragment = true;
             IPEndPoint endpoint = socketBuilder.getLocalEndpoint(outputPort);
-            sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
-            connectDone.WaitOne();
+            try
+            {
+                sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
+                connectDone.WaitOne();
 
-            sendData(sender, dataToSend);
-            sendDone.WaitOne();
-            sender.Shutdown(SocketShutdown.Both);
-            sender.Close();
+                sendData(sender, dataToSend);
+                sendDone.WaitOne();
+                sender.Shutdown(SocketShutdown.Both);
+                sender.Close();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private void ConnectToNextNode(IAsyncResult ar)

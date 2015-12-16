@@ -48,7 +48,7 @@ namespace NetworkNode.MenagmentModule
                         response = shutdownInterface(arguments);
                         break;
                     }
-                case "sub-conection-HPC":
+                case "sub-connection-HPC":
                     {
                         response = addForwardingRecord(arguments);
                         break;
@@ -68,6 +68,11 @@ namespace NetworkNode.MenagmentModule
                         response = identify();
                         break;
                     }
+                case "close-connection":
+                    {
+                        response = closeConnection(arguments);
+                        break;
+                    }
 
             }
 
@@ -76,7 +81,29 @@ namespace NetworkNode.MenagmentModule
 
         private string identify()
         {
-            return node.Id.ToString(); ;
+            return "router|" + node.Id.ToString(); ;
+        }
+
+        private string closeConnection(List<List<string>> connections)
+        {
+            if (connections.Count != 1)
+            {
+                return "ERROR: choose one connection";
+            }
+
+            List<string> literalRecord = connections[0];
+           
+            int inPort = int.Parse(literalRecord[0]);
+            int outPort = int.Parse(literalRecord[1]);
+            int inContainer = int.Parse(literalRecord[2]);
+            int outContainer = int.Parse(literalRecord[3]);
+            VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[4]);
+            StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
+            ForwardingRecord record = new ForwardingRecord(inPort, outPort, stm, level, inContainer, outContainer);
+
+
+
+            return node.RemoveRecord(record) ? "OK" : "ERROR";
         }
 
         private string disableNode()

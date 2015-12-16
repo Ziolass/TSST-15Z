@@ -62,6 +62,8 @@ namespace NetworkNode.TTF
         private IFrame beginFrameEvaluation(string bufferedData)
         {
             IFrame frame = builder.BuildFrame(bufferedData);
+            
+            raportFrame(frame, "Input Frame:");
 
             rst.evaluateHeader(frame);
             
@@ -69,7 +71,7 @@ namespace NetworkNode.TTF
             {
                 mst.evaluateHeader(frame);
             }
-            raportFrame(frame, "Input Frame:");
+            
 
             return frame;
         }
@@ -78,6 +80,17 @@ namespace NetworkNode.TTF
         {
             Console.WriteLine(raprtHeader);
             Console.WriteLine(((Frame) frame).ToString());
+            if(((Frame)frame).Rsoh != null) 
+            {
+                Console.WriteLine("DCC : " + ((Frame) frame).Rsoh.DCC);
+                Console.WriteLine("EOW : " + ((Frame)frame).Rsoh.EOW);
+            }
+
+            if (((Frame)frame).Msoh != null)
+            {
+                Console.WriteLine("DCC : " + ((Frame)frame).Msoh.DCC);
+                Console.WriteLine("EOW : " + ((Frame)frame).Msoh.EOW);
+            }
         }
 
         public List<List<int>> GetPorts()
@@ -99,6 +112,21 @@ namespace NetworkNode.TTF
                 raportFrame(frame,"Output Frame");
             }
             //TODO tu może być zgłaszanie zdarzeia wysłania i powiadaomienie zegara zewnętrznego że wysyłamy ramkę.
+        }
+
+        public bool ShudownInterface(int number)
+        {
+            return spi.ShudownInterface(number);
+        }
+
+        internal void AddRsohContent(string dccContent)
+        {
+            rst.SetNextData(dccContent);
+        }
+
+        internal void AddMsohContent(string dccContent)
+        {
+            mst.SetNextData(dccContent);
         }
     }
 }

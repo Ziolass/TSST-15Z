@@ -29,5 +29,20 @@ namespace NetworkNode.HPC
             Stm = stm;
         }
 
+        public bool Equals(ForwardingRecord other)
+        {
+            if (this == other)
+            {
+                return true;
+            }
+
+            return this.ContainerLevel == other.ContainerLevel
+                && this.Stm == other.Stm
+                && this.InputPort == other.InputPort
+                && this.OutputPort == other.OutputPort
+                && this.VcNumberIn == other.VcNumberIn
+                && this.VcNumberOut == other.VcNumberOut;
+        }
+
     }
 }
