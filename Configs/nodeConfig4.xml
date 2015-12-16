@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<node type="mux" number="3">
+<node type="mux" number="4">
   
-<port type="input" number="5030"/>
-<port type="input" number="5032"/>
-  
-<port type="output" number="5031"/>
-<port type="output" number="5033"/>
+<port type="input" number="5040"/>
+<port type="input" number="5042"/>
+<port type="input" number="5044"/>
 
-<managment-port  number="6530"/>
+ 
+<port type="output" number="5041"/>
+<port type="output" number="5043"/>
+<port type="output" number="5045"/>
+
+<managment-port  number="7004"/>
 </node>

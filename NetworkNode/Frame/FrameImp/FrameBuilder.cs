@@ -19,16 +19,11 @@ namespace NetworkNode.SDHFrame
         {
             Frame returnFrame = new Frame();
             metadata = JObject.Parse(textFrame);
-            if (FrameBuilder.isHeader(metadata["Msoh"]))
-            {
+            if (metadata["Msoh"].HasValues)
                 returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Msoh"]);
+            if (metadata["Rsoh"].HasValues)
+                returnFrame.Rsoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
 
-            }
-            if (FrameBuilder.isHeader(metadata["Rsoh"]))
-            {
-                returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
-
-            }
             if (FrameBuilder.isJArray(metadata["Content"]))
             {
                 returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["Content"]);
@@ -128,7 +123,7 @@ namespace NetworkNode.SDHFrame
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return null;
             }
         }
@@ -195,7 +190,7 @@ namespace NetworkNode.SDHFrame
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return false;
             }
         }
@@ -235,7 +230,7 @@ namespace NetworkNode.SDHFrame
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return false;
             }
         }
@@ -254,7 +249,7 @@ namespace NetworkNode.SDHFrame
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return false;
             }
         }

@@ -17,8 +17,7 @@ namespace NetworkNode
                 Console.WriteLine("Input parameter missing");
             }
 
-			//String id = args[0];
-            String id = "0";
+			String id = args[0];
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\nodeConfig" + id + ".xml");
 
 
@@ -38,8 +37,8 @@ namespace NetworkNode
             while (true) 
             {
                 Console.WriteLine("Oczekiwanie na polecenie");
-                Console.WriteLine("R - kana³ rozmówny rsoh");
-                Console.WriteLine("M - kana³ rozmówny msoh");
+                Console.WriteLine("R - kanaï¿½ rozmï¿½wny rsoh");
+                Console.WriteLine("M - kanaï¿½ rozmï¿½wny msoh");
 
                 string command = Console.ReadLine();
                 
@@ -64,7 +63,7 @@ namespace NetworkNode
 
         private static string takeArgs()
         {
-            Console.WriteLine("WprowadŸ dane");
+            Console.WriteLine("Wprowadï¿½ dane");
             return Console.ReadLine();
         }
     }

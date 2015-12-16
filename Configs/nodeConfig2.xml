@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<node type="mux" number="3">
+<node type="mux" number="2">
   
-<port type="input" number="5020"/>
-<port type="input" number="5022"/>
-
+<port type="input" number="5010"/>
+<port type="input" number="5012"/>
+<port type="input" number="5014"/>
+<port type="input" number="5016"/>
   
-<port type="output" number="5021"/>
-<port type="output" number="5023"/>
+<port type="output" number="5011"/>
+<port type="output" number="5013"/>
+<port type="output" number="5015"/>
+<port type="output" number="5017"/>
 
-
-<managment-port  number="7003"/>
+<managment-port  number="7002"/>
 </node>
