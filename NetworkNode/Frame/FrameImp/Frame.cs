@@ -45,6 +45,17 @@ namespace NetworkNode.SDHFrame
             this.Rsoh = new Header();
         }
         /// <summary>
+        /// Initializes a new instance of the <see cref="Frame"/> class.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        public Frame(Frame frame)
+        {
+            this.Content = frame.Content;
+            this.Level = frame.Level;
+            this.Msoh = frame.Msoh;
+            this.Rsoh = frame.Rsoh;
+        }
+        /// <summary>
         /// Converts the STM level.
         /// </summary>
         /// <param name="stmLevel">The STM level.</param>

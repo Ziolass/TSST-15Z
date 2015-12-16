@@ -20,9 +20,9 @@ namespace NetworkNode.TTF
 
         public bool evaluateHeader(IFrame sdhFrame)
         {
-            Frame tempFrame = (Frame)sdhFrame;
+            Frame tempFrame = new Frame((Frame)sdhFrame);
             tempFrame.Msoh = null;
-            if (sdhFrame.Msoh != null && (sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(((VirtualContainer)sdhFrame).Content, 21)))
+            if (sdhFrame.Msoh != null && (sdhFrame.Msoh.Checksum == BinaryInterleavedParity.generateBIP(((Frame)sdhFrame).Content, 21)))
                 return true;
             else return false;
         }

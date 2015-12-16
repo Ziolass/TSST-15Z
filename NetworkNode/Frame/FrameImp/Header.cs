@@ -55,9 +55,9 @@ namespace NetworkNode.SDHFrame
         public string ToString()
         {
             string returnString = string.Empty;
-            returnString += "Parity" + this.Checksum + "\n";
-            returnString += "EOW" + this.EOW + "\n";
-            returnString += "DCC" + this.DCC + "\n";            
+            returnString += "Parity: " + this.Checksum + "\n";
+            returnString += "EOW: " + this.EOW + "\n";
+            returnString += "DCC: " + this.DCC;            
             return returnString;
         }
     }

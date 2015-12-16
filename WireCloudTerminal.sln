@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WireCloudTerminal", "WireCloudTerminal\WireCloudTerminal.csproj", "{BFF94DB1-E883-4B5E-9ACE-75A3973A7322}"
 EndProject
@@ -16,12 +16,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientsLoader", "ClientsLoader\ClientsLoader.csproj", "{505914EA-6A8A-461E-8FCA-2C33241B3CE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHManagement2", "SDHManagement2\SDHManagement2.csproj", "{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode1", "NetworkNode1\NetworkNode1.csproj", "{57387F82-B9E2-4EC2-92D0-3D89B19B7498}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode2", "NetworkNode2\NetworkNode2.csproj", "{A5A6CBA5-CB15-4E07-B884-4CB64D5D7503}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode3", "NetworkNode3\NetworkNode3.csproj", "{58FC5E18-EBE6-4A5F-BB4A-90D25043C55B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,18 +51,6 @@ Global
 		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57387F82-B9E2-4EC2-92D0-3D89B19B7498}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57387F82-B9E2-4EC2-92D0-3D89B19B7498}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57387F82-B9E2-4EC2-92D0-3D89B19B7498}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57387F82-B9E2-4EC2-92D0-3D89B19B7498}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A5A6CBA5-CB15-4E07-B884-4CB64D5D7503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A5A6CBA5-CB15-4E07-B884-4CB64D5D7503}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A5A6CBA5-CB15-4E07-B884-4CB64D5D7503}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A5A6CBA5-CB15-4E07-B884-4CB64D5D7503}.Release|Any CPU.Build.0 = Release|Any CPU
-		{58FC5E18-EBE6-4A5F-BB4A-90D25043C55B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58FC5E18-EBE6-4A5F-BB4A-90D25043C55B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58FC5E18-EBE6-4A5F-BB4A-90D25043C55B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{58FC5E18-EBE6-4A5F-BB4A-90D25043C55B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿using NetworkNode.SDHFrame;
+using NetworkNode.SDHFrame;
 using NetworkNode.HPC;
 using System;
 using System.Collections.Generic;
@@ -82,14 +82,14 @@ namespace NetworkNode.TTF
             Console.WriteLine(((Frame) frame).ToString());
             if(((Frame)frame).Rsoh != null) 
             {
-                Console.WriteLine("DCC : " + ((Frame) frame).Rsoh.DCC);
-                Console.WriteLine("EOW : " + ((Frame)frame).Rsoh.EOW);
+                Console.WriteLine("RSOH");
+                Console.WriteLine(((Frame)frame).Rsoh.ToString());
             }
 
             if (((Frame)frame).Msoh != null)
             {
-                Console.WriteLine("DCC : " + ((Frame)frame).Msoh.DCC);
-                Console.WriteLine("EOW : " + ((Frame)frame).Msoh.EOW);
+                Console.WriteLine("MSOH");
+                Console.WriteLine(((Frame)frame).Msoh.ToString());
             }
         }
 
