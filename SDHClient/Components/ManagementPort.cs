@@ -4,22 +4,29 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using NetworkNode.Ports;
+//using NetworkNode.Ports;
 
-namespace Client
+namespace SDHClient
 {
     public class ClientManagementPort
     {
-        private LocalSocektBuilder builder;
+        private SHDClient.LocalSocektBuilder builder;
         private Socket menagementPort;
         private ClientManagementCenter center;
-
+        int port = 0;
         public ClientManagementPort(int port)
         {
-            builder = LocalSocektBuilder.Instance;
+            builder = SHDClient.LocalSocektBuilder.Instance;
             menagementPort = builder.getTcpSocket(port);
+            this.port = port;
         }
-
+        public int Port
+        {
+            get
+            {
+                return port;
+            }
+        }
         public void StartListening(ClientManagementCenter center)
         {
             byte[] bytes = new Byte[100000];

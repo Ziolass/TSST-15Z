@@ -7,9 +7,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Client
+namespace SHDClient
 {
-    class LocalSocektBuilder
+   public class LocalSocektBuilder
     {
         private static LocalSocektBuilder instance = null;
         private IPAddress ipAddress;

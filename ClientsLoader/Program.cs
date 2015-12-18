@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.IO;
-using Client;
+using SDHClient;
 
 using System.Windows.Forms;
 
-namespace ClientsLoader
+namespace SDHClient
 {
     class Program
     {
@@ -22,7 +22,7 @@ namespace ClientsLoader
             foreach (FileInfo fi in di.GetFiles("Klient*.xml"))
             {
 
-                Client.SDHClient sd = new Client.SDHClient(fi.FullName);
+                SDHClient sd = new SDHClient(fi.FullName);
                 sd.Show();
                 any_found = true;
                 

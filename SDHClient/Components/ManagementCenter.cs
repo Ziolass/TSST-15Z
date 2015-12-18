@@ -1,7 +1,6 @@
 ﻿
 using NetworkNode.SDHFrame;
 using NetworkNode.HPC;
-using NetworkNode.Ports;
 using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
@@ -9,16 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Client
+namespace SDHClient
 {
  
     public class ClientManagementCenter
     {
         ClientManagementPort managementPort;
         // NetworkNode.NetworkNode node;
-        Client.Adaptation adapt;
+        Adaptation adapt;
 
-        public ClientManagementCenter(ClientManagementPort managementPort, Client.Adaptation adapt)
+        public ClientManagementCenter(ClientManagementPort managementPort, Adaptation adapt)
         {
             this.adapt = adapt;
             this.managementPort = managementPort;
@@ -83,10 +82,12 @@ namespace Client
 
             Console.WriteLine("Klient: management żąda: get ports");
             string to_send = "";
-            foreach (Input ii in adapt.links.input_ports) { to_send += ii.InputPort; to_send += "#"; }
+            //reach (Input ii in adapt.links.input_ports) { to_send += ii.InputPort; to_send += "#"; }
+            foreach (IOPort io in adapt.links.ports)
+                to_send += io.listeningPort;
             to_send.Remove(to_send.Length - 1, 1);
             to_send += '|';
-            foreach (KeyValuePair<int, Output> kv in adapt.links.output_ports) { to_send += kv.Value.Port; to_send += "#"; }
+            foreach (IOPort io in adapt.links.ports) { to_send += io.PortTo; to_send += "#"; }
             List<byte> b = new List<byte>();
             return to_send;
         }

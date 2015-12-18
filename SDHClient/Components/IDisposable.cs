@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetworkNode.SDHFrame
+namespace SDHClient
 {
-    public interface IContent
+    public interface IDisposable
     {
-        ContentType Type { get; }
-
+        bool Active { get; set; }
     }
 }

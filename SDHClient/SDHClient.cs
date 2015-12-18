@@ -10,11 +10,10 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using WireCloud;
-using NetworkNode.Ports;
 using NetworkNode.SDHFrame;
 using System.Security.Cryptography;
 
-namespace Client
+namespace SDHClient
 {
     public partial class SDHClient : Form
     {
@@ -42,7 +41,7 @@ namespace Client
             lc = configloader.getLinks();
             this.textBox2.Text = configloader.Name;
             this.Show();
-            this.label1.Text = "Port komunikacji z zarządzaniem:" +lc.management_in.InputPort.ToString();
+            this.label1.Text = "Port komunikacji z zarządzaniem:" +lc.management_port.ToString();
             adapt = new Adaptation(lc,configloader.Name);
             //adapt.client_no = ;                //ostatecznie do wywalneia
             timer1.Enabled = true;
@@ -87,14 +86,14 @@ namespace Client
                 string substring = port.Substring(index);
                 int port_no = Int32.Parse(substring);
                 
-                foreach (KeyValuePair<int, Output> output in lc.output_ports)
+                foreach (IOPort io in lc.ports)
                 {
                     
-                    if(output.Value.Port == port_no)
+                    if(io.PortTo == port_no)
                     {
-                        List<byte> bytes = new List<byte>();
-                        foreach (char c in textBox1.Text) bytes.Add((byte)c);
-                        adapt.SendToRouter(port_no, bytes.ToArray<byte>()); //TODO   
+                        //List<byte> bytes = new List<byte>();
+                        //foreach (char c in textBox1.Text) bytes.Add((byte)c);
+                        adapt.SendToRouter(port_no, Encoding.Unicode.GetBytes(textBox1.Text)); //TODO   
                         break;
                     }
                 }
@@ -133,18 +132,27 @@ namespace Client
             for (int a = 0; a < 10; a++) textBox1.Text += (char)r.Next(40, 90);
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
         {
             textBox1.Text = "";
             Random r = new Random();
             for (int a = 0; a < 100; a++) textBox1.Text += (char)r.Next(40, 90);
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void timer2_Tick(object sender, EventArgs e)
         {
-            textBox1.Text = "";
-            Random r = new Random();
-            for (int a = 0; a < 1000; a++) textBox1.Text += (char)r.Next(40, 90);
+            toolStripStatusLabel2.Text = adapt.received.ToString() + "                          ";
         }
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
@@ -184,17 +192,17 @@ namespace Client
         ClientManagementCenter cmc;
         ClientManagementPort mp;
         BackgroundWorker bw;
-        public Adaptation(LinkCollection lc,string client_no)
+        public Adaptation(LinkCollection lc,string client_name)
         {
             
-            client_name = client_no;
+            this.client_name = client_name;
             log = new List<string>();
             ports = new List<ListViewItem>();
             connections = new List<ConnInfo>();
             links = lc;
             //links.management_in.TurnOn();
             //links.management_in.HandleIncomingData += Management_in_HandleIncomingData;//////////////////////////////////////
-            mp = new ClientManagementPort(links.management_in.InputPort);
+            mp = new ClientManagementPort(links.management_port);
             cmc = new ClientManagementCenter(mp, this);
             bw = new BackgroundWorker();
             bw.DoWork += Bw_DoWork;
@@ -206,19 +214,13 @@ namespace Client
             //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-            foreach (Input input in lc.input_ports)
+            foreach (IOPort io in lc.ports)
             {
-                //input.TurnOn(); //wywala wyjątki
-                input.HandleIncomingData += Input_HandleIncomingData;
-                ports.Add(new ListViewItem(new string[] { "IN: " + input.InputPort.ToString() }, null, Color.Black, Color.LightGreen, Control.DefaultFont));
+                io.HandleIncomingData += Input_HandleIncomingData;
+                ports.Add(new ListViewItem(new string[] { "PORT: " + io.PortTo.ToString() }, null, Color.Black, Color.LightGreen, Control.DefaultFont));
 
             }
-            foreach (KeyValuePair<int, Output> output in lc.output_ports)
-            {
-                ports.Add(new ListViewItem(new string[] { "OUT: " + output.Value.Port.ToString() }, null, Color.Black, Color.LightGoldenrodYellow, Control.DefaultFont));
-
-
-            }
+          
 
 
         }
@@ -229,12 +231,21 @@ namespace Client
         }
         
         private string pass = "";
+        public bool received = false;
         private void Input_HandleIncomingData(object sender, EventArgs args)
         {
-            Input i = (Input)sender;
+            IOPort i = (IOPort)sender;
+            
             ConnInfo info = new ConnInfo();
-            foreach (ConnInfo ci in this.connections) if (ci.port_in == i.InputPort) info = ci;
+            foreach (ConnInfo ci in this.connections) if (ci.port_in == i.listeningPort) info = ci;
             byte[] data = i.GetDataFromBuffer();
+
+            if (Encoding.ASCII.GetString(data).Substring(0, 2) != "OK") i.sendData(Encoding.ASCII.GetBytes("OK"));
+            else
+            {
+                received = true;
+                Console.WriteLine(Encoding.ASCII.GetString(data).Substring(0, 2));
+            }
             int counter = 0;
             // List<char> chars = new List<char>();
             string str = pass;
@@ -256,11 +267,14 @@ namespace Client
                     else if (opn >= 1 && cls == opn)
                     {
 
-
-                        str += "]}";
                         
-                        log.Add("Odebrano od: " + i.InputPort + " na poziomie "+ info.level_from +":" + unpack(str,info.level,(byte)info.level_from));
-                        Console.WriteLine("Odebrano od: " + i.InputPort + ":  " + unpack(str, info.level, (byte)info.level_from));
+                        str += "]}";
+                        string result = unpack(str, info.level, (byte)info.level_from);
+                        Encoding e = Encoding.GetEncoding("Windows-1250");
+
+                        string res1 = e.GetString(Encoding.Convert(Encoding.Unicode, e, e.GetBytes(result)));
+                        log.Add("Odebrano od: " + i.InputPort + " na poziomie " + info.level_from + ":" +res1 + "");
+                        Console.WriteLine("Odebrano od: " + i.InputPort + ":  " + res1);
                         str = "";
                         break;
                     }
@@ -314,8 +328,9 @@ namespace Client
             {
                 size = 28;
             }
-            int index = raw_data.IndexOf('\0');
-            if (index == -1) index = raw_data.Length;
+           // int index = raw_data.IndexOf('\0');
+           // if (index == -1)
+                int index = raw_data.Length;
             int no_frame = 0;
             int index1 = 0;
             FrameBuilder fbb = new FrameBuilder();
@@ -354,13 +369,13 @@ namespace Client
             return frames;
         }
         private static byte last_checksum =0;
-        public void SendToRouter(int port, byte[] raw_data)//raw_data jest stringiem w postaci ciągu bajtów, nie kontenerem
+        public void SendToRouter(int port_to, byte[] raw_data)//raw_data jest stringiem w postaci ciągu bajtów, nie kontenerem
         {
             int current_container=0;
             string data = "";
 
             ConnInfo info = new ConnInfo();
-            foreach (ConnInfo ci in this.connections) if (ci.port_out == port) info = ci;
+            foreach (ConnInfo ci in this.connections) if (ci.port_out == port_to) info = ci;
             byte number = (byte)info.level_to;
             foreach (byte b in raw_data)
             {
@@ -374,13 +389,14 @@ namespace Client
             catch(IndexOutOfRangeException) { Console.WriteLine("Klient: Error: level o podanym numerze nie jest dostępny w ramce tego typu, zmien w menagerze"); return; }
             current_container++; data = ""; //osiągnięto koniec kontenera
 
-            foreach (KeyValuePair<int, Output> output in links.output_ports)
+            foreach (IOPort io in    links.ports)
             {
 
-                if (output.Value.Port == port)
+                if (io.PortTo == port_to)
                 {
                     foreach (Frame frame in frames)
                     {
+                        received = false;
                         MD5 myHash = new MD5CryptoServiceProvider();
                         Frame frame2 = frame;
                         FrameBuilder fb = new FrameBuilder();
@@ -405,9 +421,10 @@ namespace Client
 
                             bytes_2.Add((byte)c);
                         }
-
-                        output.Value.sendData(bytes_2.ToArray<byte>());
-                        Thread.Sleep(250); // nie ruszać! bez tego ramki wysyłają się na raz i blokuje się socket
+                        
+                        io.sendData(bytes_2.ToArray<byte>());
+                        while (received==false) { }
+                        Thread.Sleep(600); // nie ruszać! bez tego ramki wysyłają się na raz i blokuje się socket
                     }
                 }
             }
