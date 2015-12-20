@@ -75,7 +75,7 @@
                 VerticalAlignment="Top" 
                 Width="110" 
                 Content="Stwórz" Command="{Binding CreateLink, Mode=OneWay, Source={StaticResource Cloud}}"/>
-        <Label Content="Konsola" HorizontalAlignment="Left" Height="27" Margin="48,240,0,0" VerticalAlignment="Top" Width="387"/>
+        <Label Content="Konsola" HorizontalAlignment="Left" Height="27" Margin="48,240,0,0" VerticalAlignment="Top" Width="270"/>
 
         <Label Content="Port lokalny" 
         	HorizontalAlignment="Left" 
