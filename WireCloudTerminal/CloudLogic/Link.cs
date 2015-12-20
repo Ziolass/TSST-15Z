@@ -33,6 +33,7 @@ namespace WireCloud.CloudLogic
         public Link(Dictionary<AbstractAddress, NetworkNodeSender> Ports)
         {
             this.Ports = Ports;
+            this.IsLinkActive = true;
         }
 
         public bool Contains(AbstractAddress address)
@@ -43,6 +44,15 @@ namespace WireCloud.CloudLogic
         public void SendData(string data, AbstractAddress address)
         {
             Ports[address].SendContent(data);
+        }
+        public String ToString()
+        {
+            String returnValue = String.Empty;
+            foreach (var item in Ports)
+            {
+                returnValue += item.Key.NodeId + ": " + item.Key.Port + " | ";
+            }
+            return returnValue;
         }
 
     }

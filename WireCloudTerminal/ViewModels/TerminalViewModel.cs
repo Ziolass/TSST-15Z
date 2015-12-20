@@ -97,8 +97,8 @@ namespace WireCloud.ViewModels
         {
             LinkActions = new ObservableCollection<ViewAction>();
 
-            LinkActions.Add(new ViewAction("Odłącz", deactivateLink));
-            LinkActions.Add(new ViewAction("Podłącz", activateLink));
+            //LinkActions.Add(new ViewAction("Odłącz", deactivateLink));
+            //LinkActions.Add(new ViewAction("Podłącz", activateLink));
             LinkActions.Add(new ViewAction("Usuń", deleteLink));
 
         }
@@ -198,7 +198,7 @@ namespace WireCloud.ViewModels
         private void deleteLink()
         {
             SelectedLink.Stop();
-            //cloudPrcoess.CloseLink(SelectedLink.GetModel());
+            this.CloudSetupProcess.ProcessMonitor.DeleteLink(SelectedLink.GetModel());
             Links.Remove(SelectedLink);
             SelectedLink = null;
         }

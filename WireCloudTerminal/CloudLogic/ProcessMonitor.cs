@@ -34,5 +34,14 @@ namespace WireCloud.CloudLogic
         {
             Server.StartListening();
         }
+
+        /// <summary>
+        /// Deletes the link from Links
+        /// </summary>
+        /// <param name="link">The link to delete</param>
+        public void DeleteLink(Link link)
+        {
+            this.Links.Remove(link);
+        }
     }
 }

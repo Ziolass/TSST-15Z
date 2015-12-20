@@ -35,7 +35,7 @@ namespace WireCloud.ViewModels
         {
             get
             {
-                return "[Link " +  " : " +  "] : " + (Link.IsLinkActive ? "Włączony" : "Wyłączony");
+                return "Link [" + Link.ToString()+ "]";// + (Link.IsLinkActive ? "Włączony" : "Wyłączony");
             }
             set 
             {

@@ -5,4 +5,8 @@
 		<port tcp="4030" local="1" node="mockup1" />
 		<port tcp="4040" local="1" node="mockup2" />
 	</link>
+	<link>
+		<port tcp="4031" local="2" node="mockup2" />
+		<port tcp="4041" local="2" node="mockup4" />
+	</link>
 </links>
