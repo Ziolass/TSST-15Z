@@ -1,4 +1,4 @@
-﻿using NetworkNode.HPC;
+using NetworkNode.HPC;
 using NetworkNode.MenagmentModule;
 using NetworkNode.TTF;
 using NetworkNode;

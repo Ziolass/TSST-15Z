@@ -1,4 +1,4 @@
-﻿<Application x:Class="WireCloudTerminal.App"
+<Application x:Class="WireCloud.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
