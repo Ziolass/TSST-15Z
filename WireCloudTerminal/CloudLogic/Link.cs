@@ -55,7 +55,7 @@ namespace WireCloud.CloudLogic
             String returnValue = String.Empty;
             foreach (var item in Ports)
             {
-                returnValue += item.Key.NodeId + ": " + item.Key.Port + " " ;
+                returnValue += item.Key.NodeId + ": " + item.Key.Port + " ";
             }
             return returnValue;
         }
@@ -63,21 +63,21 @@ namespace WireCloud.CloudLogic
         {
             bool abbstract = false;
             bool node = false;
-            foreach (var item in Ports)
+            for (int i = 0; i < Ports.Count; i++)
             {
-                foreach (var linkItem in link.Ports)
+                KeyValuePair<AbstractAddress, NetworkNodeSender> thisObject = Ports.ElementAt(i);
+                KeyValuePair<AbstractAddress, NetworkNodeSender> linkObject = link.Ports.ElementAt(i);
+                if (thisObject.Key.Equals(linkObject.Key)) //AbstractAddress
                 {
-                    if (item.Key.Equals(linkItem.Key)) //AbstractAddress
-                    {
-                        abbstract = true;
-                    }
-                    else return false;
-                    if (item.Value.Equals(linkItem.Value)) //Node
-                    {
-                        node = true;
-                    }
-                    else return false;
+                    abbstract = true;
                 }
+                else return false;
+                if (thisObject.Value.Equals(linkObject.Value)) //Node
+                {
+                    node = true;
+                }
+                else return false;
+
             }
             return node && abbstract;
         }

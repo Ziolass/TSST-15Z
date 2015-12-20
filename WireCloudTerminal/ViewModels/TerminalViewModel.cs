@@ -154,6 +154,8 @@ namespace WireCloud.ViewModels
             int dst_port = validatePortInput(msg, this.DestinationPort, "Cel - port");
             string dst_nodeid = validateNodeIdInput(msg, this.DestinationNodeId, "Cel - nodeid");
             int dst_socket = validatePortInput(msg, this.DestinationSocket, "Cel - socket");
+
+
             if (msg.Length == 0)
             {
                 List<AbstractAddress> abstractAddress = new List<AbstractAddress>();
@@ -164,42 +166,51 @@ namespace WireCloud.ViewModels
                 networkNodeSender.Add(new NetworkNodeSender(dst_socket));
 
                 Dictionary<AbstractAddress, NetworkNodeSender> dictionary = new Dictionary<AbstractAddress, NetworkNodeSender>();
-                dictionary.Add(abstractAddress[0], networkNodeSender[1]);
-                dictionary.Add(abstractAddress[1], networkNodeSender[0]);
 
-
-                Link newLink = new Link(dictionary);
-
-                List<Link> invalid = this.CloudSetupProcess.TryAddLink(newLink);
-
-                switch (invalid.Count)
+                if (abstractAddress[0].Equals(abstractAddress[1]) || networkNodeSender[0].Equals(networkNodeSender[1]))
                 {
-                    case 0:
-                        {
-                            msg.Append("Połączenie utworzone");
-                            break;
-                        }
-                    case 1:
-                        {
-                            msg.Append("Port : ");
-                            msg.Append(invalid[0].ToString());
-                            msg.Append(" jest zajęty");
-                            break;
-                        }
-                    case 2:
-                        {
-                            msg.Append("Porty : ");
-                            msg.Append(invalid[0].ToString());
-                            msg.Append(" , ");
-                            msg.Append(invalid[1].ToString());
-                            msg.Append(" są zajęte");
-                            break;
-                        }
-                    default:
-                        {
-                            throw new Exception("Unexpected State of Application");
-                        }   
+                    msg.Append("Źródło i cel są takie same");
                 }
+                else
+                {
+                    dictionary.Add(abstractAddress[0], networkNodeSender[1]);
+                    dictionary.Add(abstractAddress[1], networkNodeSender[0]);
+
+
+                    Link newLink = new Link(dictionary);
+
+                    List<Link> invalid = this.CloudSetupProcess.TryAddLink(newLink);
+
+                    switch (invalid.Count)
+                    {
+                        case 0:
+                            {
+                                msg.Append("Połączenie utworzone");
+                                break;
+                            }
+                        case 1:
+                            {
+                                msg.Append("Port : ");
+                                msg.Append(invalid[0].ToString());
+                                msg.Append(" jest zajęty");
+                                break;
+                            }
+                        case 2:
+                            {
+                                msg.Append("Porty : ");
+                                msg.Append(invalid[0].ToString());
+                                msg.Append(" , ");
+                                msg.Append(invalid[1].ToString());
+                                msg.Append(" są zajęte");
+                                break;
+                            }
+                        default:
+                            {
+                                throw new Exception("Unexpected State of Application");
+                            }
+                    }
+                }
+
             }
 
             ConsoleMessage = msg.ToString();

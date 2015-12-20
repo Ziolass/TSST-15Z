@@ -125,9 +125,12 @@ namespace WireCloud.CloudLogic
         }
         private void validatePort(List<Link> invalidPorts, Link port)
         {
-            if (usedPorts.Contains(port))
+            foreach (var item in usedPorts)
             {
-                invalidPorts.Add(port);
+                if (item.Equals(port))
+                {
+                    invalidPorts.Add(port);
+                }
             }
         }
 

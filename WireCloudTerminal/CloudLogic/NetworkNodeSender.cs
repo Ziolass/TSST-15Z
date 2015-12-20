@@ -49,5 +49,11 @@ namespace WireCloud.CloudLogic
 
 
         }
+        public bool Equals(NetworkNodeSender networkNodeSender)
+        {
+            if (this.PortNumber == networkNodeSender.PortNumber)
+                return true;
+            else return false;
+        }
     }
 }
