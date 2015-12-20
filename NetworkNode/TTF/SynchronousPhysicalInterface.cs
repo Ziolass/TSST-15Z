@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WireCloud;
 
 namespace NetworkNode.TTF
 {
@@ -22,22 +23,23 @@ namespace NetworkNode.TTF
 
     public class SynchronousPhysicalInterface
     {
-        private Dictionary<int, List<string>> buffers;
-        private Dictionary<int, Output> outputs;
-        private Dictionary<int, Input> inputs;
+        private Dictionary<int, List<string>> Buffers;
+        private NetworkNodeSender Sender;
+        private Dictionary<int, NodeInput> Ports;
+        private string RouterId;
         public String ReceivedFrame { get; private set; }
         public event HandleInputData HandleInputData;
 
-        public SynchronousPhysicalInterface(List<Input> inputs, Dictionary<int, Output> outputs)
+        public SynchronousPhysicalInterface(List<NodeInput> ports, NetworkNodeSender sender, string routerId)
         {
-
-            this.outputs = outputs;
-            buffers = new Dictionary<int, List<string>>();
-            this.inputs = new Dictionary<int, Input>();
-            foreach (Input input in inputs)
+            RouterId = routerId;
+            Sender = sender;
+            Buffers = new Dictionary<int, List<string>>();
+            this.Ports = new Dictionary<int, NodeInput>();
+            foreach (NodeInput input in ports)
             {
-                buffers.Add(input.InputPort, new List<string>());
-                this.inputs.Add(input.InputPort, input);
+                Buffers.Add(input.InputPort, new List<string>());
+                this.Ports.Add(input.InputPort, input);
                 input.HandleIncomingData += new HandleIncomingData(pullData);
             }
         }
@@ -46,11 +48,11 @@ namespace NetworkNode.TTF
 
         private void pullData(object sender, EventArgs args)
         {
-            Input source = (Input)sender;
+            AsyncInput source = (AsyncInput)sender;
             StringBuilder translator = new StringBuilder();
             byte[] data = source.GetDataFromBuffer();
             translator.Append(Encoding.ASCII.GetString(data, 0, data.Length));
-            buffers[source.InputPort].Add(translator.ToString());
+            Buffers[source.InputPort].Add(translator.ToString());
             if (HandleInputData != null)
             {
                 HandleInputData(this, new InputDataArgs(source.InputPort));
@@ -60,14 +62,24 @@ namespace NetworkNode.TTF
 
         public void SendFrame(String sdhFrame, int port)
         {
-            byte[] byteData = Encoding.ASCII.GetBytes(sdhFrame);
-            outputs[port].sendData(byteData);
+            if (!Ports.ContainsKey(port) || !Ports[port].Active)
+            {
+                return;
+            }
+
+            StringBuilder builder = new StringBuilder();
+            builder.Append(RouterId);
+            builder.Append("|");
+            builder.Append(port);
+            builder.Append("|");
+            builder.Append(sdhFrame);
+            Sender.SendContent(builder.ToString());
         }
         //TODO: zweryfikować czy faktycznie usuniemy poprawnie dane z buffora
         public string GetBufferedData(int inputPort)
         {
             string result;
-            List<string> bufferedData = buffers[inputPort];
+            List<string> bufferedData = Buffers[inputPort];
 
             if (bufferedData.Count > 0)
             {
@@ -85,15 +97,9 @@ namespace NetworkNode.TTF
         {
             try
             {
-                if (outputs.ContainsKey(number))
+                if (Ports.ContainsKey(number))
                 {
-                    outputs[number].Active = false;
-                    return true;
-                }
-
-                if (inputs.ContainsKey(number))
-                {
-                    inputs[number].Active = false;
+                    Ports[number].Active = false;
                     return true;
                 }
 
@@ -105,12 +111,9 @@ namespace NetworkNode.TTF
             }
         }
 
-        public List<List<int>> GetPorts()
+        public List<int> GetPorts()
         {
-            List<List<int>> results = new List<List<int>>();
-            results.Add(new List<int>(inputs.Keys));
-            results.Add(new List<int>(outputs.Keys));
-            return results;
+            return new List<int>(Ports.Keys);
         }
     }
 }

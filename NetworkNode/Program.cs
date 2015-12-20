@@ -17,7 +17,8 @@ namespace NetworkNode
                 Console.WriteLine("Input parameter missing");
             }
 
-			String id = args[0];
+			//String id = args[0];
+            String id = "0";
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\nodeConfig" + id + ".xml");
 
 

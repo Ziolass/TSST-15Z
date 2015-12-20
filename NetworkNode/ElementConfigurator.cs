@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using WireCloud;
 
 namespace NetworkNode
 {
@@ -22,11 +23,11 @@ namespace NetworkNode
 
         public NetworkNode configureNode()
         {
-            List<Input> inputs = new List<Input>();
-            Dictionary<int, Output> outputs = new Dictionary<int, Output>();
-            int nodeNumber = -1;
-            String nodeType = null;
+            List<NodeInput> ports = new List<NodeInput>();
+            string nodeName = null;
+            string nodeType = null;
             ManagementPort managementPort = null;
+            NetworkNodeSender sender = null;
             while (configReader.Read())
             {
                 if (configReader.IsStartElement())
@@ -37,25 +38,13 @@ namespace NetworkNode
                         {
                             string portType = configReader.GetAttribute("type");
                             int portNumber = int.Parse(configReader.GetAttribute("number"));
-
-                            switch (portType)
-                            {
-                                case "input":
-                                    {
-                                        Input input = new Input(portNumber);
-                                        inputs.Add(input);
-                                        input.TurnOn();
-                                        break;
-                                    }
-                                case "output":
-                                    {
-                                        outputs.Add(portNumber, new Output(portNumber));
-                                        break;
-                                    }
-                            }
-                            
-                            
-
+                            int tcp = int.Parse(configReader.GetAttribute("tcp"));
+                            ports.Add(new NodeInput(tcp, portNumber)); 
+                        }
+                        else if (configReader.Name == "cloud-server")
+                        {
+                            int tcp = int.Parse(configReader.GetAttribute("tcp"));
+                            sender = new NetworkNodeSender(tcp);
                         }
                         else if (configReader.Name == "managment-port")
                         {
@@ -64,7 +53,7 @@ namespace NetworkNode
                         } 
                         else if (configReader.Name == "node" && configReader.IsStartElement())
                         {
-                            nodeNumber = int.Parse(configReader.GetAttribute("number"));
+                            nodeName = configReader.GetAttribute("name");
                             nodeType = configReader.GetAttribute("type");
                         }
                     }
@@ -72,10 +61,10 @@ namespace NetworkNode
                 }
             }
 
-            SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(inputs, outputs);
+            SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(ports, sender, nodeName);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, getMode(nodeType));
             HigherOrderPathConnection hpc = new HigherOrderPathConnection(ttf);
-            NetworkNode node = new NetworkNode(hpc, ttf, nodeNumber);
+            NetworkNode node = new NetworkNode(hpc, ttf, nodeName);
             
             ManagementCenter managementCenter = new ManagementCenter(managementPort,node);
             managementPort.SetManagementCenter(managementCenter);
