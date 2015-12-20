@@ -1,4 +1,4 @@
-﻿<Window x:Class="WireCloudTerminal.MainWindow"
+<Window x:Class="WireCloudTerminal.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -35,7 +35,7 @@
                  Margin="48,60,0,0" 
                  VerticalAlignment="Top" 
                  Width="387" 
-                 ItemsSource="{Binding Links, Source={StaticResource Cloud}}" 
+                 ItemsSource="{Binding ProcessMonitor, Source={StaticResource }}" 
                  DisplayMemberPath="Id"
                  ItemContainerStyle="{StaticResource ActiveItem}"
                  SelectedItem="{Binding SelectedLink, Source={StaticResource Cloud}}"/>

@@ -64,12 +64,13 @@
     <Compile Include="CloudLogic\CloudSetupProcess.cs" />
     <Compile Include="CloudLogic\ElementConfigurator.cs" />
     <Compile Include="CloudLogic\Link.cs" />
+    <Compile Include="CloudLogic\LinkStateChangedHandler.cs" />
     <Compile Include="CloudLogic\Manager.cs" />
     <Compile Include="CloudLogic\NetworkNodeSender.cs" />
     <Compile Include="CloudLogic\Port.cs" />
     <Compile Include="CloudLogic\ProcessMonitor.cs" />
     <Compile Include="CloudLogic\SocketUtils\LocalSocektBuilder.cs" />
-    <Compile Include="LinkViewModel.cs" />
+    <Compile Include="ViewModels\LinkViewModel.cs" />
     <Compile Include="TerminalViewModel.cs" />
     <Compile Include="ViewModelUtils\ExternalCommand.cs" />
     <Compile Include="ViewModelUtils\TrulyObservableCollection.cs" />
