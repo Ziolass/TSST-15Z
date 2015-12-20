@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -64,7 +65,7 @@ namespace WireCloud.ViewModels
         public ExternalCommand PerformLinkAction { get; private set; }
         public ExternalCommand CloseAllConections { get; private set; }
         public ExternalCommand CreateLink { get; private set; }
-
+        public ExternalCommand DeleteLink { get; private set; }
 
         public TerminalViewModel()
         {
@@ -76,6 +77,7 @@ namespace WireCloud.ViewModels
             PerformLinkAction = new ExternalCommand(performAction, areActionElementsReady);
             CloseAllConections = new ExternalCommand(performCloseConnections, isClosingReady);
             CreateLink = new ExternalCommand(createLink, isCreationReady);
+            DeleteLink = new ExternalCommand(deleteLink, isLinkSelected);
         }
 
         private void onLinksCreated()
@@ -99,8 +101,15 @@ namespace WireCloud.ViewModels
 
             //LinkActions.Add(new ViewAction("Odłącz", deactivateLink));
             //LinkActions.Add(new ViewAction("Podłącz", activateLink));
-            LinkActions.Add(new ViewAction("Usuń", deleteLink));
+            //LinkActions.Add(new ViewAction("Usuń", deleteLink));
 
+        }
+        private bool isLinkSelected()
+        {
+            return true;
+            if (this.selectedLink != null)
+                return true;
+            else return false;
         }
 
         private bool areActionElementsReady()
@@ -195,9 +204,11 @@ namespace WireCloud.ViewModels
             return result;
         }
 
-        private void deleteLink()
+        /// <summary>
+        /// Deletes the link.
+        /// </summary>
+        public void deleteLink()
         {
-            SelectedLink.Stop();
             this.CloudSetupProcess.ProcessMonitor.DeleteLink(SelectedLink.GetModel());
             Links.Remove(SelectedLink);
             SelectedLink = null;
