@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WireCloud;
-using WireCloudTerminal.CloudLogic;
+using WireCloud.CloudLogic;
 
-namespace WireCloudTerminal
+namespace WireCloud.ViewModels
 {
     class LinkViewModel : INotifyPropertyChanged
     {
@@ -35,7 +35,7 @@ namespace WireCloudTerminal
         {
             get
             {
-                return "[Link " + Link. + " : " + Link.Destination + "] : " + (Link.IsLinkActive ? "Włączony" : "Wyłączony");
+                return "[Link " +  " : " +  "] : " + (Link.IsLinkActive ? "Włączony" : "Wyłączony");
             }
             set 
             {

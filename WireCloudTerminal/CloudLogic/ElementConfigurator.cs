@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,12 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace WireCloud
+namespace WireCloud.CloudLogic
 {
-    class ElementConfigurator
+    public class ElementConfigurator
     {
         private XmlReader ConfigReader;
-
         public ElementConfigurator(string cofigFilePath)
         {
             ConfigReader = XmlReader.Create(cofigFilePath);
@@ -73,8 +72,8 @@ namespace WireCloud
 
             Dictionary<AbstractAddress, NetworkNodeSender> linkConnections = new Dictionary<AbstractAddress, NetworkNodeSender>();
             linkConnections.Add(addresses[0], senders[1]);
-            linkConnections.Add(addresses[1], senders[0]);
-            
+            linkConnections.Add(addresses[1], senders[0]);           
+
             return new Link(linkConnections);
         }
     }

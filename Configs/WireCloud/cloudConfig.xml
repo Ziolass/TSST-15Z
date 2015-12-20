@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<links>
+	<server tcp="6000" buffer="10000" clientsNumber="100"/>
+	<link>
+		<port tcp="4030" local="1" node="mockup1" />
+		<port tcp="4040" local="1" node="mockup2" />
+	</link>
+</links>

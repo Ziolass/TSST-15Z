@@ -3,13 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WireCloudTerminal.CloudLogic;
 
-namespace WireCloud
+namespace WireCloud.CloudLogic
 {
-     public class Link
+    public delegate void LinkStateChangedHandler();
+    public class Link
     {
         private Dictionary<AbstractAddress, NetworkNodeSender> Ports;
+
+        public event LinkStateChangedHandler LinkActive;
+
+        private bool active;
+        public bool IsLinkActive
+        {
+            get
+            {
+                return active;
+            }
+            set
+            {
+                active = value;
+                if (LinkActive != null)
+                {
+                    LinkActive();
+                }
+            }
+        }
 
         public Link(Dictionary<AbstractAddress, NetworkNodeSender> Ports)
         {
@@ -26,7 +45,5 @@ namespace WireCloud
             Ports[address].SendContent(data);
         }
 
-
-        public static LinkStateChangedHandler LinkActive { get; set; }
     }
 }

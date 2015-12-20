@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WireCloud
+namespace WireCloud.CloudLogic
 {
     public class ProcessMonitor
     {
         private CloudServer Server;
-        private List<Link> Links;
+        public List<Link> Links { get; private set; }
 
         public ProcessMonitor(CloudServer Server, List<Link> Links)
         {
