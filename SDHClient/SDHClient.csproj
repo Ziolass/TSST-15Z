@@ -89,10 +89,6 @@
       <Project>{f2453730-6933-4343-856c-273a9fa16b6e}</Project>
       <Name>NetworkNode</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WireCloudTerminal\WireCloudTerminal.csproj">
-      <Project>{bff94db1-e883-4b5e-9ace-75a3973a7322}</Project>
-      <Name>WireCloudTerminal</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

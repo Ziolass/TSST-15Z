@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using WireCloud;
 using NetworkNode.SDHFrame;
 using System.Security.Cryptography;
+//using WireCloud; sobczakj
 
 namespace SDHClient
 {
