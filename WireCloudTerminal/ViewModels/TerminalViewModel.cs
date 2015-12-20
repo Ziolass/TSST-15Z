@@ -18,8 +18,13 @@ namespace WireCloud.ViewModels
         public ObservableCollection<LinkViewModel> Links { get; private set; }
         public ObservableCollection<ViewAction> LinkActions { get; private set; }
 
-        public String Source { get; set; }
-        public String Destination { get; set; }
+        public String SourcePort { get; set; }
+        public String SourceNodeId { get; set; }
+        public String SourceSocket { get; set; }
+        public String DestinationPort { get; set; }
+        public String DestinationNodeId { get; set; }
+        public String DestinationSocket { get; set; }
+
 
         private String consoleMessage;
 
@@ -143,11 +148,29 @@ namespace WireCloud.ViewModels
         {
             StringBuilder msg = new StringBuilder();
 
-            int src = processPortInput(msg, Source, "Źródło");
-            int dst = processPortInput(msg, Destination, "Cel");
+            int src_port = validatePortInput(msg, this.SourcePort, "Źródło - port");
+            string src_nodeid = validateNodeIdInput(msg, this.SourceNodeId, "Źródło - nodeid");
+            int src_socket = validatePortInput(msg, this.SourceSocket, "Źródło - socket");
+            int dst_port = validatePortInput(msg, this.DestinationPort, "Cel - port");
+            string dst_nodeid = validateNodeIdInput(msg, this.DestinationNodeId, "Cel - nodeid");
+            int dst_socket = validatePortInput(msg, this.DestinationSocket, "Cel - socket");
             if (msg.Length == 0)
             {
-                /*List<int> invalid = cloudPrcoess.TryAddLink(src, dst);
+                List<AbstractAddress> abstractAddress = new List<AbstractAddress>();
+                abstractAddress.Add(new AbstractAddress(src_port, src_nodeid));
+                abstractAddress.Add(new AbstractAddress(dst_port, dst_nodeid));
+                List<NetworkNodeSender> networkNodeSender = new List<NetworkNodeSender>();
+                networkNodeSender.Add(new NetworkNodeSender(src_socket));
+                networkNodeSender.Add(new NetworkNodeSender(dst_socket));
+
+                Dictionary<AbstractAddress, NetworkNodeSender> dictionary = new Dictionary<AbstractAddress, NetworkNodeSender>();
+                dictionary.Add(abstractAddress[0], networkNodeSender[1]);
+                dictionary.Add(abstractAddress[1], networkNodeSender[0]);
+
+
+                Link newLink = new Link(dictionary);
+
+                List<Link> invalid = this.CloudSetupProcess.TryAddLink(newLink);
 
                 switch (invalid.Count)
                 {
@@ -159,33 +182,30 @@ namespace WireCloud.ViewModels
                     case 1:
                         {
                             msg.Append("Port : ");
-                            msg.Append(invalid[0]);
+                            msg.Append(invalid[0].ToString());
                             msg.Append(" jest zajęty");
                             break;
                         }
                     case 2:
                         {
                             msg.Append("Porty : ");
-                            msg.Append(invalid[0]);
+                            msg.Append(invalid[0].ToString());
                             msg.Append(" , ");
-                            msg.Append(invalid[1]);
+                            msg.Append(invalid[1].ToString());
                             msg.Append(" są zajęte");
                             break;
                         }
                     default:
                         {
                             throw new Exception("Unexpected State of Application");
-                        }
-                  
-           
+                        }   
                 }
-            */
             }
 
             ConsoleMessage = msg.ToString();
         }
 
-        private int processPortInput(StringBuilder msg, String input, String portName)
+        private int validatePortInput(StringBuilder msg, String input, String portName)
         {
             int result;
             if (input == null || input.Equals(""))
@@ -201,6 +221,18 @@ namespace WireCloud.ViewModels
                 msg.Append("\n");
             }
 
+            return result;
+        }
+        private string validateNodeIdInput(StringBuilder msg, String input, String portName)
+        {
+            string result = string.Empty;
+            if (input == null || input.Equals(""))
+            {
+                msg.Append("Wprowadź ");
+                msg.Append(portName);
+                msg.Append("\n");
+            }
+            else result = input;
             return result;
         }
 

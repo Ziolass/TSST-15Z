@@ -35,6 +35,11 @@ namespace WireCloud.CloudLogic
             this.Ports = Ports;
             this.IsLinkActive = true;
         }
+        public Link(Link link)
+        {
+            this.Ports = link.Ports;
+            this.IsLinkActive = link.IsLinkActive;
+        }
 
         public bool Contains(AbstractAddress address)
         {
@@ -50,10 +55,31 @@ namespace WireCloud.CloudLogic
             String returnValue = String.Empty;
             foreach (var item in Ports)
             {
-                returnValue += item.Key.NodeId + ": " + item.Key.Port + " | ";
+                returnValue += item.Key.NodeId + ": " + item.Key.Port + " " ;
             }
             return returnValue;
         }
-
+        public bool Equals(Link link)
+        {
+            bool abbstract = false;
+            bool node = false;
+            foreach (var item in Ports)
+            {
+                foreach (var linkItem in link.Ports)
+                {
+                    if (item.Key.Equals(linkItem.Key)) //AbstractAddress
+                    {
+                        abbstract = true;
+                    }
+                    else return false;
+                    if (item.Value.Equals(linkItem.Value)) //Node
+                    {
+                        node = true;
+                    }
+                    else return false;
+                }
+            }
+            return node && abbstract;
+        }
     }
 }

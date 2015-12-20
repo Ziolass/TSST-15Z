@@ -76,5 +76,6 @@ namespace WireCloud.CloudLogic
 
             return new Link(linkConnections);
         }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -24,7 +24,7 @@ namespace MockupCloudClient
                 string text = Console.ReadLine();
                 ActionSocket.Connect(ActionEndPoint);
                 
-                byte[] msg = Encoding.ASCII.GetBytes("mockup1|1|" + text);
+                byte[] msg = Encoding.ASCII.GetBytes("mockup10|1|" + text);
 
                 ActionSocket.Send(msg);
                 ActionSocket.Shutdown(SocketShutdown.Both);

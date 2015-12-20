@@ -99,26 +99,6 @@
         	VerticalAlignment="Top" 
         	Width="113" RenderTransformOrigin="1.197,0.476"/>
 
-        <TextBox HorizontalAlignment="Left" 
-        	Height="25" 
-        	Margin="563,210,0,0" 
-        	TextWrapping="Wrap" 
-        	VerticalAlignment="Top" 
-        	Width="95" Text="{Binding Destination, Source={StaticResource Cloud}}"/>
-        <TextBox HorizontalAlignment="Left" 
-            Height="25" 
-            Margin="563,240,0,0" 
-            TextWrapping="Wrap" 
-            VerticalAlignment="Top"
-            Width="95" Text="{Binding Source, Source={StaticResource Cloud}}"/>
-        <TextBox HorizontalAlignment="Left" 
-        	Height="25" 
-        	Margin="563,270,0,0" 
-            VerticalContentAlignment="Center"
-        	TextWrapping="Wrap" 
-        	VerticalAlignment="Top"
-        	Width="95" Text="{Binding Source, Source={StaticResource Cloud}}"/>
-
         <!-- Żródło -->
         <Label Content="Port lokalny" 
         	HorizontalAlignment="Left" 
@@ -143,23 +123,44 @@
         	Width="113" RenderTransformOrigin="1.197,0.476"/>
         <TextBox HorizontalAlignment="Left" 
         	Height="25" 
-        	Margin="563,148,0,0" 
+        	Margin="563,88,0,0" 
+            VerticalContentAlignment="Center"
         	TextWrapping="Wrap" 
-        	VerticalAlignment="Top"
-        	Width="95" Text="{Binding Source, Source={StaticResource Cloud}}"/>
+        	VerticalAlignment="Top" 
+        	Width="95" Text="{Binding SourcePort, Source={StaticResource Cloud}}"/>
         <TextBox HorizontalAlignment="Left" 
         	Height="25" 
         	Margin="563,118,0,0" 
             VerticalContentAlignment="Center"
         	TextWrapping="Wrap" 
         	VerticalAlignment="Top"
-        	Width="95" Text="{Binding Source, Source={StaticResource Cloud}}"/>
+        	Width="95" Text="{Binding SourceSocket, Source={StaticResource Cloud}}"/>
         <TextBox HorizontalAlignment="Left" 
         	Height="25" 
-        	Margin="563,88,0,0" 
-            VerticalContentAlignment="Center"
+        	Margin="563,148,0,0" 
+        	TextWrapping="Wrap" 
+        	VerticalAlignment="Top"
+        	Width="95" Text="{Binding SourceNodeId, Source={StaticResource Cloud}}"/>
+
+        <TextBox HorizontalAlignment="Left" 
+        	Height="25" 
+        	Margin="563,210,0,0" 
         	TextWrapping="Wrap" 
         	VerticalAlignment="Top" 
-        	Width="95" Text="{Binding Destination, Source={StaticResource Cloud}}"/>
+        	Width="95" Text="{Binding DestinationPort, Source={StaticResource Cloud}}"/>
+        <TextBox HorizontalAlignment="Left" 
+            Height="25" 
+            Margin="563,240,0,0" 
+            TextWrapping="Wrap" 
+            VerticalAlignment="Top"
+            Width="95" Text="{Binding DestinationSocket, Source={StaticResource Cloud}}"/>
+        <TextBox HorizontalAlignment="Left" 
+        	Height="25" 
+        	Margin="563,270,0,0" 
+            VerticalContentAlignment="Center"
+        	TextWrapping="Wrap" 
+        	VerticalAlignment="Top"
+        	Width="95" Text="{Binding DestinationNodeId, Source={StaticResource Cloud}}"/>
+
     </Grid>
 </Window>

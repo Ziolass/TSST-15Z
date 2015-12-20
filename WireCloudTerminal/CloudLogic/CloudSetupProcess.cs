@@ -24,7 +24,7 @@ namespace WireCloud.CloudLogic
     {
         private String ConfigurationFilePath;
         private Dictionary<Link, Thread> linksThreads;
-        private List<int> usedPorts;
+        private List<Link> usedPorts;
         private const int CLOSING_TIME = 1000;
 
         public event LinksCreatedHandler LinksCreated;
@@ -48,7 +48,7 @@ namespace WireCloud.CloudLogic
         {
             this.ConfigurationFilePath = configurationFilePath;
             linksThreads = new Dictionary<Link, Thread>();
-            usedPorts = new List<int>();
+            usedPorts = new List<Link>();
         }
 
         public void StartCloudProcess()
@@ -60,7 +60,8 @@ namespace WireCloud.CloudLogic
 
             this.ElementConfigurator = new ElementConfigurator(this.ConfigurationFilePath);
             this.ProcessMonitor = this.ElementConfigurator.SetUpCloud();
-
+            this.ProcessMonitor.StartAction();
+            usedPorts = this.ProcessMonitor.Links;
             if (this.ProcessMonitor.Links.Count != 0)
             {
                 if (LinksCreated != null)
@@ -68,39 +69,11 @@ namespace WireCloud.CloudLogic
                     LinksCreated();
                 }
             }
-
-            //createLinks();
-
-            /*foreach (Link link in this.ProccessMon.Links)
-            {
-                wrapInThread(link);
-            }*/
         }
-
-        /*private void createLinks() {
-
-            Manager configManager = new Manager(configurationFilePath);
-            Links = configManager.createLinks();
-            if (LinksCreated != null)
-            {
-                LinksCreated();
-            }
-        }*/
-
-        /*private void wrapInThread(Link link)
-        {
-            Thread linkThread = new Thread(new ThreadStart(link.StartListening));
-            linksThreads.Add(link, linkThread);
-            usedPorts.Add(link.Source);
-            usedPorts.Add(link.Destination);
-            linkThread.Start();
-        }
-        */
         public void CloseLink(Link link)
         {
             disposeLink(link, CLOSING_TIME);
-            //usedPorts.Remove(link.Destination);
-            //usedPorts.Remove(link.Source);
+            usedPorts.Remove(link);
             linksThreads.Remove(link);
         }
 
@@ -121,7 +94,9 @@ namespace WireCloud.CloudLogic
                 {
                     linkThread.Abort();
                 }
-                catch (Exception ex) { }
+                catch (Exception ex) { 
+                
+                }
             }
         }
 
@@ -133,24 +108,22 @@ namespace WireCloud.CloudLogic
             }
         }
 
-        public List<int> TryAddLink(int src, int dst)
+        public List<Link> TryAddLink(Link src)
         {
-            List<int> occupiedPorts = new List<int>();
+            List<Link> occupiedPorts = new List<Link>();
             validatePort(occupiedPorts, src);
-            validatePort(occupiedPorts, dst);
             if (occupiedPorts.Count == 0)
             {
-                //Link link = new Link(src,dst);
-                //Links.Add(link);
-                //wrapInThread(link);
-                //if (LinkCreated != null)
-                //{
-                //LinkCreated(new LinkCreatedArgs(link));
-                //}
+                Link link = new Link(src);
+                Links.Add(link);
+                if (LinkCreated != null)
+                {
+                    LinkCreated(new LinkCreatedArgs(link));
+                }
             }
             return occupiedPorts;
         }
-        private void validatePort(List<int> invalidPorts, int port)
+        private void validatePort(List<Link> invalidPorts, Link port)
         {
             if (usedPorts.Contains(port))
             {
