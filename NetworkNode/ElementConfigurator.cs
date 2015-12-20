@@ -36,7 +36,6 @@ namespace NetworkNode
                     {
                         if (configReader.Name == "port")
                         {
-                            string portType = configReader.GetAttribute("type");
                             int portNumber = int.Parse(configReader.GetAttribute("number"));
                             int tcp = int.Parse(configReader.GetAttribute("tcp"));
                             ports.Add(new NodeInput(tcp, portNumber)); 
