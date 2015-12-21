@@ -1,0 +1,1 @@
+cd ..\..\WireCloudTerminal\bin\Debug\ &  WireCloudTerminal.exe

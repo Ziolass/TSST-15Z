@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<management-ports>
+	<ports>
+		<port value="7001" command ="sub-connection-HPC|tu_komenda_zgodna_z_protokołem"/>
+		<port value="7002" command ="sub-connection-HPC|tu_komenda_zgodna_z_protokołem"/>  
+		<port value="7003" command ="sub-connection-HPC|tu_komenda_zgodna_z_protokołem"/>
+		<port value="7004" command ="sub-connection-HPC|tu_komenda_zgodna_z_protokołem"/>  
+	
+		<port value="9901" command ="resource-location|tu_komenda_zgodna_z_protokołem"/>
+		<port value="9902" command ="resource-location|tu_komenda_zgodna_z_protokołem"/> 
+		<port value="9903" command ="resource-location|tu_komenda_zgodna_z_protokołem"/>
+		<port value="9904" command ="resource-location|tu_komenda_zgodna_z_protokołem"/>
+  
+	</ports>
+	<network-specifications>
+	<module value="STM1"/>
+	<contener name="VC32"/>
+	<contener name="VC12"/>
+	</network-specifications>
+</management-ports>

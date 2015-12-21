@@ -29,10 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("VC32");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("VC12");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("VC21");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("VC4");
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.label3 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -138,23 +134,9 @@
             // 
             // treeView1
             // 
-            this.treeView1.CheckBoxes = true;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "VC32";
-            treeNode1.Text = "VC32";
-            treeNode2.Name = "VC12";
-            treeNode2.Text = "VC12";
-            treeNode3.Name = "VC21";
-            treeNode3.Text = "VC21";
-            treeNode4.Name = "VC4";
-            treeNode4.Text = "VC4";
-            this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3,
-            treeNode4});
             this.treeView1.Size = new System.Drawing.Size(151, 178);
             this.treeView1.TabIndex = 6;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
@@ -202,6 +184,7 @@
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.List;
+            this.listView1.Visible = false;
             // 
             // groupBox2
             // 
@@ -224,6 +207,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(0, 13);
             this.label1.TabIndex = 10;
+            this.label1.Visible = false;
             // 
             // panel1
             // 
@@ -337,7 +321,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TreeView treeView1;
+        public System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +16,7 @@ namespace SDHClient
             static void Main(string[] args)
         {
             string path = Directory.GetCurrentDirectory();
-            DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(path).Parent).Parent).Parent).FullName+"\\Configs");
+            DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(path).Parent).Parent).Parent).FullName+"\\Configs\\Client"); //sobczakj
             bool any_found = false;
             if(di.Exists)
             foreach (FileInfo fi in di.GetFiles("Klient*.xml"))
