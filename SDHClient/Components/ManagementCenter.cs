@@ -1,4 +1,4 @@
-﻿
+
 using NetworkNode.SDHFrame;
 using System;
 using System.Collections.Generic;
@@ -258,7 +258,7 @@ namespace SDHClient
                 size = 28;
             }
             VirtualContainer newVC = new VirtualContainer(level);
-            newVC.Content = new NetworkNode.SDHFrame.Container(generateString(size));
+            newVC.SetContent(new NetworkNode.SDHFrame.Container(generateString(size))); //sobczakj
             return newVC;
 
 
