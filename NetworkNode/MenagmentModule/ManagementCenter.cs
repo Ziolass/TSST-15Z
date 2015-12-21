@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.MenagmentModule
 {
- 
+
     public class ManagementCenter
     {
         ManagementPort managementPort;
@@ -92,7 +92,7 @@ namespace NetworkNode.MenagmentModule
             }
 
             List<string> literalRecord = connections[0];
-           
+
             int inPort = int.Parse(literalRecord[0]);
             int outPort = int.Parse(literalRecord[1]);
             int inContainer = int.Parse(literalRecord[2]);
@@ -120,27 +120,19 @@ namespace NetworkNode.MenagmentModule
 
         private string getPortList()
         {
-            List<List<int>> inOutPorts = node.GetPorts();
+            List<int> ports = node.GetPorts();
             StringBuilder builder = new StringBuilder();
-            int mainIndex = 0;
-            foreach (List<int> ports in inOutPorts)
+            int index = 0;
+            foreach (int port in ports)
             {
-                int index = 0;
-                foreach (int port in ports)
-                {
 
-                    builder.Append(port);
-                    if (index < ports.Count - 1)
-                    {
-                        builder.Append("#");
-                    } 
-                }
-
-                if (mainIndex < inOutPorts.Count - 1)
+                builder.Append(port);
+                if (index < ports.Count - 1)
                 {
-                    builder.Append("|");
+                    builder.Append("#");
                 }
             }
+
             return builder.ToString(); ;
         }
         private string getConnectionList()
@@ -161,11 +153,11 @@ namespace NetworkNode.MenagmentModule
                 builder.Append(record.ContainerLevel.ToString());
                 builder.Append("#");
                 builder.Append(record.Stm.ToString());
-                if (index < records.Count-1)
+                if (index < records.Count - 1)
                 {
                     builder.Append("|");
                 }
-                
+
                 index++;
             }
 
@@ -179,11 +171,11 @@ namespace NetworkNode.MenagmentModule
             {
                 int inPort = int.Parse(literalRecord[0]);
                 int outPort = int.Parse(literalRecord[1]);
-                int inContainer= int.Parse(literalRecord[2]);
+                int inContainer = int.Parse(literalRecord[2]);
                 int outContainer = int.Parse(literalRecord[3]);
                 VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[4]);
                 StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
-                records.Add(new ForwardingRecord(inPort, outPort, stm,level,inContainer,outContainer));
+                records.Add(new ForwardingRecord(inPort, outPort, stm, level, inContainer, outContainer));
             }
             ExecutionResult result = node.AddForwardingRecords(records);
 

@@ -14,7 +14,7 @@ namespace SDHClient
     public delegate void HandleIncomingData(object sender, EventArgs args);
     public class IOPort : IDisposable
     {
-        
+       public int local_to, local_listen;
         private LocalSocektBuilder socketBuilder;
         private ManualResetEvent connectDone = new ManualResetEvent(false);
         private ManualResetEvent sendDone = new ManualResetEvent(false);
@@ -29,10 +29,11 @@ namespace SDHClient
         public int InputPort;
 
        // public bool Active { get; set; }
-        public IOPort(int port_to,int listening_port)
+        public IOPort(int port_to,int listening_port,int local_to,int local_listen)
         {
             socketBuilder = LocalSocektBuilder.Instance;
-          
+            this.local_listen = local_listen;
+            this.local_to = local_to;
             outputPort = port_to;
             inputBuffer = new List<byte[]>();
             InputPort = listening_port;

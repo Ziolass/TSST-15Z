@@ -1,38 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using WireCloud.SocketUtils;
 
-namespace WireCloud
+namespace WireCloud.CloudLogic
 {
     public delegate void LinkStateChangedHandler();
     public class Link
     {
-        class StateObject
-        {
-            public Socket workSocket = null;
-            public Socket sender = null;
-            public const int BufferSize = 10024;
-            public byte[] buffer = new byte[BufferSize];
-            public StringBuilder sb = new StringBuilder();
-        }
-
-        private LocalSocektBuilder socketBuilder;
-        public int Source { get; private set; }
-        public int Destination { get; private set; }
-        private bool running;
-        private Socket listener;
-
-        private ManualResetEvent allDone = new ManualResetEvent(false);
-        private ManualResetEvent connectDone = new ManualResetEvent(false);
-        private ManualResetEvent sendDone = new ManualResetEvent(false);
-        private ManualResetEvent receiveDone = new ManualResetEvent(false);
+        private Dictionary<AbstractAddress, NetworkNodeSender> Ports;
 
         public event LinkStateChangedHandler LinkActive;
 
@@ -53,134 +30,56 @@ namespace WireCloud
             }
         }
 
-
-        public Link(int cloudServer, int networkNodeServer)
+        public Link(Dictionary<AbstractAddress, NetworkNodeSender> Ports)
         {
-            socketBuilder = LocalSocektBuilder.Instance;
-            this.Source = cloudServer;
-            this.Destination = networkNodeServer;
-            this.running = true;
+            this.Ports = Ports;
+            this.IsLinkActive = true;
+        }
+        public Link(Link link)
+        {
+            this.Ports = link.Ports;
+            this.IsLinkActive = link.IsLinkActive;
         }
 
-        public void StartListening()
+        public bool Contains(AbstractAddress address)
         {
-            try
+            return Ports.ContainsKey(address);
+        }
+
+        public void SendData(string data, AbstractAddress address)
+        {
+            Ports[address].SendContent(data);
+        }
+        public String ToString()
+        {
+            String returnValue = String.Empty;
+            foreach (var item in Ports)
             {
-                listener = socketBuilder.getTcpSocket(Source);
-                IsLinkActive = true;
-                while (running)
+                returnValue += item.Key.NodeId + ": " + item.Key.Port + " ";
+            }
+            return returnValue;
+        }
+        public bool Equals(Link link)
+        {
+            bool abbstract = false;
+            bool node = false;
+            for (int i = 0; i < Ports.Count; i++)
+            {
+                KeyValuePair<AbstractAddress, NetworkNodeSender> thisObject = Ports.ElementAt(i);
+                KeyValuePair<AbstractAddress, NetworkNodeSender> linkObject = link.Ports.ElementAt(i);
+                if (thisObject.Key.Equals(linkObject.Key)) //AbstractAddress
                 {
-                    listener.Listen(10);
-                    if (!IsLinkActive)
-                    {
-                        continue;
-                    }
-                    allDone.Reset();
-                    listener.BeginAccept(new AsyncCallback(AcceptIncomingConnection), listener);
-                    allDone.WaitOne();
+                    abbstract = true;
                 }
-            }
-            catch (Exception e)
-            {
-                //TODO handling exception
-            }
-        }
-
-        private void AcceptIncomingConnection(IAsyncResult ar)
-        {   
-            allDone.Set();
-            try
-            {
-                Socket handler = ((Socket)ar.AsyncState).EndAccept(ar); // Tworzy Socket do obsługi przychodzącego
-                StateObject state = new StateObject();
-                state.workSocket = handler;
-                // TODO sprawdzić czy nie będzie sytuacji w której spróbujemy stworzyć dwie wtyczki na tym samym porcie -> przy większej ilości kabli
-                state.sender = socketBuilder.getTcpSocket();
-                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(StartReadingData), state);
-            }
-            catch (ObjectDisposedException connectionDisposed)
-            {
-                //TODO exception handling
-            }
-        }
-
-        public void StartReadingData(IAsyncResult ar)
-        {
-            StateObject state = (StateObject)ar.AsyncState;
-            Socket handler = state.workSocket;
-            Socket sender = state.sender;
-
-            int bytesRead = handler.EndReceive(ar);
-            if (bytesRead > 0)
-            {
-                IPEndPoint endpoint = socketBuilder.getLocalEndpoint(Destination);
-                try
+                else return false;
+                if (thisObject.Value.Equals(linkObject.Value)) //Node
                 {
-                    sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
-                    connectDone.WaitOne();
-
-                    sendData(sender, state.buffer);
-                    sendDone.WaitOne();
-                    sender.Shutdown(SocketShutdown.Both);
-                    sender.Close();
+                    node = true;
                 }
-                catch (Exception ex)
-                {
-
-                }
-            }
-            //TODO wprowadzić jakąś sekwencje końcową albo ograniczoną liczbębajtówktórą będziemy przesyłać  
-            //Tu może wystąpić błąd związany ze zbyt dużm blokeim danych dlatego przyda się else który wywoła jeszcze raz StartReadingData
-        }
-
-        private void ConnectToNextNode(IAsyncResult ar)
-        {
-            try
-            {
-                Thread.Sleep(100);
-                Socket sender = (Socket)ar.AsyncState;
-                sender.EndConnect(ar);
-                connectDone.Set();
-            }
-            catch (Exception ex)
-            {
+                else return false;
 
             }
+            return node && abbstract;
         }
-
-        private void sendData(Socket sender, byte[] dataToSend)
-        {
-            sender.BeginSend(dataToSend, 0, dataToSend.Length, 0,
-                new AsyncCallback(SendData), sender);
-        }
-
-        private void SendData(IAsyncResult ar)
-        {
-            try
-            {
-                Socket client = (Socket)ar.AsyncState;
-                int bytesSent = client.EndSend(ar);
-                sendDone.Set();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
-
-        public void DestroyLink()
-        {
-            if (listener == null)
-            {
-                return; 
-            } 
-
-            //listener.Shutdown(SocketShutdown.Both);
-            running = false;
-            listener.Close();
-        }
-        
-
     }
 }

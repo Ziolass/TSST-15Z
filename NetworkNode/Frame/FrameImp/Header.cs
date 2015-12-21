@@ -32,6 +32,14 @@ namespace NetworkNode.SDHFrame
         {
             this.Checksum = null;
             this.EOW = null;
+            this.DCC = null;
+            this.Type = ContentType.HEADER;
+        }
+        public Header(Header header)
+        {
+            this.Checksum = header.Checksum;
+            this.EOW = header.EOW;
+            this.DCC = header.DCC;
             this.Type = ContentType.HEADER;
         }
         /// <summary>

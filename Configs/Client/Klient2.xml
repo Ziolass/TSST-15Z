@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<client>
+<port listen="3010" to="6000" local_to="1" local_listen="2"/>  
+<port listen="3012" to="6000" local_to="3" local_listen="4"/>
+<name value="Klient2"/>
+<management_port number ="9902"/>
+</client>
+
+ 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WireCloud
+namespace WireCloud.CloudLogic
 {
     public delegate void LinksCreatedHandler();
     public delegate void LinkCreatedHandler(LinkCreatedArgs args);
-    
+
     public class LinkCreatedArgs : EventArgs
     {
         public LinkCreatedArgs(Link link)
@@ -18,93 +18,74 @@ namespace WireCloud
             Link = link;
         }
         public Link Link { get; private set; }
-    } 
+    }
 
     public class CloudSetupProcess
     {
-        private String configurationFilePath;
+        private String ConfigurationFilePath;
         private Dictionary<Link, Thread> linksThreads;
-        private List<int> usedPorts;
+        private List<Link> usedPorts;
         private const int CLOSING_TIME = 1000;
-        
+
         public event LinksCreatedHandler LinksCreated;
         public event LinkCreatedHandler LinkCreated;
-        
-        public List<Link> Links { get; private set; } 
 
-        private string setupDirectoryPath(string path, string file)
+        public ProcessMonitor ProcessMonitor { get; private set; }
+        public ElementConfigurator ElementConfigurator { get; private set; }
+
+
+        public List<Link> Links
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(path);
-            sb.Append("\\");
-            sb.Append(file);
-            return sb.ToString();
-        }
-        public CloudSetupProcess(string configurationFileName)
-        {
-            Links = new List<Link>();
-            linksThreads = new Dictionary<Link, Thread>();
-            usedPorts = new List<int>();
-            string defaultDirectoryPath = Directory.GetCurrentDirectory();
-            this.configurationFilePath = setupDirectoryPath(defaultDirectoryPath,configurationFileName);
+            get { return this.ProcessMonitor.Links; }
         }
 
-        public CloudSetupProcess(string configurationFileName, string directoryPath)
-        {
-            Links = new List<Link>();
-            linksThreads = new Dictionary<Link, Thread>();
-            usedPorts = new List<int>();
-            this.configurationFilePath = setupDirectoryPath(directoryPath, configurationFileName);
-        }  
 
-        public void  StartCloudProcess () {
-            if (!File.Exists(configurationFilePath))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CloudSetupProcess" /> class.
+        /// </summary>
+        /// <param name="configurationFilePath">The configuration file path.</param>
+        public CloudSetupProcess(string configurationFilePath)
+        {
+            this.ConfigurationFilePath = configurationFilePath;
+            linksThreads = new Dictionary<Link, Thread>();
+            usedPorts = new List<Link>();
+        }
+
+        public void StartCloudProcess()
+        {
+            if (!File.Exists(ConfigurationFilePath))
             {
                 throw new Exception("Missing configuration file or wrong directory");
             }
-            
-            createLinks();
 
-            foreach (Link link in Links)
+            this.ElementConfigurator = new ElementConfigurator(this.ConfigurationFilePath);
+            this.ProcessMonitor = this.ElementConfigurator.SetUpCloud();
+            this.ProcessMonitor.StartAction();
+            usedPorts = this.ProcessMonitor.Links;
+            if (this.ProcessMonitor.Links.Count != 0)
             {
-                wrapInThread(link);
+                if (LinksCreated != null)
+                {
+                    LinksCreated();
+                }
             }
         }
-
-        private void createLinks() {
-            Manager configManager = new Manager(configurationFilePath);
-            Links = configManager.createLinks();
-            if (LinksCreated != null)
-            {
-                LinksCreated();
-            }
-        }
-
-        private void wrapInThread(Link link)
-        {
-            Thread linkThread = new Thread(new ThreadStart(link.StartListening));
-            linksThreads.Add(link, linkThread);
-            usedPorts.Add(link.Source);
-            usedPorts.Add(link.Destination);
-            linkThread.Start();
-        }
-
         public void CloseLink(Link link)
         {
             disposeLink(link, CLOSING_TIME);
-            usedPorts.Remove(link.Destination);
-            usedPorts.Remove(link.Source);
+            usedPorts.Remove(link);
             linksThreads.Remove(link);
         }
 
         private void disposeLink(Link link, int executionTime)
         {
-            if (!Links.Contains(link))
-            {
-                return;
-            }
+            //if (!Links.Contains(link))
+            //{
+            //    return;
+            //}
 
-            link.DestroyLink();
+            //link.DestroyLink();
+
             Thread linkThread = linksThreads[link];
             linkThread.Join(executionTime);
             if (linkThread.IsAlive)
@@ -113,7 +94,9 @@ namespace WireCloud
                 {
                     linkThread.Abort();
                 }
-                catch (Exception ex){}
+                catch (Exception ex) { 
+                
+                }
             }
         }
 
@@ -125,16 +108,14 @@ namespace WireCloud
             }
         }
 
-        public List<int> TryAddLink(int src, int dst)
-        {   
-            List<int> occupiedPorts = new List<int>();
-            validatePort(occupiedPorts,src);
-            validatePort(occupiedPorts, dst);
+        public List<Link> TryAddLink(Link src)
+        {
+            List<Link> occupiedPorts = new List<Link>();
+            validatePort(occupiedPorts, src);
             if (occupiedPorts.Count == 0)
             {
-                Link link = new Link(src,dst);
+                Link link = new Link(src);
                 Links.Add(link);
-                wrapInThread(link);
                 if (LinkCreated != null)
                 {
                     LinkCreated(new LinkCreatedArgs(link));
@@ -142,13 +123,16 @@ namespace WireCloud
             }
             return occupiedPorts;
         }
-        private void validatePort(List<int> invalidPorts, int port)
+        private void validatePort(List<Link> invalidPorts, Link port)
         {
-            if (usedPorts.Contains(port))
+            foreach (var item in usedPorts)
             {
-                invalidPorts.Add(port);
+                if (item.Equals(port))
+                {
+                    invalidPorts.Add(port);
+                }
             }
         }
-     
+
     }
 }

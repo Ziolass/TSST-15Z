@@ -1,8 +1,8 @@
-﻿using NetworkNode.HPC;
-using NetworkNode.MenagmentModule;
-using NetworkNode.TTF;
-using NetworkNode;
-using WireCloud;
+﻿//using NetworkNode.HPC;
+//using NetworkNode.MenagmentModule;
+//using NetworkNode.TTF;
+//using NetworkNode;
+//using WireCloud;
 using System;
 using System.Collections.Generic;
 using System.Collections;
@@ -43,14 +43,16 @@ namespace SDHClient
                             int portNumberTo = 0;
 
                                 bool b = int.TryParse(configReader.GetAttribute("to"),out portNumberTo);
-                            int portNumberLs = 0;
+                            int portNumberLs = 0, local_to = 0, local_listen = 0;
 
                                 bool c = int.TryParse(configReader.GetAttribute("listen"),out portNumberLs);
-                            if (b == false || c == false) throw new FormatException("Nieprawidłowy plik konfiguracyjny");                       ////  switch (portType)
+                            bool d = int.TryParse(configReader.GetAttribute("local_to"), out local_to);
+                            bool e = int.TryParse(configReader.GetAttribute("local_listen"), out local_listen);
+                            if (b == false || c == false||d==false||e==false) throw new FormatException("Nieprawidłowy plik konfiguracyjny");                       ////  switch (portType)
                            // {
                                // case "input":
                                 //    {
-                                        IOPort io = new IOPort(portNumberTo, portNumberLs);
+                                        IOPort io = new IOPort(portNumberTo, portNumberLs,local_to,local_listen);
                                           ports.Add(io);
                                        // Input input = new Input(portNumber);
                                        // inputs.Add(input);

@@ -15,7 +15,8 @@ namespace NetworkNode.HPC
         private Dictionary<int, List<ForwardingRecord>> forwardingTable;
         private IFrameBuilder builder;
         private TransportTerminalFunction ttf;
-        private Dictionary<int, IFrame> portsCredentials;
+        private Dictionary<int, IFrame> inputCredentials;
+        private Dictionary<int, IFrame> outputCredentials;
 
         object bufferLock = new object();
 
@@ -25,16 +26,14 @@ namespace NetworkNode.HPC
             this.ttf = ttf;
             this.ttf.HandleInputFrame += new HandleInputFrame(handleIncomFrame);
             builder = new FrameBuilder();
-            portsCredentials = new Dictionary<int, IFrame>();
-            List<int> allPorts = new List<int>();
-            foreach (List<int> ports in ttf.GetPorts())
-            {
-                allPorts.AddRange(ports);
-            }
-
+            inputCredentials = new Dictionary<int, IFrame>();
+            outputCredentials = new Dictionary<int, IFrame>();
+            List<int> allPorts = ttf.GetPorts();
+            
             foreach (int port in allPorts)
             {
-                portsCredentials.Add(port, new Frame());
+                inputCredentials.Add(port, new Frame());
+                outputCredentials.Add(port, new Frame());
             }
         }
 
@@ -70,14 +69,14 @@ namespace NetworkNode.HPC
         {
             VirtualContainer vc = new VirtualContainer(record.ContainerLevel);
             
-            if (portsCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+            if (inputCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
             {
-                if (portsCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+                if (outputCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
                 {
                     return true;
                 }
 
-                ((Frame)portsCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
+                ((Frame)inputCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
             } 
 
             return false;
@@ -85,9 +84,12 @@ namespace NetworkNode.HPC
 
         private bool clearCredentials(ForwardingRecord record)
         {
-            
-            return ((Frame)portsCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn) &
-                ((Frame)portsCredentials[record.OutputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
+            Frame inputCredential = (Frame)inputCredentials[record.InputPort];
+            Frame outputCredential = (Frame)outputCredentials[record.InputPort];
+            bool result = true;
+            result = result && inputCredential.ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
+            result = result && outputCredential.ClearVirtualContainer(record.ContainerLevel, record.VcNumberOut);
+            return result;
         }
 
         public List<ForwardingRecord> GetForwardingRecords()

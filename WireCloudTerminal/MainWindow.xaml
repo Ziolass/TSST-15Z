@@ -1,11 +1,11 @@
-﻿<Window x:Class="WireCloudTerminal.MainWindow"
+<Window x:Class="WireCloud.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        xmlns:local="clr-namespace:WireCloudTerminal"
+        xmlns:local="clr-namespace:WireCloud.ViewModels"
         Title="Chmura Kablowa" 
-        Height="459.6" 
-        Width="482.6"
+        Height="394.494" 
+        Width="712.6"
         >
     <Window.Resources>
         <local:TerminalViewModel x:Key="Cloud"/>
@@ -17,7 +17,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Grid RenderTransformOrigin="0.5,0.5" Height="426" VerticalAlignment="Top">
+    <Grid RenderTransformOrigin="0.5,0.5" Height="363" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
@@ -29,69 +29,138 @@
                 <TranslateTransform/>
             </TransformGroup>
         </Grid.RenderTransform>
-        <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="110" Margin="48,291,0,0" Stroke="Black" VerticalAlignment="Top" Width="169"/>
+        <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="252" Margin="445,60,0,0" Stroke="Black" VerticalAlignment="Top" Width="223"/>
         <ListBox HorizontalAlignment="Left" 
-                 Height="200" 
+                 Name="linkListBox"
+                 Height="175" 
                  Margin="48,60,0,0" 
                  VerticalAlignment="Top" 
                  Width="387" 
                  ItemsSource="{Binding Links, Source={StaticResource Cloud}}" 
                  DisplayMemberPath="Id"
                  ItemContainerStyle="{StaticResource ActiveItem}"
-                 SelectedItem="{Binding SelectedLink, Source={StaticResource Cloud}}"/>
+                 SelectedItem="{Binding SelectedLink, UpdateSourceTrigger=PropertyChanged, Source={StaticResource Cloud}}"/>
         <Label Content="Lista istniejących portów" HorizontalAlignment="Left" Height="25" Margin="48,30,0,0" VerticalAlignment="Top" Width="207"/>
-        <ComboBox HorizontalAlignment="Left" 
-                  Height="21" 
-                  Margin="48,265,0,0" 
-                  VerticalAlignment="Top" 
-                  Width="272" 
-                  ItemsSource="{Binding LinkActions, Source={StaticResource Cloud}}" 
-                  DisplayMemberPath="Label"
-                  SelectedItem="{Binding SelectedAction, Source={StaticResource Cloud}}">
-        </ComboBox>
         <Button HorizontalAlignment="Left" 
                 Height="21" 
-                Margin="325,265,0,0" 
+                Margin="323,240,0,0" 
                 VerticalAlignment="Top" 
                 Width="110" 
-                Content="Wykonaj" 
-                Command="{Binding PerformLinkAction, Mode=OneWay, Source={StaticResource Cloud}}"/>
-        <TextBox HorizontalAlignment="Left" 
-                 Height="18" 
-                 Margin="103,334,0,0" 
-                 TextWrapping="Wrap" 
-                 VerticalAlignment="Top" 
-                 Width="95" Text="{Binding Destination, Source={StaticResource Cloud}}"/>
-        <TextBox HorizontalAlignment="Left" 
-                 Height="18" 
-                 Margin="103,311,0,0" 
-                 TextWrapping="Wrap" 
-                 VerticalAlignment="Top"
-                 Width="95" Text="{Binding Source, Source={StaticResource Cloud}}"/>
+                IsEnabled="{Binding ElementName=linkListBox, Path=SelectedItems.Count}"
+                Content="Usuń" 
+                Command="{Binding DeleteLink, Source={StaticResource Cloud}}"/>
         <Label Content="Źródło" 
-               HorizontalAlignment="Left" 
+               HorizontalAlignment="Left"                
+               HorizontalContentAlignment="Center"
                Height="28" 
-               Margin="48,308,0,0" 
+               Margin="445,60,0,0" 
                VerticalAlignment="Top" 
-               Width="49"/>
+               Width="223"/>
         <Label Content="Cel" 
                HorizontalAlignment="Left" 
+               HorizontalContentAlignment="Center"
                Height="28" 
-               Margin="67,330,0,0" 
+               Margin="445,182,0,0" 
                VerticalAlignment="Top" 
-               Width="30"/>
+               Width="223" RenderTransformOrigin="1.197,0.476"/>
         <TextBox HorizontalAlignment="Left" 
                  Height="78" 
-                 Margin="229,323,0,0" 
+                 Margin="48,272,0,0" 
                  TextWrapping="Wrap" 
                  VerticalAlignment="Top" 
-                 Width="206" Text="{Binding ConsoleMessage, Source={StaticResource Cloud}}"/>
+                 Width="385" Text="{Binding ConsoleMessage, Source={StaticResource Cloud}}"/>
         <Button HorizontalAlignment="Left" 
                 Height="21" 
-                Margin="87,363,0,0" 
+                Margin="558,317,0,0" 
                 VerticalAlignment="Top" 
                 Width="110" 
                 Content="Stwórz" Command="{Binding CreateLink, Mode=OneWay, Source={StaticResource Cloud}}"/>
-        <Label Content="Konsola" HorizontalAlignment="Left" Height="27" Margin="229,291,0,0" VerticalAlignment="Top" Width="207"/>
+        <Label Content="Konsola" HorizontalAlignment="Left" Height="27" Margin="48,240,0,0" VerticalAlignment="Top" Width="270"/>
+
+        <Label Content="Port lokalny" 
+        	HorizontalAlignment="Left" 
+        	HorizontalContentAlignment="Center"
+        	Height="25" 
+        	Margin="445,210,0,0" 
+        	VerticalAlignment="Top" 
+        	Width="113" RenderTransformOrigin="1.197,0.476"/>
+        <Label Content="Socket" 
+        	HorizontalAlignment="Left" 
+        	HorizontalContentAlignment="Center"
+        	Height="25" 
+        	Margin="445,240,0,0" 
+        	VerticalAlignment="Top" 
+        	Width="113" RenderTransformOrigin="1.197,0.476"/>
+        <Label Content="ID węzła" 
+        	HorizontalAlignment="Left" 
+        	HorizontalContentAlignment="Center"
+        	Height="25" 
+        	Margin="445,270,0,0" 
+        	VerticalAlignment="Top" 
+        	Width="113" RenderTransformOrigin="1.197,0.476"/>
+
+        <!-- Żródło -->
+        <Label Content="Port lokalny" 
+        	HorizontalAlignment="Left" 
+        	HorizontalContentAlignment="Center"
+        	Height="25" 
+        	Margin="445,88,0,0" 
+        	VerticalAlignment="Top" 
+        	Width="113" RenderTransformOrigin="1.197,0.476"/>
+        <Label Content="Socket" 
+        	HorizontalAlignment="Left" 
+        	HorizontalContentAlignment="Center"
+        	Height="25" 
+        	Margin="445,118,0,0" 
+        	VerticalAlignment="Top" 
+        	Width="113" RenderTransformOrigin="1.197,0.476"/>
+        <Label Content="ID węzła" 
+        	HorizontalAlignment="Left" 
+        	HorizontalContentAlignment="Center"
+        	Height="25" 
+        	Margin="445,148,0,0" 
+        	VerticalAlignment="Top" 
+        	Width="113" RenderTransformOrigin="1.197,0.476"/>
+        <TextBox HorizontalAlignment="Left" 
+        	Height="25" 
+        	Margin="563,88,0,0" 
+            VerticalContentAlignment="Center"
+        	TextWrapping="Wrap" 
+        	VerticalAlignment="Top" 
+        	Width="95" Text="{Binding SourcePort, Source={StaticResource Cloud}}"/>
+        <TextBox HorizontalAlignment="Left" 
+        	Height="25" 
+        	Margin="563,118,0,0" 
+            VerticalContentAlignment="Center"
+        	TextWrapping="Wrap" 
+        	VerticalAlignment="Top"
+        	Width="95" Text="{Binding SourceSocket, Source={StaticResource Cloud}}"/>
+        <TextBox HorizontalAlignment="Left" 
+        	Height="25" 
+        	Margin="563,148,0,0" 
+        	TextWrapping="Wrap" 
+        	VerticalAlignment="Top"
+        	Width="95" Text="{Binding SourceNodeId, Source={StaticResource Cloud}}"/>
+
+        <TextBox HorizontalAlignment="Left" 
+        	Height="25" 
+        	Margin="563,210,0,0" 
+        	TextWrapping="Wrap" 
+        	VerticalAlignment="Top" 
+        	Width="95" Text="{Binding DestinationPort, Source={StaticResource Cloud}}"/>
+        <TextBox HorizontalAlignment="Left" 
+            Height="25" 
+            Margin="563,240,0,0" 
+            TextWrapping="Wrap" 
+            VerticalAlignment="Top"
+            Width="95" Text="{Binding DestinationSocket, Source={StaticResource Cloud}}"/>
+        <TextBox HorizontalAlignment="Left" 
+        	Height="25" 
+        	Margin="563,270,0,0" 
+            VerticalContentAlignment="Center"
+        	TextWrapping="Wrap" 
+        	VerticalAlignment="Top"
+        	Width="95" Text="{Binding DestinationNodeId, Source={StaticResource Cloud}}"/>
+
     </Grid>
 </Window>
