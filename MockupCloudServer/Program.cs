@@ -17,7 +17,7 @@ namespace MockupCloudServer
             {
                 IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint ActionEndPoint = new IPEndPoint(ipAddress, 4040);
+                IPEndPoint ActionEndPoint = new IPEndPoint(ipAddress, 4032);
                 Socket ActionSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 ActionSocket.Bind(ActionEndPoint);
                 ActionSocket.Listen(100);

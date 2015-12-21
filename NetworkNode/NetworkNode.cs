@@ -14,9 +14,9 @@ namespace NetworkNode
         private HigherOrderPathConnection hpc;
         private TransportTerminalFunction ttf;
 
-        public int Id { get; private set; }
+        public string Id { get; private set; }
 
-        public NetworkNode(HigherOrderPathConnection hpc, TransportTerminalFunction ttf, int id)
+        public NetworkNode(HigherOrderPathConnection hpc, TransportTerminalFunction ttf, string id)
         {
             this.ttf = ttf;
             this.hpc = hpc;
@@ -38,7 +38,7 @@ namespace NetworkNode
             return hpc.GetForwardingRecords();
         }
 
-        public List<List<int>> GetPorts()
+        public List<int> GetPorts()
         {
             return ttf.GetPorts();
         }

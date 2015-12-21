@@ -2,11 +2,11 @@
 <links>
 	<server tcp="6000" buffer="10000" clientsNumber="100"/>
 	<link>
-		<port tcp="4030" local="1" node="mockup1" />
-		<port tcp="4040" local="1" node="mockup2" />
+		<port tcp="4029" local="1" node="client" />
+		<port tcp="4030" local="2" node="node" />
 	</link>
 	<link>
-		<port tcp="4031" local="2" node="mockup2" />
-		<port tcp="4041" local="2" node="mockup4" />
+		<port tcp="4031" local="2" node="" />
+		<port tcp="4032" local="3" node="server" />
 	</link>
 </links>

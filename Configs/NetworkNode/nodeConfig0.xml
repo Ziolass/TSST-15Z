@@ -1,14 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <node type="mux" number="1">
-  
-<port type="input" number="5000"/>
-<port type="input" number="5002"/>
-<port type="input" number="5004"/>
-  
-<port type="output" number="5001"/>
-<port type="output" number="5003"/>
-<port type="output" number="5005"/>
-
-
-<managment-port  number="7001"/>
+	<port local="1" tcp="4030"/>
+	<port local="2" tcp="4031"/>
+	<cloud-server tcp="6000"/>
+	<managment-port number="5000"/>
 </node>

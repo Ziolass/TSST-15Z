@@ -50,10 +50,10 @@ namespace NetworkNode.SDHFrame
         /// <param name="frame">The frame.</param>
         public Frame(Frame frame)
         {
-            this.Content = frame.Content;
+            this.Content = new List<IContent>(frame.Content);
             this.Level = frame.Level;
-            this.Msoh = frame.Msoh;
-            this.Rsoh = frame.Rsoh;
+            this.Msoh = new Header(frame.Msoh);
+            this.Rsoh = new Header(frame.Rsoh);
         }
         /// <summary>
         /// Converts the STM level.

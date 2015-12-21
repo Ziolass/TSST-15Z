@@ -17,6 +17,11 @@ namespace NetworkNode.SDHFrame
             this.Type = ContentType.CONTAINER;
             this.Content = content;
         }
+        public Container(Container container)
+        {
+            this.Content = container.Content;
+            this.Type = ContentType.CONTAINER;
+        }
 
         /// <summary>
         /// Determines whether the specified content is container.

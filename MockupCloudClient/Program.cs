@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using NetworkNode;
+using NetworkNode.SDHFrame;
 
 namespace MockupCloudClient
 {
@@ -21,10 +23,14 @@ namespace MockupCloudClient
                 Socket ActionSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
                 Console.WriteLine("wpisz dane");
-                string text = Console.ReadLine();
+                FrameBuilder fmb = new FrameBuilder();
+                Frame newframe = new Frame();
+                newframe.SetVirtualContainer(VirtualContainerLevel.VC32, 0, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test")));
+                string text = fmb.BuildLiteral(newframe);
+                Console.ReadLine();
                 ActionSocket.Connect(ActionEndPoint);
                 
-                byte[] msg = Encoding.ASCII.GetBytes("mockup10|1|" + text);
+                byte[] msg = Encoding.ASCII.GetBytes("client|1|" + text);
 
                 ActionSocket.Send(msg);
                 ActionSocket.Shutdown(SocketShutdown.Both);
