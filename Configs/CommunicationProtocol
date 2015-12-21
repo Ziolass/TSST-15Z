@@ -61,3 +61,31 @@ EXAMPLE: R->M: 1#stm1|2#stm4|3#stm64
 7. Przypadek gdy router nie jest w stanie wykonać polecenia
 M->R: <polecenie>
 R->M: ERROR
+
+KLIENT
+1. rezerwacja zasobůw
+M->C: resource-relocation|port1#port2#szczelina1#szczelina#kontener#modu≥
+C->M: OK
+(chyba Ņe coú siÍ spieprzy≥o to daj coú zwiÍz≥ego typu "port X zajÍty, albo szczelina zajÍta itp"
+
+port1 - port wejúciowy
+port2 - port wyjúciowy
+szczelina1 - szczelina wejúciowa
+szczelina2 - szczelina wyjúciowa
+kontener - przydzielone VC ileú
+modu≥ - STM
+
+moŅe byś tak Ņe naraz sprůbujemy przyznaś kilka zasobůw, wtedy bÍdzie:
+M->C: resource-relocation|port_in1#port_out2#szczelina1#szczelina2#kontener1#modu≥1|port_in2#port_out2#szczelina1.... itp
+
+2. podanie istniejĻcych po≥ĻczeŮ
+M->C: get-connections|
+C->M: IDENTIFIER1#port_in1#port_out2#level_in1#level_out1#kontener1#modu≥1|IDENTIFIER2#port_in2#port_out2#level_in2#level_out2#kontener2#modu≥2 .....
+
+IDENTIFIER - ten identyfikator o ktůrym rozmawialiúmy
+
+3. usuniÍcie po≥Ļczenia
+M->C: delete-connection|IDENTIFIER
+c->M: OK
+albo coú w stylu po≥Ļczenie nie istnieje
+
