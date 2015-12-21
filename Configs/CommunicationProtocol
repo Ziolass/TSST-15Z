@@ -54,10 +54,9 @@ EXAMPLE: R->M: 1#2#3#4#VC1#STM1|5#6#7#8#VC12#STM4
 
 5. Podanie listy portów
 M->R: get-ports|
-R->M: {IN1}#{IN2}#{IN3}|{OUT1}#{OUT2}#{OUT3}
-(najpierw porty wejściowe oddzielone # , następnie | i porty wyjściowe oddzielone #)
-
-EXAMPLE: R->M: 1#2#3#4|5#6#7#8
+R->M: {port1}#STM1|{port2}#STM2 itp
+ergo: pary (port#stm) oddziela znak |
+EXAMPLE: R->M: 1#stm1|2#stm4|3#stm64
 
 7. Przypadek gdy router nie jest w stanie wykonać polecenia
 M->R: <polecenie>
