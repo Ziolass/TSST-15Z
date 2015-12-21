@@ -84,11 +84,11 @@ namespace NetworkNode.SDHFrame
         /// Gets the virtual container.
         /// </summary>
         /// <param name="level">The level of Virtual Container</param>
-        /// <param name="number">The number (index).</param>
+        /// <param name="index">The number (index).</param>
         /// <returns></returns>
-        public IContent GetVirtualContainer(VirtualContainerLevel level, int number)
+        public IContent GetVirtualContainer(VirtualContainerLevel level, int index)
         {
-            IContent returnContent = this.Content[GetContainerIndex(level, number)];
+            IContent returnContent = this.Content[GetContainerIndex(level, index)];
             return returnContent;
         }
 
@@ -97,19 +97,19 @@ namespace NetworkNode.SDHFrame
         /// Content must by VirtualContainer!
         /// </summary>
         /// <param name="level">The level.</param>
-        /// <param name="number">The number.</param>
+        /// <param name="index">The number.</param>
         /// <param name="content">The content. Virtual Container</param>
         /// <returns>True - success, False - fail</returns>
-        public bool SetVirtualContainer(VirtualContainerLevel level, int number, IContent content)
+        public bool SetVirtualContainer(VirtualContainerLevel level, int index, IContent content)
         {
             if (VirtualContainer.isVirtualContainer(content))
             {
                 VirtualContainer contentVC = (VirtualContainer)content;
                 if (level == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level))
                 {
-                    if (TestContainerSpace(level, number)) //Test if i can put in this location
+                    if (TestContainerSpace(level, index)) //Test if i can put in this location
                     {
-                        this.Content[GetContainerIndex(level, number)] = content;
+                        this.Content[GetContainerIndex(level, index)] = content;
                         return true;
                     }
                 }
@@ -118,9 +118,9 @@ namespace NetworkNode.SDHFrame
             return false;
         }
 
-        public bool ClearVirtualContainer(VirtualContainerLevel level, int number)
+        public bool ClearVirtualContainer(VirtualContainerLevel level, int index)
         {
-            this.Content[GetContainerIndex(level, number)] = null;
+            this.Content[GetContainerIndex(level, index)] = null;
             return true; 
         }
 

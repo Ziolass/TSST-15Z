@@ -49,21 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\ConfigLoader.cs" />
-    <Compile Include="Components\Container.cs" />
-    <Compile Include="Components\Frame.cs" />
-    <Compile Include="Components\FrameBuilder.cs" />
-    <Compile Include="Components\Header.cs" />
-    <Compile Include="Components\IContent.cs" />
     <Compile Include="Components\IDisposable.cs" />
-    <Compile Include="Components\IFrame.cs" />
-    <Compile Include="Components\IFrameBuilder.cs" />
     <Compile Include="Components\LocalSocektBuilder.cs" />
     <Compile Include="Components\ManagementCenter.cs" />
     <Compile Include="Components\ManagementPort.cs" />
     <Compile Include="Components\Output.cs" />
-    <Compile Include="Components\POH.cs" />
     <Compile Include="Components\StateObject.cs" />
-    <Compile Include="Components\VirtualContainer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDHClient.cs">

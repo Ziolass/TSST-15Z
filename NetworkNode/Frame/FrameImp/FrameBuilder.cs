@@ -89,7 +89,7 @@ namespace NetworkNode.SDHFrame
                         Container newContainer = (Container)FrameBuilder.evaluateContent((JObject)content["Content"]);
                         if (newContainer != null)
                         {
-                            newVC.Content = newContainer;
+                           // newVC.Content = newContainer;
                             return newVC;
                         }
                         else return null;
