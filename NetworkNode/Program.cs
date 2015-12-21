@@ -12,6 +12,18 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
+
+            Frame frame = new Frame();
+
+            frame.SetVirtualContainer(VirtualContainerLevel.VC32, 0, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test")));
+            frame.SetVirtualContainer(VirtualContainerLevel.VC32, 1, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test")));
+            frame.SetVirtualContainer(VirtualContainerLevel.VC32, 1, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test2 ja sie nie mieszcze")));
+
+            var test = frame.GetVirtualContainer(VirtualContainerLevel.VC32, 2);
+            test = frame.GetVirtualContainer(VirtualContainerLevel.VC32, 1);
+            Console.ReadLine();
+
+            /*
             if (args.Length == 0)
             {
                 Console.WriteLine("Input parameter missing");
@@ -30,8 +42,7 @@ namespace NetworkNode
             Console.WriteLine("Start emulation");
             startReadingCommands(node);
             //node.emulateManagement("sub-conection-HPC|1002-2003#|");
-
-
+            */
         }
 
         private static void startReadingCommands(NetworkNode node) {

@@ -127,6 +127,12 @@ namespace NetworkNode.SDHFrame
                         {
                             ((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, index, content);
                         }
+                        else if (tempVirtualContainer == null) //Frame does not have VC4 to keep lower virtual container levels
+                        {
+                            this.Content[GetHigherContainerIndex(level, index)] = new VirtualContainer(VirtualContainerLevel.VC4);
+                            tempVirtualContainer = this.Content[GetHigherContainerIndex(level, index)];
+                            ((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, index, content);
+                        }
                         return true;
                     }
                 }
