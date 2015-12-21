@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<client>
+<port listen="3001" to="3000"/>  
+<name value="Klient2"/>
+<management_port number ="9902"/>
+</client>
+
+ 

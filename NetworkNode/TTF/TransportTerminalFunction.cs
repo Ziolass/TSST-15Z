@@ -1,4 +1,4 @@
-﻿using NetworkNode.Frame;
+using NetworkNode.SDHFrame;
 using NetworkNode.HPC;
 using System;
 using System.Collections.Generic;
@@ -43,7 +43,6 @@ namespace NetworkNode.TTF
             {
                 mst = new MultiplexSectionTermination();
             }
-            //TODO inicjalizacja buildera
             this.spi.HandleInputData += new HandleInputData(getInputData);
             builder = new FrameBuilder();
         }
@@ -63,6 +62,8 @@ namespace NetworkNode.TTF
         private IFrame beginFrameEvaluation(string bufferedData)
         {
             IFrame frame = builder.BuildFrame(bufferedData);
+            
+            raportFrame(frame, "Input Frame:");
 
             rst.evaluateHeader(frame);
             
@@ -70,38 +71,62 @@ namespace NetworkNode.TTF
             {
                 mst.evaluateHeader(frame);
             }
+            
 
             return frame;
         }
 
-       /* public Dictionary<int, IFrame> GetBufferedFrame()
+        private void raportFrame(IFrame frame, string raprtHeader)
         {
-            Dictionary<int, string> bufferedData = spi.GetBufferedData();
-            Dictionary<int, IFrame> result = new Dictionary<int, IFrame>();
-
-            foreach (int inputPort in bufferedData.Keys) 
+            Console.WriteLine(raprtHeader);
+            Console.WriteLine(((Frame) frame).ToString());
+            if(((Frame)frame).Rsoh != null) 
             {
-                IFrame frame = beginFrameEvaluation(bufferedData[inputPort]);
-                result.Add(inputPort, frame);
+                Console.WriteLine("RSOH");
+                Console.WriteLine(((Frame)frame).Rsoh.ToString());
             }
-            return result;
-        }*/
 
+            if (((Frame)frame).Msoh != null)
+            {
+                Console.WriteLine("MSOH");
+                Console.WriteLine(((Frame)frame).Msoh.ToString());
+            }
+        }
+
+        public List<List<int>> GetPorts()
+        {
+            return spi.GetPorts();
+        }
         public void PassDataToInterfaces(Dictionary<int,IFrame> outputFrames)
         {
             foreach (int outputPort in outputFrames.Keys)
             {
                 IFrame frame = outputFrames[outputPort];
-                rst.generateHeader(ref frame);
+                rst.generateHeader(frame);
                 if (nodeMode == NodeMode.MULTIPLEXER)
                 {
-                    mst.generateHeader(ref frame);
-                }
-                
+                    mst.generateHeader(frame);
+                }                
                 String textForm = builder.BuildLiteral(frame);
-                spi.SendFrame(textForm, outputPort);               
+                spi.SendFrame(textForm, outputPort);
+                raportFrame(frame,"Output Frame");
             }
             //TODO tu może być zgłaszanie zdarzeia wysłania i powiadaomienie zegara zewnętrznego że wysyłamy ramkę.
+        }
+
+        public bool ShudownInterface(int number)
+        {
+            return spi.ShudownInterface(number);
+        }
+
+        internal void AddRsohContent(string dccContent)
+        {
+            rst.SetNextData(dccContent);
+        }
+
+        internal void AddMsohContent(string dccContent)
+        {
+            mst.SetNextData(dccContent);
         }
     }
 }

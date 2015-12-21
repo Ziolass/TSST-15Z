@@ -10,12 +10,14 @@ using TsstSdh.SocketUtils;
 
 namespace NetworkNode.Ports
 {
-    public class Output
+    public class Output : IDisposable
     {
         private LocalSocektBuilder socketBuilder;
         private ManualResetEvent connectDone = new ManualResetEvent(false);
         private ManualResetEvent sendDone = new ManualResetEvent(false);
         private int outputPort;
+
+        public bool Active { get; set; }
         public Output(int port)
         {
             socketBuilder = LocalSocektBuilder.Instance;
@@ -32,15 +34,24 @@ namespace NetworkNode.Ports
 
         public void sendData(byte[] dataToSend)
         {
+            
             Socket sender = socketBuilder.getTcpSocket();
+            sender.DontFragment = true;
             IPEndPoint endpoint = socketBuilder.getLocalEndpoint(outputPort);
-            sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
-            connectDone.WaitOne();
+            try
+            {
+                sender.BeginConnect(endpoint, new AsyncCallback(ConnectToNextNode), sender);
+                connectDone.WaitOne();
 
-            sendData(sender, dataToSend);
-            sendDone.WaitOne();
-            sender.Shutdown(SocketShutdown.Both);
-            sender.Close();
+                sendData(sender, dataToSend);
+                sendDone.WaitOne();
+                sender.Shutdown(SocketShutdown.Both);
+                sender.Close();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private void ConnectToNextNode(IAsyncResult ar)

@@ -45,6 +45,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\ConfigLoader.cs" />
+    <Compile Include="Components\IDisposable.cs" />
+    <Compile Include="Components\LocalSocektBuilder.cs" />
+    <Compile Include="Components\ManagementCenter.cs" />
+    <Compile Include="Components\ManagementPort.cs" />
+    <Compile Include="Components\Output.cs" />
+    <Compile Include="Components\StateObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDHClient.cs">

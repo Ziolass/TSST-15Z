@@ -1,4 +1,4 @@
-﻿using NetworkNode.Frame;
+﻿using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.HPC
 {
+    
     public class HigherOrderPathConnection
     {
-        private Dictionary<int, List<ForwardingRecord>> forwardingTable; 
+        private Dictionary<int, List<ForwardingRecord>> forwardingTable;
         private IFrameBuilder builder;
         private TransportTerminalFunction ttf;
-        
+        private Dictionary<int, IFrame> portsCredentials;
+
         object bufferLock = new object();
 
         public HigherOrderPathConnection(TransportTerminalFunction ttf)
@@ -23,18 +25,80 @@ namespace NetworkNode.HPC
             this.ttf = ttf;
             this.ttf.HandleInputFrame += new HandleInputFrame(handleIncomFrame);
             builder = new FrameBuilder();
+            portsCredentials = new Dictionary<int, IFrame>();
+            List<int> allPorts = new List<int>();
+            foreach (List<int> ports in ttf.GetPorts())
+            {
+                allPorts.AddRange(ports);
+            }
+
+            foreach (int port in allPorts)
+            {
+                portsCredentials.Add(port, new Frame());
+            }
         }
 
 
 
-        public void AddForwardingRecord(ForwardingRecord record)
+        public ExecutionResult AddForwardingRecords(List<ForwardingRecord> records)
         {
-            if (!forwardingTable.ContainsKey(record.InputPort))
+            int index = 0;
+            foreach (ForwardingRecord record in records)
             {
-                forwardingTable.Add(record.InputPort, new List<ForwardingRecord>());
+                
+                if (!checkForwardingRecord(record))
+                {
+                    return new ExecutionResult(false,"Error at record " + index);
+                }
+                index++;
             }
 
-            forwardingTable[record.InputPort].Add(record);
+            foreach(ForwardingRecord record in records) 
+            {
+                if (!forwardingTable.ContainsKey(record.InputPort))
+                {
+                    forwardingTable.Add(record.InputPort, new List<ForwardingRecord>());
+                }
+
+                forwardingTable[record.InputPort].Add(record);
+            }
+
+            return new ExecutionResult(true,null);
+        }
+
+        private bool checkForwardingRecord(ForwardingRecord record)
+        {
+            VirtualContainer vc = new VirtualContainer(record.ContainerLevel);
+            
+            if (portsCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+            {
+                if (portsCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+                {
+                    return true;
+                }
+
+                ((Frame)portsCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
+            } 
+
+            return false;
+        }
+
+        private bool clearCredentials(ForwardingRecord record)
+        {
+            
+            return ((Frame)portsCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn) &
+                ((Frame)portsCredentials[record.OutputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
+        }
+
+        public List<ForwardingRecord> GetForwardingRecords()
+        {
+            List<ForwardingRecord> routerRecords = new List<ForwardingRecord>();
+            foreach (List<ForwardingRecord> portRecords in forwardingTable.Values)
+            {
+                routerRecords.AddRange(portRecords);
+            }
+
+            return routerRecords;
         }
 
         private void handleIncomFrame(object sender, InputFrameArgs args)
@@ -48,6 +112,11 @@ namespace NetworkNode.HPC
 
         private void commuteFrame(int input, IFrame frame, Dictionary<int, IFrame> outputFrames)
         {
+            if (!forwardingTable.ContainsKey(input))
+            {
+                return;
+            }
+
             List<ForwardingRecord> forwardingRules = forwardingTable[input];
 
             foreach (ForwardingRecord record in forwardingRules)
@@ -59,7 +128,7 @@ namespace NetworkNode.HPC
 
                 IFrame outputFrame = outputFrames[record.OutputPort];
                 IContent vContainer = frame.GetVirtualContainer(record.ContainerLevel, record.VcNumberIn);
-                
+
                 outputFrame.SetVirtualContainer(record.ContainerLevel, record.VcNumberOut, vContainer);
             }
         }
@@ -67,6 +136,33 @@ namespace NetworkNode.HPC
         private void transportData(Dictionary<int, IFrame> outputFrames)
         {
             ttf.PassDataToInterfaces(outputFrames);
+        }
+
+        internal bool RemoveRecord(ForwardingRecord record)
+        {
+            if(!forwardingTable.ContainsKey(record.InputPort)) 
+            {
+                return false;
+            }
+            List<ForwardingRecord> scope = forwardingTable[record.InputPort];
+            ForwardingRecord toRemove = null;
+            foreach (ForwardingRecord scopeRecord in scope)
+            {
+                if (record.Equals(scopeRecord))
+                {
+                    toRemove = scopeRecord;
+                    break;
+                }
+            }
+            
+            if (toRemove != null)
+            {
+               clearCredentials(toRemove);
+               forwardingTable[record.InputPort].Remove(toRemove);
+               return true;
+            }
+           
+            return false;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetworkNode.Frame
+namespace NetworkNode.SDHFrame
 {
     public interface IContent
     {

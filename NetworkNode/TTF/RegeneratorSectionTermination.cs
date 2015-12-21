@@ -1,4 +1,4 @@
-﻿using NetworkNode.Frame;
+using NetworkNode.SDHFrame;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,19 +11,51 @@ namespace NetworkNode.TTF
 {
     class RegeneratorSectionTermination : SectionTerminator
     {
-        public void evaluateHeader(IFrame sdhFrame)
+        private List<string> nextData;
+
+        public RegeneratorSectionTermination()
         {
-            if (sdhFrame.Rsoh.Checksum == BinaryInterleavedParity.generateBIP(((Frame.Frame)sdhFrame).Content, 24))
-            {
-            }
-            else { }
+            nextData = new List<string>();
         }
 
-        public void generateHeader(ref IFrame sdhFrame)
+        public bool evaluateHeader(IFrame sdhFrame)
         {
-            Frame.Frame tempFrame = (Frame.Frame)sdhFrame;
-            ((Frame.Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame.Content, 24);
+            //Remove RSOH header from tempFrame 
+            Frame tempFrame = new Frame((Frame)sdhFrame);
+            tempFrame.Rsoh = null;
+            //Check BIP
+            if (sdhFrame.Rsoh != null && sdhFrame.Rsoh.Checksum == BinaryInterleavedParity.generateBIP(((Frame)tempFrame), 8))
+                return true;
+            else return false;
         }
+
+
+        public void generateHeader(IFrame sdhFrame)
+        {
+
+            Frame tempFrame = (Frame)sdhFrame;
+            tempFrame.Rsoh = null;
+            if (sdhFrame.Rsoh != null)
+            {
+
+                ((Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
+            }
+            else
+            {
+                ((Frame)sdhFrame).Rsoh = new Header(BinaryInterleavedParity.generateBIP(tempFrame, 8), null, null);
+            }
+            
+            if (nextData.Count > 0)
+            {
+                ((SDHFrame.Frame)sdhFrame).Rsoh.DCC = nextData[0];
+                nextData.RemoveAt(0);
+            }            
+        }
+
+        public void SetNextData(string data)
+        {
+            nextData.Add(data);
+        } 
 
     }
 }

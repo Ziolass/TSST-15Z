@@ -1,0 +1,1 @@
+cd c:\Users\Johnny\Desktop\TSST-15Z\NetworkNode\bin\Debug\ & NetworkNode.exe 1

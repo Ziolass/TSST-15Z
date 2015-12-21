@@ -11,7 +11,8 @@ namespace NetworkNode.SocketUtils
     {
         public Socket workSocket = null;
         public Socket sender = null;
-        public const int BufferSize = 4698;//TODO zmienić buffer na odpowiednio duży
+
+        public const int BufferSize = 10024;//TODO zmienić buffer na odpowiednio duży
         public byte[] buffer = new byte[BufferSize];
         public StringBuilder sb = new StringBuilder();
     }

@@ -1,4 +1,5 @@
 ﻿
+using NetworkNode.SDHFrame;
 using NetworkNode.HPC;
 using NetworkNode.Ports;
 using NetworkNode.TTF;
@@ -10,10 +11,7 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.MenagmentModule
 {
-    enum menagementProtocol{
-
-    }
-
+ 
     public class ManagementCenter
     {
         ManagementPort managementPort;
@@ -28,15 +26,15 @@ namespace NetworkNode.MenagmentModule
         public string PerformManagementAction(string request)
         {
             string[] departedRequest = request.Split('|');
-            string[] requestArguments = {};
             int argLength = departedRequest.Length - 1;
             string requestType = departedRequest[0];
-            
-            if (argLength > 0)
+            List<List<string>> arguments = new List<List<string>>();
+
+            for (int i = 1; i < departedRequest.Length; i++)
             {
-                requestArguments = new string[argLength];
-                Array.Copy(departedRequest, 1, requestArguments, 0, argLength);
+                arguments.Add(new List<string>(departedRequest[i].Split('#')));
             }
+
             String response = "ERROR";
             switch (requestType)
             {
@@ -47,12 +45,12 @@ namespace NetworkNode.MenagmentModule
                     }
                 case "shutdown-interface":
                     {
-                        response = shutdownInterface(prapreInterfaceList(requestArguments));
+                        response = shutdownInterface(arguments);
                         break;
                     }
-                case "sub-conection-HPC":
+                case "sub-connection-HPC":
                     {
-                        response = establishLink(requestArguments);
+                        response = addForwardingRecord(arguments);
                         break;
                     }
                 case "get-connection-list":
@@ -64,135 +62,133 @@ namespace NetworkNode.MenagmentModule
                     {
                         response = getPortList();
                         break;
-                    }       
+                    }
+                case "identify":
+                    {
+                        response = identify();
+                        break;
+                    }
+                case "close-connection":
+                    {
+                        response = closeConnection(arguments);
+                        break;
+                    }
 
             }
 
             return response;
         }
 
+        private string identify()
+        {
+            return "router|" + node.Id.ToString(); ;
+        }
+
+        private string closeConnection(List<List<string>> connections)
+        {
+            if (connections.Count != 1)
+            {
+                return "ERROR: choose one connection";
+            }
+
+            List<string> literalRecord = connections[0];
+           
+            int inPort = int.Parse(literalRecord[0]);
+            int outPort = int.Parse(literalRecord[1]);
+            int inContainer = int.Parse(literalRecord[2]);
+            int outContainer = int.Parse(literalRecord[3]);
+            VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[4]);
+            StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
+            ForwardingRecord record = new ForwardingRecord(inPort, outPort, stm, level, inContainer, outContainer);
+
+
+
+            return node.RemoveRecord(record) ? "OK" : "ERROR";
+        }
+
         private string disableNode()
         {
-            return null;
+            return node.DisableNode() ? "OK" : "ERROR";
         }
-        private string shutdownInterface(List<int> ports)
+
+        private string shutdownInterface(List<List<string>> testPort)
         {
-            return null;
+
+            int port = int.Parse(testPort[0][0]);
+            return node.ShudownInterface(port) ? "OK" : "ERROR";
         }
+
         private string getPortList()
         {
-            return null;
+            List<List<int>> inOutPorts = node.GetPorts();
+            StringBuilder builder = new StringBuilder();
+            int mainIndex = 0;
+            foreach (List<int> ports in inOutPorts)
+            {
+                int index = 0;
+                foreach (int port in ports)
+                {
+
+                    builder.Append(port);
+                    if (index < ports.Count - 1)
+                    {
+                        builder.Append("#");
+                    } 
+                }
+
+                if (mainIndex < inOutPorts.Count - 1)
+                {
+                    builder.Append("|");
+                }
+            }
+            return builder.ToString(); ;
         }
         private string getConnectionList()
         {
-            /*List<ForwardingRecord> allConnections = node.GetCommutation();
-            StringBuilder sb = new StringBuilder();
-            sb.Append("OK|");
-            foreach(ForwardingRecord connection in allConnections)
+            List<ForwardingRecord> records = node.GetForwardingRecords();
+            StringBuilder builder = new StringBuilder();
+            int index = 0;
+            foreach (ForwardingRecord record in records)
             {
-                InOutPair highierConnection = connection.SlotPair;
-                InOutPair lowerConnection = connection.ContainerPair;
-                appendConnection(sb, highierConnection);
-                sb.Append("#");
-                appendConnection(sb, lowerConnection);
-                sb.Append("|");
-            }
-            managmentInterface.sendFrameBytes(sb.ToString());*/
-            return null;
-        }
-
-        private string appendConnection(StringBuilder sb)
-        {
-            /*if (pair == null)
-            {
-                sb.Append("?");
-                return;
-            }
-
-            sb.Append(pair.inputIdentifier);
-            sb.Append("-");
-            sb.Append(pair.outputIdentifier);*/
-            return null;
-        }
-
-        private string establishLink(String[] requestArguments)
-        {
-            /*foreach(String connection in requestArguments){
-                if (connection.Equals("")) { continue; }
-                String[] multiLevelSwitching = connection.Split('#');
-                
-
-                if (multiLevelSwitching.Length > 2 || multiLevelSwitching.Length <1)
+                builder.Append(record.InputPort);
+                builder.Append("#");
+                builder.Append(record.OutputPort);
+                builder.Append("#");
+                builder.Append(record.VcNumberIn);
+                builder.Append("#");
+                builder.Append(record.VcNumberOut);
+                builder.Append("#");
+                builder.Append(record.ContainerLevel.ToString());
+                builder.Append("#");
+                builder.Append(record.Stm.ToString());
+                if (index < records.Count-1)
                 {
-                   // throw Exception();
+                    builder.Append("|");
                 }
-                String interfaceLevelConnection = multiLevelSwitching[0];
-                String containerLevelConnection = multiLevelSwitching.Length == 2 && multiLevelSwitching[1] != ""? multiLevelSwitching[1] : null;
                 
-                InOutPair interfacePair = transformToPair(interfaceLevelConnection,MultiplexationLevel.SLOTS);
-                //TODO to trzeba zminić multiplexation level musi być generyczny
-                //InOutPair containerPair = transformToPair(containerLevelConnection, MultiplexationLevel.VC4);
+                index++;
+            }
 
-                ForwardingRecord muxConnection = new ForwardingRecord(interfacePair, null);
-                hpc.addConnection(muxConnection);
-                
-            }*/
-            return null;
+            return builder.ToString();
         }
 
-        /*private InOutPair transformToPair(String pair, MultiplexationLevel muxLevel)
+        private string addForwardingRecord(List<List<string>> literalRecords)
         {
-            if (pair == null || pair.Equals(""))
+            List<ForwardingRecord> records = new List<ForwardingRecord>();
+            foreach (List<string> literalRecord in literalRecords)
             {
-                return null;
+                int inPort = int.Parse(literalRecord[0]);
+                int outPort = int.Parse(literalRecord[1]);
+                int inContainer= int.Parse(literalRecord[2]);
+                int outContainer = int.Parse(literalRecord[3]);
+                VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[4]);
+                StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
+                records.Add(new ForwardingRecord(inPort, outPort, stm,level,inContainer,outContainer));
             }
-            InOutPair result = new InOutPair();
-            String[] partedPair = pair.Split('-');
-            result.inputIdentifier = int.Parse(partedPair[0]);
-            result.outputIdentifier = int.Parse(partedPair[1]);
-            result.level = muxLevel;
-            return result;
+            ExecutionResult result = node.AddForwardingRecords(records);
+
+            return result.Result ? "OK" : "ERROR " + result.Msg;
         }
 
-        private void sendPortList()
-        {
-            Dictionary<int, IoSlot> interfaces = ttf.getInterfaces();
-            StringBuilder sb = new StringBuilder();
-            if(interfaces.Count > 0) {
-                sb.Append("OK|");
-            } else {
-                sb.Append("ERROR|Any of ports doesn't exist");
-            }
-
-            foreach (KeyValuePair<int, IoSlot> networkInterface in interfaces)
-            {
-                sb.Append("interface:[");
-                sb.Append(networkInterface.Key);
-                sb.Append("],in:[");
-                sb.Append(networkInterface.Value.getIputPort());
-                sb.Append("].out:[");
-                sb.Append(networkInterface.Value.getOutputPort());
-                sb.Append("]|");
-            }
-            managmentInterface.sendFrameBytes(sb.ToString());
-        } */
-        private List<int> prapreInterfaceList(string[] departedRequest)
-        {
-            List<int> interfacesToShut = new List<int>();
-            string[] ports= new string[departedRequest.Length-1];
-            Array.Copy(departedRequest, 1, ports, 0, departedRequest.Length - 1);
-
-            foreach(String stringNumber in ports){
-                try
-                {
-                    interfacesToShut.Add(Int32.Parse(stringNumber));
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
-            return interfacesToShut;
-        }
     }
 }

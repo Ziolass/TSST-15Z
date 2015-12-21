@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace NetworkNode.Frame
+namespace NetworkNode.SDHFrame
 {
     public class FrameBuilder : IFrameBuilder
     {
@@ -20,16 +19,11 @@ namespace NetworkNode.Frame
         {
             Frame returnFrame = new Frame();
             metadata = JObject.Parse(textFrame);
-            if (FrameBuilder.isHeader(metadata["Msoh"]))
-            {
+            if (metadata["Msoh"].HasValues)
                 returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Msoh"]);
+            if (metadata["Rsoh"].HasValues)
+                returnFrame.Rsoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
 
-            }
-            if (FrameBuilder.isHeader(metadata["Rsoh"]))
-            {
-                returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
-
-            }
             if (FrameBuilder.isJArray(metadata["Content"]))
             {
                 returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["Content"]);
@@ -84,12 +78,12 @@ namespace NetworkNode.Frame
         {
             try
             {
-                if (FrameBuilder.isVC(content["Type"])) //VirtualContainer
+                if (FrameBuilder.isVirtualContainer(content["Type"])) //VirtualContainer
                 {
                     //Create new VC with level from JSON file
                     VirtualContainer newVC = new VirtualContainer(FrameBuilder.getVCLevel(content["Level"]));
                     newVC.Pointer = content["Pointer"].ToString();
-                    newVC.POH = content["POH"].ToString();
+                    newVC.POH = (POH)FrameBuilder.evaluateContent((JObject)content["POH"]);
                     if (FrameBuilder.isObjectOfContainer(content["Content"])) //Check if "Content" has value and is type of Container
                     {
                         Container newContainer = (Container)FrameBuilder.evaluateContent((JObject)content["Content"]);
@@ -115,8 +109,15 @@ namespace NetworkNode.Frame
                 {
                     string checksum = content["Checksum"].ToString();
                     string eow = content["EOW"].ToString();
-                    Header newHeader = new Header(checksum, eow);
+                    string dcc = content["DCC"].ToString();
+                    Header newHeader = new Header(checksum, eow, dcc);
                     return newHeader;
+                }
+                else if (FrameBuilder.isPOH(content["Type"]))
+                {
+                    SignalLabelType signalType = FrameBuilder.getSignalType(content["SignalLabel"]);
+                    POH poh = new POH(signalType);
+                    return poh;
                 }
                 else return null;
             }
@@ -179,7 +180,7 @@ namespace NetworkNode.Frame
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        private static bool isVC(JToken token)
+        private static bool isVirtualContainer(JToken token)
         {
             try
             {
@@ -209,7 +210,7 @@ namespace NetworkNode.Frame
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
                 return false;
             }
         }
@@ -224,6 +225,25 @@ namespace NetworkNode.Frame
             try
             {
                 if (getContentType(token) == ContentType.HEADER)
+                    return true;
+                else return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+        /// <summary>
+        /// Determines whether the specified token is POH.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        private static bool isPOH(JToken token)
+        {
+            try
+            {
+                if (getContentType(token) == ContentType.POH)
                     return true;
                 else return false;
             }
@@ -269,13 +289,27 @@ namespace NetworkNode.Frame
         /// <param name="token">The token.</param>
         /// <returns></returns>
         /// <exception cref="Exception">ERROR FrameBuilder: Could not read level of given token</exception>
-        private static ContainerLevel getTULevel(JToken token)
+        private static VirtualContainerLevel getTULevel(JToken token)
         {
-            ContainerLevel containerLevel;
-            if (Enum.TryParse<ContainerLevel>(token.ToString(), out containerLevel))
+            VirtualContainerLevel containerLevel;
+            if (Enum.TryParse<VirtualContainerLevel>(token.ToString(), out containerLevel))
                 return containerLevel;
             else
                 throw new Exception("ERROR FrameBuilder: Could not read level of given token");
+        }
+        /// <summary>
+        /// Gets the type of the signal.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">ERROR FrameBuilder: Could not read content type of given token</exception>
+        private static SignalLabelType getSignalType(JToken token)
+        {
+            SignalLabelType contentType;
+            if (Enum.TryParse<SignalLabelType>(token.ToString(), out contentType))
+                return contentType;
+            else
+                throw new Exception("ERROR FrameBuilder: Could not read content type of given token");
         }
     }
 }

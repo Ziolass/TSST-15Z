@@ -39,28 +39,30 @@ namespace SDHManagement2.FileUtils
             dane.Element("router-ports").Add(new_router_info);
             dane.Save(configurationFilePath);
         }
-        public static Dictionary<string,int> readConfig(string configurationFileName)
+       
+        public static List<int> readPortsFromConfig (string configurationFileName)
         {
-            Dictionary<string,int> portDictionary = new Dictionary<string, int>();
+            List<int> portList = new List<int>();
 
             string defaultDirectoryPath = Directory.GetCurrentDirectory();
-            configurationFilePath = setupDirectoryPath(defaultDirectoryPath, configurationFileName);
+            DirectoryInfo di = new DirectoryInfo(((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).Parent).FullName+"\\Configs");
+            configurationFilePath = setupDirectoryPath(di.ToString(), configurationFileName);
             using (
             configReader = XmlReader.Create(configurationFilePath))
                 try
                 {
                     while (configReader.Read())
                     {
-                        if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "router-port")) 
+                        if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "port"))
                         {
                             if (configReader.HasAttributes)
                             {
-                                portDictionary.Add(configReader.GetAttribute("name"),int.Parse(configReader.GetAttribute("port")));
+                                portList.Add(int.Parse(configReader.GetAttribute("value")));
                             }
                         }
 
                     }
-                    return portDictionary;
+                    return portList;
 
                 }
                 catch
@@ -70,36 +72,6 @@ namespace SDHManagement2.FileUtils
                 }
         }
 
-        public static Dictionary<string, int> readClientConfig (string configurationFileName)
-        {
-            Dictionary<string, int> clientPortDictionary = new Dictionary<string, int>();
-
-            string defaultDirectoryPath = Directory.GetCurrentDirectory();
-            configurationFilePath = setupDirectoryPath(defaultDirectoryPath, configurationFileName);
-            using (
-            configReader = XmlReader.Create(configurationFilePath))
-                try
-                {
-                    while (configReader.Read())
-                    {
-                        if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "client-port"))
-                        {
-                            if (configReader.HasAttributes)
-                            {
-                                clientPortDictionary.Add(configReader.GetAttribute("name"), int.Parse(configReader.GetAttribute("port")));
-                            }
-                        }
-
-                    }
-                    return clientPortDictionary;
-
-                }
-                catch
-                    (Exception e)
-                {
-                    return null;
-                }
-        }
 
     }
 }

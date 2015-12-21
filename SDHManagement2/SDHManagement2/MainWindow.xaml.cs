@@ -29,7 +29,7 @@ namespace SDHManagement2
 
         private string[] actionList = 
             {"disable-node",
-            "shutdown-interface",
+            "close-connection",
             "sub-connection-HPC",
             "get-connection-list",
             "get-ports"
@@ -60,9 +60,12 @@ namespace SDHManagement2
         public MainWindow()
         {
             InitializeComponent();
-            console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt") + ": Management console");
+            selectionBox.IsEnabled = false;
+            actionBox.IsEnabled = false;
+            nodeBox.IsEnabled = false;
+
+            console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt") + ": Konsola zarządzania");
             selectionBox.ItemsSource = selection.ToList();
-            // actionBox.ItemsSource = actionList.ToList();
             actionBox.ItemsSource = actionaNameList.ToList();
             button2.IsEnabled = false;
             addNewButton.IsEnabled = false;
@@ -110,6 +113,7 @@ namespace SDHManagement2
             Area.LogicCore = logicCore;
 
 
+
         }
 
         private GraphExample GraphExample_Setup()
@@ -143,15 +147,18 @@ namespace SDHManagement2
             string action;
 
             nodeName = nodeBox.Text;
-            //action = actionBox.Text;
-            action = actionList[actionBox.SelectedIndex];
+            if (selectionBox.SelectedIndex == 0)
+            {
+                action = actionList[actionBox.SelectedIndex];
+            }
+            else
+            {
+                action = clientAction[actionBox.SelectedIndex];
+            }
+
+            //action = actionList[actionBox.SelectedIndex];
             socketHandler.commandHandle(action,nodeName);
-
-
-            //if(socketHandler.sendCommand(nodeName, action) == null) { return; }
-
-
-
+            
         }
 
         public void appendConsole(string text, string name, string command)
@@ -184,7 +191,7 @@ namespace SDHManagement2
                 console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt")
                                     + ":\n"
                                     + name
-                                    + "'s current connections");
+                                    + " Istniejące połączenia");
                 foreach(string con in tmp)
                 {
                     console.Items.Add(con);
@@ -224,50 +231,28 @@ namespace SDHManagement2
                 connections[i] = "Polaczanie "+position+".\n"+
                     "z: "+tmp[0] + " do " + tmp[1]+"\n"+
                     "z pozycji "+tmp[2]+". na pozycje "+tmp[3]+".\n"+
-                    "obsługiwany kontener: "+tmp[4];
+                    "obsługiwany kontener: "+tmp[4]+
+                    "moduł: " + tmp[5];
             }
             return connections;
         }
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-
-            Dictionary<string, int> portDictionary = ConfigReader.readConfig("\\managementConfigFile.xml");
-            Dictionary<string, int> clientDictionary = ConfigReader.readClientConfig("\\managementConfigFile.xml");
-
+            List<int> portList = ConfigReader.readPortsFromConfig("\\managementConfigFile.xml");
             routerList = new List<Router>();
             clientList = new List<Router>();
 
             
-            if (portDictionary==null || clientDictionary==null)
+            if (portList==null)
             {
-                appendConsole("Error reading configuration file. Try again",null,null);
+                appendConsole("Błąd odczytu pliku konfiguracyjnego, spróbuj ponownie.",null,null);
                 return;
             }
 
-            foreach (var VARIABLE in portDictionary)
-            {
-                Router router = new Router()
-                {
-                    identifier = VARIABLE.Key,
-                    connected = false,
-                    port = VARIABLE.Value
-                };
-                routerList.Add(router);
-
-            }
-            foreach(var client in clientDictionary)
-            {
-                Router clientNode = new Router()
-                {
-                    identifier = client.Key,
-                      connected = false,
-                      port = client.Value
-                };
-                clientList.Add(clientNode);
-            }
-
-            socketHandler = new SocketHandler(routerList,clientList, this);
-            
+            socketHandler = new SocketHandler(portList, this);
+            actionBox.IsEnabled = true;
+            nodeBox.IsEnabled = true;
+            selectionBox.IsEnabled = true;
             button1.IsEnabled = false;
             button2.IsEnabled = true;
             addNewButton.IsEnabled = true;
@@ -308,7 +293,6 @@ namespace SDHManagement2
                    nodeBox.ItemsSource = socketHandler.clientNameList;
 
                     actionBox.ItemsSource = clientNameAction.ToList();
-                    //actionBox.ItemsSource = clientAction.ToList();
                     break;
                 case "Krosownica" :
                     nodeBox.ItemsSource = socketHandler.nodelist;

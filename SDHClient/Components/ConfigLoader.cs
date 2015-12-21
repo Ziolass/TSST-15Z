@@ -1,6 +1,5 @@
 ﻿using NetworkNode.HPC;
 using NetworkNode.MenagmentModule;
-using NetworkNode.Ports;
 using NetworkNode.TTF;
 using NetworkNode;
 using WireCloud;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Collections.Specialized;
 
-namespace Client
+namespace SDHClient
 {
    public class ConfigLoader
     {
@@ -28,9 +27,10 @@ namespace Client
 
         public LinkCollection getLinks()
         {
-            List<Input> inputs = new List<Input>();
-            Dictionary<int, Output> outputs = new Dictionary<int, Output>();
-            int man_in=0, man_out=0;
+            List<IOPort> ports = new List<IOPort>();
+            //List<Input> inputs = new List<Input>();
+            //Dictionary<int, Output> outputs = new Dictionary<int, Output>();
+            int manag = 0;
             while (configReader.Read())
             {
                 //if (configReader.IsStartElement())
@@ -39,50 +39,47 @@ namespace Client
                     {
                         if (configReader.Name == "port")
                         {
-                            string portType = configReader.GetAttribute("type");
-                            int portNumber = int.Parse(configReader.GetAttribute("number"));
-                            /*if (portNumber < 10000)
-                            {
-                                Console.WriteLine("KLIENT:Próbowano użyć portu nr:{0}", portNumber);
-                                Console.WriteLine("Przedział portów klient - router: > 10000 - aby uniknąć kolizji z portami wewnątrz SDH");
-                                continue;
-                            }*/
+                            //string portType = configReader.GetAttribute("type");
+                            int portNumberTo = 0;
 
-                            switch (portType)
-                            {
-                                case "input":
-                                    {
-                                        Input input = new Input(portNumber);
-                                        inputs.Add(input);
-                                        input.TurnOn();
-                                        break;
-                                    }
-                                case "output":
-                                    {
-                                        outputs.Add(portNumber, new Output(portNumber));
-                                        break;
-                                    }
-                            }
+                                bool b = int.TryParse(configReader.GetAttribute("to"),out portNumberTo);
+                            int portNumberLs = 0;
 
-
+                                bool c = int.TryParse(configReader.GetAttribute("listen"),out portNumberLs);
+                            if (b == false || c == false) throw new FormatException("Nieprawidłowy plik konfiguracyjny");                       ////  switch (portType)
+                           // {
+                               // case "input":
+                                //    {
+                                        IOPort io = new IOPort(portNumberTo, portNumberLs);
+                                          ports.Add(io);
+                                       // Input input = new Input(portNumber);
+                                       // inputs.Add(input);
+                                        //input.TurnOn();
+                                       // break;
+                                 //   }
+                               // case "output":
+                                 //   {
+                                       // outputs.Add(portNumber, new Output(portNumber));
+                                     //   break;
+                                 //   }
+                           // }
 
                         }
                         else if (configReader.Name == "name")
                         {
                             name = configReader.GetAttribute("value");
                         }
-                        else if (configReader.Name == "management_port_in")
-                            man_in = Int32.Parse(configReader.GetAttribute("number"));
-                        else if (configReader.Name == "management_port_out")
-                            man_out = Int32.Parse(configReader.GetAttribute("number"));
+                        else if (configReader.Name == "management_port")
+                            manag = Int32.Parse(configReader.GetAttribute("number"));
+                        
                     }
                    // resource - location |{ port_we}#{port_wy}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
 
                 }
             }
 
-            if (man_in != 0 && man_out != 0)
-                return new LinkCollection(inputs, outputs, name, new Input(man_in), new Output(man_out));
+            if (manag!= 0)
+                return new LinkCollection( name,ports,manag);
             else
                 throw new NotImplementedException("Nie odczytano wartosci portow management");
             
@@ -98,18 +95,17 @@ namespace Client
     }
     public class LinkCollection
     {
-        public List<Input> input_ports;
-        public Dictionary<int, Output> output_ports;
+        public List<IOPort> ports;
+       // public Dictionary<int, Output> output_ports;
         public string name;
-        public Input management_in;
-        public Output management_out;
-        public LinkCollection(List<Input> inp, Dictionary<int, Output> outp,string name,Input manag_in,Output manag_out)
+        //public Input management_in;
+        //public Output management_out;
+        public int management_port;
+        public LinkCollection(string name,List<IOPort> ports,int manag)
         {
-            input_ports = inp;
-            output_ports = outp;
+            this.ports = ports;
             this.name = name;
-            this.management_in = manag_in;
-            this.management_out = manag_out;
+            this.management_port = manag;
         }
         //TODO: POLA -> PRIVATE, DOSTĘP PRZEZ PROPERTY
     }
