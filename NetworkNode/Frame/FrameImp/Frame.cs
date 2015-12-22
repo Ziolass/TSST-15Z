@@ -109,14 +109,48 @@ namespace NetworkNode.SDHFrame
             return returnContent;
         }
         /// <summary>
+        /// Gets the virtual container.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="hiIndex">Index of the hi.</param>
+        /// <param name="lowIndex">Index of the low.</param>
+        /// <returns></returns>
+        public IContent GetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex)
+        {
+            IContent returnContent = null;
+            if (level == VirtualContainerLevel.VC4)
+            {
+                if (this.Content.Count >= hiIndex + 1)
+                {
+                    returnContent = this.Content[hiIndex];
+                }
+            }
+            else
+            {
+                if (this.Content.Count >= hiIndex + 1 && lowIndex != null)
+                {
+                    int lowerIndex = (int)lowIndex;
+                    returnContent = this.Content[hiIndex];
+                    if (VirtualContainer.isVirtualContainer(returnContent))
+                    {
+                        returnContent = ((VirtualContainer)returnContent).GetVirtualContainerAtIndex(level, lowerIndex); //Get specific virtual container lower level
+                    }
+                }
+            }
+            return returnContent;
+        }
+        /// <summary>
         /// Sets the virtual container. This overwrite the <see cref="Content" /> list member.
         /// Content must by VirtualContainer!
         /// </summary>
         /// <param name="level">The level.</param>
-        /// <param name="index">The index.</param>
+        /// <param name="hiIndex">Index of the higher level virtual container (VC-4).</param>
+        /// <param name="lowIndex">Index of the lower level virtual container.</param>
         /// <param name="content">The content. Virtual Container</param>
-        /// <returns>True - success, False - fail</returns>
-        public bool SetVirtualContainer(VirtualContainerLevel level, int index, IContent content)
+        /// <returns>
+        /// True - success, False - fail
+        /// </returns>
+        public bool SetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex , IContent content)
         {
             if (VirtualContainer.isVirtualContainer(content))
             {
@@ -125,28 +159,29 @@ namespace NetworkNode.SDHFrame
                 {
                     if (level == VirtualContainerLevel.VC4)
                     {
-                        if (this.Content.Count >= index + 1)
+                        if (this.Content.Count >= hiIndex + 1)
                         {
-                            this.Content[index] = content;
+                            this.Content[hiIndex] = content;
                             return true;
                         }
                         else return false;
                     }
                     else
                     {
-                        int higherIndex = GetHigherContainerIndex(level, index);
-                        if (this.Content.Count >= higherIndex + 1)
+                        //int higherIndex = GetHigherContainerIndex(level, index);
+                        if (this.Content.Count >= hiIndex + 1 && lowIndex != null)
                         {
-                            IContent tempVirtualContainer = this.Content[higherIndex];
-                            if (VirtualContainer.isVirtualContainer(tempVirtualContainer) && ((VirtualContainer)tempVirtualContainer).TryAddContainer(level, index))
+                            int lowerIndex = (int)lowIndex;
+                            IContent tempVirtualContainer = this.Content[hiIndex];
+                            if (VirtualContainer.isVirtualContainer(tempVirtualContainer) && ((VirtualContainer)tempVirtualContainer).TryAddContainer(level, lowerIndex))
                             {
-                                ((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, index, content);
+                                ((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, lowerIndex, content);
                             }
                             else if (tempVirtualContainer == null) //Frame does not have VC4 to keep lower virtual container levels
                             {
-                                this.Content[GetHigherContainerIndex(level, index)] = new VirtualContainer(VirtualContainerLevel.VC4);
-                                tempVirtualContainer = this.Content[GetHigherContainerIndex(level, index)];
-                                ((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, GetRelativeIndex(level, index), content);
+                                this.Content[hiIndex] = new VirtualContainer(VirtualContainerLevel.VC4);
+                                tempVirtualContainer = this.Content[hiIndex];
+                                ((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, lowerIndex, content);
                             }
                             return true;
                         }
@@ -157,6 +192,7 @@ namespace NetworkNode.SDHFrame
             }
             return false;
         }
+
 
         /// <summary>
         /// Gets the relative index for virtual container index position.

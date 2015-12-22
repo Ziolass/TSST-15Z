@@ -1,4 +1,4 @@
-﻿using NetworkNode.SDHFrame;
+using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
@@ -69,7 +69,7 @@ namespace NetworkNode.HPC
         {
             VirtualContainer vc = new VirtualContainer(record.ContainerLevel);
             
-            if (inputCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+            /*if (inputCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
             {
                 if (outputCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
                 {
@@ -77,7 +77,7 @@ namespace NetworkNode.HPC
                 }
 
                 ((Frame)inputCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
-            } 
+            } */
 
             return false;
         }
@@ -131,7 +131,7 @@ namespace NetworkNode.HPC
                 IFrame outputFrame = outputFrames[record.OutputPort];
                 IContent vContainer = frame.GetVirtualContainer(record.ContainerLevel, record.VcNumberIn);
 
-                outputFrame.SetVirtualContainer(record.ContainerLevel, record.VcNumberOut, vContainer);
+                //outputFrame.SetVirtualContainer(record.ContainerLevel, record.VcNumberOut, vContainer);
             }
         }
 

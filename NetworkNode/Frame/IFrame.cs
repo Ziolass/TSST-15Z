@@ -81,6 +81,6 @@ namespace NetworkNode.SDHFrame
          Header Msoh { get; set; }
          Header Rsoh { get; set; }
          IContent GetVirtualContainer(VirtualContainerLevel level, int number);
-         bool SetVirtualContainer(VirtualContainerLevel level, int number, IContent content);
+         bool SetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex, IContent content);
     }
 }

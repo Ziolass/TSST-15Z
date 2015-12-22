@@ -18,14 +18,16 @@ namespace NetworkNode
             VirtualContainer vcTest = new VirtualContainer(VirtualContainerLevel.VC4);
             vcTest.SetContent("TEST");
             //frame.SetVirtualContainer(VirtualContainerLevel.VC4, 0, vcTest);
+            //frame.SetVirtualContainer(VirtualContainerLevel.VC4, 0, null, new VirtualContainer(VirtualContainerLevel.VC4, new Container("test")));
 
-                frame.SetVirtualContainer(VirtualContainerLevel.VC32, 0, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test")));
-                frame.SetVirtualContainer(VirtualContainerLevel.VC32, 1, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test2")));
+                frame.SetVirtualContainer(VirtualContainerLevel.VC32, 0, 0, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test")));
+                frame.SetVirtualContainer(VirtualContainerLevel.VC32, 0, 1, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test2")));
+                frame.SetVirtualContainer(VirtualContainerLevel.VC32, 0, 1, new VirtualContainer(VirtualContainerLevel.VC32, new Container("mnie nie ma")));
 
-                frame.SetVirtualContainer(VirtualContainerLevel.VC12, 42, new VirtualContainer(VirtualContainerLevel.VC12, new Container("test3 ja sie nie mieszcze")));
-                frame.SetVirtualContainer(VirtualContainerLevel.VC21, 15, new VirtualContainer(VirtualContainerLevel.VC21, new Container("testVC21 ja sie nie mieszcze")));
+                //frame.SetVirtualContainer(VirtualContainerLevel.VC12, 42, new VirtualContainer(VirtualContainerLevel.VC12, new Container("test3 ja sie nie mieszcze")));
+                //frame.SetVirtualContainer(VirtualContainerLevel.VC21, 15, new VirtualContainer(VirtualContainerLevel.VC21, new Container("testVC21 ja sie nie mieszcze")));
 
-                var test = frame.GetVirtualContainer(VirtualContainerLevel.VC32, 5);
+                var test = frame.GetVirtualContainer(VirtualContainerLevel.VC32, 0, 1);
                 test = frame.GetVirtualContainer(VirtualContainerLevel.VC32, 1);
 
             FrameBuilder fmb = new FrameBuilder();
