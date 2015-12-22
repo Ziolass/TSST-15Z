@@ -13,12 +13,13 @@ namespace NetworkNode.HPC
     {
         public VirtualContainerLevel ContainerLevel { get; private set; }
         public int VcNumberIn { get; private set; }
+        public int HigherPathIn { get; private set; }
         public int VcNumberOut { get; private set; }
         public int OutputPort { get; private set; }
+        public int HigherPathOut { get; private set; }
         public int InputPort { get; private set; }
-        public StmLevel Stm { get; private set; }
 
-        public ForwardingRecord(int inputPort, int outputPort, StmLevel stm, VirtualContainerLevel containerLevel, int vcNumberIn, int vcNumberOut)
+        public ForwardingRecord(int inputPort, int outputPort, VirtualContainerLevel containerLevel, int vcNumberIn, int vcNumberOut, int hPathIn, int hPathOut)
         {
             OutputPort = outputPort;
             InputPort = inputPort;
@@ -26,7 +27,8 @@ namespace NetworkNode.HPC
             VcNumberIn = vcNumberIn;
             VcNumberOut = vcNumberOut;
             InputPort = inputPort;
-            Stm = stm;
+            HigherPathIn = hPathIn;
+            HigherPathOut = hPathOut;
         }
 
         public bool Equals(ForwardingRecord other)
@@ -37,7 +39,8 @@ namespace NetworkNode.HPC
             }
 
             return this.ContainerLevel == other.ContainerLevel
-                && this.Stm == other.Stm
+                && this.HigherPathIn == other.HigherPathIn
+                && this.HigherPathOut == other.HigherPathOut
                 && this.InputPort == other.InputPort
                 && this.OutputPort == other.OutputPort
                 && this.VcNumberIn == other.VcNumberIn

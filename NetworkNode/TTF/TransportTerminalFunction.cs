@@ -93,7 +93,7 @@ namespace NetworkNode.TTF
             }
         }
 
-        public List<int> GetPorts()
+        public Dictionary<int, StmLevel>  GetPorts()
         {
             return spi.GetPorts();
         }

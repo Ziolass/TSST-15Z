@@ -28,12 +28,12 @@ namespace NetworkNode.HPC
             builder = new FrameBuilder();
             inputCredentials = new Dictionary<int, IFrame>();
             outputCredentials = new Dictionary<int, IFrame>();
-            List<int> allPorts = ttf.GetPorts();
+            Dictionary<int,StmLevel> allPorts = ttf.GetPorts();
             
-            foreach (int port in allPorts)
+            foreach (int port in allPorts.Keys)
             {
-                inputCredentials.Add(port, new Frame());
-                outputCredentials.Add(port, new Frame());
+                inputCredentials.Add(port, new Frame(allPorts[port]));
+                outputCredentials.Add(port, new Frame(allPorts[port]));
             }
         }
 
@@ -68,16 +68,16 @@ namespace NetworkNode.HPC
         private bool checkForwardingRecord(ForwardingRecord record)
         {
             VirtualContainer vc = new VirtualContainer(record.ContainerLevel);
-            
-            /*if (inputCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+
+            if (inputCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn, vc))
             {
-                if (outputCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.VcNumberIn, vc))
+                if (outputCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn, vc))
                 {
                     return true;
                 }
 
-                ((Frame)inputCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
-            } */
+                ((Frame)inputCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn);
+            } 
 
             return false;
         }

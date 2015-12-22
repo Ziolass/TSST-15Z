@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetworkNode.SDHFrame;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -22,13 +23,15 @@ namespace NetworkNode.Ports
         public event HandleIncomingData HandleIncomingData;
         public int InputPort { get; set; } 
         public bool Active { get; set; }
+        public StmLevel Level { get; private set; }
 
-        public NodeInput(int tcpPort, int abstractPort)
+        public NodeInput(int tcpPort, int abstractPort, StmLevel level)
             : base(tcpPort) 
         {
             InputPort = abstractPort;
             InputBuffer = new List<List<byte>>();
             Active = true;
+            Level = level;
         }
 
         public void SetUpServer(int bufferSize, int maxQueueLength)

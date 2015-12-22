@@ -13,7 +13,7 @@ namespace NetworkNode
         static void Main(string[] args)
         {
 
-            Frame frame = new Frame();
+            /*Frame frame = new Frame();
 
             VirtualContainer vcTest = new VirtualContainer(VirtualContainerLevel.VC4);
             vcTest.SetContent("TEST");
@@ -43,9 +43,9 @@ namespace NetworkNode
             if (args.Length == 0)
             {
                 Console.WriteLine("Input parameter missing");
-            }
+            }*/
 
-			String id = args[0];
+			String id = "0";//args[0];
             //String id = "1";
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\NetworkNode\\nodeConfig" + id + ".xml");
 
@@ -58,7 +58,7 @@ namespace NetworkNode
             Console.WriteLine("Start emulation");
             startReadingCommands(node);
             //node.emulateManagement("sub-conection-HPC|1002-2003#|");
-            */
+            
         }
 
         private static void startReadingCommands(NetworkNode node)

@@ -111,9 +111,14 @@ namespace NetworkNode.TTF
             }
         }
 
-        public List<int> GetPorts()
+        public Dictionary<int,StmLevel> GetPorts()
         {
-            return new List<int>(Ports.Keys);
+            Dictionary<int,StmLevel> result = new Dictionary<int,StmLevel>();
+            foreach (int port in Ports.Keys)
+            {
+                result.Add(port,Ports[port].Level);
+            }
+            return result;
         }
     }
 }

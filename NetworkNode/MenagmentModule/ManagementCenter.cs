@@ -93,15 +93,7 @@ namespace NetworkNode.MenagmentModule
 
             List<string> literalRecord = connections[0];
 
-            int inPort = int.Parse(literalRecord[0]);
-            int outPort = int.Parse(literalRecord[1]);
-            int inContainer = int.Parse(literalRecord[2]);
-            int outContainer = int.Parse(literalRecord[3]);
-            VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[4]);
-            StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
-            ForwardingRecord record = new ForwardingRecord(inPort, outPort, stm, level, inContainer, outContainer);
-
-
+            ForwardingRecord record = createRecord(literalRecord);
 
             return node.RemoveRecord(record) ? "OK" : "ERROR";
         }
@@ -120,16 +112,18 @@ namespace NetworkNode.MenagmentModule
 
         private string getPortList()
         {
-            List<int> ports = node.GetPorts();
+            Dictionary<int, StmLevel> ports = node.GetPorts();
             StringBuilder builder = new StringBuilder();
             int index = 0;
-            foreach (int port in ports)
+            foreach (int port in ports.Keys)
             {
 
                 builder.Append(port);
+                builder.Append("#");
+                builder.Append(ports[port].ToString());
                 if (index < ports.Count - 1)
                 {
-                    builder.Append("#");
+                    builder.Append("|");
                 }
             }
 
@@ -146,13 +140,15 @@ namespace NetworkNode.MenagmentModule
                 builder.Append("#");
                 builder.Append(record.OutputPort);
                 builder.Append("#");
-                builder.Append(record.VcNumberIn);
-                builder.Append("#");
-                builder.Append(record.VcNumberOut);
-                builder.Append("#");
                 builder.Append(record.ContainerLevel.ToString());
                 builder.Append("#");
-                builder.Append(record.Stm.ToString());
+                builder.Append(record.VcNumberIn == -1 ? "" : "" + record.VcNumberIn);
+                builder.Append("#");
+                builder.Append(record.HigherPathIn);
+                builder.Append("#");
+                builder.Append(record.VcNumberOut == -1 ? "" : "" + record.VcNumberOut);
+                builder.Append("#");
+                builder.Append(record.HigherPathOut);
                 if (index < records.Count - 1)
                 {
                     builder.Append("|");
@@ -169,17 +165,26 @@ namespace NetworkNode.MenagmentModule
             List<ForwardingRecord> records = new List<ForwardingRecord>();
             foreach (List<string> literalRecord in literalRecords)
             {
-                int inPort = int.Parse(literalRecord[0]);
-                int outPort = int.Parse(literalRecord[1]);
-                int inContainer = int.Parse(literalRecord[2]);
-                int outContainer = int.Parse(literalRecord[3]);
-                VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[4]);
-                StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
-                records.Add(new ForwardingRecord(inPort, outPort, stm, level, inContainer, outContainer));
+
+                records.Add(createRecord(literalRecord));
             }
             ExecutionResult result = node.AddForwardingRecords(records);
 
             return result.Result ? "OK" : "ERROR " + result.Msg;
+        }
+
+        private ForwardingRecord createRecord(List<string> literalRecord)
+        {
+            int inPort = int.Parse(literalRecord[0]);
+            int outPort = int.Parse(literalRecord[1]);
+            int inContainer = int.Parse(literalRecord[3].Equals("") ? "-1" : literalRecord[2]);
+            int outContainer = int.Parse(literalRecord[5].Equals("") ? "-1" : literalRecord[5]);
+            int hPathIn = int.Parse(literalRecord[4]);
+            int hPathOut = int.Parse(literalRecord[6]);
+            VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[2]);
+            //StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
+            ForwardingRecord record = new ForwardingRecord(inPort, outPort, level, inContainer, outContainer, hPathIn, hPathOut);
+            return record;
         }
 
     }

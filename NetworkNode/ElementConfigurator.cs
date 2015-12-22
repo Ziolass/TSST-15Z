@@ -1,6 +1,7 @@
 using NetworkNode.HPC;
 using NetworkNode.MenagmentModule;
 using NetworkNode.Ports;
+using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,9 @@ namespace NetworkNode
                         {
                             int portNumber = int.Parse(configReader.GetAttribute("local"));
                             int tcp = int.Parse(configReader.GetAttribute("tcp"));
-                            ports.Add(new NodeInput(tcp, portNumber)); 
+                            string stm = configReader.GetAttribute("stm");
+
+                            ports.Add(new NodeInput(tcp, portNumber, StmLevelExt.GetContainer(stm))); 
                         }
                         else if (configReader.Name == "cloud-server")
                         {

@@ -1,5 +1,6 @@
 ﻿using NetworkNode.HPC;
 using NetworkNode.MenagmentModule;
+using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace NetworkNode
             return hpc.GetForwardingRecords();
         }
 
-        public List<int> GetPorts()
+        public Dictionary<int, StmLevel> GetPorts()
         {
             return ttf.GetPorts();
         }
