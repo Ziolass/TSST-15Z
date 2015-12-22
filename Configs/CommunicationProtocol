@@ -28,7 +28,7 @@ M->R: disable-node|
 R->M: OK
 
 2. usuwanie połączenia
-M->R: close-connection|{id} 
+M->R: close-connection|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{typ_modulu1} 
 R->M: OK
 	
 3. Dodanie połączenia
@@ -51,7 +51,7 @@ z portu 1 na port 2 przekładamy vc3 które przychodzi z w zerowym vc4 i wychodz
 
 4. Podanie listy połączeń
 M->R: get-connection-list|
-R->M: {id}#{port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath}|{id}#{port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath} itd
+R->M: {port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath}|{port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath} itd
 id - pomaga w usuwaniu połączeń
 EXAMPLE: R->M: 1#2#VC3#0#0#1#1 |5#6#7#8#VC12#STM4
 
