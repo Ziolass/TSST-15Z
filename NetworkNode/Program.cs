@@ -33,6 +33,8 @@ namespace NetworkNode
 
             frame = (Frame)fmb.BuildFrame(literal);
 
+            frame.ToString();
+
             Console.ReadLine();
 
             /*

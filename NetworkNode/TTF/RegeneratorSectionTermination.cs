@@ -18,31 +18,38 @@ namespace NetworkNode.TTF
             nextData = new List<string>();
         }
 
+        /// <summary>
+        /// Evaluates the header.
+        /// </summary>
+        /// <param name="sdhFrame">The SDH frame.</param>
+        /// <returns></returns>
         public bool evaluateHeader(IFrame sdhFrame)
         {
             //Remove RSOH header from tempFrame 
             Frame tempFrame = new Frame((Frame)sdhFrame);
             tempFrame.Rsoh = null;
             //Check BIP
-            if (sdhFrame.Rsoh != null && sdhFrame.Rsoh.Checksum == BinaryInterleavedParity.generateBIP(((Frame)tempFrame), 8))
+            if (sdhFrame.Rsoh != null && sdhFrame.Rsoh.Checksum == BinaryInterleavedParity.GenerateBIP(((Frame)tempFrame), 8))
                 return true;
             else return false;
         }
 
 
+        /// <summary>
+        /// Generates the header.
+        /// </summary>
+        /// <param name="sdhFrame">The SDH frame.</param>
         public void generateHeader(IFrame sdhFrame)
         {
-
             Frame tempFrame = (Frame)sdhFrame;
             tempFrame.Rsoh = null;
             if (sdhFrame.Rsoh != null)
             {
-
-                ((Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.generateBIP(tempFrame, 8);
+                ((Frame)sdhFrame).Rsoh.Checksum = BinaryInterleavedParity.GenerateBIP(tempFrame, 8);
             }
             else
             {
-                ((Frame)sdhFrame).Rsoh = new Header(BinaryInterleavedParity.generateBIP(tempFrame, 8), null, null);
+                ((Frame)sdhFrame).Rsoh = new Header(BinaryInterleavedParity.GenerateBIP(tempFrame, 8), null, null);
             }
             
             if (nextData.Count > 0)

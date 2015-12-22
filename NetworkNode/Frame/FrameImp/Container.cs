@@ -17,6 +17,10 @@ namespace NetworkNode.SDHFrame
             this.Type = ContentType.CONTAINER;
             this.Content = content;
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Container"/> class.
+        /// </summary>
+        /// <param name="container">The container.</param>
         public Container(Container container)
         {
             this.Content = container.Content;
@@ -34,7 +38,13 @@ namespace NetworkNode.SDHFrame
                 return true;
             else return false;
         }
-        public string ToString()
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
         {
             return this.Content;
         }

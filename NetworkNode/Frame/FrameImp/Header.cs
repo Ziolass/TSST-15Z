@@ -35,6 +35,10 @@ namespace NetworkNode.SDHFrame
             this.DCC = null;
             this.Type = ContentType.HEADER;
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Header"/> class.
+        /// </summary>
+        /// <param name="header">The header.</param>
         public Header(Header header)
         {
             this.Checksum = header.Checksum;
@@ -60,7 +64,7 @@ namespace NetworkNode.SDHFrame
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public string ToString()
+        public override string ToString()
         {
             string returnString = string.Empty;
             returnString += "Parity: " + this.Checksum + "\n";

@@ -17,7 +17,7 @@ namespace NetworkNode.TTF
         /// <param name="sdhFrame">The SDH frame.</param>
         /// <param name="block">The block.</param>
         /// <returns></returns>
-        public static string generateBIP(IFrame sdhFrame, int blockCount)
+        public static string GenerateBIP(IFrame sdhFrame, int blockCount)
         {
             FrameBuilder fmb = new FrameBuilder();
             String checksum = String.Empty;
@@ -36,27 +36,17 @@ namespace NetworkNode.TTF
             return checksum;
         }
         /// <summary>
-        /// Generates the BIP checksum.
+        /// Generates the BIP checksum from content.
         /// </summary>
-        /// <param name="var">The variable.</param>
+        /// <param name="content">The content.</param>
         /// <param name="blockCount">The block count.</param>
+        /// <param name="level">The level.</param>
         /// <returns></returns>
-        public static string generateBIP(object var, int blockCount)
+        public static string GenerateBIP(List<IContent> content, int blockCount, StmLevel level)
         {
-            String checksum = String.Empty;
-            byte[] bitFrame = BinaryInterleavedParity.ObjectToByteArray(var.ToString());
-            int hopSize = bitFrame.Length / blockCount;
-            for (int z = 0; z < blockCount; z++)
-            {
-                byte block = 0;
-                for (int x = z; x < z * hopSize && x < bitFrame.Length; x++)
-                {
-                    block = (byte)(block + bitFrame[x]);
-                }
-                block = (byte)(block % 2);
-                checksum += block.ToString();
-            }
-            return checksum;
+            Frame bipFrame = new Frame(level);
+            bipFrame.Content = new List<IContent>(content);
+            return BinaryInterleavedParity.GenerateBIP(bipFrame, blockCount);
         }
         /// <summary>
         /// Objects to byte array.

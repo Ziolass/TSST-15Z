@@ -283,7 +283,7 @@ namespace NetworkNode.SDHFrame
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public string ToString()
+        public override string ToString()
         {
             string returnString = string.Empty;
             returnString += this.Level.ToString() + "|";
@@ -299,10 +299,21 @@ namespace NetworkNode.SDHFrame
                 {
                     returnString += "|" + ((VirtualContainer)item).Level.ToString();
                     returnString += "+POH";
+                    string VCcontent = string.Empty;
+                    foreach (var innerItem in ((VirtualContainer)item).Content)
+                    {
+                        if (innerItem != null && VirtualContainer.isVirtualContainer(innerItem))
+                        {
+                            VCcontent += ((VirtualContainer)innerItem).ToString();
+                        }
+                    }
+                    if (VCcontent != string.Empty)
+                    {
+                        returnString += "[" + VCcontent + "]";
+                    }
                 }
             }
-            returnString += "|";
-            return returnString;
+            return returnString.Remove(returnString.LastIndexOf('|'),1);
         }
     }
 }

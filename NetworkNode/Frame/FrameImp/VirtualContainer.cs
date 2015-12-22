@@ -60,9 +60,16 @@ namespace NetworkNode.SDHFrame
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public string ToString()
+        public override string ToString()
         {
-            return this.Level.ToString() + " POH: " + this.POH.ToString() + " Cont: " + this.Content.ToString();
+            string returnString = string.Empty;
+            foreach (var item in this.Content)
+            {
+                if (item != null){
+                    returnString += this.Level.ToString() + "+POH|";
+                }
+            }
+            return returnString;
         }
         /// <summary>
         /// Generates the list content depending on the current VirtualContainer level
