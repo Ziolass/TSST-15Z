@@ -27,36 +27,39 @@ EXAMLE: C->M: client|client1
 M->R: disable-node|
 R->M: OK
 
-2. 
-M->R: close-connection|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{typ_modulu1} 
+2. usuwanie połączenia
+M->R: close-connection|{id} 
 R->M: OK
 	
 3. Dodanie połączenia
-M->R: sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{typ_modulu1} 
+M->R: sub-connection-HPC|{port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath}
 R->M: OK
 (wartości oddzielone # w kolejności:
 -port z którego wychodzi
 -port na który ma wejść
--poziom z którego przekłada
--poziom do którego przekłada
--typ kontera
--typ modulu
+-typ kontera - kontener który będzie przekładany
+-we + wy	: {
+		-szczelina ścieżki niższego rzędu może być pusta (##) gdy transportujemy dane w kontenerze wyższego rzędu
+		-szczelina ścieżki wyższego określa w której VC4 znajduje się dana ramka lub dane dla STM1 jest to zawsze 0
+	}
+
 poszczególne połączenia oddzielone |
 
-EXAMLE: M->R: sub-connection-HPC|1#2#3#4#VC1#STM1
-EXAMPLE Multiple Con: M->R: sub-connection-HPC|1#2#3#4#VC1#STM1|5#6#7#8#VC12#STM4
+EXAMLE: M->R: sub-connection-HPC|1#2#VC3#0#0#1#1 => to oznacz że szlak do którego wkłada jest conajmniej STM4
+z portu 1 na port 2 przekładamy vc3 które przychodzi z w zerowym vc4 i wychodzi jako 2 VC3 w drugim VC4
+
 
 4. Podanie listy połączeń
 M->R: get-connection-list|
-R->M: {port_wejsciowy1}#{port_wwyjsciowy1}#{poziom_wejsciowy1}#{poziom_wyjsciowy1}#{typ_konteneru1}{modul1}|{port_wejsciowy2}#{port_wwyjsciowy2}#{poziom_wejsciowy2}#{poziom_wyjsciowy2}#{typ_konteneru2}{modul2} itd
-
-EXAMPLE: R->M: 1#2#3#4#VC1#STM1|5#6#7#8#VC12#STM4
+R->M: {id}#{port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath}|{id}#{port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath} itd
+id - pomaga w usuwaniu połączeń
+EXAMPLE: R->M: 1#2#VC3#0#0#1#1 |5#6#7#8#VC12#STM4
 
 5. Podanie listy portów
 M->R: get-ports|
-R->M: {port1}#STM1|{port2}#STM2 itp
+R->M: {port1}#STM1|{port2}#STM4 itp
 ergo: pary (port#stm) oddziela znak |
-EXAMPLE: R->M: 1#stm1|2#stm4|3#stm64
+EXAMPLE: R->M: 1#STM1|2#STM4|3#STM64
 
 7. Przypadek gdy router nie jest w stanie wykonać polecenia
 M->R: <polecenie>
