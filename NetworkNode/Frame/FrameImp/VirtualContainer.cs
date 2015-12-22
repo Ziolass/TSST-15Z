@@ -222,6 +222,14 @@ namespace NetworkNode.SDHFrame
         {
             this.Content[0] = container;
         }
+        /// <summary>
+        /// Sets the content.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void SetContent(String value)
+        {
+            this.Content[0] = new Container(value);
+        }
 
         /// <summary>
         /// Tests adding the container to frame space.

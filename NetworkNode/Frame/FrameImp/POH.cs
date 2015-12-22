@@ -15,6 +15,7 @@ namespace NetworkNode.SDHFrame
         public POH()
         {
             this.Type = ContentType.POH;
+            this.SignalLabel = SignalLabelType.UNDEF;
         }
         public POH(SignalLabelType signalLabel)
         {

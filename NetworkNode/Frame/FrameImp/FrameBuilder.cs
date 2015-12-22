@@ -84,21 +84,24 @@ namespace NetworkNode.SDHFrame
                     VirtualContainer newVC = new VirtualContainer(FrameBuilder.getVCLevel(content["Level"]));
                     newVC.Pointer = content["Pointer"].ToString();
                     newVC.POH = (POH)FrameBuilder.evaluateContent((JObject)content["POH"]);
-                    if (FrameBuilder.isObjectOfContainer(content["Content"])) //Check if "Content" has value and is type of Container
+                    if (FrameBuilder.isJArray(content["Content"]))
+                    {
+                        newVC.Content = FrameBuilder.evaluateContents((JArray)content["Content"]);
+                    }
+                    else if (FrameBuilder.isObjectOfContainer(content["Content"])) //Check if "Content" has value and is type of Container
                     {
                         Container newContainer = (Container)FrameBuilder.evaluateContent((JObject)content["Content"]);
                         if (newContainer != null)
                         {
-                           // newVC.Content = newContainer;
-                            return newVC;
+                            newVC.SetContent(newContainer);
                         }
                         else return null;
                     }
                     else //There is no value Content of VC is null
                     {
                         newVC.Content = null;
-                        return newVC;
                     }
+                    return newVC;
                 }
                 else if (FrameBuilder.isContainer(content["Type"]))
                 {
