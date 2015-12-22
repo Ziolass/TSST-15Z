@@ -88,15 +88,6 @@ namespace NetworkNode.SDHFrame
                     {
                         newVC.Content = FrameBuilder.evaluateContents((JArray)content["Content"]);
                     }
-                    else if (FrameBuilder.isObjectOfContainer(content["Content"])) //Check if "Content" has value and is type of Container
-                    {
-                        Container newContainer = (Container)FrameBuilder.evaluateContent((JObject)content["Content"]);
-                        if (newContainer != null)
-                        {
-                            newVC.SetContent(newContainer);
-                        }
-                        else return null;
-                    }
                     else //There is no value Content of VC is null
                     {
                         newVC.Content = null;
@@ -130,20 +121,6 @@ namespace NetworkNode.SDHFrame
                 return null;
             }
         }
-
-        /// <summary>
-        /// Determines whether the specified jToken is object of container.
-        /// </summary>
-        /// <param name="jToken">The jToken.</param>
-        /// <returns></returns>
-        private static bool isObjectOfContainer(JToken jToken)
-        {
-            if (!jToken.HasValues || !FrameBuilder.isContainer(jToken["Type"]))
-                return false;
-            else
-                return true;
-        }
-
         /// <summary>
         /// Evaluates the contents. Iterate through the JArray to create IContent
         /// </summary>
