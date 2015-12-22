@@ -242,6 +242,33 @@ namespace NetworkNode.SDHFrame
             }
             return true;
         }
+        /// <summary>
+        /// Clears the virtual container.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="hiIndex">The number.</param>
+        /// <param name="lowIndex">The number.</param>
+        /// <returns></returns>
+        public bool ClearVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex)
+        {
+            if (level == VirtualContainerLevel.VC4)
+            {
+                this.Content[hiIndex] = null;
+            }
+            else
+            {
+                if (this.Content.Count >= hiIndex + 1 && lowIndex != null)
+                {
+                    int lowerIndex = (int)lowIndex;
+                    IContent tempContainer = this.Content[hiIndex];
+                    if (VirtualContainer.isVirtualContainer(tempContainer))
+                    {
+                        ((VirtualContainer)tempContainer).SetVirtualContainerAtIndex(level, lowerIndex, null); //Get specific virtual container lower level
+                    }
+                }
+            }
+            return true;
+        }
 
 
         /// <summary>
