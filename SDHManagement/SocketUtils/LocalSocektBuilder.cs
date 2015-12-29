@@ -28,7 +28,6 @@ namespace SDHManagement2.SocketUtils
                 {
 
                     instance = new LocalSocektBuilder();
-                    // NetworkChange.NetworkAddressChanged += new NetworkAddressChangedEventHandler();
                 }
 
                 return instance;
@@ -48,8 +47,6 @@ namespace SDHManagement2.SocketUtils
 
             if (!success)
             {
-                // NOTE, MUST CLOSE THE SOCKET
-
                 socket.Close();
                 
                 throw new Exception("Failed to connect server.");

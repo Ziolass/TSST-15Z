@@ -45,10 +45,8 @@ namespace SDHManagement2.FileUtils
                             if (configReader.HasAttributes)
                             {
                                 portList.Add(int.Parse(configReader.GetAttribute("value")));
-                                //portCommandDictionary.Add(int.Parse(configReader.GetAttribute("value")), configReader.GetAttribute("command"));
                             }
                         }
-
                         else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "module"))
                         {
                             if (configReader.HasAttributes)

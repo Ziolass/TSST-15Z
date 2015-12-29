@@ -25,6 +25,7 @@ namespace SDHManagement2.AdditionalWindows
     /// </summary>
     public partial class AddConnectionWindow : Window
     {
+        #region variables
         private SocketHandler handler;
         private string [] connections;
         private string [] inports;
@@ -38,9 +39,7 @@ namespace SDHManagement2.AdditionalWindows
         private int[] vc4levels = { 0 };
         private int[] vc21levels;
         private int []vc12levels;
-
-       
-
+        #endregion
         public AddConnectionWindow(SocketHandler handler_, string port_response, string connection_response,string name,List<string> modulesList, List<string> contenersList)
         {
             InitializeComponent();
@@ -70,7 +69,6 @@ namespace SDHManagement2.AdditionalWindows
             string stm = modules[0].Substring(3);
             modulesMultiplier = int.Parse(stm);
         }
-
         private void stringToPortArray(String port_string)
         {
             ports = port_string.Split('#');
@@ -80,7 +78,6 @@ namespace SDHManagement2.AdditionalWindows
             outportBox.ItemsSource = ports.ToList();
 
         }
-
         private void stringToConnectionArray(String con_string)
         {
 
@@ -92,20 +89,19 @@ namespace SDHManagement2.AdditionalWindows
 
                 string[] tmp = temp_connections[i].Split('#');
                 int temp = i + 1;
-                // connections[i] = "Połączenie "+temp+".\n"+
-                // +tmp[0] + " --> " + tmp[1];
-                connections[i] = "Połączenie " + temp + ".\n" +
-                    "Z portu " + tmp[0] + ". na port " + tmp[1] + ".\n" +
-                    "Ze szczeliny " + tmp[2] + ". do szczeliny " + tmp[3] + ".\n" +
-                    "Moduł: " + tmp[5] + "\n" +
-                    "Kontener: " + tmp[4];
+                connections[i] ="Polaczanie " + temp + ".\n" +
+                        "z: " + tmp[0] + " do " + tmp[1] + "\n" +
+                        "Kontener: " + tmp[2] +
+                        "Szczelina pocz., LP: " + tmp[3] +
+                        "Szczelina pocz., HP: " + tmp[4] +
+                        "Szczelina docelowa, LP: " + tmp[5] +
+                        "Szczelina docelowa, HP: " + tmp[6];
 
 
             }
             connectionsBox.ItemsSource = connections.ToList();
 
         }
-
         private void button_Click(object sender, RoutedEventArgs e)
         {
             int inport; 
@@ -175,8 +171,6 @@ namespace SDHManagement2.AdditionalWindows
                 vc4levels[j] = j;
             }
         }
-
-
         private void initArrays()
         {
             vc12levels = new int[63];
@@ -222,12 +216,10 @@ namespace SDHManagement2.AdditionalWindows
                     break;
             }
         }
-
         private void STMComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
-
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();

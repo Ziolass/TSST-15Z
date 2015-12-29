@@ -1,24 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using SDHManagement2.FileUtils;
 using SDHManagement2.Models;
 using SDHManagement2.SocketUtils;
-using SDHManagement2.AdditionalWindows;
-using Microsoft.Win32;
-using System.IO;
 
 namespace SDHManagement2
 {
@@ -27,6 +14,7 @@ namespace SDHManagement2
     /// </summary>
     public partial class MainWindow : Window, IDisposable
     {
+        #region variables
         private SocketHandler socketHandler;
         private List<string> availableModules;
         private List<string> availableConteners;
@@ -59,11 +47,10 @@ namespace SDHManagement2
              "Krosownica",
              "Klient"
             };
-
         public List<Router> routerList { get; set; }
         public List<Router> clientList { get; set; }
         private bool initialised = false;
-
+        #endregion
         public MainWindow()
         {
             InitializeComponent();
@@ -84,70 +71,10 @@ namespace SDHManagement2
             GraphAreaExample_Setup();
             init();*/
         }
-
-        /*
-        void init()
-        {
-           
-            Area.GenerateGraph(true,true);
-
-           // Area.SetEdgesDashStyle(EdgeDashStyle.Dash);
-
-            Area.ShowAllEdgesArrows(true);
-            Area.MoveAnimation = AnimationFactory.CreateMoveAnimation(MoveAnimation.Move, TimeSpan.FromSeconds(1));
-            Area.ShowAllEdgesLabels(false);
-
-            zoomctrl.ZoomToFill();
-        }
-
-        private void GraphAreaExample_Setup()
-        {
-            var logicCore = new GXLogicCoreExample() {Graph = GraphExample_Setup()};
-
-            logicCore.DefaultLayoutAlgorithm =LayoutAlgorithmTypeEnum.KK;
-
-            ((KKLayoutParameters) logicCore.DefaultLayoutAlgorithmParams).MaxIterations = 100;
-
-            logicCore.DefaultOverlapRemovalAlgorithm = OverlapRemovalAlgorithmTypeEnum.FSA;
-
-            logicCore.DefaultOverlapRemovalAlgorithmParams.HorizontalGap = 50;
-            logicCore.DefaultOverlapRemovalAlgorithmParams.VerticalGap = 50;
-
-            logicCore.DefaultEdgeRoutingAlgorithm=EdgeRoutingAlgorithmTypeEnum.SimpleER;
-
-            logicCore.AsyncAlgorithmCompute = false;
-
-            Area.LogicCore = logicCore;
-
-
-
-        }
-
-        private GraphExample GraphExample_Setup()
-        {
-            var dataGraph = new GraphExample();
-
-            for (int i = 0; i < 5; i++)
-            {
-                var dataVertex = new DataVertex("Router:"+i);
-                dataGraph.AddVertex(dataVertex);
-
-            }
-
-            var vlist = dataGraph.Vertices.ToList();
-            var dataEdge = new DataEdge(vlist[0], vlist[1]);// {Text =string.Format("{0} -> {1}",vlist[0],vlist[1])};
-            dataGraph.AddEdge(dataEdge);
-            dataEdge = new DataEdge(vlist[2], vlist[3]);//{ Text = string.Format("{0} -> {1}", vlist[2], vlist[3]) };
-            dataGraph.AddEdge(dataEdge);
-            return dataGraph;
-
-        }
-        */
         public void Dispose()
         {
            // Area.Dispose(); 
         }
-
         private void button_Click(object sender, RoutedEventArgs e)
         {
             string nodeName;
@@ -163,11 +90,9 @@ namespace SDHManagement2
                 action = clientAction[actionBox.SelectedIndex];
             }
 
-            //action = actionList[actionBox.SelectedIndex];
             socketHandler.commandHandle(action,nodeName);
             
         }
-
         public void appendConsole(string text, string name, string command)
         {
             if (command == null || name == null)
@@ -224,20 +149,16 @@ namespace SDHManagement2
         }
         private string  stringToPortArray(String port_string)
         {
-    //        string[] temp_ports = port_string.Split('|');
-  //          string [] inports = temp_ports[0].Split('#');
-//            string [] outports = temp_ports[1].Split('#');
-
-            //string[] result = new string[2];
-            //result[0] = string.Join(", ", inports);
-           // result[1] = string.Join(", ", outports);
-            string result2 = string.Join(", ",port_string.Split('#'));
-
-
-            return result2;
+            string[] temp = port_string.Split('|');
+            string[] temp2 = new string[temp.Length];
+            for(int i = 0; i < temp.Length; i++)
+            {
+                string[] tmp = temp[i].Split('#');
+                temp2[i] = string.Join(":", tmp);
+            }       
+            return string.Join(", ",temp2);
 
         }
-
         private string [] stringToConnectionArray(String con_string)
         {
             string[] temp_connections = con_string.Split('|');
@@ -249,9 +170,11 @@ namespace SDHManagement2
                 int position = i + 1;
                 connections[i] = "Polaczanie "+position+".\n"+
                     "z: "+tmp[0] + " do " + tmp[1]+"\n"+
-                    "z pozycji "+tmp[2]+". na pozycje "+tmp[3]+".\n"+
-                    "obsługiwany kontener: "+tmp[4]+
-                    "moduł: " + tmp[5];
+                    "obsługiwany kontener: "+tmp[2]+
+                    "szczelina z LP: " + tmp[3] + "\n" +
+                    "szczelina z HP: " + tmp[4] + "\n" +
+                    "szczelina do LP: " + tmp[5] + "\n" +
+                    "szczelina do HP: " + tmp[6] + "\n" ;
             }
             return connections;
         }
@@ -308,7 +231,6 @@ namespace SDHManagement2
 
 
         }
-
         private void button2_Click(object sender, RoutedEventArgs e)
         {
             socketHandler.refresh();
@@ -347,12 +269,10 @@ namespace SDHManagement2
             return;
 
         }
-
         private void nodeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             
         }
-
         private void selectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -378,7 +298,6 @@ namespace SDHManagement2
                     break;
             }
         }
-
         private void actionBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 

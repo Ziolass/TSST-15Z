@@ -10,14 +10,14 @@ namespace SDHManagement2.SocketUtils
 {
     public class RouterSocket
     {
+        #region variables
         private Thread personalThread;
         private TcpClient client;
         private List<byte[]> inputBuffer;
         private Socket socket;
         public string identifier { get; set; }
         public int port { get; set; }
-
-        
+        #endregion
         public RouterSocket(int _port, string name)
         {
             inputBuffer = new List<byte[]>();
@@ -29,14 +29,10 @@ namespace SDHManagement2.SocketUtils
             inputBuffer = new List<byte[]>();
             port = _port;
         }
-
         public void TurnOn()
         {
-            //personalThread = new Thread(new ThreadStart(initConversation));
-           // personalThread.Start();
            client = new TcpClient();
         }
-
         public void InitConversation()
         {
             try {
@@ -46,7 +42,6 @@ namespace SDHManagement2.SocketUtils
                 throw   e;
             }
         }
-
         public Socket GetSocket()
         {
             return socket;

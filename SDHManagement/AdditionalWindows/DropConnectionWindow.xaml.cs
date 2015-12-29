@@ -50,10 +50,11 @@ namespace SDHManagement2.AdditionalWindows
                     string[] tmp = connectionsWithSharp[i].Split('#');
                     connections[i] = "Polaczanie " + position + ".\n" +
                         "z: " + tmp[0] + " do " + tmp[1] + "\n" +
-                        "z pozycji " + tmp[2] + ". na pozycje " + tmp[3] + ".\n" +
-                        "Kontener: " + tmp[4] +
-                        "Moduł: " + tmp[5];
-
+                        "Kontener: " + tmp[2] +
+                        "Szczelina pocz., LP: " + tmp[3] +
+                        "Szczelina pocz., HP: " + tmp[4] +
+                        "Szczelina docelowa, LP: " + tmp[5] +
+                        "Szczelina docelowa, HP: " + tmp[6];
                 }
             }
             else if (elementType.Equals("client"))

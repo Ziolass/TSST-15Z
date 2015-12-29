@@ -12,6 +12,7 @@ namespace SDHManagement2.SocketUtils
 {
     public class SocketHandler
     {
+        #region variables
         private MainWindow mainWindow;
         private List<Router> endPointsList;
         private List<Router> rList;
@@ -20,7 +21,7 @@ namespace SDHManagement2.SocketUtils
         private List<string> availableModules;
         public List<string> nodelist { get; set; }
         public List<string> clientNameList { get; set; }
-
+        #endregion
         public SocketHandler(List<int> portList, MainWindow main, List<string> modules, List<string> conteners)
         {
             rList = new List<Router>();
@@ -65,7 +66,6 @@ namespace SDHManagement2.SocketUtils
                     mainWindow.appendConsole("Połączono z klientem: " + r.identifier + " na porcie: " + r.port, null, null);
 
                 }
-                //nodelist.Add(r.identifier);
 
             }
 
@@ -83,7 +83,7 @@ namespace SDHManagement2.SocketUtils
             }
             catch (Exception e)
             {
-                mainWindow.appendConsole("Nie można było nawiązać połączania na porcie "+r.port, null, null);
+                mainWindow.appendConsole("Nie można było nawiązać połączania na porcie "+r.port+" ,błąd: "+e.Message, null, null);
             }
             try
             {
@@ -130,22 +130,11 @@ namespace SDHManagement2.SocketUtils
             }
             catch (Exception e)
             {
+                mainWindow.appendConsole("Błąd podczas identyfikacji: " + e.Message,null,null);
                 return null;
             }
             
           }
-        public SocketHandler(List<Router> routerList, List<Router> clientList, MainWindow main)
-        {
-
-            rList = routerList;
-            cList = clientList;
-            mainWindow = main;
-            nodelist = new List<string>();
-            clientNameList = new List<string>();
-            refresh();
-
-
-        }
         public Router GetRouter(String name)
         {
             if (rList == null)
@@ -204,10 +193,9 @@ namespace SDHManagement2.SocketUtils
                 clientNameList.Remove(targetRouter.identifier);
                 mainWindow.nodeBox.ItemsSource = nodelist;
                 int selected = mainWindow.selectionBox.SelectedIndex;
-
                 mainWindow.selectionBox.SelectedIndex = (selected == 1 ? 0 : 1);
                 targetRouter.connected = false;
-                mainWindow.appendConsole(string.Format("{0} nie odpowiada. Spróbuj ponownie po odświeżeniu.", name), null, null);
+                mainWindow.appendConsole(string.Format("{0} nie odpowiada. Błąd {1}.Spróbuj ponownie po odświeżeniu.", name,e.Message), null, null);
                 return null;
             }
             Socket conversationSocket = targetSocket.GetSocket();
@@ -234,9 +222,8 @@ namespace SDHManagement2.SocketUtils
             }
             catch (Exception e)
             {
-                mainWindow.appendConsole("Polecenie nie mogło być zrealizowane. Spróbuj ponownie",null,null);
+                mainWindow.appendConsole(string.Format("Polecenie nie mogło być zrealizowane przez błąd {0}. Spróbuj ponownie",e.Message),null,null);
             }
-            // TODO zmienić to
             return response;
         }
         public string commandHandle(string command, string node)
@@ -295,14 +282,12 @@ namespace SDHManagement2.SocketUtils
         }
         public void refresh()
         {
-            //List<String> nodeList = new List<string>();
 
             foreach (var router in endPointsList)
             {
                 if (!router.connected)
                 { 
-                    mainWindow.appendConsole(string.Format("Próba połączenia na porcie {0}",
-                        router.port),null,null);
+                    mainWindow.appendConsole(string.Format("Próba połączenia na porcie {0}",router.port),null,null);
 
                 try
                     {
@@ -336,46 +321,11 @@ namespace SDHManagement2.SocketUtils
                 }
                 catch (Exception e)
                 {
-                    mainWindow.appendConsole("Nie można było połączyć się z  " + router.identifier,null,null);
+                    mainWindow.appendConsole(string.Format("Nie można było połączyć się z {0} z powodu błędu: {1}",router.identifier,e.Message),null,null);
                 }
             }
         }
        
-           // mainWindow.nodeBox.ItemsSource = nodelist;
-            
-        }
-        public string addSingleNode(string name, int port_)
-        {
-            try {
-
-                Router r = new Router();
-                r.identifier = name;
-                r.port = port_;
-                r.socket = new RouterSocket(r.port, r.identifier);
-                r.socket.TurnOn();
-                r.connected = true;
-                nodelist.Add(r.identifier);
-                
-                rList.Add(r);
-                mainWindow.nodeBox.ItemsSource = nodelist;
-
-                mainWindow.appendConsole(string.Format("Połączenie z {0} zakończone pomyślnie.", r.identifier), null, null);
-
-            }
-            catch (Exception e)
-            {
-                return "Nastąpił błąd podczas próby połączenia z "+name;
-            }
-            try
-            {
-                // TODO
-               // ConfigReader.addNewElement(name, port_);
-            }
-            catch(Exception e)
-            {
-                return "Nastąpił błąd podczas próby dodania nowego elementu do pliku konfiguracyjnego";
-            }
-            return name + " dodany";
         }
     }
 }
