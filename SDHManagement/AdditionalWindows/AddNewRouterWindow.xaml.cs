@@ -42,8 +42,8 @@ namespace SDHManagement2.AdditionalWindows
                 return;
             }
 
-            string result = handler.addSingleNode(name, port);
-            mainw.appendConsole(result,null,null);
+            //string result = handler.addSingleNode(name, port);
+            //mainw.appendConsole(result,null,null);
             this.Close();
 
 

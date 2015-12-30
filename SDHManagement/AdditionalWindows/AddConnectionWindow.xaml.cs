@@ -1,20 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using SDHManagement2.SocketUtils;
-using System.Runtime.InteropServices;
-using System.Windows.Interop;
 using Microsoft.Win32;
 using System.IO;
 
@@ -45,18 +34,14 @@ namespace SDHManagement2.AdditionalWindows
             InitializeComponent();
             handler = handler_;
             initAll(port_response, connection_response, name, modulesList, contenersList);
-            
-           
-
-
         }
         private void initAll(string port_response, string connection_response, string name, List<string> modulesList, List<string> contenersList)
         {
             conteners = contenersList.ToArray();
             modules = modulesList.ToArray();
             contenerTypeBox.ItemsSource = conteners.ToList();
-            STMComboBox.ItemsSource = modules.ToList();
-            STMComboBox.SelectedIndex = 0;
+           // STMComboBox.ItemsSource = modules.ToList();
+            //STMComboBox.SelectedIndex = 0;
             nodeName = name;
             nodeNameLabel.Content = "Nazwa: "+name;
             stringToPortArray(port_response);
@@ -73,9 +58,8 @@ namespace SDHManagement2.AdditionalWindows
         {
             ports = port_string.Split('#');
 
-
-            inportBox.ItemsSource = ports.ToList();
             outportBox.ItemsSource = ports.ToList();
+            inportBox.ItemsSource = ports.ToList();
 
         }
         private void stringToConnectionArray(String con_string)
@@ -104,16 +88,18 @@ namespace SDHManagement2.AdditionalWindows
         }
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            int inport; 
+            int beginHP; 
+            int beginLP;
+            int endHP;
+            int endLP;
+            int inport;
             int outport;
-            int fromlevel;
-            int tolevel;
 
             try {
-                if ((int.TryParse(inportBox.SelectedItem.ToString(), out inport)) && int.TryParse(outportBox.SelectedItem.ToString(), out outport) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel) && inport!=outport)
+                if ((int.TryParse(inportBox.SelectedItem.ToString(), out inport)) && (int.TryParse(outportBox.SelectedItem.ToString(),out outport)) &&(int.TryParse(beginHigherPath.SelectedItem.ToString(), out beginHP)) && int.TryParse(beginLowerPath.SelectedItem.ToString(), out beginLP) && int.TryParse(endHigherPath.SelectedItem.ToString(), out endHP) && int.TryParse(endLowerPath.SelectedItem.ToString(), out endLP) && inport!=outport)
                 {
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-                    string command = "sub-connection-HPC|" + inport + "#" + outport + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString() + "#" + STMComboBox.SelectedItem.ToString() ;
+                    string command = "sub-connection-HPC|" + inport + "#" + outport + "#" + contenerTypeBox.SelectedItem.ToString() + "#" + beginLP + "#" + beginHP + "#" + endLP +"#"+endHP ;
                     handler.sendCommand(nodeName, command, true);
 
                     this.Close();
@@ -185,6 +171,13 @@ namespace SDHManagement2.AdditionalWindows
                 vc21levels[j] = j;
             }
         }
+        private void reinitComboBoxes(List<int> s)
+        {
+            beginHigherPath.ItemsSource = s;
+            beginLowerPath.ItemsSource = s;
+            endHigherPath.ItemsSource = s;
+            endLowerPath.ItemsSource = s;
+        }
         private void contenerTypeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -192,24 +185,28 @@ namespace SDHManagement2.AdditionalWindows
             {
                 case "VC4":
                     reInitvc4();
-                    endLevelBox.ItemsSource = vc4levels.ToList();
-                    startLevelBox.ItemsSource = vc4levels.ToList();
+                    reinitComboBoxes(vc4levels.ToList());
+                   // endLevelBox.ItemsSource = vc4levels.ToList();
+                    //startLevelBox.ItemsSource = vc4levels.ToList();
                     break;
                 case "VC32":
                     reInitvc32();
-                    endLevelBox.ItemsSource = vc32levels.ToList();
-                    startLevelBox.ItemsSource = vc32levels.ToList();
+                    reinitComboBoxes(vc32levels.ToList());
+                    //endLevelBox.ItemsSource = vc32levels.ToList();
+                    //startLevelBox.ItemsSource = vc32levels.ToList();
                     break;
 
                 case "VC21":
                     reInitvc21();
-                    endLevelBox.ItemsSource = vc21levels.ToList();
-                    startLevelBox.ItemsSource = vc21levels.ToList();
+                    reinitComboBoxes(vc21levels.ToList());
+                   // endLevelBox.ItemsSource = vc21levels.ToList();
+                    //startLevelBox.ItemsSource = vc21levels.ToList();
                     break;
                 case "VC12":
                     reInitvc12();
-                    endLevelBox.ItemsSource = vc12levels.ToList();
-                    startLevelBox.ItemsSource = vc12levels.ToList();
+                    reinitComboBoxes(vc12levels.ToList());
+                    //endLevelBox.ItemsSource = vc12levels.ToList();
+                    //startLevelBox.ItemsSource = vc12levels.ToList();
                     break;
                 default:
                   
