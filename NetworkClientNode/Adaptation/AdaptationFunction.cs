@@ -53,10 +53,10 @@ namespace NetworkClientNode.Adaptation
             foreach (StreamData record in records)
             {
 
-                //if (!CheckStreamData(record))
-                //{
-                 //   return new ExecutionResult(false, "Error at record " + index);
-                //}
+                if (!CheckStreamData(record))
+                {
+                    return new ExecutionResult(false, "Error at record " + index);
+                }
                 index++;
             }
 
