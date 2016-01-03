@@ -501,13 +501,13 @@ namespace SDHClient
                 {
                     newVC.SetContent(new NetworkNode.SDHFrame.Container(raw_data.Substring(index1, size))); //sobczakj  
                     index1 += size;
-                    frames[no_frame].SetVirtualContainer(level, number, newVC);
+                    frames[no_frame].SetVirtualContainer(level, number, null, newVC);
                 }
                 else if (index1 < raw_data.Length)
                 {
                     newVC.SetContent(new NetworkNode.SDHFrame.Container(raw_data.Substring(index1, raw_data.Length - index1))); //sobczakj
                     index1 += (raw_data.Length - index1);
-                    frames[no_frame].SetVirtualContainer(level, number, newVC);
+                    frames[no_frame].SetVirtualContainer(level, number, null, newVC);
                 }
                 else
                 {

@@ -1,4 +1,4 @@
-﻿using NetworkNode.SDHFrame;
+using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
@@ -18,6 +18,8 @@ namespace NetworkClientNode.Adaptation
         {
             Ttf = ttf;
             Builder = new FrameBuilder();
+            this.Streams = new List<StreamData>();
+            this.outputCredentials = new Dictionary<int, IFrame>();
         }
 
         public void SentData(Dictionary<StreamData,string> dataToSent)
@@ -51,10 +53,10 @@ namespace NetworkClientNode.Adaptation
             foreach (StreamData record in records)
             {
 
-                if (!CheckStreamData(record))
-                {
-                    return new ExecutionResult(false, "Error at record " + index);
-                }
+                //if (!CheckStreamData(record))
+                //{
+                 //   return new ExecutionResult(false, "Error at record " + index);
+                //}
                 index++;
             }
 

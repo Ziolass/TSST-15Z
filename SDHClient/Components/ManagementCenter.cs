@@ -129,7 +129,7 @@ namespace SDHClient
                         if (ConnInfo.business.ContainsKey(port_in) == false)
                         {
                              f = new Frame();
-                            bool canI = f.SetVirtualContainer(vc, from, packUp(vc));
+                            bool canI = f.SetVirtualContainer(vc, from, null, packUp(vc));
                             if (!canI)
                                 msg = "ERROR: THIS LEVEL IN THIS CONTAINER IS INACCESSIBLE OR CANT CREATE CONTAINER:" + vc.ToString() + ", LEVEL:" + from + " ,PORT:" + port_in;
 
@@ -137,7 +137,7 @@ namespace SDHClient
                         else
                         {
                             f = new Frame(ConnInfo.business[port_in].frame);
-                            bool canI = f.SetVirtualContainer(vc, from, packUp(vc));
+                            bool canI = f.SetVirtualContainer(vc, from, null, packUp(vc)); 
                             if (!canI) 
                             msg = "ERROR: THIS LEVEL IN THIS CONTAINER IS INACCESSIBLE OR CANT CREATE CONTAINER:" + vc.ToString() + ", LEVEL:" + from + " ,PORT:" + port_in;
                         }
@@ -146,15 +146,15 @@ namespace SDHClient
                         if (ConnInfo.business.ContainsKey(port_out) == false)
                         {
                             f2 = new Frame();
-                            bool canI = f2.SetVirtualContainer(vc, to, packUp(vc));
+                            bool canI = f.SetVirtualContainer(vc, from, null, packUp(vc)); 
                             if (!canI) if (!canI) msg = "ERROR: THIS LEVEL IN THIS CONTAINER IS INACCESSIBLE OR CANT CREATE CONTAINER:" + vc.ToString() + ", LEVEL:" + to + " ,PORT:" + port_out;
 
                         }
                         else
                         {
                             f2 = new Frame(ConnInfo.business[port_out].frame);
-                            bool canI = f2.SetVirtualContainer(vc, to, packUp(vc));
-                            if (!canI) msg = "ERROR: THIS LEVEL IN THIS CONTAINER IS INACCESSIBLE OR CANT CREATE CONTAINER:" + vc.ToString() + ", LEVEL:" + to + " ,PORT:" +port_out;
+                            bool canI = f.SetVirtualContainer(vc, from, null, packUp(vc)); 
+                            if (!canI) msg = "ERROR: THIS LEVEL IN THIS CONTAINER IS INACCESSIBLE OR CANT CREATE CONTAINER:" + vc.ToString() + ", LEVEL:" + to + " ,PORT:" + port_out;
 
                         }
 
@@ -225,8 +225,8 @@ namespace SDHClient
                     ConnInfo.business.Add(adapt.connections[a].port_in, new FrameBusiness(true, new Frame()));
                 Frame f1 = ConnInfo.business[port_in].frame;
                 Frame f2 = ConnInfo.business[port_out].frame;
-                f1.SetVirtualContainer(adapt.connections[a].level, adapt.connections[a].level_from, packUp(adapt.connections[a].level));
-                f2.SetVirtualContainer(adapt.connections[a].level, adapt.connections[a].level_to, packUp(adapt.connections[a].level));
+                f1.SetVirtualContainer(adapt.connections[a].level, adapt.connections[a].level_from, null, packUp(adapt.connections[a].level));
+                f2.SetVirtualContainer(adapt.connections[a].level, adapt.connections[a].level_to, null,  packUp(adapt.connections[a].level));
                 ConnInfo.business[port_in].frame = f1;
                 ConnInfo.business[port_out].frame = f2;
 
