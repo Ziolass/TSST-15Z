@@ -11,7 +11,8 @@ namespace NetworkNode.TTF
     public enum NodeMode
     {
         REGENERATOR,
-        MULTIPLEXER
+        MULTIPLEXER,
+        CLIENT
     }
     public class InputFrameArgs : InputDataArgs
     {

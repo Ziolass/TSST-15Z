@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TsstSdh.SocketUtils
 {
-    class LocalSocektBuilder
+    public class LocalSocektBuilder
     {
         private static LocalSocektBuilder instance = null;
         private IPAddress ipAddress;
