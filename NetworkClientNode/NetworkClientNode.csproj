@@ -54,11 +54,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ClientSetUpProcess.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModelsUtils\ExternalCommand.cs" />
+    <Compile Include="ViewModelsUtils\TrulyObservableCollection.cs" />
+    <Compile Include="ViewModelsUtils\ViewAction.cs" />
     <Compile Include="ViewModels\ClientViewModel.cs" />
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="Adaptation\AdaptationFunction.cs" />
     <Compile Include="Adaptation\StreamData.cs" />
     <Compile Include="App.xaml.cs">
@@ -66,10 +68,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ElementConfigurator.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="ViewModels\StreamDataViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Management\ManagementCenter.cs" />
@@ -107,7 +106,11 @@
       <Name>NetworkNode</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -25,8 +25,11 @@ namespace SDHManagement2.AdditionalWindows
         private SocketHandler handler;
         private string[] connections;
         private string[] ports;
+        private string[] portsWithSTM;
+
         private string[] inports;
         private string[] outports;
+
         private string[] conteners ;
         private string[] modules ;
         private string nodeName;
@@ -90,27 +93,35 @@ namespace SDHManagement2.AdditionalWindows
         private void stringToPortArray(String port_string)
         {
 
-            string[] temp_ports = port_string.Split('|');
-            inports = temp_ports[0].Split('#');
-            outports = temp_ports[1].Split('#');
+            portsWithSTM = port_string.Split('|');
 
-            inportBox.ItemsSource = inports.ToList();
-            outportBox.ItemsSource = outports.ToList();
+            ports = new string[portsWithSTM.Length];
+
+            for (int i = 0; i < portsWithSTM.Length; i++)
+            {
+                string[] tmp = portsWithSTM[i].Split('#');
+                ports[i] = tmp[0];
+            }
+
+            inportBox.ItemsSource = portsWithSTM.ToList();
+            outportBox.ItemsSource = portsWithSTM.ToList();
 
         }
         
         private void button_Click(object sender, RoutedEventArgs e)
         {
             int inport;
+            int inIndex;
             int outport;
+            int outIndex;
             int fromlevel;
             int tolevel;
 
             try {
-                if ((int.TryParse(inportBox.SelectedItem.ToString(), out inport)) && int.TryParse(outportBox.SelectedItem.ToString(), out outport) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel) && outport!=inport)
+                if ((int.TryParse(inportBox.SelectedIndex.ToString(), out inIndex)) && int.TryParse(outportBox.SelectedIndex.ToString(), out outIndex) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel) && ports[outIndex] != ports[inIndex])
                 {
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-                    string command = "resource-location|" + inport + "#" + outport + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString()+"#"+ModuleComboBox.SelectedItem.ToString();
+                    string command = "resource-location|" + ports[inIndex] + "#" + ports[outIndex] + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString()+"#"+ModuleComboBox.SelectedItem.ToString();
                     handler.sendCommand(nodeName, command, true);
 
                     this.Close();
@@ -239,6 +250,11 @@ namespace SDHManagement2.AdditionalWindows
             {
 
             }
+        }
+
+        private void inportBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

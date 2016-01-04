@@ -1,4 +1,4 @@
-﻿using NetworkNode.SDHFrame;
+using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,10 @@ namespace NetworkClientNode.Adaptation
         {
             Ttf = ttf;
             Builder = new FrameBuilder();
+
+            this.Streams = new List<StreamData>();
             Ttf.HandleInputFrame += new HandleInputFrame(GetDataFromFrame);
+            this.outputCredentials = new Dictionary<int, IFrame>();
         }
 
         public void GetDataFromFrame(object sender, InputFrameArgs args)

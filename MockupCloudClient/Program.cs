@@ -25,7 +25,7 @@ namespace MockupCloudClient
                 Console.WriteLine("wpisz dane");
                 FrameBuilder fmb = new FrameBuilder();
                 Frame newframe = new Frame();
-                newframe.SetVirtualContainer(VirtualContainerLevel.VC32, 0, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test")));
+                newframe.SetVirtualContainer(VirtualContainerLevel.VC32, 0, null, new VirtualContainer(VirtualContainerLevel.VC32, new Container("test")));
                 string text = fmb.BuildLiteral(newframe);
                 Console.ReadLine();
                 ActionSocket.Connect(ActionEndPoint);

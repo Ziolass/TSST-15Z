@@ -1,4 +1,4 @@
-﻿using NetworkClientNode.Adaptation;
+using NetworkClientNode.Adaptation;
 using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
@@ -12,6 +12,7 @@ namespace NetworkClientNode
     public class NetworkClNode
     {
         private AdaptationFunction Adaptation;
+        public int SelectedStream { get; private set; }
 
         public string Id { get; set; }
 
@@ -38,6 +39,27 @@ namespace NetworkClientNode
         public  bool RemoveStreamData(StreamData record)
         {
             return Adaptation.RemoveStreamData(record);
+        }
+        /// <summary>
+        /// Sends the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        public void SendData(string message)
+        {
+            Dictionary<StreamData, string> tempDictionary = new Dictionary<StreamData, string>();
+            tempDictionary.Add(this.Adaptation.GetStreamData().ElementAt<StreamData>(this.SelectedStream), message);
+            this.Adaptation.SentData(tempDictionary);
+        }
+        /// <summary>
+        /// Selects the stream for sending messages.
+        /// </summary>
+        /// <param name="streamData">The stream data.</param>
+        public void SelectStream(StreamData streamData)
+        {
+            if (GetStreamData() != null && GetStreamData().Contains(streamData))
+            {
+                this.SelectedStream = GetStreamData().IndexOf(streamData);
+            }
         }
     }
 }
