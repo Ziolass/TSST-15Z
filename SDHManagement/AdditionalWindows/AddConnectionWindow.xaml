@@ -9,8 +9,8 @@
         <Button x:Name="button" Content="Dodaj" HorizontalAlignment="Left" Margin="118,262,0,0" VerticalAlignment="Top" Width="104" Click="button_Click" Height="27"/>
         <Label x:Name="label" Content="Porty" HorizontalAlignment="Left" Margin="63,27,0,0" VerticalAlignment="Top" FontSize="16" Width="52"/>
         <Canvas HorizontalAlignment="Left" Height="76" Margin="18,76,0,0" VerticalAlignment="Top" Width="146" Background="#FF746868">
-            <ListBox x:Name="inportBox" Height="56" Canvas.Left="10" Canvas.Top="10" Width="56" FontSize="10.667"/>
-            <ListBox x:Name="outportBox" Height="56" Canvas.Left="80" Canvas.Top="10" Width="56" FontSize="10.667"/>
+            <ListBox x:Name="inportBox" Height="56" Canvas.Left="10" Canvas.Top="10" Width="56" FontSize="10.667" SelectionChanged="inportBox_SelectionChanged"/>
+            <ListBox x:Name="outportBox" Height="56" Canvas.Left="80" Canvas.Top="10" Width="56" FontSize="10.667" SelectionChanged="outportBox_SelectionChanged"/>
         </Canvas>
         <Label x:Name="label3" Content="Istniejące połączenia" HorizontalAlignment="Left" Margin="184,31,0,0" VerticalAlignment="Top" FontSize="14.667" Width="149"/>
         <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="90" Margin="181,62,0,0" VerticalAlignment="Top" Width="149" IsEnabled="False"/>

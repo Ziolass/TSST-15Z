@@ -20,6 +20,9 @@ namespace SDHManagement2.AdditionalWindows
         private string [] inports;
         private string[] outports;
         private string[] ports;
+        private string[] portsWithSTM;
+        private int[] STMs;
+        private int[] STMszczeliny;
         private string nodeName;
         private string[] conteners;
         private string[] modules;
@@ -37,6 +40,10 @@ namespace SDHManagement2.AdditionalWindows
         }
         private void initAll(string port_response, string connection_response, string name, List<string> modulesList, List<string> contenersList)
         {
+            STMszczeliny = new int[1] { 0 };
+            beginHigherPath.ItemsSource = STMszczeliny.ToList();
+            endHigherPath.ItemsSource = STMszczeliny.ToList();
+
             conteners = contenersList.ToArray();
             modules = modulesList.ToArray();
             contenerTypeBox.ItemsSource = conteners.ToList();
@@ -56,10 +63,19 @@ namespace SDHManagement2.AdditionalWindows
         }
         private void stringToPortArray(String port_string)
         {
-            ports = port_string.Split('#');
+            portsWithSTM = port_string.Split('|');
+            ports = new string[portsWithSTM.Length];
+            STMs = new int[portsWithSTM.Length];
 
-            outportBox.ItemsSource = ports.ToList();
-            inportBox.ItemsSource = ports.ToList();
+            for(int i = 0; i < portsWithSTM.Length; i++)
+            {
+                string[] tmp = portsWithSTM[i].Split('#');
+                ports[i] = tmp[0];
+                STMs[i] = int.Parse(tmp[1].Substring(3));
+            }
+
+            outportBox.ItemsSource = portsWithSTM.ToList();
+            inportBox.ItemsSource = portsWithSTM.ToList();
 
         }
         private void stringToConnectionArray(String con_string)
@@ -92,14 +108,16 @@ namespace SDHManagement2.AdditionalWindows
             int beginLP;
             int endHP;
             int endLP;
-            int inport;
-            int outport;
+            //int inport;
+            int inIndex;
+            //int outport;
+            int outIndex;
 
             try {
-                if ((int.TryParse(inportBox.SelectedItem.ToString(), out inport)) && (int.TryParse(outportBox.SelectedItem.ToString(),out outport)) &&(int.TryParse(beginHigherPath.SelectedItem.ToString(), out beginHP)) && int.TryParse(beginLowerPath.SelectedItem.ToString(), out beginLP) && int.TryParse(endHigherPath.SelectedItem.ToString(), out endHP) && int.TryParse(endLowerPath.SelectedItem.ToString(), out endLP) && inport!=outport)
+                if ((int.TryParse(inportBox.SelectedIndex.ToString(), out inIndex)) && (int.TryParse(outportBox.SelectedIndex.ToString(),out outIndex)) &&(int.TryParse(beginHigherPath.SelectedItem.ToString(), out beginHP)) && int.TryParse(beginLowerPath.SelectedItem.ToString(), out beginLP) && int.TryParse(endHigherPath.SelectedItem.ToString(), out endHP) && int.TryParse(endLowerPath.SelectedItem.ToString(), out endLP) && ports[outIndex] != ports[inIndex])
                 {
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-                    string command = "sub-connection-HPC|" + inport + "#" + outport + "#" + contenerTypeBox.SelectedItem.ToString() + "#" + beginLP + "#" + beginHP + "#" + endLP +"#"+endHP ;
+                    string command = "sub-connection-HPC|" + ports[inIndex] + "#" + ports[outIndex] + "#" + contenerTypeBox.SelectedItem.ToString() + "#" + beginLP + "#" + beginHP + "#" + endLP +"#"+endHP ;
                     handler.sendCommand(nodeName, command, true);
 
                     this.Close();
@@ -113,6 +131,7 @@ namespace SDHManagement2.AdditionalWindows
             }
             catch(Exception ex)
             {
+
                 MessageBox.Show("Niepoprawny format!");
                 return;
             }
@@ -173,9 +192,9 @@ namespace SDHManagement2.AdditionalWindows
         }
         private void reinitComboBoxes(List<int> s)
         {
-            beginHigherPath.ItemsSource = s;
+           // beginHigherPath.ItemsSource = s;
             beginLowerPath.ItemsSource = s;
-            endHigherPath.ItemsSource = s;
+            //endHigherPath.ItemsSource = s;
             endLowerPath.ItemsSource = s;
         }
         private void contenerTypeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -240,6 +259,31 @@ namespace SDHManagement2.AdditionalWindows
                 {
                 
                 }
+        }
+
+        private void inportBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int selection= inportBox.SelectedIndex;
+            int multiplier = STMs[selection];
+            STMszczeliny = new int[multiplier];
+            for(int i = 0; i < STMszczeliny.Length; i++)
+            {
+                STMszczeliny[i] = i;
+            }
+            beginHigherPath.ItemsSource = STMszczeliny.ToList();
+
+        }
+
+        private void outportBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int selection = inportBox.SelectedIndex;
+            int multiplier = STMs[selection];
+            STMszczeliny = new int[multiplier];
+            for (int i = 0; i < STMszczeliny.Length; i++)
+            {
+                STMszczeliny[i] = i;
+            }
+            endHigherPath.ItemsSource = STMszczeliny.ToList();
         }
     }
 }
