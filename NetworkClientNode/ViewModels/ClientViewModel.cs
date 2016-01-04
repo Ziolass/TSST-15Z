@@ -39,7 +39,7 @@ namespace NetworkClientNode.ViewModels
         {
             var args = Environment.GetCommandLineArgs();
             this.Streams = new ObservableCollection<StreamDataViewModel>();
-            this.ClientSetUpProccess = new ClientSetUpProcess("..\\..\\..\\Configs\\Client\\clientConfig" + args[1] + ".xml");
+            this.ClientSetUpProccess = new ClientSetUpProcess("..\\..\\..\\Configs\\Client\\clientConfig" + /*args[1]*/0 + ".xml");
             this.ClientSetUpProccess.StreamsCreated += new StreamsCreatedHandler(OnStreamsCreated);
             this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
             this.ClientSetUpProccess.StartClientProcess();

@@ -12,16 +12,25 @@ namespace NetworkClientNode.Adaptation
     {
         private TransportTerminalFunction Ttf;
         private List<StreamData> Streams;
-        private Dictionary<int, IFrame> outputCredentials;
+        private Dictionary<int, IFrame> OutputCredentials;
         private FrameBuilder Builder;
         public AdaptationFunction(TransportTerminalFunction ttf)
         {
             Ttf = ttf;
             Builder = new FrameBuilder();
+            Ttf.HandleInputFrame += new HandleInputFrame(GetDataFromFrame);
 
             this.Streams = new List<StreamData>();
-            Ttf.HandleInputFrame += new HandleInputFrame(GetDataFromFrame);
-            this.outputCredentials = new Dictionary<int, IFrame>();
+
+            Dictionary<int, StmLevel> portsLevels = Ttf.GetPorts();
+            OutputCredentials = new Dictionary<int, IFrame>();
+            
+            foreach (int portNumber in portsLevels.Keys)
+            {
+                OutputCredentials.Add(portNumber, new Frame(portsLevels[portNumber]));
+            }
+
+            
         }
 
         public void GetDataFromFrame(object sender, InputFrameArgs args)
@@ -83,13 +92,13 @@ namespace NetworkClientNode.Adaptation
         private bool CheckStreamData(StreamData record)
         {
             VirtualContainer vc = new VirtualContainer(record.VcLevel);
-            return outputCredentials[record.Port].SetVirtualContainer(record.VcLevel, record.HigherPathOut, record.LowerPathOut, vc);
+            return OutputCredentials[record.Port].SetVirtualContainer(record.VcLevel, record.HigherPathOut, record.LowerPathOut, vc);
             
         }
 
         private bool ClearCredentials(StreamData record)
         {
-            Frame outputCredential = (Frame)outputCredentials[record.Port];
+            Frame outputCredential = (Frame)OutputCredentials[record.Port];
             return outputCredential.ClearVirtualContainer(record.VcLevel, record.HigherPathOut, record.LowerPathOut);
         }
 

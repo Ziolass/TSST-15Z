@@ -69,6 +69,10 @@ namespace SDHManagement2.AdditionalWindows
 
             for(int i = 0; i < portsWithSTM.Length; i++)
             {
+                if (portsWithSTM[i].Equals(""))
+                {
+                    continue;
+                }
                 string[] tmp = portsWithSTM[i].Split('#');
                 ports[i] = tmp[0];
                 STMs[i] = int.Parse(tmp[1].Substring(3));
