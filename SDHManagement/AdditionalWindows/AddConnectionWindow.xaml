@@ -11,8 +11,8 @@
         <Canvas HorizontalAlignment="Left" Height="127" Margin="10,76,0,0" VerticalAlignment="Top" Width="212" Background="#FF746868">
             <ListBox x:Name="inportBox" Height="89" Canvas.Left="10" Canvas.Top="28" Width="91" FontSize="10.667" SelectionChanged="inportBox_SelectionChanged"/>
             <ListBox x:Name="outportBox" Height="89" Canvas.Left="116" Canvas.Top="28" Width="86" FontSize="10.667" SelectionChanged="outportBox_SelectionChanged"/>
-            <Label x:Name="label6" Content="Wejście" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17.333" Canvas.Left="24" Canvas.Top="-5"/>
-            <Label x:Name="label7" Content="Wyjście" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17.333" Canvas.Left="125" Canvas.Top="-5"/>
+            <Label x:Name="label6" Content="Pierwszy" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17.333" Canvas.Left="24" Canvas.Top="-5" Foreground="White"/>
+            <Label x:Name="label7" Content="Drugi" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17.333" Canvas.Left="126" Canvas.Top="-4" Foreground="#FFF9F1F1"/>
 
         </Canvas>
         <Label x:Name="label3" Content="Istniejące połączenia" HorizontalAlignment="Left" Margin="278,34,0,0" VerticalAlignment="Top" FontSize="17.333" Width="181"/>
@@ -20,8 +20,8 @@
         <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,2,0,0" VerticalAlignment="Top" Height="37" Width="497" FontSize="21.333" FontWeight="Bold" HorizontalContentAlignment="Center"/>
         <Button x:Name="button1" Content="Podaj predefiniowany plik wejściowy" HorizontalAlignment="Left" Margin="140,423,0,0" VerticalAlignment="Top" Width="248" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF0F2A64" Click="button1_Click" FontSize="13.333"/>
         <Canvas HorizontalAlignment="Left" Height="178" Margin="10,208,0,0" VerticalAlignment="Top" Width="497" Background="#FF746868">
-            <Label x:Name="label1" Content="Docelowe" Canvas.Left="407" FontSize="16" Foreground="#FFF3EDED" Canvas.Top="11"/>
-            <Label x:Name="label2" Content="Początkowe" Canvas.Left="278" FontSize="16" Foreground="#FFF5EBEB" Canvas.Top="11"/>
+            <Label x:Name="label1" Content="Drugi" Canvas.Left="418" FontSize="16" Foreground="#FFF3EDED" Canvas.Top="17"/>
+            <Label x:Name="label2" Content="Pierwszy" Canvas.Left="278" FontSize="16" Foreground="#FFF5EBEB" Canvas.Top="16"/>
             <ComboBox x:Name="beginLowerPath" Canvas.Left="288" Canvas.Top="83" Width="84" Height="28"/>
             <ComboBox x:Name="beginHigherPath" Canvas.Left="288" Canvas.Top="141" Width="84" SelectionChanged="beginHigherPath_SelectionChanged" Height="27"/>
             <ComboBox x:Name="endLowerPath" Canvas.Left="407" Canvas.Top="83" Width="80" Height="28"/>

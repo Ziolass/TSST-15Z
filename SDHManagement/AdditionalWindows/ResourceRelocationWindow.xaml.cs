@@ -55,7 +55,7 @@ namespace SDHManagement2.AdditionalWindows
             initModuleMultiplier(modulesList);
             contenerTypeBox.ItemsSource = conteners.ToList();
             //ModuleComboBox.ItemsSource = modules.ToList();
-            //ModuleComboBox.SelectedIndex = 0;
+           // ModuleComboBox.SelectedIndex = 0;
             stringToPortArray(port_response);
             nodeName = name;
             stringToConnectionArray(con_response);
@@ -121,7 +121,7 @@ namespace SDHManagement2.AdditionalWindows
                 if ((int.TryParse(inportBox.SelectedIndex.ToString(), out inIndex)) && int.TryParse(outportBox.SelectedIndex.ToString(), out outIndex) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel) && ports[outIndex] != ports[inIndex])
                 {
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-                    string command = "resource-location|" + ports[inIndex] + "#" + ports[outIndex] + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString()+"#"+/*ModuleComboBox.SelectedItem.ToString()*/ "STM1";
+                    string command = "resource-location|" + ports[inIndex] + "#" + ports[outIndex] + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString()+"#"+"STM1";
                     handler.sendCommand(nodeName, command, true);
 
                     this.Close();
