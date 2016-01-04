@@ -285,5 +285,10 @@ namespace SDHManagement2.AdditionalWindows
             }
             endHigherPath.ItemsSource = STMszczeliny.ToList();
         }
+
+        private void beginHigherPath_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

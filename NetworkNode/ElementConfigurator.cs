@@ -13,7 +13,7 @@ using WireCloud;
 
 namespace NetworkNode
 {
-    class ElementConfigurator
+    public class ElementConfigurator
     {
         private XmlReader configReader;
 

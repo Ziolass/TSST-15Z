@@ -4,32 +4,33 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SDHManagement2.AdditionalWindows"
-        mc:Ignorable="d" Height="350" Width="350" WindowStyle="ToolWindow" BorderThickness="2" Background="#FFB4A7A7" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        mc:Ignorable="d" Height="484" Width="526.649" WindowStyle="ToolWindow" BorderThickness="2" Background="#FFB4A7A7" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Button x:Name="button" Content="Dodaj" HorizontalAlignment="Left" Margin="118,262,0,0" VerticalAlignment="Top" Width="104" Click="button_Click" Height="27"/>
-        <Label x:Name="label" Content="Porty" HorizontalAlignment="Left" Margin="63,27,0,0" VerticalAlignment="Top" FontSize="16" Width="52"/>
-        <Canvas HorizontalAlignment="Left" Height="76" Margin="18,76,0,0" VerticalAlignment="Top" Width="146" Background="#FF746868">
-            <ListBox x:Name="inportBox" Height="56" Canvas.Left="10" Canvas.Top="10" Width="56" FontSize="10.667" SelectionChanged="inportBox_SelectionChanged"/>
-            <ListBox x:Name="outportBox" Height="56" Canvas.Left="80" Canvas.Top="10" Width="56" FontSize="10.667" SelectionChanged="outportBox_SelectionChanged"/>
+        <Button x:Name="button" Content="Dodaj" HorizontalAlignment="Left" Margin="210,391,0,0" VerticalAlignment="Top" Width="104" Click="button_Click" Height="27" FontSize="13.333"/>
+        <Label x:Name="label" Content="Porty" HorizontalAlignment="Left" Margin="89,41,0,0" VerticalAlignment="Top" FontSize="18.667" Width="52"/>
+        <Canvas HorizontalAlignment="Left" Height="127" Margin="10,76,0,0" VerticalAlignment="Top" Width="212" Background="#FF746868">
+            <ListBox x:Name="inportBox" Height="89" Canvas.Left="10" Canvas.Top="28" Width="91" FontSize="10.667" SelectionChanged="inportBox_SelectionChanged"/>
+            <ListBox x:Name="outportBox" Height="89" Canvas.Left="116" Canvas.Top="28" Width="86" FontSize="10.667" SelectionChanged="outportBox_SelectionChanged"/>
+            <Label x:Name="label6" Content="Wejście" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17.333" Canvas.Left="24" Canvas.Top="-5"/>
+            <Label x:Name="label7" Content="Wyjście" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17.333" Canvas.Left="125" Canvas.Top="-5"/>
+
         </Canvas>
-        <Label x:Name="label3" Content="Istniejące połączenia" HorizontalAlignment="Left" Margin="184,31,0,0" VerticalAlignment="Top" FontSize="14.667" Width="149"/>
-        <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="90" Margin="181,62,0,0" VerticalAlignment="Top" Width="149" IsEnabled="False"/>
-        <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Height="37" Width="320" FontSize="18.667" FontWeight="Bold" HorizontalContentAlignment="Center"/>
-        <Button x:Name="button1" Content="Podaj predefiniowany plik wejściowy" HorizontalAlignment="Left" Margin="51,289,0,0" VerticalAlignment="Top" Width="248" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF0F2A64" Click="button1_Click"/>
-        <Canvas HorizontalAlignment="Left" Height="98" Margin="18,159,0,0" VerticalAlignment="Top" Width="312" Background="#FF746868">
-            <Label x:Name="label1" Content="Docelowe" Canvas.Left="228" FontSize="14.667" Foreground="#FFF3EDED" Canvas.Top="-6"/>
-            <Label x:Name="label2" Content="Początkowe" Canvas.Left="117" FontSize="14.667" Foreground="#FFF5EBEB" Canvas.Top="-6"/>
-            <ComboBox x:Name="beginLowerPath" Canvas.Left="131" Canvas.Top="34" Width="59"/>
-            <ComboBox x:Name="beginHigherPath" Canvas.Left="131" Canvas.Top="72" Width="59"/>
-            <ComboBox x:Name="endLowerPath" Canvas.Left="237" Canvas.Top="34" Width="58"/>
-            <ComboBox x:Name="endHigherPath" Canvas.Left="237" Canvas.Top="72" Width="58"/>
-            <Label x:Name="label5" Content="Lower Path" Canvas.Left="180" Canvas.Top="11" Foreground="White"/>
-            <Label x:Name="label5_Copy" Content="Higher Path" Canvas.Left="177" Canvas.Top="49" Foreground="White"/>
-            <Label x:Name="label4" Content="Kontener" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="15" Canvas.Top="20" Foreground="#FFF9F7F7" FontSize="16"/>
-            <ComboBox x:Name="contenerTypeBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="65" SelectionChanged="contenerTypeBox_SelectionChanged" Canvas.Left="19" Canvas.Top="47"/>
+        <Label x:Name="label3" Content="Istniejące połączenia" HorizontalAlignment="Left" Margin="278,34,0,0" VerticalAlignment="Top" FontSize="17.333" Width="181"/>
+        <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="135" Margin="227,68,0,0" VerticalAlignment="Top" Width="280" IsEnabled="False"/>
+        <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,2,0,0" VerticalAlignment="Top" Height="37" Width="497" FontSize="21.333" FontWeight="Bold" HorizontalContentAlignment="Center"/>
+        <Button x:Name="button1" Content="Podaj predefiniowany plik wejściowy" HorizontalAlignment="Left" Margin="140,423,0,0" VerticalAlignment="Top" Width="248" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF0F2A64" Click="button1_Click" FontSize="13.333"/>
+        <Canvas HorizontalAlignment="Left" Height="178" Margin="10,208,0,0" VerticalAlignment="Top" Width="497" Background="#FF746868">
+            <Label x:Name="label1" Content="Docelowe" Canvas.Left="407" FontSize="16" Foreground="#FFF3EDED" Canvas.Top="11"/>
+            <Label x:Name="label2" Content="Początkowe" Canvas.Left="278" FontSize="16" Foreground="#FFF5EBEB" Canvas.Top="11"/>
+            <ComboBox x:Name="beginLowerPath" Canvas.Left="288" Canvas.Top="83" Width="84" Height="28"/>
+            <ComboBox x:Name="beginHigherPath" Canvas.Left="288" Canvas.Top="141" Width="84" SelectionChanged="beginHigherPath_SelectionChanged" Height="27"/>
+            <ComboBox x:Name="endLowerPath" Canvas.Left="407" Canvas.Top="83" Width="80" Height="28"/>
+            <ComboBox x:Name="endHigherPath" Canvas.Left="407" Canvas.Top="141" Width="80" Height="27"/>
+            <Label x:Name="label5" Content="Lower Path" Canvas.Left="348" Canvas.Top="47" Foreground="White" FontSize="14.667"/>
+            <Label x:Name="label5_Copy" Content="Higher Path" Canvas.Left="348" Canvas.Top="111" Foreground="White" FontSize="14.667"/>
+            <Label x:Name="label4" Content="Kontener" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="60" Canvas.Top="75" Foreground="#FFF9F7F7" FontSize="16"/>
+            <ComboBox x:Name="contenerTypeBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" SelectionChanged="contenerTypeBox_SelectionChanged" Canvas.Left="50" Canvas.Top="111" Height="30"/>
         </Canvas>
-        <Label x:Name="label6" Content="Wejście" HorizontalAlignment="Left" Margin="36,52,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label7" Content="Wyjście" HorizontalAlignment="Left" Margin="102,52,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

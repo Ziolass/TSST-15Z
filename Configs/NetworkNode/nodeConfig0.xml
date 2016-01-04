@@ -4,5 +4,5 @@
 	<port local="2" tcp="4031" stm="STM1"/>
 	<port local="3" tcp="4032" stm="STM4"/>
 	<cloud-server tcp="6000"/>
-	<managment-port number="5000"/>
+	<managment-port number="7000"/>
 </node>

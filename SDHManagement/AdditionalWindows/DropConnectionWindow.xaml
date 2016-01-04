@@ -4,12 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SDHManagement2.AdditionalWindows"
-        mc:Ignorable="d" Height="250" Width="250" Background="#FFB4A7A7" WindowStartupLocation="CenterScreen">
+        mc:Ignorable="d" Height="282.609" Width="313.665" Background="#FFB4A7A7" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Label x:Name="nameLabel" Content="NodeName" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="18.667" Width="222" HorizontalContentAlignment="Center"/>
-        <Label x:Name="label" Content="Istniejące połączenia" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="222" HorizontalContentAlignment="Center"/>
-        <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="87" Margin="10,81,0,0" VerticalAlignment="Top" Width="222" SelectionChanged="connectionsBox_SelectionChanged"/>
-        <Button x:Name="deleteButton" Content="Usuń" HorizontalAlignment="Left" Margin="79,173,0,0" VerticalAlignment="Top" Width="75" Click="deleteButton_Click"/>
+        <Label x:Name="nameLabel" Content="NodeName" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="18.667" Width="286" HorizontalContentAlignment="Center"/>
+        <Label x:Name="label" Content="Istniejące połączenia" HorizontalAlignment="Left" Margin="41,50,0,0" VerticalAlignment="Top" Width="222" HorizontalContentAlignment="Center" FontSize="16"/>
+        <ListBox x:Name="connectionsBox" HorizontalAlignment="Left" Height="125" Margin="10,81,0,0" VerticalAlignment="Top" Width="286" SelectionChanged="connectionsBox_SelectionChanged"/>
+        <Button x:Name="deleteButton" Content="Usuń" HorizontalAlignment="Left" Margin="97,211,0,0" VerticalAlignment="Top" Width="99" Click="deleteButton_Click" FontSize="16" Height="32"/>
 
     </Grid>
 </Window>

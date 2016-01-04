@@ -37,8 +37,6 @@ namespace NetworkNode.HPC
             }
         }
 
-
-
         public ExecutionResult AddForwardingRecords(List<ForwardingRecord> records)
         {
             int index = 0;
@@ -71,7 +69,7 @@ namespace NetworkNode.HPC
 
             if (inputCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn, vc))
             {
-                if (outputCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn, vc))
+                if (outputCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut == -1 ? null : (int?)record.VcNumberOut, vc))
                 {
                     return true;
                 }
@@ -87,8 +85,8 @@ namespace NetworkNode.HPC
             Frame inputCredential = (Frame)inputCredentials[record.InputPort];
             Frame outputCredential = (Frame)outputCredentials[record.InputPort];
             bool result = true;
-            result = result && inputCredential.ClearVirtualContainer(record.ContainerLevel, record.VcNumberIn);
-            result = result && outputCredential.ClearVirtualContainer(record.ContainerLevel, record.VcNumberOut);
+            result = result && inputCredential.ClearVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn);
+            result = result && outputCredential.ClearVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut);
             return result;
         }
 
