@@ -66,6 +66,7 @@ namespace SDHManagement2.AdditionalWindows
         }
         private void stringToPortArray(String port_string)
         {
+
             portsWithSTM = port_string.Split('|');
             
             
