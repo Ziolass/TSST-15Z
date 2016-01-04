@@ -149,7 +149,7 @@ namespace NetworkClientNode.Menagment
 
         private StreamData createRecord(List<string> literalRecord)
         {
-            int outPort = int.Parse(literalRecord[1]);
+            int outPort = int.Parse(literalRecord[0]);
             int? lowerPathOut = literalRecord[5].Equals("") ? null : (int?)int.Parse(literalRecord[5]);
             int higherPathOut = int.Parse(literalRecord[6]);
 

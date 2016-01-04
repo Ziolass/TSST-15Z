@@ -18,8 +18,22 @@ namespace NetworkClientNode.Adaptation
         {
             Ttf = ttf;
             Builder = new FrameBuilder();
+            Ttf.HandleInputFrame += new HandleInputFrame(GetDataFromFrame);
         }
 
+        public void GetDataFromFrame(object sender, InputFrameArgs args)
+        {
+            int inputPort = args.PortNumber;
+            List<StreamData> streamForPort = new List<StreamData>();
+            foreach (StreamData stream in Streams)
+            {
+                if (stream.Port == inputPort)
+                {
+                    streamForPort.Add(stream);
+                }
+            }
+
+        }
         public void SentData(Dictionary<StreamData,string> dataToSent)
         {
             Dictionary<int, IFrame> outputData = new Dictionary<int, IFrame>();

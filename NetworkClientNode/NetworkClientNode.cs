@@ -35,7 +35,7 @@ namespace NetworkClientNode
             return Adaptation.AddStreamData(records);
         }
 
-        internal bool RemoveStreamData(StreamData record)
+        public  bool RemoveStreamData(StreamData record)
         {
             return Adaptation.RemoveStreamData(record);
         }
