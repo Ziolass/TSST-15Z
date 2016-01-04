@@ -22,7 +22,8 @@ namespace SDHManagement2.AdditionalWindows
         private string[] ports;
         private string[] portsWithSTM;
         private int[] STMs;
-        private int[] STMszczeliny;
+        private int[] STMszczelinyBegin;
+        private int[] STMszczelinyEnd;
         private string nodeName;
         private string[] conteners;
         private string[] modules;
@@ -40,9 +41,11 @@ namespace SDHManagement2.AdditionalWindows
         }
         private void initAll(string port_response, string connection_response, string name, List<string> modulesList, List<string> contenersList)
         {
-            STMszczeliny = new int[1] { 0 };
-            beginHigherPath.ItemsSource = STMszczeliny.ToList();
-            endHigherPath.ItemsSource = STMszczeliny.ToList();
+            STMszczelinyBegin = new int[1] { 0 };
+            STMszczelinyEnd = new int[1] { 0 };
+
+            beginHigherPath.ItemsSource = STMszczelinyBegin.ToList();
+            endHigherPath.ItemsSource = STMszczelinyEnd.ToList();
 
             conteners = contenersList.ToArray();
             modules = modulesList.ToArray();
@@ -64,6 +67,9 @@ namespace SDHManagement2.AdditionalWindows
         private void stringToPortArray(String port_string)
         {
             portsWithSTM = port_string.Split('|');
+            
+            
+
             ports = new string[portsWithSTM.Length];
             STMs = new int[portsWithSTM.Length];
 
@@ -72,6 +78,7 @@ namespace SDHManagement2.AdditionalWindows
                 string[] tmp = portsWithSTM[i].Split('#');
                 ports[i] = tmp[0];
                 STMs[i] = int.Parse(tmp[1].Substring(3));
+                portsWithSTM[i] = tmp[0] + " - " + tmp[1];
             }
 
             outportBox.ItemsSource = portsWithSTM.ToList();
@@ -132,7 +139,7 @@ namespace SDHManagement2.AdditionalWindows
             catch(Exception ex)
             {
 
-                MessageBox.Show("Niepoprawny format!");
+                MessageBox.Show("Niepoprawny format! B³¹d: "+ex.Message );
                 return;
             }
         }
@@ -265,25 +272,25 @@ namespace SDHManagement2.AdditionalWindows
         {
             int selection= inportBox.SelectedIndex;
             int multiplier = STMs[selection];
-            STMszczeliny = new int[multiplier];
-            for(int i = 0; i < STMszczeliny.Length; i++)
+            STMszczelinyBegin = new int[multiplier];
+            for(int i = 0; i < STMszczelinyBegin.Length; i++)
             {
-                STMszczeliny[i] = i;
+                STMszczelinyBegin[i] = i;
             }
-            beginHigherPath.ItemsSource = STMszczeliny.ToList();
+            beginHigherPath.ItemsSource = STMszczelinyBegin.ToList();
 
         }
 
         private void outportBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int selection = inportBox.SelectedIndex;
+            int selection = outportBox.SelectedIndex;
             int multiplier = STMs[selection];
-            STMszczeliny = new int[multiplier];
-            for (int i = 0; i < STMszczeliny.Length; i++)
+            STMszczelinyEnd = new int[multiplier];
+            for (int i = 0; i < STMszczelinyEnd.Length; i++)
             {
-                STMszczeliny[i] = i;
+                STMszczelinyEnd[i] = i;
             }
-            endHigherPath.ItemsSource = STMszczeliny.ToList();
+            endHigherPath.ItemsSource = STMszczelinyEnd.ToList();
         }
 
         private void beginHigherPath_SelectionChanged(object sender, SelectionChangedEventArgs e)
