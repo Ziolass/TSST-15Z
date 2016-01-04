@@ -93,9 +93,9 @@ namespace NetworkNode.MenagmentModule
 
             List<string> literalRecord = connections[0];
 
-            ForwardingRecord record = createRecord(literalRecord);
+            List<ForwardingRecord> records = createRecord(literalRecord);
 
-            return node.RemoveRecord(record) ? "OK" : "ERROR";
+            return node.RemoveTwWayRecord(records)  ? "OK" : "ERROR";
         }
 
         private string disableNode()
@@ -131,7 +131,7 @@ namespace NetworkNode.MenagmentModule
         }
         private string getConnectionList()
         {
-            List<ForwardingRecord> records = node.GetForwardingRecords();
+            List<ForwardingRecord> records = node.GetConnections();
             StringBuilder builder = new StringBuilder();
             int index = 0;
             foreach (ForwardingRecord record in records)
@@ -162,10 +162,9 @@ namespace NetworkNode.MenagmentModule
 
         private string addForwardingRecord(List<List<string>> literalRecords)
         {
-            List<ForwardingRecord> records = new List<ForwardingRecord>();
+            List<List<ForwardingRecord>> records = new List<List<ForwardingRecord>>();
             foreach (List<string> literalRecord in literalRecords)
             {
-
                 records.Add(createRecord(literalRecord));
             }
             ExecutionResult result = node.AddForwardingRecords(records);
@@ -173,18 +172,22 @@ namespace NetworkNode.MenagmentModule
             return result.Result ? "OK" : "ERROR " + result.Msg;
         }
 
-        private ForwardingRecord createRecord(List<string> literalRecord)
+        private List<ForwardingRecord> createRecord(List<string> literalRecord)
         {
-            int inPort = int.Parse(literalRecord[0]);
-            int outPort = int.Parse(literalRecord[1]);
-            int inContainer = int.Parse(literalRecord[3].Equals("") ? "-1" : literalRecord[2]);
-            int outContainer = int.Parse(literalRecord[5].Equals("") ? "-1" : literalRecord[5]);
-            int hPathIn = int.Parse(literalRecord[4]);
-            int hPathOut = int.Parse(literalRecord[6]);
+
+            int port1 = int.Parse(literalRecord[0]);
+            int port2 = int.Parse(literalRecord[1]);
+            int lPath1 = int.Parse(literalRecord[3].Equals("") ? "-1" : literalRecord[3]);
+            int lPath2 = int.Parse(literalRecord[5].Equals("") ? "-1" : literalRecord[5]);
+            int hPath1 = int.Parse(literalRecord[4]);
+            int hPath2 = int.Parse(literalRecord[6]);
             VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[2]);
             //StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
-            ForwardingRecord record = new ForwardingRecord(inPort, outPort, level, inContainer, outContainer, hPathIn, hPathOut);
-            return record;
+            List<ForwardingRecord> forwardingRecords = new List<ForwardingRecord>();
+            forwardingRecords.Add(new ForwardingRecord(port1, port2, level, lPath1, lPath2, hPath1, hPath2));
+            forwardingRecords.Add(new ForwardingRecord(port2, port1, level, lPath2, lPath1, hPath2, hPath1));
+
+            return forwardingRecords;
         }
 
     }

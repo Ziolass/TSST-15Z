@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace NetworkNode.HPC
 {
 
-    public class ForwardingRecord
+    public class ForwardingRecord : IEquatable<ForwardingRecord>
     {
         public VirtualContainerLevel ContainerLevel { get; private set; }
         public int VcNumberIn { get; private set; }
@@ -31,6 +31,21 @@ namespace NetworkNode.HPC
             HigherPathOut = hPathOut;
         }
 
+        public override bool Equals(object obj)
+        {
+            ForwardingRecord rec = obj as ForwardingRecord;
+            return rec == null ? false : Equals(rec);
+        }
+        public override int GetHashCode()
+        {
+            return ("" + ContainerLevel
+                + "" + VcNumberIn
+                + "" + HigherPathIn
+                + "" + VcNumberOut
+                + "" + HigherPathOut
+                + "" + OutputPort
+                + "" + InputPort).GetHashCode();
+        }
         public bool Equals(ForwardingRecord other)
         {
             if (this == other)

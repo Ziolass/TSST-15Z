@@ -24,7 +24,7 @@ namespace NetworkNode
             Id = id;
         }
 
-        public ExecutionResult AddForwardingRecords(List<ForwardingRecord> records)
+        public ExecutionResult AddForwardingRecords(List<List<ForwardingRecord>> records)
         {
             return hpc.AddForwardingRecords(records);
         }
@@ -34,9 +34,9 @@ namespace NetworkNode
             return ttf.ShudownInterface(number);
         }
 
-        public List<ForwardingRecord> GetForwardingRecords()
+        public List<ForwardingRecord> GetConnections()
         {
-            return hpc.GetForwardingRecords();
+            return hpc.GetConnections();
         }
 
         public Dictionary<int, StmLevel> GetPorts()
@@ -59,9 +59,9 @@ namespace NetworkNode
             ttf.AddMsohContent(dccContent);
         }
 
-        public bool RemoveRecord(ForwardingRecord record)
+        public bool RemoveTwWayRecord(List<ForwardingRecord> record)
         {
-            return hpc.RemoveRecord(record);
+            return hpc.RemoveTwWayRecord(record);
         }
     }
 }

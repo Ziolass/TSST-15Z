@@ -12,93 +12,106 @@ namespace NetworkNode.HPC
     
     public class HigherOrderPathConnection
     {
-        private Dictionary<int, List<ForwardingRecord>> forwardingTable;
+        private Dictionary<int, List<ForwardingRecord>> ForwardingTable;
+        private List<ForwardingRecord> Connections;
         private IFrameBuilder builder;
         private TransportTerminalFunction ttf;
-        private Dictionary<int, IFrame> inputCredentials;
-        private Dictionary<int, IFrame> outputCredentials;
+        private Dictionary<int, IFrame> InputCredentials;
+        private Dictionary<int, IFrame> OutputCredentials;
 
         object bufferLock = new object();
 
         public HigherOrderPathConnection(TransportTerminalFunction ttf)
         {
-            this.forwardingTable = new Dictionary<int, List<ForwardingRecord>>();
+            this.ForwardingTable = new Dictionary<int, List<ForwardingRecord>>();
             this.ttf = ttf;
             this.ttf.HandleInputFrame += new HandleInputFrame(handleIncomFrame);
             builder = new FrameBuilder();
-            inputCredentials = new Dictionary<int, IFrame>();
-            outputCredentials = new Dictionary<int, IFrame>();
+            InputCredentials = new Dictionary<int, IFrame>();
+            OutputCredentials = new Dictionary<int, IFrame>();
+            Connections = new List<ForwardingRecord>();
+
             Dictionary<int,StmLevel> allPorts = ttf.GetPorts();
             
             foreach (int port in allPorts.Keys)
             {
-                inputCredentials.Add(port, new Frame(allPorts[port]));
-                outputCredentials.Add(port, new Frame(allPorts[port]));
+                InputCredentials.Add(port, new Frame(allPorts[port]));
+                OutputCredentials.Add(port, new Frame(allPorts[port]));
             }
         }
 
-        public ExecutionResult AddForwardingRecords(List<ForwardingRecord> records)
+        public ExecutionResult AddForwardingRecords(List<List<ForwardingRecord>> records)
         {
             int index = 0;
-            foreach (ForwardingRecord record in records)
+            List<ForwardingRecord> checkedRecords = new List<ForwardingRecord>();
+            foreach (List<ForwardingRecord> twoWayRecord in records)
             {
                 
-                if (!checkForwardingRecord(record))
+                foreach (ForwardingRecord record in twoWayRecord)
                 {
-                    return new ExecutionResult(false,"Error at record " + index);
+                    if (!CheckForwardingRecord(record))
+                    {
+                        foreach (ForwardingRecord checkedRecord in checkedRecords)
+                        {
+                            ClearCredentials(checkedRecord);
+                        }
+                        return new ExecutionResult(false, "Error at record " + index);
+                    }
+                    checkedRecords.Add(record);
+                    index++;
                 }
-                index++;
+                Connections.Add(twoWayRecord[0]);
             }
 
-            foreach(ForwardingRecord record in records) 
+            foreach (ForwardingRecord record in checkedRecords) 
             {
-                if (!forwardingTable.ContainsKey(record.InputPort))
+                if (!ForwardingTable.ContainsKey(record.InputPort))
                 {
-                    forwardingTable.Add(record.InputPort, new List<ForwardingRecord>());
+                    ForwardingTable.Add(record.InputPort, new List<ForwardingRecord>());
                 }
 
-                forwardingTable[record.InputPort].Add(record);
+                ForwardingTable[record.InputPort].Add(record);
             }
 
             return new ExecutionResult(true,null);
         }
 
-        private bool checkForwardingRecord(ForwardingRecord record)
+        private bool CheckForwardingRecord(ForwardingRecord record)
         {
             VirtualContainer vc = new VirtualContainer(record.ContainerLevel);
 
-            if (inputCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn, vc))
+            if (InputCredentials[record.InputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn, vc))
             {
-                if (outputCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut == -1 ? null : (int?)record.VcNumberOut, vc))
+                if (OutputCredentials[record.OutputPort].SetVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut == -1 ? null : (int?)record.VcNumberOut, vc))
                 {
                     return true;
                 }
 
-                ((Frame)inputCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn);
+                ((Frame)InputCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn);
             } 
 
             return false;
         }
 
-        private bool clearCredentials(ForwardingRecord record)
+        private bool ClearCredentials(ForwardingRecord record)
         {
-            Frame inputCredential = (Frame)inputCredentials[record.InputPort];
-            Frame outputCredential = (Frame)outputCredentials[record.InputPort];
+            Frame inputCredential = (Frame)InputCredentials[record.InputPort];
+            Frame outputCredential = (Frame)OutputCredentials[record.OutputPort];
             bool result = true;
             result = result && inputCredential.ClearVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn);
             result = result && outputCredential.ClearVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut);
             return result;
         }
 
-        public List<ForwardingRecord> GetForwardingRecords()
+        public List<ForwardingRecord> GetConnections()
         {
-            List<ForwardingRecord> routerRecords = new List<ForwardingRecord>();
-            foreach (List<ForwardingRecord> portRecords in forwardingTable.Values)
+            /*List<ForwardingRecord> routerRecords = new List<ForwardingRecord>();
+            foreach (List<ForwardingRecord> portRecords in ForwardingTable.Values)
             {
                 routerRecords.AddRange(portRecords);
-            }
+            }*/
 
-            return routerRecords;
+            return Connections;
         }
 
         private void handleIncomFrame(object sender, InputFrameArgs args)
@@ -112,12 +125,12 @@ namespace NetworkNode.HPC
 
         private void commuteFrame(int input, IFrame frame, Dictionary<int, IFrame> outputFrames)
         {
-            if (!forwardingTable.ContainsKey(input))
+            if (!ForwardingTable.ContainsKey(input))
             {
                 return;
             }
 
-            List<ForwardingRecord> forwardingRules = forwardingTable[input];
+            List<ForwardingRecord> forwardingRules = ForwardingTable[input];
 
             foreach (ForwardingRecord record in forwardingRules)
             {
@@ -138,13 +151,39 @@ namespace NetworkNode.HPC
             ttf.PassDataToInterfaces(outputFrames);
         }
 
-        internal bool RemoveRecord(ForwardingRecord record)
+        public bool RemoveTwWayRecord(List<ForwardingRecord> records) 
         {
-            if(!forwardingTable.ContainsKey(record.InputPort)) 
+            if (records.Count != 2)
             {
                 return false;
             }
-            List<ForwardingRecord> scope = forwardingTable[record.InputPort];
+
+            foreach (ForwardingRecord record in records)
+            {
+                RemoveRecord(record);
+            }
+
+            if(Connections.Contains(records[0]))
+            {
+                Connections.Remove(records[0]);
+                return true;
+            }
+            
+            if (Connections.Contains(records[1]))
+            {
+                Connections.Remove(records[1]);
+                return true;
+            }
+            return false;
+
+        }
+        private bool RemoveRecord(ForwardingRecord record)
+        {
+            if(!ForwardingTable.ContainsKey(record.InputPort)) 
+            {
+                return false;
+            }
+            List<ForwardingRecord> scope = ForwardingTable[record.InputPort];
             ForwardingRecord toRemove = null;
             foreach (ForwardingRecord scopeRecord in scope)
             {
@@ -157,8 +196,8 @@ namespace NetworkNode.HPC
             
             if (toRemove != null)
             {
-               clearCredentials(toRemove);
-               forwardingTable[record.InputPort].Remove(toRemove);
+               ClearCredentials(toRemove);
+               ForwardingTable[record.InputPort].Remove(toRemove);
                return true;
             }
            
