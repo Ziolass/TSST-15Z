@@ -102,8 +102,8 @@ namespace SDHManagement2.AdditionalWindows
                 string[] tmp = temp_connections[i].Split('#');
                 int temp = i + 1;
                 connections[i] = "Polaczanie " + temp + ". kontener: " + tmp[2] + "\n" +
-                         "Port 1.: " + tmp[0] + ", HP: " + tmp[4] + ", LP: " + tmp[3] +
-                         "\nPort 2. : " + tmp[1] + ", HP: " + tmp[6] + ", LP: " + tmp[5];
+                  "Numer 1. portu: " + tmp[0] + ", HP: " + tmp[4] + ", LP: " + tmp[3] +
+                  "\nNumer 2. portu: " + tmp[1] + ", HP: " + tmp[6] + ", LP: " + tmp[5];
 
             }
             connectionsBox.ItemsSource = connections.ToList();
@@ -112,17 +112,31 @@ namespace SDHManagement2.AdditionalWindows
         private void button_Click(object sender, RoutedEventArgs e)
         {
             int beginHP; 
-            int beginLP;
+            string beginLP;
             int endHP;
-            int endLP;
+            string endLP;
             //int inport;
             int inIndex;
             //int outport;
             int outIndex;
 
             try {
-                if ((int.TryParse(inportBox.SelectedIndex.ToString(), out inIndex)) && (int.TryParse(outportBox.SelectedIndex.ToString(),out outIndex)) &&(int.TryParse(beginHigherPath.SelectedItem.ToString(), out beginHP)) && int.TryParse(beginLowerPath.SelectedItem.ToString(), out beginLP) && int.TryParse(endHigherPath.SelectedItem.ToString(), out endHP) && int.TryParse(endLowerPath.SelectedItem.ToString(), out endLP) && ports[outIndex] != ports[inIndex])
+
+                int.TryParse(inportBox.SelectedIndex.ToString(), out inIndex);
+                int.TryParse(outportBox.SelectedIndex.ToString(), out outIndex);
+                if(ports[outIndex] == ports[inIndex])
                 {
+                    MessageBox.Show("Nie mo¿na wybraæ dwóch tych samych portów!");
+                    return;
+                }
+
+                
+                if ((int.TryParse(beginHigherPath.SelectedItem.ToString(), out beginHP)) && int.TryParse(endHigherPath.SelectedItem.ToString(), out endHP) )
+                {
+
+                    beginLP = beginLowerPath.SelectedItem==null ? "" : beginLowerPath.SelectedItem.ToString();
+                    endLP = endLowerPath.SelectedItem == null ? "" : endLowerPath.SelectedItem.ToString();
+                    
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
                     string command = "sub-connection-HPC|" + ports[inIndex] + "#" + ports[outIndex] + "#" + contenerTypeBox.SelectedItem.ToString() + "#" + beginLP + "#" + beginHP + "#" + endLP +"#"+endHP ;
                     handler.sendCommand(nodeName, command, true);

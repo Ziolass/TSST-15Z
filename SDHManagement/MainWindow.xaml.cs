@@ -161,6 +161,10 @@ namespace SDHManagement2
         }
         private string [] stringToConnectionArray(String con_string)
         {
+            if (con_string.Equals(""))
+            {
+                return new string[1] { "" };
+            }
             string[] temp_connections = con_string.Split('|');
             string [] connections = new string[temp_connections.Length];
 
@@ -169,8 +173,8 @@ namespace SDHManagement2
                 string[] tmp = temp_connections[i].Split('#');
                 int position = i + 1;
                 connections[i] = "Polaczanie " + position + ". kontener: " + tmp[2] + "\n" +
-                 "Port 1.: " + tmp[0] + ", HP: " + tmp[4] + ", LP: " + tmp[3] +
-                 "\nPort 2. : " + tmp[1] + ", HP: " + tmp[6] + ", LP: " + tmp[5];
+                 "Numer 1. portu: " + tmp[0] + ", HP: " + tmp[4] + ", LP: " + tmp[3] +
+                 "\nNumer 2.  portu: " + tmp[1] + ", HP: " + tmp[6] + ", LP: " + tmp[5];
             }
             return connections;
         }

@@ -48,13 +48,9 @@ namespace SDHManagement2.AdditionalWindows
                 {
                     int position = i + 1;
                     string[] tmp = connectionsWithSharp[i].Split('#');
-                    connections[i] = "Polaczanie " + position + ".\n" +
-                        "z: " + tmp[0] + " do " + tmp[1] + "\n" +
-                        "Kontener: " + tmp[2] +
-                        "Szczelina pocz., LP: " + tmp[3] +
-                        "Szczelina pocz., HP: " + tmp[4] +
-                        "Szczelina docelowa, LP: " + tmp[5] +
-                        "Szczelina docelowa, HP: " + tmp[6];
+                    connections[i] = "Polaczanie " + position + ". kontener: " + tmp[2] + "\n" +
+                    "Numer 1. portu: " + tmp[0] + ", HP: " + tmp[4] + ", LP: " + tmp[3] +
+                    "\nNumer 2.  portu: " + tmp[1] + ", HP: " + tmp[6] + ", LP: " + tmp[5];
                 }
             }
             else if (elementType.Equals("client"))
