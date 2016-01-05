@@ -9,8 +9,8 @@ namespace NetworkClientNode.Adaptation
 {
     public class StreamData : IEquatable<StreamData>
     {
-        public int HigherPathOut { get; set; }
-        public int? LowerPathOut { get; set; }
+        public int HigherPath { get; set; }
+        public int? LowerPath { get; set; }
         public int Port { get; set; }
         public StmLevel Stm { get; set; }
         public VirtualContainerLevel VcLevel { get; set; }
@@ -20,8 +20,8 @@ namespace NetworkClientNode.Adaptation
             Port = port;
             Stm = stm;
             VcLevel = vcLevel;
-            HigherPathOut = hpo;
-            LowerPathOut = lpo;
+            HigherPath = hpo;
+            LowerPath = lpo;
         }
 
         public bool Equals(StreamData other)
@@ -34,7 +34,7 @@ namespace NetworkClientNode.Adaptation
             bool areNullableEqual = NullablePartEqality(other);
             
             return areNullableEqual &&
-                HigherPathOut == other.HigherPathOut &&
+                HigherPath == other.HigherPath &&
                 Port == other.Port &&
                 Stm == other.Stm &&
                 VcLevel == VcLevel;
@@ -42,11 +42,11 @@ namespace NetworkClientNode.Adaptation
 
         private bool NullablePartEqality(StreamData other)
         {
-            if (LowerPathOut == null && other.LowerPathOut != null || LowerPathOut != null && other.LowerPathOut == null)
+            if (LowerPath == null && other.LowerPath != null || LowerPath != null && other.LowerPath == null)
             {
                 return false;
             }
-            if ((LowerPathOut != null && other.LowerPathOut != null) && (LowerPathOut != other.LowerPathOut))
+            if ((LowerPath != null && other.LowerPath != null) && (LowerPath != other.LowerPath))
             {
                 return false;
             }
@@ -60,7 +60,7 @@ namespace NetworkClientNode.Adaptation
         }
         public override int GetHashCode()
         {
-            return string.Format("{0}-{1}-{2}-{3}-{4}", HigherPathOut, LowerPathOut == null ? "" : "" + LowerPathOut, Port, Stm, VcLevel).GetHashCode();
+            return string.Format("{0}-{1}-{2}-{3}-{4}", HigherPath, LowerPath == null ? "" : "" + LowerPath, Port, Stm, VcLevel).GetHashCode();
         }
     }
 }

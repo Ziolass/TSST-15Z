@@ -120,9 +120,9 @@ namespace NetworkClientNode.Menagment
                 builder.Append("#");
                 builder.Append(record.VcLevel.ToString());
                 builder.Append("#");
-                builder.Append(record.HigherPathOut);
+                builder.Append(record.HigherPath);
                 builder.Append("#");
-                builder.Append(record.LowerPathOut == null ? "" : "" + record.LowerPathOut);
+                builder.Append(record.LowerPath == null ? "" : "" + record.LowerPath);
                 if (index < records.Count - 1)
                 {
                     builder.Append("|");

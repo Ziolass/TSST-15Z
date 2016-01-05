@@ -40,6 +40,11 @@ namespace NetworkClientNode
         {
             return Adaptation.RemoveStreamData(record);
         }
+
+        public void RegisterDataListener(HandleClientData clientDataDelegate)
+        {
+            Adaptation.HandleClientData += clientDataDelegate;
+        }
         /// <summary>
         /// Sends the message.
         /// </summary>

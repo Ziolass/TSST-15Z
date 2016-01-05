@@ -8,12 +8,23 @@ using System.Threading.Tasks;
 
 namespace NetworkClientNode.Adaptation
 {
+    public class ClientData : EventArgs 
+    {
+        public Dictionary<StreamData,string> StreamsData {get;set;}
+        public ClientData (Dictionary<StreamData,string> streamsData) 
+        {
+            StreamsData = streamsData;
+        }
+    }
+    public delegate void HandleClientData(ClientData data);
     public class AdaptationFunction
     {
         private TransportTerminalFunction Ttf;
         private List<StreamData> Streams;
         private Dictionary<int, IFrame> OutputCredentials;
         private FrameBuilder Builder;
+
+        public event HandleClientData HandleClientData;
         public AdaptationFunction(TransportTerminalFunction ttf)
         {
             Ttf = ttf;
@@ -30,7 +41,6 @@ namespace NetworkClientNode.Adaptation
                 OutputCredentials.Add(portNumber, new Frame(portsLevels[portNumber]));
             }
 
-            
         }
 
         public void GetDataFromFrame(object sender, InputFrameArgs args)
@@ -42,11 +52,33 @@ namespace NetworkClientNode.Adaptation
             {
                 if (stream.Port == inputPort)
                 {
-                    args.Frame.GetVirtualContainer(stream.)
-                    streamForPort.Add(stream);
+                    VirtualContainer vc = (VirtualContainer) args.Frame.GetVirtualContainer(stream.VcLevel, stream.HigherPath, stream.LowerPath);
+
+                    Container conteriner = vc.Content.Count > 0 ? vc.Content[0] as Container : null;
+                    
+                    string content = null;
+                    
+                    if (conteriner != null)
+                    {
+                        content = conteriner.Content;
+                        if (content == null || content.Equals(""))
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        content = "Error: Container does not transport client data";
+                    }
+
+                    streamsData.Add(stream, content);
                 }
             }
 
+            if (HandleClientData != null)
+            {
+                HandleClientData(new ClientData(streamsData));
+            }
         }
         public void SentData(Dictionary<StreamData,string> dataToSent)
         {
@@ -67,7 +99,7 @@ namespace NetworkClientNode.Adaptation
                 //TODO ewentualne dzielenie danych
                 Container content = new Container(dataToSent[stream]);
                 VirtualContainer vc = new VirtualContainer(stream.VcLevel, content);
-                outputData[stream.Port].SetVirtualContainer(stream.VcLevel, stream.HigherPathOut, stream.LowerPathOut, vc);
+                outputData[stream.Port].SetVirtualContainer(stream.VcLevel, stream.HigherPath, stream.LowerPath, vc);
             }
             
             Ttf.PassDataToInterfaces(outputData);        
@@ -94,14 +126,14 @@ namespace NetworkClientNode.Adaptation
         private bool CheckStreamData(StreamData record)
         {
             VirtualContainer vc = new VirtualContainer(record.VcLevel);
-            return OutputCredentials[record.Port].SetVirtualContainer(record.VcLevel, record.HigherPathOut, record.LowerPathOut, vc);
+            return OutputCredentials[record.Port].SetVirtualContainer(record.VcLevel, record.HigherPath, record.LowerPath, vc);
             
         }
 
         private bool ClearCredentials(StreamData record)
         {
             Frame outputCredential = (Frame)OutputCredentials[record.Port];
-            return outputCredential.ClearVirtualContainer(record.VcLevel, record.HigherPathOut, record.LowerPathOut);
+            return outputCredential.ClearVirtualContainer(record.VcLevel, record.HigherPath, record.LowerPath);
         }
 
 

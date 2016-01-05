@@ -22,7 +22,7 @@ namespace NetworkClientNode.ViewModels
         {
             get
             {
-                return StreamData.Port + " " + StreamData.VcLevel + " " + StreamData.Stm + " [" + StreamData.HigherPathOut + "," + StreamData.LowerPathOut + "]";
+                return StreamData.Port + " " + StreamData.VcLevel + " " + StreamData.Stm + " [" + StreamData.HigherPath + "," + StreamData.LowerPath + "]";
             }
         }
         public void riseChangesToView()

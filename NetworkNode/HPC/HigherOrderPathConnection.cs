@@ -14,8 +14,10 @@ namespace NetworkNode.HPC
     {
         private Dictionary<int, List<ForwardingRecord>> ForwardingTable;
         private List<ForwardingRecord> Connections;
-        private IFrameBuilder builder;
+        private IFrameBuilder Builder;
+        
         private TransportTerminalFunction ttf;
+        
         private Dictionary<int, IFrame> InputCredentials;
         private Dictionary<int, IFrame> OutputCredentials;
 
@@ -26,7 +28,7 @@ namespace NetworkNode.HPC
             this.ForwardingTable = new Dictionary<int, List<ForwardingRecord>>();
             this.ttf = ttf;
             this.ttf.HandleInputFrame += new HandleInputFrame(handleIncomFrame);
-            builder = new FrameBuilder();
+            Builder = new FrameBuilder();
             InputCredentials = new Dictionary<int, IFrame>();
             OutputCredentials = new Dictionary<int, IFrame>();
             Connections = new List<ForwardingRecord>();
@@ -136,7 +138,7 @@ namespace NetworkNode.HPC
             {
                 if (!outputFrames.ContainsKey(record.OutputPort))
                 {
-                    outputFrames.Add(record.OutputPort, builder.BuildEmptyFrame());
+                    outputFrames.Add(record.OutputPort, Builder.BuildEmptyFrame());
                 }
 
                 IFrame outputFrame = outputFrames[record.OutputPort];
