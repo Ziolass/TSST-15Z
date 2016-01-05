@@ -66,6 +66,7 @@ namespace SDHManagement2.AdditionalWindows
         }
         private void stringToPortArray(String port_string)
         {
+
             portsWithSTM = port_string.Split('|');
             
             
@@ -100,14 +101,9 @@ namespace SDHManagement2.AdditionalWindows
 
                 string[] tmp = temp_connections[i].Split('#');
                 int temp = i + 1;
-                connections[i] ="Polaczanie " + temp + ".\n" +
-                        "z: " + tmp[0] + " do " + tmp[1] + "\n" +
-                        "Kontener: " + tmp[2] +
-                        "Szczelina pocz., LP: " + tmp[3] +
-                        "Szczelina pocz., HP: " + tmp[4] +
-                        "Szczelina docelowa, LP: " + tmp[5] +
-                        "Szczelina docelowa, HP: " + tmp[6];
-
+                connections[i] = "Polaczanie " + temp + ". kontener: " + tmp[2] + "\n" +
+                         "Port 1.: " + tmp[0] + ", HP: " + tmp[4] + ", LP: " + tmp[3] +
+                         "\nPort 2. : " + tmp[1] + ", HP: " + tmp[6] + ", LP: " + tmp[5];
 
             }
             connectionsBox.ItemsSource = connections.ToList();

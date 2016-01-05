@@ -168,13 +168,9 @@ namespace SDHManagement2
             {
                 string[] tmp = temp_connections[i].Split('#');
                 int position = i + 1;
-                connections[i] = "Polaczanie "+position+".\n"+
-                    "z: "+tmp[0] + " do " + tmp[1]+"\n"+
-                    "obsługiwany kontener: "+tmp[2]+
-                    "szczelina z LP: " + tmp[3] + "\n" +
-                    "szczelina z HP: " + tmp[4] + "\n" +
-                    "szczelina do LP: " + tmp[5] + "\n" +
-                    "szczelina do HP: " + tmp[6] + "\n" ;
+                connections[i] = "Polaczanie " + position + ". kontener: " + tmp[2] + "\n" +
+                 "Port 1.: " + tmp[0] + ", HP: " + tmp[4] + ", LP: " + tmp[3] +
+                 "\nPort 2. : " + tmp[1] + ", HP: " + tmp[6] + ", LP: " + tmp[5];
             }
             return connections;
         }
