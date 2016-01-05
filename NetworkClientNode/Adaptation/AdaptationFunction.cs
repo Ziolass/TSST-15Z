@@ -37,10 +37,12 @@ namespace NetworkClientNode.Adaptation
         {
             int inputPort = args.PortNumber;
             List<StreamData> streamForPort = new List<StreamData>();
+            Dictionary<StreamData, string> streamsData = new Dictionary<StreamData, string>();
             foreach (StreamData stream in Streams)
             {
                 if (stream.Port == inputPort)
                 {
+                    args.Frame.GetVirtualContainer(stream.)
                     streamForPort.Add(stream);
                 }
             }
