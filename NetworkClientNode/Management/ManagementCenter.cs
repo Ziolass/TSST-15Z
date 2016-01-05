@@ -41,27 +41,27 @@ namespace NetworkClientNode.Menagment
             {
                 case "resource-relocation":
                     {
-                        response = addStreamData(arguments);
+                        response = AddStreamData(arguments);
                         break;
                     }
-                case "get-connection-list":
+                case "get-resource-list":
                     {
-                        response = getConnectionList();
+                        response = GetResourceList();
                         break;
                     }
                 case "get-ports":
                     {
-                        response = getPortList();
+                        response = GetPortList();
                         break;
                     }
                 case "identify":
                     {
-                        response = identify();
+                        response = Identify();
                         break;
                     }
-                case "close-connection":
+                case "delete-resource":
                     {
-                        response = closeConnection(arguments);
+                        response = CloseConnection(arguments);
                         break;
                     }
             }
@@ -69,12 +69,12 @@ namespace NetworkClientNode.Menagment
             return response;
         }
 
-        private string identify()
+        private string Identify()
         {
             return "client|" + node.Id.ToString(); ;
         }
 
-        private string closeConnection(List<List<string>> connections)
+        private string CloseConnection(List<List<string>> connections)
         {
             if (connections.Count != 1)
             {
@@ -83,12 +83,12 @@ namespace NetworkClientNode.Menagment
 
             List<string> literalRecord = connections[0];
 
-            StreamData record = createRecord(literalRecord);
+            StreamData record = CreateRecord(literalRecord);
 
             return node.RemoveStreamData(record) ? "OK" : "ERROR";
         }
 
-        private string getPortList()
+        private string GetPortList()
         {
             Dictionary<int, StmLevel> ports = node.GetPorts();
             StringBuilder builder = new StringBuilder();
@@ -107,7 +107,7 @@ namespace NetworkClientNode.Menagment
 
             return builder.ToString(); ;
         }
-        private string getConnectionList()
+        private string GetResourceList()
         {
             List<StreamData> records = node.GetStreamData();
             StringBuilder builder = new StringBuilder();
@@ -134,29 +134,29 @@ namespace NetworkClientNode.Menagment
             return builder.ToString();
         }
 
-        private string addStreamData(List<List<string>> literalRecords)
+        private string AddStreamData(List<List<string>> literalRecords)
         {
             List<StreamData> records = new List<StreamData>();
             foreach (List<string> literalRecord in literalRecords)
             {
 
-                records.Add(createRecord(literalRecord));
+                records.Add(CreateRecord(literalRecord));
             }
             ExecutionResult result = node.AddStreamData(records);
 
             return result.Result ? "OK" : "ERROR " + result.Msg;
         }
 
-        private StreamData createRecord(List<string> literalRecord)
+        private StreamData CreateRecord(List<string> literalRecord)
         {
             int outPort = int.Parse(literalRecord[0]);
-            int? lowerPathOut = literalRecord[5].Equals("") ? null : (int?)int.Parse(literalRecord[5]);
-            int higherPathOut = int.Parse(literalRecord[6]);
+            int? lowerPath = literalRecord[4].Equals("") ? null : (int?)int.Parse(literalRecord[4]);
+            int higherPath = int.Parse(literalRecord[3]);
 
             VirtualContainerLevel level = VirtualContainerLevelExt.GetContainer(literalRecord[2]);
-            StmLevel stm = StmLevelExt.GetContainer(literalRecord[5]);
+            StmLevel stm = StmLevelExt.GetContainer(literalRecord[1]);
 
-            StreamData record = new StreamData(outPort, stm, level, higherPathOut, lowerPathOut);
+            StreamData record = new StreamData(outPort, stm, level, higherPath, lowerPath);
 
             return record;
         }

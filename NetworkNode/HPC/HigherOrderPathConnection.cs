@@ -27,7 +27,7 @@ namespace NetworkNode.HPC
         {
             this.ForwardingTable = new Dictionary<int, List<ForwardingRecord>>();
             this.ttf = ttf;
-            this.ttf.HandleInputFrame += new HandleInputFrame(handleIncomFrame);
+            this.ttf.HandleInputFrame += new HandleInputFrame(HandleIncomFrame);
             Builder = new FrameBuilder();
             InputCredentials = new Dictionary<int, IFrame>();
             OutputCredentials = new Dictionary<int, IFrame>();
@@ -116,16 +116,16 @@ namespace NetworkNode.HPC
             return Connections;
         }
 
-        private void handleIncomFrame(object sender, InputFrameArgs args)
+        private void HandleIncomFrame(object sender, InputFrameArgs args)
         {
             IFrame bufferedFrame = args.Frame;
             Dictionary<int, IFrame> outputFrames = new Dictionary<int, IFrame>();
-            commuteFrame(args.PortNumber, bufferedFrame, outputFrames);
+            CommuteFrame(args.PortNumber, bufferedFrame, outputFrames);
 
             transportData(outputFrames);
         }
 
-        private void commuteFrame(int input, IFrame frame, Dictionary<int, IFrame> outputFrames)
+        private void CommuteFrame(int input, IFrame frame, Dictionary<int, IFrame> outputFrames)
         {
             if (!ForwardingTable.ContainsKey(input))
             {
@@ -142,9 +142,9 @@ namespace NetworkNode.HPC
                 }
 
                 IFrame outputFrame = outputFrames[record.OutputPort];
-                IContent vContainer = frame.GetVirtualContainer(record.ContainerLevel, record.VcNumberIn);
+                IContent vContainer = frame.GetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?) record.VcNumberIn);
 
-                //outputFrame.SetVirtualContainer(record.ContainerLevel, record.VcNumberOut, vContainer);
+                outputFrame.SetVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut, vContainer);
             }
         }
 
