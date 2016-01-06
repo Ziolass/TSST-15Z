@@ -65,7 +65,11 @@ namespace NetworkClientNode
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, NodeMode.CLIENT);
             AdaptationFunction adpt = new AdaptationFunction(ttf);
             NetworkClNode node = new NetworkClNode(adpt, nodeName);
+            
             //TODO
+            List<StreamData> records = new List<StreamData>();
+            records.Add(new StreamData(1,StmLevel.STM1, VirtualContainerLevel.VC32, 0, 0));
+            //node.AddStreamData(records);
             ManagementCenter managementCenter = new ManagementCenter(managementPort, node);
             managementPort.SetManagementCenter(managementCenter);
             managementPort.StartListening();
@@ -74,7 +78,6 @@ namespace NetworkClientNode
                 input.SetUpServer(10000, 10);
                 input.StartListening();
             }
-
             return node;
         }
         

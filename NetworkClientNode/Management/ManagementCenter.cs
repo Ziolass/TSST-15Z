@@ -102,8 +102,8 @@ namespace NetworkClientNode.Menagment
                 if (index < ports.Count - 1)
                 {
                     builder.Append("|");
-                    index++;
                 }
+                index++;
             }
 
             return builder.ToString(); ;
@@ -128,7 +128,6 @@ namespace NetworkClientNode.Menagment
                 {
                     builder.Append("|");
                 }
-
                 index++;
             }
 
@@ -140,7 +139,6 @@ namespace NetworkClientNode.Menagment
             List<StreamData> records = new List<StreamData>();
             foreach (List<string> literalRecord in literalRecords)
             {
-
                 records.Add(CreateRecord(literalRecord));
             }
             ExecutionResult result = node.AddStreamData(records);

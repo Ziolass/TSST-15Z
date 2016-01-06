@@ -43,8 +43,21 @@ namespace NetworkClientNode.ViewModels
             this.ClientSetUpProccess.StreamsCreated += new StreamsCreatedHandler(OnStreamsCreated);
             this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
             this.ClientSetUpProccess.StartClientProcess();
+            this.ClientSetUpProccess.ClientNode.StreamAdded += new StreamChangedHandler(OnStreamAdded);
             this.SendMessage = new ExternalCommand(SendNewMessage, IsMessageReady);
         }
+
+        private void OnStreamAdded(StreamChangedArgs args)
+        {
+            foreach (StreamData stream in args.Streams)
+            {
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    this.Streams.Add(new StreamDataViewModel(stream));
+                });
+            }
+        }
+
         /// <summary>
         /// Called when streams created.
         /// </summary>
@@ -91,6 +104,7 @@ namespace NetworkClientNode.ViewModels
                 PropertyChanged(sender, new PropertyChangedEventArgs(property));
             }
         }
+
 
 
     }

@@ -3,18 +3,29 @@ using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NetworkClientNode
 {
+    public delegate void StreamChangedHandler(StreamChangedArgs args);
+
+    public class StreamChangedArgs : EventArgs
+    {
+        public List<StreamData> Streams { get; private set; }
+        public StreamChangedArgs(List<StreamData> stream)
+        {
+            Streams = stream;
+        }
+    }
     public class NetworkClNode
     {
         private AdaptationFunction Adaptation;
         public int SelectedStream { get; private set; }
-
         public string Id { get; set; }
+        public event StreamChangedHandler StreamAdded;
 
         public NetworkClNode(AdaptationFunction adaptation, string id)
         {
@@ -32,9 +43,15 @@ namespace NetworkClientNode
             return Adaptation.GetStreamData();
         }
 
-        public ExecutionResult AddStreamData(List<StreamData> records)
+        public ExecutionResult AddStreamData(List<StreamData> streams)
         {
-            return Adaptation.AddStreamData(records);
+            ExecutionResult executionResult = Adaptation.AddStreamData(streams);
+            if (executionResult.Result)
+                if (StreamAdded != null)
+                {
+                    StreamAdded(new StreamChangedArgs(streams));
+                }
+            return executionResult;
         }
 
         public  bool RemoveStreamData(StreamData record)
