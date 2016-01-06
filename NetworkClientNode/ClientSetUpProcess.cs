@@ -43,11 +43,6 @@ namespace NetworkClientNode
             }
             this.ElementConfigurator = new ElementConfigurator(this.ConfigurationFilePath);
             this.ClientNode = ElementConfigurator.ConfigureNode();
-            List<StreamData> streamData = new List<StreamData>();
-            streamData.Add(new StreamData(0, NetworkNode.SDHFrame.StmLevel.STM1, NetworkNode.SDHFrame.VirtualContainerLevel.VC12, 0, 5));
-            streamData.Add(new StreamData(0, NetworkNode.SDHFrame.StmLevel.STM1, NetworkNode.SDHFrame.VirtualContainerLevel.VC12, 0, 4));
-            streamData.Add(new StreamData(0, NetworkNode.SDHFrame.StmLevel.STM1, NetworkNode.SDHFrame.VirtualContainerLevel.VC12, 0, 6));
-            this.ClientNode.AddStreamData(streamData);
             if (this.ClientNode.GetStreamData() != null && this.ClientNode.GetStreamData().Count != 0)
             {
                 if (StreamsCreated != null)
