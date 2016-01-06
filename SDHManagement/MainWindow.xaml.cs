@@ -35,8 +35,8 @@ namespace SDHManagement2
         };
         private string[] clientAction =
             {"resource-location",
-            "get-connections",
-            "delete-connection"};
+            "get-resource-list",
+            "delete-resource"};
         private string[] clientNameAction =
             {"Przydział zasobów",
             "Pobierz listę przyznanych zasobów",
@@ -63,13 +63,7 @@ namespace SDHManagement2
             actionBox.ItemsSource = actionaNameList.ToList();
             button2.IsEnabled = false;
             addNewButton.IsEnabled = false;
-        //    socketHandler = new SocketHandler(routerList, this);
-
-            /*ZoomControl.SetViewFinderVisibility(zoomctrl,Visibility.Visible);
-            zoomctrl.ZoomToFill();
-
-            GraphAreaExample_Setup();
-            init();*/
+        
         }
         public void Dispose()
         {
@@ -126,7 +120,7 @@ namespace SDHManagement2
                     console.Items.Add(con);
                 }
             }
-            else if (command.Equals("get-connections|"))
+            else if (command.Equals("get-resource-list|"))
             {
                 string[] temp = clientStringToConnectionArray(text);
 
@@ -185,14 +179,13 @@ namespace SDHManagement2
 
             for (int i = 0; i < temp_connections.Length; i++)
             {
+                //port#stm#vclevel#hPath#lPath|port#stm#vclevel#hPath#lPath|.
                 string[] tmp = temp_connections[i].Split('#');
                 int position = i + 1;
                 connections[i] = "Polaczanie " + position + ".\n" +
-                    "Identyfikator " + tmp[0] + "\n"+
-                    "z: " + tmp[1] + " do " + tmp[2] + "\n" +
-                    "z pozycji " + tmp[3] + ". na pozycje " + tmp[4] + ".\n" +
-                    "obsługiwany kontener: " + tmp[5] +
-                    "moduł: " + tmp[6];
+                    "Numer portu: " + tmp[0] + ". STM na porcie: " + tmp[1] + ". Kontener: " + tmp[2] + ".\n" +
+                    "HigherPath: " + tmp[4] + ". LowerPath: " + tmp[5];
+                    
             }
             return connections;
         }

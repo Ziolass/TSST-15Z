@@ -25,10 +25,9 @@ namespace SDHManagement2.AdditionalWindows
         private SocketHandler handler;
         private string[] connections;
         private string[] ports;
+        private int[] STMs;
+        private int[] STMszczelinyBegin;
         private string[] portsWithSTM;
-
-        private string[] inports;
-        private string[] outports;
 
         private string[] conteners ;
         private string[] modules ;
@@ -54,8 +53,6 @@ namespace SDHManagement2.AdditionalWindows
             conteners = contenersList.ToArray();
             initModuleMultiplier(modulesList);
             contenerTypeBox.ItemsSource = conteners.ToList();
-            //ModuleComboBox.ItemsSource = modules.ToList();
-           // ModuleComboBox.SelectedIndex = 0;
             stringToPortArray(port_response);
             nodeName = name;
             stringToConnectionArray(con_response);
@@ -74,13 +71,10 @@ namespace SDHManagement2.AdditionalWindows
 
                 string[] tmp = temp_connections[i].Split('#');
                 int temp = i + 1;
-                connections[i] = "Połączanie " + temp + ".\n" +
-                    "identyfikator: " + tmp[0] + "\n" +
-                    "z: " + tmp[1] + " do " + tmp[2] + "\n" +
-                    "z pozycji " + tmp[3] + ". na pozycje " + tmp[4] + ".\n" +
-                    "Kontener: " + tmp[5] +
-                    "Moduł: " + tmp[6];
-                
+                connections[i] = "Polaczanie " + temp + ".\n" +
+                    "Numer portu: " + tmp[0] + ". STM na porcie: " + tmp[1] + ". Kontener: " + tmp[2] + ".\n" +
+                    "HigherPath: " + tmp[4] + ". LowerPath: " + tmp[5];
+
             }
             connectionsBox.ItemsSource = connections.ToList();
 
@@ -96,32 +90,31 @@ namespace SDHManagement2.AdditionalWindows
             portsWithSTM = port_string.Split('|');
 
             ports = new string[portsWithSTM.Length];
+            STMs = new int[portsWithSTM.Length];
 
             for (int i = 0; i < portsWithSTM.Length; i++)
             {
                 string[] tmp = portsWithSTM[i].Split('#');
                 ports[i] = tmp[0];
+                STMs[i] = int.Parse(tmp[1].Substring(3));
+                portsWithSTM[i] = tmp[0] + " " + tmp[1];
             }
 
             inportBox.ItemsSource = portsWithSTM.ToList();
-            outportBox.ItemsSource = portsWithSTM.ToList();
-
         }
         
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            int inport;
             int inIndex;
-            int outport;
             int outIndex;
             int fromlevel;
             int tolevel;
 
             try {
-                if ((int.TryParse(inportBox.SelectedIndex.ToString(), out inIndex)) && int.TryParse(outportBox.SelectedIndex.ToString(), out outIndex) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel) && ports[outIndex] != ports[inIndex])
+                if ((int.TryParse(inportBox.SelectedIndex.ToString(), out inIndex)) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel))
                 {
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-                    string command = "resource-location|" + ports[inIndex] + "#" + ports[outIndex] + "#" + fromlevel + "#" + tolevel + "#" + contenerTypeBox.SelectedItem.ToString()+"#"+"STM1";
+                    string command = "resource-location|" + ports[inIndex] + "#" + STMs[inIndex] + "#" +contenerTypeBox.SelectedItem.ToString() +"#" + tolevel + "#" + fromlevel;
                     handler.sendCommand(nodeName, command, true);
 
                     this.Close();
@@ -201,23 +194,23 @@ namespace SDHManagement2.AdditionalWindows
             {
                 case "VC4":
                     reInitvc4();
-                    endLevelBox.ItemsSource = vc4levels.ToList();
+                   // endLevelBox.ItemsSource = vc4levels.ToList();
                     startLevelBox.ItemsSource = vc4levels.ToList();
                     break;
                 case "VC32":
                     reInitvc32();
-                    endLevelBox.ItemsSource = vc32levels.ToList();
+                    //endLevelBox.ItemsSource = vc32levels.ToList();
                     startLevelBox.ItemsSource = vc32levels.ToList();
                     break;
 
                 case "VC21":
                     reInitvc21();
-                    endLevelBox.ItemsSource = vc21levels.ToList();
+                    //endLevelBox.ItemsSource = vc21levels.ToList();
                     startLevelBox.ItemsSource = vc21levels.ToList();
                     break;
                 case "VC12":
                     reInitvc12();
-                    endLevelBox.ItemsSource = vc12levels.ToList();
+                    //endLevelBox.ItemsSource = vc12levels.ToList();
                     startLevelBox.ItemsSource = vc12levels.ToList();
                     break;
                 default:
@@ -254,6 +247,14 @@ namespace SDHManagement2.AdditionalWindows
 
         private void inportBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            int selection = inportBox.SelectedIndex;
+            int multiplier = STMs[selection];
+            STMszczelinyBegin = new int[multiplier];
+            for (int i = 0; i < STMszczelinyBegin.Length; i++)
+            {
+                STMszczelinyBegin[i] = i;
+            }
+            endLevelBox.ItemsSource = STMszczelinyBegin.ToList();
 
         }
     }

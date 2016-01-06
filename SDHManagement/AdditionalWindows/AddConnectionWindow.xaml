@@ -20,10 +20,10 @@
         <Label x:Name="nodeNameLabel" Content="root_name" HorizontalAlignment="Left" Margin="10,2,0,0" VerticalAlignment="Top" Height="37" Width="497" FontSize="21.333" FontWeight="Bold" HorizontalContentAlignment="Center"/>
         <Button x:Name="button1" Content="Podaj predefiniowany plik wejściowy" HorizontalAlignment="Left" Margin="140,423,0,0" VerticalAlignment="Top" Width="248" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF0F2A64" Click="button1_Click" FontSize="13.333"/>
         <Canvas HorizontalAlignment="Left" Height="178" Margin="10,208,0,0" VerticalAlignment="Top" Width="497" Background="#FF746868">
-            <Label x:Name="label1" Content="Drugi" Canvas.Left="418" FontSize="16" Foreground="#FFF3EDED" Canvas.Top="17"/>
-            <Label x:Name="label2" Content="Pierwszy" Canvas.Left="278" FontSize="16" Foreground="#FFF5EBEB" Canvas.Top="16"/>
+            <Label x:Name="label1" Content="Drugi" Canvas.Left="418" FontSize="16" Foreground="#FFF3EDED" Canvas.Top="20"/>
+            <Label x:Name="label2" Content="Pierwszy" Canvas.Left="293" FontSize="16" Foreground="#FFF5EBEB" Canvas.Top="19"/>
             <ComboBox x:Name="beginLowerPath" Canvas.Left="288" Canvas.Top="83" Width="84" Height="28"/>
-            <ComboBox x:Name="beginHigherPath" Canvas.Left="288" Canvas.Top="141" Width="84" SelectionChanged="beginHigherPath_SelectionChanged" Height="27"/>
+            <ComboBox x:Name="beginHigherPath" Canvas.Left="288" Canvas.Top="141" Width="84" Height="27"/>
             <ComboBox x:Name="endLowerPath" Canvas.Left="407" Canvas.Top="83" Width="80" Height="28"/>
             <ComboBox x:Name="endHigherPath" Canvas.Left="407" Canvas.Top="141" Width="80" Height="27"/>
             <Label x:Name="label5" Content="Lower Path" Canvas.Left="348" Canvas.Top="47" Foreground="White" FontSize="14.667"/>

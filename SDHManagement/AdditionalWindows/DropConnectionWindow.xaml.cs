@@ -60,11 +60,8 @@ namespace SDHManagement2.AdditionalWindows
                     int position = i + 1;
                     string[] tmp = connectionsWithSharp[i].Split('#');
                     connections[i] = "Polaczanie " + position + ".\n" +
-                        "identyfikator: " + tmp[0] + "\n"+
-                        "z: " + tmp[1] + " do " + tmp[2] + "\n" +
-                        "z pozycji " + tmp[3] + ". na pozycje " + tmp[4] + ".\n" +
-                        "Kontener: " + tmp[5] +
-                        "Moduł: " + tmp[6];
+                    "Numer portu: " + tmp[0] + ". STM na porcie: " + tmp[1] + ". Kontener: " + tmp[2] + ".\n" +
+                    "HigherPath: " + tmp[4] + ". LowerPath: " + tmp[5];
 
                 }
             }
@@ -82,7 +79,6 @@ namespace SDHManagement2.AdditionalWindows
 
             string selected = connectionsWithSharp[connectionsBox.SelectedIndex];
 
-            string []con  =selected.Split('#');
                     
             if (elementType.Equals("router"))
             {
@@ -90,7 +86,7 @@ namespace SDHManagement2.AdditionalWindows
             }
             else if (elementType.Equals("client"))
             {
-                sockethandler.sendCommand(nodename, "delete-connection|" + con[0], true);
+                sockethandler.sendCommand(nodename, "delete-resource|" + selected, true);
             }
             this.Close();
 

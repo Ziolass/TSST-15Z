@@ -238,16 +238,16 @@ namespace SDHManagement2.SocketUtils
                 // do klienta
                 case "resource-location":
                     string portresponse = sendCommand(node, "get-ports|", false);
-                    string con_response = sendCommand(node, "get-connections|", false);
+                    string con_response = sendCommand(node, "get-resource-list|", false);
                     ResourceRelocationWindow relocationwindow = new ResourceRelocationWindow(this, node,portresponse,con_response,availableModules,availableConteners);
                     relocationwindow.ShowDialog();
                     return "DONE";
                 // do klienta
-                case "get-connections":
+                case "get-resource-list":
                     return sendCommand(node, command + "|", true);
                 // do klienta
-                case "delete-connection":
-                    string conresponse = sendCommand(node, "get-connections|", false);
+                case "delete-resource":
+                    string conresponse = sendCommand(node, "get-resource-list|", false);
                     DropConnectionWindow deleteWindow = new DropConnectionWindow(this, conresponse, node, mainWindow, "client");
                     deleteWindow.ShowDialog();
                     return "DONE";
