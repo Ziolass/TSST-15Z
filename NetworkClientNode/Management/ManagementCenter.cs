@@ -1,4 +1,4 @@
-﻿
+
 using NetworkNode.SDHFrame;
 using NetworkNode.HPC;
 using NetworkNode.Ports;
@@ -102,6 +102,7 @@ namespace NetworkClientNode.Menagment
                 if (index < ports.Count - 1)
                 {
                     builder.Append("|");
+                    index++;
                 }
             }
 
