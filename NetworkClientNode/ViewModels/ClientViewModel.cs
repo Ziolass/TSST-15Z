@@ -66,12 +66,24 @@ namespace NetworkClientNode.ViewModels
                 this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
                 this.ClientSetUpProccess.StartClientProcess();
                 this.ClientSetUpProccess.ClientNode.StreamAdded += new StreamChangedHandler(OnStreamAdded);
+                this.ClientSetUpProccess.ClientNode.StreamRemoved += new StreamChangedHandler(OnStreamRemoved);
                 this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
                 this.SendMessage = new ExternalCommand(SendNewMessage, true);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        private void OnStreamRemoved(StreamChangedArgs args)
+        {
+            foreach (StreamData stream in args.Streams)
+            {
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    this.Streams.Remove(new StreamDataViewModel(stream));
+                });
             }
         }
 

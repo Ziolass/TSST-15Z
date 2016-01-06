@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:SDHManagement2"
         
         mc:Ignorable="d"
-        Title="Management" Height="500" Width="700" WindowStartupLocation="CenterScreen" Background="#FF746868">
+        Title="Management" Height="550
+        " Width="700" WindowStartupLocation="CenterScreen" Background="#FF746868">
     <Grid Background="#FF746868">
 
         <Grid.RowDefinitions>
@@ -21,9 +22,9 @@
 
 
         </DockPanel>
-        <ListBox x:Name="console" HorizontalAlignment="Left" Height="153" Margin="12,82,0,0" VerticalAlignment="Top" Width="672" FontSize="18.667" BorderThickness="5" Background="#FFB4A7A7"/>
-        <Label x:Name="label1" Content="Konsola" HorizontalAlignment="Left" Margin="272,26,0,0" VerticalAlignment="Top" Height="51" Width="132" FontSize="29.333"/>
-        <Canvas HorizontalAlignment="Left" Height="144" Margin="10,310,0,0" VerticalAlignment="Top" Width="672" Background="#FFB4A7A7">
+        <ListBox x:Name="console" HorizontalAlignment="Center" Height="276" Margin="0,60,0,0"  VerticalAlignment="Top" Width="672" FontSize="18.667" BorderThickness="5" Background="#FFB4A7A7"/>
+        <Label x:Name="label1" Content="Konsola" HorizontalAlignment="Center" VerticalAlignment="Top" Height="51" Width="132" FontSize="29.333"/>
+        <Canvas HorizontalAlignment="Center" Height="144" Margin="0,0,0,10" VerticalAlignment="Bottom" Width="672" Background="#FFB4A7A7">
             <ComboBox x:Name="nodeBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="114" Height="38" Canvas.Left="173" Canvas.Top="84" SelectionChanged="nodeBox_SelectionChanged"/>
             <ComboBox x:Name="actionBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="223" Height="38" Canvas.Left="326" Canvas.Top="84" SelectionChanged="actionBox_SelectionChanged"/>
             <Label x:Name="label" Content="Nazwa" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Canvas.Left="197" Canvas.Top="56"/>
