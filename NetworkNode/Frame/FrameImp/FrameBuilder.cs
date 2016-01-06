@@ -17,13 +17,17 @@ namespace NetworkNode.SDHFrame
         /// <returns></returns>
         public IFrame BuildFrame(String textFrame)
         {
-            Frame returnFrame = new Frame();
             metadata = JObject.Parse(textFrame);
+            StmLevel frameLevel = StmLevel.STM1;
+            if (metadata["Level"] != null)
+            {
+                frameLevel = FrameBuilder.getStmLevel(metadata["Level"]);
+            }
+            Frame returnFrame = new Frame(frameLevel);
             if (metadata["Msoh"].HasValues)
-                returnFrame.Msoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Msoh"]);
+                returnFrame.Msoh = (Header)FrameBuilder.EvaluateContent((JObject)metadata["Msoh"]);
             if (metadata["Rsoh"].HasValues)
-                returnFrame.Rsoh = (Header)FrameBuilder.evaluateContent((JObject)metadata["Rsoh"]);
-
+                returnFrame.Rsoh = (Header)FrameBuilder.EvaluateContent((JObject)metadata["Rsoh"]);            
             if (FrameBuilder.isJArray(metadata["Content"]))
             {
                 returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["Content"]);
@@ -64,7 +68,7 @@ namespace NetworkNode.SDHFrame
         /// </summary>
         /// <param name="content">The content.</param>
         /// <returns></returns>
-        private static IContent evaluateContent(JObject content)
+        private static IContent EvaluateContent(JObject content)
         {
             try
             {
@@ -73,7 +77,7 @@ namespace NetworkNode.SDHFrame
                     //Create new VC with level from JSON file
                     VirtualContainer newVC = new VirtualContainer(FrameBuilder.getVCLevel(content["Level"]));
                     newVC.Pointer = content["Pointer"].ToString();
-                    newVC.POH = (POH)FrameBuilder.evaluateContent((JObject)content["POH"]);
+                    newVC.POH = (POH)FrameBuilder.EvaluateContent((JObject)content["POH"]);
                     if (FrameBuilder.isJArray(content["Content"]))
                     {
                         newVC.Content = FrameBuilder.evaluateContents((JArray)content["Content"]);
@@ -123,7 +127,7 @@ namespace NetworkNode.SDHFrame
             {
                 if (item.HasValues)
                 {
-                    returnList.Add(FrameBuilder.evaluateContent((JObject)item));
+                    returnList.Add(FrameBuilder.EvaluateContent((JObject)item));
                 }
                 else //Index in Frame.Content is free or occupied by larger VC then VC12
                 {
@@ -280,6 +284,14 @@ namespace NetworkNode.SDHFrame
                 return contentType;
             else
                 throw new Exception("ERROR FrameBuilder: Could not read content type of given token");
+        }
+        private static StmLevel getStmLevel(JToken token)
+        {
+            StmLevel contentType;
+            if (Enum.TryParse<StmLevel>(token.ToString(), out contentType))
+                return contentType;
+            else
+                throw new Exception("ERROR FrameBuilder: Could not read STM level of given token");
         }
     }
 }

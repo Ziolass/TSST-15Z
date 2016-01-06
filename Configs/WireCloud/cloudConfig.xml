@@ -19,7 +19,7 @@
 	</link>
 	<link>
 		<port tcp="5012" local="3" node="node2" />
-		<port tcp="5021" local="1" node="node3" />
+		<port tcp="5021" local="2" node="node3" />
 	</link>
 	<link>
 		<port tcp="5013" local="4" node="node2" />

@@ -1,0 +1,1 @@
+resource-relocation|1#STM1#VC21#0#10
