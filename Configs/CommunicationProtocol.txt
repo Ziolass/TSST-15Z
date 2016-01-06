@@ -1,0 +1,94 @@
+(wzorowane na metodach z NetworkNode/MenagementModule/ManagementCenter)
+(OK można zastąpić czymkolwiek innym, równie dobrze każde polecenie może mieć 
+indywidualne potwierdzenie np. Link-established ale nie wiem czy jest specjalnie sens)
+
+Legenda:
+Management = M
+Router = R
+Klient = C
+-> = kierunek komunikatu
+| oraz # = znaki specjalne oddzielające wartości
+_______________________________________________________________________________________
+0. Identyfikacja
+a) router
+M->R: identify|
+R->M: router|<name>
+
+EXAMLE: R->M: router|root1
+
+b)
+M->C: identify|
+C->M: client|<name>
+
+EXAMLE: C->M: client|client1
+
+
+1. Wyłączenie węzła:
+M->R: disable-node|
+R->M: OK
+
+2. usuwanie połączenia
+M->R: close-connection|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}#{typ_modulu1} 
+R->M: OK
+	
+3. Dodanie połączenia
+M->R: sub-connection-HPC|{port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath}
+R->M: OK
+(wartości oddzielone # w kolejności:
+-port z którego wychodzi
+-port na który ma wejść
+-typ kontera - kontener który będzie przekładany
+-we + wy	: {
+		-szczelina ścieżki niższego rzędu może być pusta (##) gdy transportujemy dane w kontenerze wyższego rzędu
+		-szczelina ścieżki wyższego określa w której VC4 znajduje się dana ramka lub dane dla STM1 jest to zawsze 0
+	}
+
+poszczególne połączenia oddzielone |
+
+EXAMLE: M->R: sub-connection-HPC|1#2#VC3#0#0#1#1 => to oznacz że szlak do którego wkłada jest conajmniej STM4
+z portu 1 na port 2 przekładamy vc3 które przychodzi z w zerowym vc4 i wychodzi jako 2 VC3 w drugim VC4
+
+
+4. Podanie listy połączeń
+M->R: get-connection-list|
+R->M: {port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath}|{port_z1}#{port_do1}#{typ_konteneru_z}#{szczelina_z_lowerpath}#{szczelina_z_higherpath}#{szczelina_do_lowerpath}#{szczelina_do_higherpath} itd
+id - pomaga w usuwaniu połączeń
+EXAMPLE: R->M: 1#2#VC3#0#0#1#1 |5#6#7#8#VC12#STM4
+
+5. Podanie listy portów
+M->R: get-ports|
+R->M: {port1}#STM1|{port2}#STM4 itp
+ergo: pary (port#stm) oddziela znak |
+EXAMPLE: R->M: 1#STM1|2#STM4|3#STM64
+
+7. Przypadek gdy router nie jest w stanie wykonać polecenia
+M->R: <polecenie>
+R->M: ERROR
+
+KLIENT
+1. rezerwacja zasobůw
+M->C: resource-relocation|port#stm#vclevel#hPath#lPath
+C->M: OK
+
+port - port na którym rezerwujemy zasób
+stm - stm na porcie
+vclevel - jaki kontener przydzielamy
+hPath - higherpath (VC4)
+lPath - lowerPath
+
+2. lista przydzielonych zasobów
+Uwaga analogicznie do routera tylko mniej danych
+M->C: get-resource-list|
+C->M: port#stm#vclevel#hPath#lPath|port#stm#vclevel#hPath#lPath|...
+port - port na którym rezerwujemy zasób
+stm - stm na porcie
+vclevel - jaki kontener przydzielamy
+hPath - higherpath (VC4)
+lPath - lowerPath
+
+
+3. usuniÍcie po≥Ļczenia
+M->C: delete-resource|port#stm#vclevel#hPath#lPath
+c->M: OK
+albo coú w stylu po≥Ļczenie nie istnieje
+

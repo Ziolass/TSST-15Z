@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<client>
-<port listen="3000" to="6000" local_to="1" local_listen="1"/>  
-<port listen="3005" to="6000" local_to="2" local_listen="2"/>
-<name value="Klient1"/>
-<management_port number ="9901"/>
-</client>
-
- 

@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<client>
-<port type="input" number="3021"/>  
-<port type="output" number="3020"/> 
-<name value="Klient3"/>
-<management_port number ="9903"/>
-</client>
-
- 
