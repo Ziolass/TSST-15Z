@@ -1,4 +1,4 @@
-﻿using NetworkClientNode.Adaptation;
+using NetworkClientNode.Adaptation;
 using NetworkClientNode.Menagment;
 using NetworkNode.Ports;
 using NetworkNode.SDHFrame;
@@ -64,7 +64,7 @@ namespace NetworkClientNode
             SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(ports, sender, nodeName);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, NodeMode.CLIENT);
             AdaptationFunction adpt = new AdaptationFunction(ttf);
-            NetworkClNode node = new NetworkClNode(adpt);
+            NetworkClNode node = new NetworkClNode(adpt, nodeName);
             //TODO
             ManagementCenter managementCenter = new ManagementCenter(managementPort, node);
             managementPort.SetManagementCenter(managementCenter);

@@ -16,9 +16,10 @@ namespace NetworkClientNode
 
         public string Id { get; set; }
 
-        public NetworkClNode(AdaptationFunction adaptation)
+        public NetworkClNode(AdaptationFunction adaptation, string id)
         {
             Adaptation = adaptation;
+            Id = id;
         }
 
         public Dictionary<int, StmLevel> GetPorts()
