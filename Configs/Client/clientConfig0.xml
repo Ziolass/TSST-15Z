@@ -4,5 +4,6 @@
   <port local="2" tcp="3001" stm="STM1"/>
   <node name="client1"/>
   <managment-port number ="9901"/>
+  <cloud-server tcp="6000"/>
 </client>
 

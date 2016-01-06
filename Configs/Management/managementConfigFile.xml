@@ -6,7 +6,9 @@
 	</ports>
 	<network-specifications>
 	<module value="STM1"/>
+	<contener name="VC4"/>
 	<contener name="VC32"/>
+	<contener name="VC21"/>
 	<contener name="VC12"/>
 	</network-specifications>
 </management-ports>

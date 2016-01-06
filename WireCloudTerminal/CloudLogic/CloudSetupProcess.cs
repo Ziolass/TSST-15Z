@@ -39,7 +39,6 @@ namespace WireCloud.CloudLogic
             get { return this.ProcessMonitor.Links; }
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudSetupProcess" /> class.
         /// </summary>
@@ -70,42 +69,12 @@ namespace WireCloud.CloudLogic
                 }
             }
         }
-        public void CloseLink(Link link)
+        /// <summary>
+        /// Exits this instance.
+        /// </summary>
+        public void StopCloudProccess()
         {
-            disposeLink(link, CLOSING_TIME);
-            usedPorts.Remove(link);
-            linksThreads.Remove(link);
-        }
-
-        private void disposeLink(Link link, int executionTime)
-        {
-            //if (!Links.Contains(link))
-            //{
-            //    return;
-            //}
-
-            //link.DestroyLink();
-
-            Thread linkThread = linksThreads[link];
-            linkThread.Join(executionTime);
-            if (linkThread.IsAlive)
-            {
-                try
-                {
-                    linkThread.Abort();
-                }
-                catch (Exception ex) { 
-                
-                }
-            }
-        }
-
-        public void CloseAll()
-        {
-            foreach (Link link in linksThreads.Keys)
-            {
-                disposeLink(link, 10);
-            }
+            this.ProcessMonitor.Stop();
         }
 
         public List<Link> TryAddLink(Link src)
@@ -120,6 +89,7 @@ namespace WireCloud.CloudLogic
                 {
                     LinkCreated(new LinkCreatedArgs(link));
                 }
+
             }
             return occupiedPorts;
         }

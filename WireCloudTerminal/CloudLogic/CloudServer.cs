@@ -49,6 +49,13 @@ namespace WireCloud.CloudLogic
             }
         }
 
+        /// <summary>
+        /// Stops the server thread.
+        /// </summary>
+        public void StopServerThread(){
+            ServerThread.Abort();
+        }
+
         public void ConnectToLocalPoint()
         {
             SetSocket();

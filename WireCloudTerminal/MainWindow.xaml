@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:WireCloud.ViewModels"
+        Closing="Window_Closing" 
         Title="Chmura Kablowa" 
         Height="394.494" 
         Width="712.6"

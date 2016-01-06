@@ -15,6 +15,16 @@ namespace NetworkClientNode.Adaptation
         {
             StreamsData = streamsData;
         }
+        public string ToString()
+        {
+            string returnString = string.Empty;
+
+            foreach (var item in StreamsData)
+            {
+                returnString += item.Value + "\n";
+            }
+            return returnString;
+        }
     }
     public delegate void HandleClientData(ClientData data);
     public class AdaptationFunction

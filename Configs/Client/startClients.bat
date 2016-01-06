@@ -1,1 +1,1 @@
-cd ..\..\ClientsLoader\bin\Debug\ & start ClientsLoader.exe
+cd ..\..\NetworkClientNode\bin\Debug\ & start NetworkClientNode.exe

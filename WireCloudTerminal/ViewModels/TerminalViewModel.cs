@@ -137,7 +137,7 @@ namespace WireCloud.ViewModels
 
         private void performCloseConnections()
         {
-            //cloudPrcoess.CloseAll();
+            this.CloudSetupProcess.StopCloudProccess();
         }
         private bool isCreationReady()
         {

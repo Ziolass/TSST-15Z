@@ -11,10 +11,17 @@ namespace NetworkClientNode.ViewModelUtils
     {
         private Action What;
         private Func<bool> When;
+        private bool WhenBool;
         public ExternalCommand(Action what, Func<bool> when)
         {
             What = what;
             When = when;
+        }
+        public ExternalCommand(Action what, bool when)
+        {
+            What = what;
+            WhenBool = when;
+            When = StaticWhen;
         }
         public bool CanExecute(object parameter)
         {
@@ -23,6 +30,10 @@ namespace NetworkClientNode.ViewModelUtils
         public void Execute(object parameter)
         {
             What();
+        }
+        public bool StaticWhen()
+        {
+            return WhenBool;
         }
 
 

@@ -23,5 +23,9 @@ namespace NetworkClientNode
         {
             InitializeComponent();
         }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Environment.Exit(0);
+        }
     }
 }

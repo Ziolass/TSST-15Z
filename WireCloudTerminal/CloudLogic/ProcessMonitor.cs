@@ -34,6 +34,13 @@ namespace WireCloud.CloudLogic
         {
             Server.StartListening();
         }
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+        public void Stop()
+        {
+            Server.StopServerThread();
+        }
 
         /// <summary>
         /// Deletes the link from Links

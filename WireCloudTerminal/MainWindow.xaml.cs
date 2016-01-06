@@ -30,6 +30,7 @@ namespace WireCloud
         {
             TerminalViewModel viewModel = (TerminalViewModel)Resources["Cloud"];
             viewModel.CloseAllConections.Execute(null);
+            Environment.Exit(0);
         }
 
     }
