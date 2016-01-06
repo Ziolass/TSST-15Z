@@ -1,1 +1,1 @@
-cd ..\..\WireCloudTerminal\bin\Debug\ &  WireCloudTerminal.exe
+cd ..\..\WireCloudTerminal\bin\Debug\ & start WireCloudTerminal.exe

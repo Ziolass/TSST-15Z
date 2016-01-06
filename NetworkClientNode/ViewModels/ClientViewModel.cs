@@ -29,30 +29,50 @@ namespace NetworkClientNode.ViewModels
             }
         }
         private string messageRecivedText;
-
         public string MessageRecivedText
         {
             get { return messageRecivedText; }
             set { messageRecivedText = value; }
         }
+        public string ClientName
+        {
+            get { return this.ClientSetUpProccess.ClientNode.Id; }
+        }
         
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientViewModel"/> class.
+        /// Initializes a new instance of the <see cref="ClientViewModel" /> class.
         /// </summary>
+        /// <exception cref="System.Exception">
+        /// Wrong application start argument
+        /// </exception>
         public ClientViewModel()
         {
-            var args = Environment.GetCommandLineArgs();
-            this.Streams = new ObservableCollection<StreamDataViewModel>();
-            this.ClientSetUpProccess = new ClientSetUpProcess("..\\..\\..\\Configs\\Client\\clientConfig" + /*args[1]*/0 + ".xml");
-            this.ClientSetUpProccess.StreamsCreated += new StreamsCreatedHandler(OnStreamsCreated);
-            this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
-            this.ClientSetUpProccess.StartClientProcess();
-            this.ClientSetUpProccess.ClientNode.StreamAdded += new StreamChangedHandler(OnStreamAdded);
-            this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
-            this.SendMessage = new ExternalCommand(SendNewMessage, true);
+            try
+            {
+                var args = Environment.GetCommandLineArgs();
+                int i = 0; //This is dumy variable for TryParse
+                if (args.Length < 2)
+                    throw new Exception("Wrong application start argument");
+                else if (!int.TryParse(args[1], out i))
+                    throw new Exception("Wrong application start argument");
+
+                this.Streams = new ObservableCollection<StreamDataViewModel>();
+                this.ClientSetUpProccess = new ClientSetUpProcess("..\\..\\..\\Configs\\NetworkClient\\clientConfig" + args[1] + ".xml");
+                this.ClientSetUpProccess.StreamsCreated += new StreamsCreatedHandler(OnStreamsCreated);
+                this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
+                this.ClientSetUpProccess.StartClientProcess();
+                this.ClientSetUpProccess.ClientNode.StreamAdded += new StreamChangedHandler(OnStreamAdded);
+                this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
+                this.SendMessage = new ExternalCommand(SendNewMessage, true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         /// <summary>

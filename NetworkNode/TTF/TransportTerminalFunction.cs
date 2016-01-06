@@ -77,20 +77,18 @@ namespace NetworkNode.TTF
             return frame;
         }
 
-        private void raportFrame(IFrame frame, string raprtHeader)
+        private void raportFrame(IFrame frame, string raportHeader)
         {
-            Console.WriteLine(raprtHeader);
+            Console.WriteLine(raportHeader);
             Console.WriteLine(((Frame) frame).ToString());
             if(((Frame)frame).Rsoh != null) 
             {
-                Console.WriteLine("RSOH");
-                Console.WriteLine(((Frame)frame).Rsoh.ToString());
+                Console.WriteLine("RSOH = " + ((Frame)frame).Rsoh.ToString());
             }
 
             if (((Frame)frame).Msoh != null)
             {
-                Console.WriteLine("MSOH");
-                Console.WriteLine(((Frame)frame).Msoh.ToString());
+                Console.WriteLine("MSOH = " + ((Frame)frame).Msoh.ToString());
             }
         }
 

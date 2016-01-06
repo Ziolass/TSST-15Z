@@ -138,7 +138,9 @@ namespace NetworkNode.HPC
             {
                 if (!outputFrames.ContainsKey(record.OutputPort))
                 {
-                    outputFrames.Add(record.OutputPort, Builder.BuildEmptyFrame());
+                    Dictionary<int, StmLevel> portStmLevels = this.ttf.GetPorts();
+                    StmLevel outputFrameLevel = portStmLevels[record.OutputPort];
+                    outputFrames.Add(record.OutputPort, new Frame(outputFrameLevel));
                 }
 
                 IFrame outputFrame = outputFrames[record.OutputPort];

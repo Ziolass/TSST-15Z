@@ -1,0 +1,1 @@
+cd ..\..\NetworkClientNode\bin\Debug\ & start NetworkClientNode.exe 3 D

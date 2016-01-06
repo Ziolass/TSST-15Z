@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<node type="mux" number="1" name="node3">
-	<port local="1" tcp="5020"/>
-	<port local="2" tcp="5021"/>
-	<port local="3" tcp="5022"/>
+<node type="mux" number="1" name="node4">
+	<port local="1" tcp="5030" stm="STM4"/>
+	<port local="2" tcp="5031" stm="STM4"/>
+	<port local="3" tcp="5032" stm="STM4"/>
+	<port local="4" tcp="5033" stm="STM1"/>
 	<cloud-server tcp="6000"/>
-	<managment-port number="7002"/>
+	<managment-port number="7003"/>
 </node>

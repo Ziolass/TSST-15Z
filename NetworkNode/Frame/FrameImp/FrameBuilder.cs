@@ -31,16 +31,6 @@ namespace NetworkNode.SDHFrame
             else return null;
             return returnFrame;
         }
-
-        /// <summary>
-        /// Builds the empty frame.
-        /// </summary>
-        /// <returns></returns>
-        public IFrame BuildEmptyFrame()
-        {
-            return new Frame();
-        }
-
         /// <summary>
         /// Builds the frame from JSON file.
         /// </summary>
