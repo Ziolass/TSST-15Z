@@ -73,7 +73,7 @@ namespace SDHManagement2.AdditionalWindows
                 int temp = i + 1;
                 connections[i] = "Polaczanie " + temp + ".\n" +
                     "Numer portu: " + tmp[0] + ". STM na porcie: " + tmp[1] + ". Kontener: " + tmp[2] + ".\n" +
-                    "HigherPath: " + tmp[4] + ". LowerPath: " + tmp[5];
+                    "HigherPath: " + tmp[3] + ". LowerPath: " + tmp[4];
 
             }
             connectionsBox.ItemsSource = connections.ToList();
@@ -118,7 +118,10 @@ namespace SDHManagement2.AdditionalWindows
                 if ((int.TryParse(inportBox.SelectedIndex.ToString(), out inIndex)) && int.TryParse(startLevelBox.SelectedItem.ToString(), out fromlevel) && int.TryParse(endLevelBox.SelectedItem.ToString(), out tolevel))
                 {
                     //sub-connection-HPC|{port_z1}#{port_do1}#{poziom_z1}#{poziom_do1}#{typ_konteneru1}
-                    string command = "resource-location|" + ports[inIndex] + "#" + STMs[inIndex] + "#" +contenerTypeBox.SelectedItem.ToString() +"#" + tolevel + "#" + fromlevel;
+                    string tmp = portsWithSTM[inIndex];
+                    string stm = tmp.Split(' ')[1];
+                    string command = "resource-relocation|" + ports[inIndex] + "#" + stm + "#" +contenerTypeBox.SelectedItem.ToString() +"#" + tolevel + "#" + fromlevel;
+
                     handler.sendCommand(nodeName, command, true);
 
                     this.Close();

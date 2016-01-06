@@ -61,7 +61,7 @@ namespace SDHManagement2.AdditionalWindows
                     string[] tmp = connectionsWithSharp[i].Split('#');
                     connections[i] = "Polaczanie " + position + ".\n" +
                     "Numer portu: " + tmp[0] + ". STM na porcie: " + tmp[1] + ". Kontener: " + tmp[2] + ".\n" +
-                    "HigherPath: " + tmp[4] + ". LowerPath: " + tmp[5];
+                    "HigherPath: " + tmp[3] + ". LowerPath: " + tmp[4];
 
                 }
             }
