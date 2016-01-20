@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<directory-config>
+<network-info>
+<autonomous-system-name name="AS1"/>
+
+</network-info>
+	<entries>
+		<entry username="JAN" address ="5001"/>
+		<entry username="JACEK" address ="5002"/>  
+		<entry username="MICHAU" address ="5003"/>
+	</entries>
+	
+</directory-config>
