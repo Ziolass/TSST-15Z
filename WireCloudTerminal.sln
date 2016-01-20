@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHClient", "SDHClient\SDHClient.csproj", "{6A9C4200-BBA3-4FE3-A2F2-10CDC79041E7}"
 EndProject
@@ -22,6 +22,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHManagement", "SDHManagement\SDHManagement.csproj", "{77BE45FC-ADE2-410A-BBDF-3E00B44B07C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkClientNode", "NetworkClientNode\NetworkClientNode.csproj", "{65CC4579-8AC3-4E44-8468-AE9E0623069D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallingPartyCallController", "CallingPartyCallController\CallingPartyCallController.csproj", "{3EF5B84F-3A19-498F-810E-9DEA12EC96AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkCallController", "NetworkCallController\NetworkCallController.csproj", "{95336BC8-DFA7-49B3-BF4F-26F52069240B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +73,14 @@ Global
 		{65CC4579-8AC3-4E44-8468-AE9E0623069D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65CC4579-8AC3-4E44-8468-AE9E0623069D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65CC4579-8AC3-4E44-8468-AE9E0623069D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EF5B84F-3A19-498F-810E-9DEA12EC96AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EF5B84F-3A19-498F-810E-9DEA12EC96AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EF5B84F-3A19-498F-810E-9DEA12EC96AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EF5B84F-3A19-498F-810E-9DEA12EC96AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95336BC8-DFA7-49B3-BF4F-26F52069240B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95336BC8-DFA7-49B3-BF4F-26F52069240B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95336BC8-DFA7-49B3-BF4F-26F52069240B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95336BC8-DFA7-49B3-BF4F-26F52069240B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
