@@ -22,13 +22,12 @@ namespace NetworkCallController.FileUtils
             return sb.ToString();
         }
 
-        public static Tuple<string, int, Dictionary<string, string>> readEntriesFromConfig(string configurationFileName)
+        public static Tuple<string, int> readConfig(string configurationFileName)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
             string network_identifier = "AS";
             int port = 0;
 
-            string defaultDirectoryPath = System.IO.Directory.GetCurrentDirectory();
+            string defaultDirectoryPath = Directory.GetCurrentDirectory();
             DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).FullName + "\\Configs\\NCC"); //sobczakj 
             configurationFilePath = setupDirectoryPath(di.ToString(), configurationFileName);
             using (
@@ -51,17 +50,9 @@ namespace NetworkCallController.FileUtils
                                 port = int.Parse(configReader.GetAttribute("value"));
                             }
                         }
-                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "entry"))
-                        {
-                            if (configReader.HasAttributes)
-                            {
-                                dict.Add(configReader.GetAttribute("username"), configReader.GetAttribute("address"));
-                            }
-                        }
-
-
+                        
                     }
-                    return Tuple.Create(network_identifier, port, dict);
+                    return Tuple.Create(network_identifier, port);
 
                 }
                 catch

@@ -10,7 +10,11 @@ namespace NetworkCallController
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Działam");
+            Console.WriteLine("╔═╗     NCC     ╔═╗");
+            Console.WriteLine("╚═╝             ╚═╝");
+            Console.WriteLine("NCC starting...");
+            NetworkCallController ncc = new NetworkCallController();
+            
             Console.Read();
         }
     }
