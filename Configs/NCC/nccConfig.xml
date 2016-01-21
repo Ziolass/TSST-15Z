@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ncc-config>
+<network-info>
+<autonomous-system-name name="AS1"/>
+<localport value="1001"/>
+<other-ncc name="AS2" value = "1002"/>
+</network-info>
+</ncc-config>

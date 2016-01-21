@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 
 
-namespace Directory.FileUtils
+namespace NetworkCallController.FileUtils
 {
     class ConfigReader
     {
@@ -22,14 +22,14 @@ namespace Directory.FileUtils
             return sb.ToString();
         }
 
-        public static Tuple<string,int,Dictionary<string,string>> readEntriesFromConfig(string configurationFileName)
+        public static Tuple<string, int, Dictionary<string, string>> readEntriesFromConfig(string configurationFileName)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            string network_identifier="AS";
+            string network_identifier = "AS";
             int port = 0;
 
             string defaultDirectoryPath = System.IO.Directory.GetCurrentDirectory();
-            DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).FullName + "\\Configs\\Directory"); //sobczakj 
+            DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).FullName + "\\Configs\\NCC"); //sobczakj 
             configurationFilePath = setupDirectoryPath(di.ToString(), configurationFileName);
             using (
             configReader = XmlReader.Create(configurationFilePath))
@@ -55,13 +55,13 @@ namespace Directory.FileUtils
                         {
                             if (configReader.HasAttributes)
                             {
-                                dict.Add(configReader.GetAttribute("username"),configReader.GetAttribute("address"));
+                                dict.Add(configReader.GetAttribute("username"), configReader.GetAttribute("address"));
                             }
                         }
-                        
+
 
                     }
-                    return Tuple.Create(network_identifier,port, dict);
+                    return Tuple.Create(network_identifier, port, dict);
 
                 }
                 catch
@@ -70,7 +70,7 @@ namespace Directory.FileUtils
                     return null;
                 }
         }
-        
+
 
     }
 }

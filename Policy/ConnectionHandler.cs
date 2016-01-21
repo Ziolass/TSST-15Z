@@ -1,4 +1,5 @@
-﻿using Directory.SocketUtils;
+﻿
+using Policy.SocketUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,20 +8,20 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Directory
+namespace Policy
 {
     class ConnectionHandler
     {
         private LocalSocektBuilder builder;
-        private Directory directory;
         private Socket menagementPort;
         private Thread managementThread;
+        private Policy policy;
 
-        public ConnectionHandler(Directory dir)
+        public ConnectionHandler(Policy pol)
         {
             builder = LocalSocektBuilder.Instance;
-            directory = dir;
-            menagementPort = builder.getTcpSocket(dir.getLocalPort());
+            policy  = pol;
+            menagementPort = builder.getTcpSocket(pol.getLocalPort());
             managementThread = new Thread(new ThreadStart(startAction));
         }
 
@@ -42,7 +43,7 @@ namespace Directory
                 // Start listening for connections.
                 while (true)
                 {
-                    Console.WriteLine("Directory waiting for a connection...");
+                    Console.WriteLine("Policy waiting for a connection...");
                     Socket handler = menagementPort.Accept();
                     string data = null;
 
@@ -54,8 +55,8 @@ namespace Directory
 
 
 
-                    string response = directory.commandHandle(data);
-                    
+                    string response = policy.verify(data) ? "CONFIRM" : "DECLINE";
+
                     // Echo the data back to the client.
                     byte[] msg = Encoding.ASCII.GetBytes(response);
 

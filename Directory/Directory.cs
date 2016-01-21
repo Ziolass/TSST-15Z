@@ -31,14 +31,34 @@ namespace Directory
                 Console.WriteLine("Blad! Sprawdz poprawnosc pliku konfiguracyjnego");
             }
         }
-        public string checkForEntries(string query)
+        private string checkForEntries(string query)
         {
             if (hostnames_ports_dictionary.ContainsKey(query))
             {
+                Console.WriteLine("Znaleziono wpis: " + query);
                 return hostnames_ports_dictionary[query];
             }
             
             return "no-such-entry|";
+        }
+        private string addEntry(string name,string address)
+        {
+            hostnames_ports_dictionary.Add(name, address);
+            Console.WriteLine("Wpis: " + name + "/ " + address +" dodano pomyslnie.");
+            return "entry-added|";
+        }
+        public string commandHandle(string query)
+        {
+            string[] temp = query.Split('|');
+            switch (temp[0])
+            {
+                case "get-address":
+                    return checkForEntries(temp[1]);
+                case "add-entry":
+                    return addEntry(temp[1], temp[2]);
+                default:
+                    return "error|";
+            }
         }
         public int getLocalPort()
         {

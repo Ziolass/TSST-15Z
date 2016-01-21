@@ -10,6 +10,12 @@ namespace Policy
     {
         static void Main(string[] args)
         {
+            Console.Out.WriteLine("Policy starting...");
+            Policy policy = new Policy();
+            ConnectionHandler chandler = new ConnectionHandler(policy);
+            chandler.StartListening();
+
+
         }
     }
 }
