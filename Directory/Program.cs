@@ -17,6 +17,8 @@ namespace Directory
             Directory directory = new Directory();
             Console.WriteLine("Start Directory...");
             directory.setUp();
+            ConnectionHandler chandler = new ConnectionHandler(directory);
+            chandler.StartListening();
             
         }
 

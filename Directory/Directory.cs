@@ -9,27 +9,40 @@ namespace Directory
 {
     class Directory
     {
-        private Dictionary<string, int> hostnames_ports_dictionary;
+        private Dictionary<string, string> hostnames_ports_dictionary;
+        private int localPort;
         
-        public Directory()
-        {
-        
-        }
-        private void setDict(Dictionary<string, int> dict)
+     
+        private void setDict(int port,Dictionary<string, string> dict)
         {
             hostnames_ports_dictionary = dict;
+            localPort = port;
         }
         public void setUp()
         {
             try {
-                Tuple<string, Dictionary<string, int>> t = ConfigReader.readEntriesFromConfig("directoryConfig.xml");
+                Tuple<string,int, Dictionary<string, string>> t = ConfigReader.readEntriesFromConfig("directoryConfig.xml");
                 string network_name = t.Item1;
+
                 Console.WriteLine("Identyfikator sieci: " + network_name);
-                setDict(t.Item2);
+                setDict(t.Item2,t.Item3);
             }catch(Exception e)
             {
                 Console.WriteLine("Blad! Sprawdz poprawnosc pliku konfiguracyjnego");
             }
+        }
+        public string checkForEntries(string query)
+        {
+            if (hostnames_ports_dictionary.ContainsKey(query))
+            {
+                return hostnames_ports_dictionary[query];
+            }
+            
+            return "no-such-entry|";
+        }
+        public int getLocalPort()
+        {
+            return localPort;
         }
 
     }

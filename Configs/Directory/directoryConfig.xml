@@ -2,8 +2,9 @@
 <directory-config>
 <network-info>
 <autonomous-system-name name="AS1"/>
-
+<port value="1001"/>
 </network-info>
+
 	<entries>
 		<entry username="JAN" address ="5001"/>
 		<entry username="JACEK" address ="5002"/>  

@@ -22,10 +22,11 @@ namespace Directory.FileUtils
             return sb.ToString();
         }
 
-        public static Tuple<string,Dictionary<string,int>> readEntriesFromConfig(string configurationFileName)
+        public static Tuple<string,int,Dictionary<string,string>> readEntriesFromConfig(string configurationFileName)
         {
-            Dictionary<string, int> dict = new Dictionary<string, int>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
             string network_identifier="AS";
+            int port = 0;
 
             string defaultDirectoryPath = System.IO.Directory.GetCurrentDirectory();
             DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).FullName + "\\Configs\\Directory"); //sobczakj 
@@ -43,17 +44,24 @@ namespace Directory.FileUtils
                                 network_identifier = configReader.GetAttribute("name");
                             }
                         }
+                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "port"))
+                        {
+                            if (configReader.HasAttributes)
+                            {
+                                port = int.Parse(configReader.GetAttribute("value"));
+                            }
+                        }
                         else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "entry"))
                         {
                             if (configReader.HasAttributes)
                             {
-                                dict.Add(configReader.GetAttribute("username"),int.Parse(configReader.GetAttribute("address")));
+                                dict.Add(configReader.GetAttribute("username"),configReader.GetAttribute("address"));
                             }
                         }
                         
 
                     }
-                    return Tuple.Create(network_identifier, dict);
+                    return Tuple.Create(network_identifier,port, dict);
 
                 }
                 catch
