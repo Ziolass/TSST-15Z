@@ -2,7 +2,7 @@
 <directory-config>
 <network-info>
 <autonomous-system-name name="AS1"/>
-<port value="1001"/>
+<port value="10001"/>
 </network-info>
 
 	<entries>

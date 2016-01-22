@@ -22,10 +22,14 @@ namespace NetworkCallController.FileUtils
             return sb.ToString();
         }
 
-        public static Tuple<string, int> readConfig(string configurationFileName)
+        public static Tuple<string, int,string,int,int,int> readConfig(string configurationFileName)
         {
             string network_identifier = "AS";
             int port = 0;
+            int foreignPort = 0;
+            string foreiggnNetworkIdentifier = "AS";
+            int directoryPort=0;
+            int policyPort=0;
 
             string defaultDirectoryPath = Directory.GetCurrentDirectory();
             DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).FullName + "\\Configs\\NCC"); //sobczakj 
@@ -43,16 +47,38 @@ namespace NetworkCallController.FileUtils
                                 network_identifier = configReader.GetAttribute("name");
                             }
                         }
-                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "port"))
+                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "localport"))
                         {
                             if (configReader.HasAttributes)
                             {
                                 port = int.Parse(configReader.GetAttribute("value"));
                             }
                         }
-                        
+                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "other-ncc"))
+                        {
+                            if (configReader.HasAttributes)
+                            {
+                                foreiggnNetworkIdentifier = configReader.GetAttribute("name");
+                                foreignPort = int.Parse(configReader.GetAttribute("value"));
+                            }
+                        }
+                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "dictionary"))
+                        {
+                            if (configReader.HasAttributes)
+                            {
+                                directoryPort= int.Parse(configReader.GetAttribute("value"));
+                            }
+                        }
+                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "policy"))
+                        {
+                            if (configReader.HasAttributes)
+                            {
+                                policyPort = int.Parse(configReader.GetAttribute("value"));
+                            }
+                        }
+
                     }
-                    return Tuple.Create(network_identifier, port);
+                    return Tuple.Create(network_identifier, port,foreiggnNetworkIdentifier,foreignPort,directoryPort,policyPort);
 
                 }
                 catch

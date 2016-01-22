@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Directory", "Directory\Dire
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Policy", "Policy\Policy.csproj", "{F74A9E11-EBA4-403F-925D-C502C5F41529}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockupCPCC", "MockupCPCC\MockupCPCC.csproj", "{089A8BBF-9421-4A9F-B27B-7153EF46A644}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{F74A9E11-EBA4-403F-925D-C502C5F41529}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F74A9E11-EBA4-403F-925D-C502C5F41529}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F74A9E11-EBA4-403F-925D-C502C5F41529}.Release|Any CPU.Build.0 = Release|Any CPU
+		{089A8BBF-9421-4A9F-B27B-7153EF46A644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{089A8BBF-9421-4A9F-B27B-7153EF46A644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{089A8BBF-9421-4A9F-B27B-7153EF46A644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{089A8BBF-9421-4A9F-B27B-7153EF46A644}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

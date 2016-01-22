@@ -12,14 +12,21 @@ namespace NetworkCallController
     {
         private TcpListener serverSocket;
         private TcpClient clientSocket;
-        public ConnectionHandler(int port)
+        private NetworkCallController ncc;
+        public NetworkCallController getNcc()
         {
+            return ncc;
+        }
+        public ConnectionHandler(int port,NetworkCallController ncc)
+        {
+            this.ncc = ncc;
             serverSetUp(port);
             while (true)
             {
                 clientSocket = serverSocket.AcceptTcpClient();
                 Console.WriteLine("Request receied");
-
+                ClientHandler clientHandler = new ClientHandler(this);
+                clientHandler.startClient(clientSocket);
             }
 
         }

@@ -3,6 +3,8 @@
 <network-info>
 <autonomous-system-name name="AS1"/>
 <localport value="1001"/>
+<dictionary value="10001"/>
+<policy value = "10002"/>
 <other-ncc name="AS2" value = "1002"/>
 </network-info>
 </ncc-config>
