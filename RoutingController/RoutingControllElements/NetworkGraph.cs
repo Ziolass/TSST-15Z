@@ -7,15 +7,25 @@ using RoutingController.Interfaces;
 
 namespace RoutingController.RoutingControllElements
 {
+    /// <summary>
+    /// Represent graph of network
+    /// </summary>
     public class NetworkGraph
     {
         public int NetworkLevel { get; set; }
-        public int NetworkId { get; set; }
-        private Dictionary<string, Dictionary<string, double>> Graph {get; set;}
+        public string NetworkId { get; set; }
+        private Dictionary<string, Dictionary<string, int>> Graph { get; set; }
 
         public NetworkGraph()
         {
-            this.Graph = new Dictionary<string, Dictionary<string, double>>();
+            this.Graph = new Dictionary<string, Dictionary<string, int>>();
+        }
+        public NetworkGraph(ITopology topology)
+        {
+            this.NetworkId = topology.NetworkId;
+            this.NetworkLevel = topology.NetworkLevel;
+            this.Graph = new Dictionary<string, Dictionary<string, int>>();
+            UpdateGraph(topology);
         }
 
         /// <summary>
@@ -43,7 +53,7 @@ namespace RoutingController.RoutingControllElements
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="edges">The edges.</param>
-        public void AddVertex(string name, Dictionary<string, double> edges)
+        public void AddVertex(string name, Dictionary<string, int> edges)
         {
             Graph[name] = edges;
         }
@@ -54,7 +64,7 @@ namespace RoutingController.RoutingControllElements
         /// <param name="link">The link.</param>
         private void AddVertex(ILink link)
         {
-            Dictionary<string, double> edge = new Dictionary<string,double>();
+            Dictionary<string, int> edge = new Dictionary<string, int>();
             edge.Add(link.DestinationId, link.Weight);
             Graph[link.SourceId] = edge;
         }
@@ -65,7 +75,7 @@ namespace RoutingController.RoutingControllElements
         /// <param name="link">The link.</param>
         private void UpdateVertexConnection(ILink link)
         {
-            Dictionary<string, double> edges = Graph[link.SourceId];
+            Dictionary<string, int> edges = Graph[link.SourceId];
             if (!edges.ContainsKey(link.DestinationId))
             {
                 edges.Add(link.DestinationId, link.Weight);
@@ -77,7 +87,7 @@ namespace RoutingController.RoutingControllElements
         }
 
         /// <summary>
-        /// Calculate the shortests path.
+        /// Calculate the shortests path using Dijkstra algorithm
         /// https://github.com/mburst/dijkstras-algorithm/blob/master/dijkstras.cs
         /// </summary>
         /// <param name="start">The start.</param>
@@ -140,10 +150,14 @@ namespace RoutingController.RoutingControllElements
                 }
             }
             //Change order
-            List<string> returnPath = new List<string>();            
-            for (int i = path.Count -1; i >= 0; i--)
+            List<string> returnPath = null;
+            if (path != null)
             {
-                returnPath.Add(path[i]);
+                returnPath = new List<string>();
+                for (int i = path.Count - 1; i >= 0; i--)
+                {
+                    returnPath.Add(path[i]);
+                }
             }
             return returnPath;
         }

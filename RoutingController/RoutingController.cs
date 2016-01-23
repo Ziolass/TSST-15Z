@@ -26,13 +26,31 @@ namespace RoutingController
             this.NetworkId = networkId;
         }
 
-        public ISNPP[] RouteTableQueryResponse(string source, string destination)
+        /// <summary>
+        /// Routes the table response.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="networkLevel">The network level.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">
+        /// Error RouteTableResponse: NetworkGraph not found! 
+        /// or
+        /// Error RouteTableResponse: NetworkGraph not found! 
+        /// </exception>
+        public List<string> RouteTableResponse(string source, string destination, int networkLevel)
         {
-            //Get LRM local topology
-            //Dijkstra dijkstra = new Dijkstra(Dijkstra.MakeGraph(LRM.LocalTopology()));
-
-
-            throw new NotImplementedException();
+            NetworkGraph tempNetworkGraph = this.GetNetworkGraph(networkLevel);
+            if (tempNetworkGraph != null)
+            {
+                List<string> returnList = tempNetworkGraph.ShortestPath(source, destination);
+                if (returnList != null)
+                {
+                    return returnList;
+                }
+                else throw new Exception("Error RouteTableResponse: Graph is uncomplete (ShortestPath)! ");
+            }
+            else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
         }
 
         /// <summary>
@@ -42,17 +60,17 @@ namespace RoutingController
         /// <returns></returns>
         public bool UpdateNetworkGraph(ITopology topology)
         {
-            if (IsNetworkLevelValid(topology.NetworkLevel))
+            NetworkGraph tempNetworkGraph = this.GetNetworkGraph(topology.NetworkLevel);
+            if (tempNetworkGraph != null)
             {
-                NetworkGraph tempNetworkGraph = this.GetNetworkGraph(topology.NetworkLevel);
-                if (tempNetworkGraph != null)
-                {
-                    tempNetworkGraph.UpdateGraph(topology);
-                    return true;
-                }
-                else return false;
+                tempNetworkGraph.UpdateGraph(topology);
+                return true;
             }
-            else return false;
+            else
+            {
+                NetworkGraphs.Add(new NetworkGraph(topology));
+                return true;
+            }
         }
 
         /// <summary>

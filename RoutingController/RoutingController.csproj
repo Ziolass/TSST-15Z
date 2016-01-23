@@ -54,7 +54,6 @@
     <Compile Include="RoutingControllElements\SNPP.cs" />
     <Compile Include="RoutingControllElements\Topology.cs" />
     <Compile Include="RoutingController.cs" />
-    <Compile Include="RoutingControllElements\Dijkstra.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

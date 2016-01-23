@@ -10,6 +10,6 @@ namespace RoutingController.Interfaces
     {
         string SourceId { get; set; }
         string DestinationId { get; set; }
-        double Weight { get; set; }
+        int Weight { get; set; }
     }
 }
