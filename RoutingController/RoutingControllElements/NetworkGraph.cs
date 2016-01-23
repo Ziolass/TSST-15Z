@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RoutingController.Interfaces;
+using System.Collections.Generic;
 
 namespace RoutingController.RoutingControllElements
 {
@@ -20,6 +16,7 @@ namespace RoutingController.RoutingControllElements
         {
             this.Graph = new Dictionary<string, Dictionary<string, int>>();
         }
+
         public NetworkGraph(ITopology topology)
         {
             this.NetworkId = topology.NetworkId;

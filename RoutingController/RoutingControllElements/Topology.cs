@@ -1,12 +1,10 @@
+using RoutingController.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using RoutingController.Interfaces;
 
 namespace RoutingController.RoutingControllElements
 {
@@ -26,11 +24,12 @@ namespace RoutingController.RoutingControllElements
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns></returns>
-        public static Topology ReadFromXML(string path){
+        public static Topology ReadFromXML(string path)
+        {
             try
             {
                 Topology returnTopology = new Topology();
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(Topology));                
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(Topology));
                 FileStream myFileStream = new FileStream(ConvertPath(path), FileMode.Open);
                 returnTopology = (Topology)xmlSerializer.Deserialize(myFileStream);
                 return returnTopology;
@@ -41,6 +40,7 @@ namespace RoutingController.RoutingControllElements
                 return null;
             }
         }
+
         /// <summary>
         /// Saves to XML.
         /// </summary>
