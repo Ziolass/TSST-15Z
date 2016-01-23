@@ -62,18 +62,26 @@ namespace NetworkClientNode.Adaptation
             {
                 if (stream.Port == inputPort)
                 {
-                    VirtualContainer vc = (VirtualContainer) args.Frame.GetVirtualContainer(stream.VcLevel, stream.HigherPath, stream.LowerPath);
-
-                    Container conteriner = vc.Content.Count > 0 ? vc.Content[0] as Container : null;
-                    
                     string content = null;
-                    
-                    if (conteriner != null)
+
+                    VirtualContainer vc = (VirtualContainer)args.Frame.GetVirtualContainer(stream.VcLevel, stream.HigherPath, stream.LowerPath);
+                    if (vc != null)
                     {
-                        content = conteriner.Content;
-                        if (content == null || content.Equals(""))
+                        Container conteriner = vc.Content.Count > 0 ? vc.Content[0] as Container : null;
+
+
+
+                        if (conteriner != null)
                         {
-                            continue;
+                            content = conteriner.Content;
+                            if (content == null || content.Equals(""))
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            content = "Error: Container does not transport client data";
                         }
                     }
                     else
