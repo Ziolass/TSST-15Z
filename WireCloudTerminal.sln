@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHManagement", "SDHManagem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkClientNode", "NetworkClientNode\NetworkClientNode.csproj", "{65CC4579-8AC3-4E44-8468-AE9E0623069D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoutingController", "RoutingController\RoutingController.csproj", "{B703FB71-1209-401D-862D-FF12250E54B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{65CC4579-8AC3-4E44-8468-AE9E0623069D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65CC4579-8AC3-4E44-8468-AE9E0623069D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65CC4579-8AC3-4E44-8468-AE9E0623069D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B703FB71-1209-401D-862D-FF12250E54B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B703FB71-1209-401D-862D-FF12250E54B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B703FB71-1209-401D-862D-FF12250E54B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B703FB71-1209-401D-862D-FF12250E54B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
