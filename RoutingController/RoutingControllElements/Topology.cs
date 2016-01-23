@@ -12,17 +12,13 @@ namespace RoutingController.RoutingControllElements
 {
     public class Topology : ITopology
     {
-        public int NodeCount { get; set; }
-        public List<INode> NodeList { get; set; }
-
         public int NetworkLevel { get; set; }
-        public int NetworkId { get; set; }
+        public string NetworkId { get; set; }
         public List<ILink> LinkList { get; set; }
 
         public Topology()
         {
             this.LinkList = new List<ILink>();
-            this.NodeList = new List<INode>();
         }
 
         /// <summary>

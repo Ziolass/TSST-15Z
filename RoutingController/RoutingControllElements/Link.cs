@@ -1,19 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RoutingController.Interfaces;
 
 namespace RoutingController.RoutingControllElements
 {
     public class Link : ILink
     {
-        public int SourceId { get; set; }
-        public int DestinationId { get; set; }
-        public int Weight { get; set; }
+        public string SourceId { get; set; }
+        public string DestinationId { get; set; }
+        public double Weight { get; set; }
 
-        public Link(int sourceId, int destinationId, int weight)
+        public Link(string sourceId, string destinationId, double weight)
         {
             this.SourceId = sourceId;
             this.DestinationId = destinationId;

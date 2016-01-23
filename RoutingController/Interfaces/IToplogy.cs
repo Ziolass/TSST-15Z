@@ -9,7 +9,7 @@ namespace RoutingController.Interfaces
     public interface ITopology
     {
         int NetworkLevel { get; set; }
-        int NetworkId { get; set; }
+        string NetworkId { get; set; }
         List<ILink> LinkList { get; set; }
     }
 }

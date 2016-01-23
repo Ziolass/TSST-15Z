@@ -8,8 +8,8 @@ namespace RoutingController.Interfaces
 {
     public interface ILink
     {
-        int SourceId { get; set; }
-        int DestinationId { get; set; }
-        int Weight { get; set; }
+        string SourceId { get; set; }
+        string DestinationId { get; set; }
+        double Weight { get; set; }
     }
 }

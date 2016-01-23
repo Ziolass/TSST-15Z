@@ -11,121 +11,87 @@ namespace RoutingController.RoutingControllElements
     {
         public int NetworkLevel { get; set; }
         public int NetworkId { get; set; }
-        public int[,] Graph { get; private set; }
+        private Dictionary<string, Dictionary<string, double>> Graph {get; set;}
 
         public NetworkGraph()
         {
+            this.Graph = new Dictionary<string, Dictionary<string, double>>();
         }
 
         /// <summary>
         /// Updates the graph.
         /// </summary>
         /// <param name="topology">The link list.</param>
-        /*public void UpdateGraph(ITopology topology)
+        public void UpdateGraph(ITopology topology)
         {
-            if (this.Graph == null)
-            {                
-                int size = CountDistinguish(topology.LinkList);
-                this.Graph = new int[size, size];
-            }
-            else if (this.Graph.GetLength(0) >= CountDistinguish(topology.LinkList)) //Add information to current graph
-            {
-
-            }
-            else //Resize graph
-            {
-
-            }
-
-            //Make graph
-            int[,] graph = new int[topology.LinkList.Count, topology.LinkList.Count];
-
-
-
-
-            //Create SNPP and attach 
-            for (int i = 0; i < topology.NodeCount; i++)
-            {
-                Console.WriteLine("SNPP add: " + topology.NodeList[i].Id);
-                snppList.Add(new SNPP(i, topology.NodeList[i].Id));
-            }
-
             foreach (ILink link in topology.LinkList)
             {
-                int srcNumber = -1;
-                int dstNumber = -1;
-
-                foreach (SNPP snpp in snppList)
+                if (!Graph.ContainsKey(link.SourceId)) //Graph doesn't have this link - add
                 {
-                    if (link.SourceId == snpp.NodeId)
-                    {
-                        srcNumber = snpp.Id;
-                    }
-                    if (link.DestinationId == snpp.NodeId)
-                    {
-                        dstNumber = snpp.Id;
-                    }
+                    AddVertex(link);
                 }
-                if (srcNumber != -1 && dstNumber != -1)
-                    graph[srcNumber, dstNumber] = 1;
-                else
+                else //Graph have this link - update
                 {
-
+                    UpdateVertexConnection(link);
                 }
             }
-
-            for (int i = 0; i < graph.GetLength(0); i++)
-            {
-                for (int j = 0; j < graph.GetLength(1); j++)
-                {
-                    if (graph[i, j] == 0)
-                        graph[i, j] = Dijkstra.Inf;
-                }
-            }
-            return graph;
         }
-          */  
 
         /// <summary>
-        /// Counts distinguish items in list.
+        /// Adds the vertex to graph.
+        /// https://github.com/mburst/dijkstras-algorithm/blob/master/dijkstras.cs
         /// </summary>
-        /// <param name="linkList">The link list.</param>
-        /// <returns></returns>
-        private static int CountDistinguish(List<ILink> linkList)
+        /// <param name="name">The name.</param>
+        /// <param name="edges">The edges.</param>
+        public void AddVertex(string name, Dictionary<string, double> edges)
         {
-            List<ILink> distinguishLinks = new List<ILink>();
-            foreach (ILink link in linkList)
+            Graph[name] = edges;
+        }
+
+        /// <summary>
+        /// Adds the vertex.
+        /// </summary>
+        /// <param name="link">The link.</param>
+        private void AddVertex(ILink link)
+        {
+            Dictionary<string, double> edge = new Dictionary<string,double>();
+            edge.Add(link.DestinationId, link.Weight);
+            Graph[link.SourceId] = edge;
+        }
+
+        /// <summary>
+        /// Updates the vertex connection.
+        /// </summary>
+        /// <param name="link">The link.</param>
+        private void UpdateVertexConnection(ILink link)
+        {
+            Dictionary<string, double> edges = Graph[link.SourceId];
+            if (!edges.ContainsKey(link.DestinationId))
             {
-                if (distinguishLinks.Count == 0)
-                {
-                    distinguishLinks.Add(link);
-                }
-                else if (!distinguishLinks.Contains(link))
-                {
-                    distinguishLinks.Add(link);
-                }
-                else continue;
+                edges.Add(link.DestinationId, link.Weight);
             }
-
-            return distinguishLinks.Count;
+            else
+            {
+                edges[link.DestinationId] = link.Weight;
+            }
         }
 
-        Dictionary<char, Dictionary<char, int>> vertices = new Dictionary<char, Dictionary<char, int>>();
-
-        public void AddVertex(char name, Dictionary<char, int> edges)
+        /// <summary>
+        /// Calculate the shortests path.
+        /// https://github.com/mburst/dijkstras-algorithm/blob/master/dijkstras.cs
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="finish">The finish.</param>
+        /// <returns></returns>
+        public List<string> ShortestPath(string start, string finish)
         {
-            vertices[name] = edges;
-        }
+            var previous = new Dictionary<string, string>();
+            var distances = new Dictionary<string, int>();
+            var nodes = new List<string>();
 
-        public List<char> ShortestPath(char start, char finish)
-        {
-            var previous = new Dictionary<char, char>();
-            var distances = new Dictionary<char, int>();
-            var nodes = new List<char>();
+            List<string> path = null;
 
-            List<char> path = null;
-
-            foreach (var vertex in vertices)
+            foreach (var vertex in Graph)
             {
                 if (vertex.Key == start)
                 {
@@ -136,19 +102,19 @@ namespace RoutingController.RoutingControllElements
                     distances[vertex.Key] = int.MaxValue;
                 }
 
-                nodes.Add(vertex.Key);
+                nodes.Add(vertex.Key.ToString());
             }
 
             while (nodes.Count != 0)
             {
                 nodes.Sort((x, y) => distances[x] - distances[y]);
 
-                var smallest = nodes[0];
+                string smallest = nodes[0];
                 nodes.Remove(smallest);
 
                 if (smallest == finish)
                 {
-                    path = new List<char>();
+                    path = new List<string>();
                     while (previous.ContainsKey(smallest))
                     {
                         path.Add(smallest);
@@ -163,7 +129,7 @@ namespace RoutingController.RoutingControllElements
                     break;
                 }
 
-                foreach (var neighbor in vertices[smallest])
+                foreach (var neighbor in Graph[smallest])
                 {
                     var alt = distances[smallest] + neighbor.Value;
                     if (alt < distances[neighbor.Key])
@@ -173,8 +139,13 @@ namespace RoutingController.RoutingControllElements
                     }
                 }
             }
-
-            return path;
+            //Change order
+            List<string> returnPath = new List<string>();            
+            for (int i = path.Count -1; i >= 0; i--)
+            {
+                returnPath.Add(path[i]);
+            }
+            return returnPath;
         }
     }
 }
