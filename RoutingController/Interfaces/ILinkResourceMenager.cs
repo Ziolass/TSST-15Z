@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoutingController
+namespace RoutingController.Interfaces
 {
-    public class SNPP
+    public interface ILinkResourceMenager
     {
+        ITopology LocalTopology();
     }
 }

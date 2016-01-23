@@ -6,15 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using RoutingController.Interfaces;
 
 namespace RoutingController.RoutingControllElements
 {
     public class Topology : ITopology
     {
-        public string NetworkId { get; set; }
         public int NodeCount { get; set; }
-        public List<ILink> LinkList { get; set; }
         public List<INode> NodeList { get; set; }
+
+        public int NetworkLevel { get; set; }
+        public int NetworkId { get; set; }
+        public List<ILink> LinkList { get; set; }
 
         public Topology()
         {

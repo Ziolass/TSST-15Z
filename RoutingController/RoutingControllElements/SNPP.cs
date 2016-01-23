@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RoutingController.Interfaces;
 
 namespace RoutingController.RoutingControllElements
 {
     public class SNPP : ISNPP
     {
-        public int Id { get; private set; }
-        public int NodeId { get; private set; }
+        public int Id { get; set; }
+        public int NodeId { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SNPP"/> class.

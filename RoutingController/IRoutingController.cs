@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RoutingController.RoutingControllElements;
+using RoutingController.Interfaces;
 
 namespace RoutingController
 {
     public interface IRoutingController
     {
-        public ISNPP[] RouteTableQuery(string source, string destination);
-        public ISNPP NetworkTopology();
+        ISNPP[] RouteTableQuery(string source, string destination);
+        ISNPP NetworkTopology();
     }
 }

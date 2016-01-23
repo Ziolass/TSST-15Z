@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RoutingController.Interfaces;
+
 namespace RoutingController.RoutingControllElements
 {
     public class Dijkstra
@@ -108,62 +110,7 @@ namespace RoutingController.RoutingControllElements
                 reversed[currentNode - i] = ret[i];
 
             return reversed;
-        }
-
-        /// <summary>
-        /// Makes the graph.
-        /// </summary>
-        /// <param name="linkList">The link list.</param>
-        /// <returns></returns>
-        public static int[,] MakeGraph(ITopology linkList)
-        {
-            List<ISNPP> snppList = new List<ISNPP>(); //SNPP list
-            
-            //List<int> connectedNodes = LRM.getConnectedNodes();
-            //Console.WriteLine("DLugosc to: " + connectedNodes.Count);
-
-            int[,] graph = new int[linkList.NodeList.Count, linkList.NodeList.Count];
-
-            //Create SNPP and attach 
-            for (int i = 0; i < linkList.NodeCount; i++)
-            {
-                Console.WriteLine("SNPP add: " + linkList.NodeList[i].Id);
-                snppList.Add(new SNPP(i, linkList.NodeList[i].Id));
-            }
-
-            foreach (ILink link in linkList.LinkList)
-            {
-                int srcNumber = -1;
-                int dstNumber = -1;
-
-                foreach (SNPP snpp in snppList)
-                {
-                    if (link.SourceId == snpp.NodeId)
-                    {
-                        srcNumber = snpp.Id;
-                    }
-                    if (link.DestinationId == snpp.NodeId)
-                    {
-                        dstNumber = snpp.Id;
-                    }
-                }
-                if (srcNumber != -1 && dstNumber != -1)
-                    graph[srcNumber, dstNumber] = 1;
-                else
-                { 
-
-                }
-            }
-
-            for (int i = 0; i < graph.GetLength(0); i++)
-            {
-                for (int j = 0; j < graph.GetLength(1); j++)
-                {
-                    if (graph[i, j] == 0)
-                        graph[i, j] = Dijkstra.Inf;
-                }
-            }
-            return graph;
-        }
+        }        
     }
+
 }

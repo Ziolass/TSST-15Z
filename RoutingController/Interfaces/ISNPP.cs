@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoutingController
+namespace RoutingController.Interfaces
 {
     public interface ISNPP
     {
-        public int NodeId { get; set; }
-        public int Id { get; set; }
+        int NodeId { get; set; }
+        int Id { get; set; }
     }
 }

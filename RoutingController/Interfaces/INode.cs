@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoutingController.RoutingControllElements
+namespace RoutingController.Interfaces
 {
     public interface INode
     {
-        public int Id { get; set; }
-        public String NetworkId { get; set; }
+        int Id { get; set; }
+        String NetworkId { get; set; }
     }
 }
