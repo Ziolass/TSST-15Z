@@ -8,8 +8,7 @@ namespace RoutingController.Interfaces
 {
     public interface ITopology
     {
-        int NetworkLevel { get; set; }
-        string NetworkId { get; set; }
-        List<ILink> LinkList { get; set; }
+        string Node { get; }
+        List<ILink> LinkList { get; }
     }
 }

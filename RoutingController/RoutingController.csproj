@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,10 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Elements\Destination.cs" />
+    <Compile Include="Interfaces\IDestination.cs" />
     <Compile Include="Interfaces\ILinkResourceMenager.cs" />
     <Compile Include="Interfaces\INode.cs" />
-    <Compile Include="Interfaces\IToplogy.cs" />
     <Compile Include="Interfaces\ILink.cs" />
+    <Compile Include="Interfaces\IRequest.cs" />
+    <Compile Include="Interfaces\IToplogy.cs" />
     <Compile Include="Interfaces\ISNPP.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

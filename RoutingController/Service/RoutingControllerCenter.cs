@@ -1,3 +1,6 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RoutingController.Elements;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -10,16 +13,18 @@ namespace RoutingController.Service
     public class StateObject
     {
         // Client  socket.
-        public Socket workSocket = null;
+        public Socket WorkSocket = null;
 
         // Size of receive buffer.
         public const int BufferSize = 1024;
 
         // Receive buffer.
-        public byte[] buffer = new byte[BufferSize];
+        public byte[] Buffer = new byte[BufferSize];
 
         // Received data string.
-        public StringBuilder sb = new StringBuilder();
+        public StringBuilder StringBuilder = new StringBuilder();
+
+        public RoutingController RoutingController = new RoutingController();
     }
 
     public class RoutingControllerCenter
@@ -34,53 +39,36 @@ namespace RoutingController.Service
             this.RoutingController = new RoutingController();
         }
 
+        /// <summary>
+        /// Performs action depending on the request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         private string PerformAction(string request)
         {
-            string[] departedRequest = request.Split('|');
-            int argLength = departedRequest.Length - 1;
-            string requestType = departedRequest[0];
-            List<List<string>> arguments = new List<List<string>>();
+            //parse JSON
+            JObject metadata = JObject.Parse(request);
 
-            for (int i = 1; i < departedRequest.Length; i++)
+            //LocalTopology
+            if (metadata["Protocol"] != null)
             {
-                arguments.Add(new List<string>(departedRequest[i].Split('#')));
+                if (metadata["Protocol"].ToString() == "resources")
+                {
+                    request = request.Replace("Protocol: \"resources\",", "");
+                    Node serializedNode = JsonConvert.DeserializeObject<Node>(request);
+                    return "Success";
+                }
+                else if (metadata["Protocol"].ToString() == "query")
+                {
+                    return "Success";
+                }
+                else return "ERROR";
             }
-
-            String response = "ERROR";
-            switch (requestType)
-            {
-                case "resource-relocation":
-                    {
-                        response = AddStreamData(arguments);
-                        break;
-                    }
-                case "get-resource-list":
-                    {
-                        response = GetResourceList();
-                        break;
-                    }
-                case "get-ports":
-                    {
-                        response = GetPortList();
-                        break;
-                    }
-                case "identify":
-                    {
-                        response = Identify();
-                        break;
-                    }
-                case "delete-resource":
-                    {
-                        response = CloseConnection(arguments);
-                        break;
-                    }
-            }
-
-            return response;
+            else return "ERROR";
         }
- 
 
         #region AsyncServer
+
         /// <summary>
         /// Starts listening.
         /// https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx
@@ -136,7 +124,7 @@ namespace RoutingController.Service
         /// https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx
         /// </summary>
         /// <param name="ar">The ar.</param>
-        public static void AcceptCallback(IAsyncResult ar)
+        public void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.
             allDone.Set();
@@ -147,8 +135,8 @@ namespace RoutingController.Service
 
             // Create the state object.
             StateObject state = new StateObject();
-            state.workSocket = handler;
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+            state.WorkSocket = handler;
+            handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
         }
 
@@ -157,14 +145,14 @@ namespace RoutingController.Service
         /// https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx
         /// </summary>
         /// <param name="ar">The ar.</param>
-        public static void ReadCallback(IAsyncResult ar)
+        public void ReadCallback(IAsyncResult ar)
         {
             String content = String.Empty;
 
             // Retrieve the state object and the handler socket
             // from the asynchronous state object.
             StateObject state = (StateObject)ar.AsyncState;
-            Socket handler = state.workSocket;
+            Socket handler = state.WorkSocket;
 
             // Read data from the client socket.
             int bytesRead = handler.EndReceive(ar);
@@ -172,20 +160,20 @@ namespace RoutingController.Service
             if (bytesRead > 0)
             {
                 // There  might be more data, so store the data received so far.
-                state.sb.Append(Encoding.ASCII.GetString(
-                    state.buffer, 0, bytesRead));
+                state.StringBuilder.Append(Encoding.ASCII.GetString(
+                    state.Buffer, 0, bytesRead));
 
                 //Read message
-                content = state.sb.ToString();
+                content = state.StringBuilder.ToString();
                 if (!String.IsNullOrEmpty(content))
                 {
-                    //TODO: obs³uga zg³oszenia
-                    Send(handler, content);
+                    string response = this.PerformAction(content);
+                    Send(handler, response);
                 }
                 else
                 {
                     // Not all data received. Get more.
-                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                    handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReadCallback), state);
                 }
             }
@@ -231,6 +219,7 @@ namespace RoutingController.Service
                 Console.WriteLine(e.ToString());
             }
         }
-        #endregion
+
+        #endregion AsyncServer
     }
 }

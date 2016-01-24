@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RoutingController.Elements;
 
 namespace RoutingController.Interfaces
 {
@@ -14,11 +15,11 @@ namespace RoutingController.Interfaces
     /// </summary>
     public interface INode
     {
-        List<string> Domains { get; private set; }
-        int Port { get; private set; }
-        NodeType Type { get; private set; }
-        List<IDestination> Destination { get; private set; }
-        NodeStatus Status { get; private set; }
+        List<string> Domains { get; }
+        int Port { get; }
+        NodeType Type { get; }
+        List<Link> LinkList { get; }
+        NodeStatus Status { get; }
     }
 
 }

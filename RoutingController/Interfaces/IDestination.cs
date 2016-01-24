@@ -8,8 +8,8 @@ namespace RoutingController.Interfaces
 {
     public interface IDestination
     {
-        string Scope { get; private set; } //Name of other subnetwork
-        string Node { get; private set; } //Node ID
-        int Port { get; private set; } //Node Port
+        string Scope { get; } //Name of other subnetwork
+        string Node { get; } //Node ID
+        int Port { get; } //Node Port
     }
 }

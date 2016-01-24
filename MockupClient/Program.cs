@@ -18,8 +18,8 @@ namespace MockupClient
         public static void StartClient(string json) {
         byte[] bytes = new byte[5000];
 
-        //string data = File.ReadAllText(json);
-        string data = "TEST";
+        string data = File.ReadAllText(json);
+        //string data = "TEST";
         Console.WriteLine("Pressto send JSON");
         Console.ReadKey();
         try {
@@ -60,7 +60,7 @@ namespace MockupClient
 
         public static void Main(String[] args)
         {
-            StartClient("../../../Configs/data.json");
+            StartClient("../../../Configs/RoutingController/test.json");
             Console.ReadLine();
         }
     }
