@@ -1,0 +1,32 @@
+{
+
+    protocol: "resources",
+    node: "node1",
+    data: [
+        {
+            Domains: [
+                "mydomain1"
+            ],
+            port: 1,
+            type: "LOCAL",
+            destination: {
+                scope:  "",
+                node: "node2",
+                port: 2
+            },
+            status: "FREE"
+        },
+        {
+            domains: [
+                "mydomain1"
+            ],
+            port: 1,
+            type: "LOCAL",
+            destination: {
+                node: "node2",
+                port: 3
+            },
+            status: "OCCUPIED"
+        }
+    ]
+}

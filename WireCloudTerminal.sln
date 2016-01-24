@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkClientNode", "Networ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoutingController", "RoutingController\RoutingController.csproj", "{B703FB71-1209-401D-862D-FF12250E54B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockupClient", "MockupClient\MockupClient.csproj", "{0450AB59-1D7D-4D0A-947E-29903FF02A46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{B703FB71-1209-401D-862D-FF12250E54B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B703FB71-1209-401D-862D-FF12250E54B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B703FB71-1209-401D-862D-FF12250E54B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

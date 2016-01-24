@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace RoutingController.Service
 {
@@ -14,10 +11,13 @@ namespace RoutingController.Service
     {
         // Client  socket.
         public Socket workSocket = null;
+
         // Size of receive buffer.
         public const int BufferSize = 1024;
+
         // Receive buffer.
         public byte[] buffer = new byte[BufferSize];
+
         // Received data string.
         public StringBuilder sb = new StringBuilder();
     }
@@ -33,8 +33,57 @@ namespace RoutingController.Service
             this.Port = port;
             this.RoutingController = new RoutingController();
         }
+
+        private string PerformAction(string request)
+        {
+            string[] departedRequest = request.Split('|');
+            int argLength = departedRequest.Length - 1;
+            string requestType = departedRequest[0];
+            List<List<string>> arguments = new List<List<string>>();
+
+            for (int i = 1; i < departedRequest.Length; i++)
+            {
+                arguments.Add(new List<string>(departedRequest[i].Split('#')));
+            }
+
+            String response = "ERROR";
+            switch (requestType)
+            {
+                case "resource-relocation":
+                    {
+                        response = AddStreamData(arguments);
+                        break;
+                    }
+                case "get-resource-list":
+                    {
+                        response = GetResourceList();
+                        break;
+                    }
+                case "get-ports":
+                    {
+                        response = GetPortList();
+                        break;
+                    }
+                case "identify":
+                    {
+                        response = Identify();
+                        break;
+                    }
+                case "delete-resource":
+                    {
+                        response = CloseConnection(arguments);
+                        break;
+                    }
+            }
+
+            return response;
+        }
+ 
+
+        #region AsyncServer
         /// <summary>
         /// Starts listening.
+        /// https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx
         /// </summary>
         public void StartListening()
         {
@@ -52,6 +101,8 @@ namespace RoutingController.Service
             Socket listener = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
 
+            Console.WriteLine("Waiting for a connection...");
+
             // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
@@ -62,9 +113,7 @@ namespace RoutingController.Service
                 {
                     // Set the event to nonsignaled state.
                     allDone.Reset();
-
                     // Start an asynchronous socket to listen for connections.
-                    Console.WriteLine("Waiting for a connection...");
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
                         listener);
@@ -72,7 +121,6 @@ namespace RoutingController.Service
                     // Wait until a connection is made before continuing.
                     allDone.WaitOne();
                 }
-
             }
             catch (Exception e)
             {
@@ -81,8 +129,13 @@ namespace RoutingController.Service
 
             Console.WriteLine("\nPress ENTER to continue...");
             Console.Read();
-
         }
+
+        /// <summary>
+        /// Accepts the callback.
+        /// https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx
+        /// </summary>
+        /// <param name="ar">The ar.</param>
         public static void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.
@@ -99,6 +152,11 @@ namespace RoutingController.Service
                 new AsyncCallback(ReadCallback), state);
         }
 
+        /// <summary>
+        /// Reads the callback.
+        /// https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx
+        /// </summary>
+        /// <param name="ar">The ar.</param>
         public static void ReadCallback(IAsyncResult ar)
         {
             String content = String.Empty;
@@ -108,7 +166,7 @@ namespace RoutingController.Service
             StateObject state = (StateObject)ar.AsyncState;
             Socket handler = state.workSocket;
 
-            // Read data from the client socket. 
+            // Read data from the client socket.
             int bytesRead = handler.EndReceive(ar);
 
             if (bytesRead > 0)
@@ -117,16 +175,11 @@ namespace RoutingController.Service
                 state.sb.Append(Encoding.ASCII.GetString(
                     state.buffer, 0, bytesRead));
 
-                // Check for end-of-file tag. If it is not there, read 
-                // more data.
+                //Read message
                 content = state.sb.ToString();
-                if (content.IndexOf("<EOF>") > -1)
+                if (!String.IsNullOrEmpty(content))
                 {
-                    // All the data has been read from the 
-                    // client. Display it on the console.
-                    Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-                        content.Length, content);
-                    // Echo the data back to the client.
+                    //TODO: obs³uga zg³oszenia
                     Send(handler, content);
                 }
                 else
@@ -138,6 +191,12 @@ namespace RoutingController.Service
             }
         }
 
+        /// <summary>
+        /// Sends the specified handler.
+        /// https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx
+        /// </summary>
+        /// <param name="handler">The handler.</param>
+        /// <param name="data">The data.</param>
         private static void Send(Socket handler, String data)
         {
             // Convert the string data to byte data using ASCII encoding.
@@ -148,6 +207,11 @@ namespace RoutingController.Service
                 new AsyncCallback(SendCallback), handler);
         }
 
+        /// <summary>
+        /// Sends the callback.
+        /// https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx
+        /// </summary>
+        /// <param name="ar">The ar.</param>
         private static void SendCallback(IAsyncResult ar)
         {
             try
@@ -157,16 +221,16 @@ namespace RoutingController.Service
 
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to client.", bytesSent);
+                Console.WriteLine("Message send to client.");
 
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
-
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
         }
+        #endregion
     }
 }

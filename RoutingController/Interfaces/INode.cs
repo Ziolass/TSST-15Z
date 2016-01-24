@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace RoutingController.Interfaces
 {
+    public enum NodeType { LOCAL, NETWORK, CLIENT, UNDEF }
+    public enum NodeStatus { FREE, OCCUPIED, UNDEF }
+
+    /// <summary>
+    /// Represent Node
+    /// </summary>
     public interface INode
     {
-        int Id { get; set; }
-        String NetworkId { get; set; }
+        List<string> Domains { get; private set; }
+        int Port { get; private set; }
+        NodeType Type { get; private set; }
+        List<IDestination> Destination { get; private set; }
+        NodeStatus Status { get; private set; }
     }
+
 }
