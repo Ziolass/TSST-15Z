@@ -46,26 +46,66 @@ namespace RoutingController.Service
         /// <returns></returns>
         private string PerformAction(string request)
         {
-            //parse JSON
-            JObject metadata = JObject.Parse(request);
-
-            //LocalTopology
-            if (metadata["Protocol"] != null)
-            {
-                if (metadata["Protocol"].ToString() == "resources")
+                //parse JSON
+                JObject metadata = JObject.Parse(request);
+                if (metadata["Protocol"] != null)
                 {
-                    request = request.Replace("Protocol: \"resources\",", "");
-                    TopologyRequest serializedRequest = JsonConvert.DeserializeObject<TopologyRequest>(request);
-
-                    return "Success";
-                }
-                else if (metadata["Protocol"].ToString() == "query")
-                {
-                    return "Success";
+                    //LocalTopology
+                    if (metadata["Protocol"].ToString() == "resources")
+                    {
+                        request = request.Replace("Protocol: \"resources\",", "");
+                        TopologyRequest topologyRequest = JsonConvert.DeserializeObject<TopologyRequest>(request);
+                        this.RoutingController.UpdateNetworkGraph(topologyRequest);
+                        Console.WriteLine("Update from {0} ", topologyRequest.Node);
+                        return "OK";
+                    }
+                    //RouteTableQuery
+                    else if (metadata["Protocol"].ToString() == "query")
+                    {
+                        request = request.Replace("Protocol: \"query\",", "");
+                        QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
+                        Console.WriteLine("RouteTableQuery from {0} ", queryRequest.LrmId);
+                        return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest.Source, queryRequest.Destination));
+                    }
+                    else return "ERROR";
                 }
                 else return "ERROR";
+            
+        }
+
+        /// <summary>
+        /// Determines whether the specified string input is valid json.
+        /// http://stackoverflow.com/questions/14977848/how-to-make-sure-that-string-is-valid-json-using-json-net
+        /// </summary>
+        /// <param name="strInput">The string input.</param>
+        /// <returns></returns>
+        private static bool IsValidJson(string strInput)
+        {
+            strInput = strInput.Trim();
+            if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
+                (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array
+            {
+                try
+                {
+                    var obj = JToken.Parse(strInput);
+                    return true;
+                }
+                catch (JsonReaderException jex)
+                {
+                    //Exception in parsing json
+                    Console.WriteLine(jex.Message);
+                    return false;
+                }
+                catch (Exception ex) //some other exception
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
             }
-            else return "ERROR";
+            else
+            {
+                return false;
+            }
         }
 
         #region AsyncServer
@@ -90,8 +130,7 @@ namespace RoutingController.Service
             Socket listener = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
 
-            Console.WriteLine("Waiting for a connection...");
-
+            Console.WriteLine("Start successful!");
             // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
@@ -166,7 +205,8 @@ namespace RoutingController.Service
 
                 //Read message
                 content = state.StringBuilder.ToString();
-                if (!String.IsNullOrEmpty(content))
+
+                if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                 {
                     string response = this.PerformAction(content);
                     Send(handler, response);
@@ -210,7 +250,6 @@ namespace RoutingController.Service
 
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
-                Console.WriteLine("Message send to client.");
 
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();

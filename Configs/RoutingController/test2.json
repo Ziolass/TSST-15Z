@@ -1,0 +1,34 @@
+{
+    Protocol: "resources",
+    LinkList: [
+        {
+            Node: "node2",
+            Port: 1,
+            Domains: [
+                "mydomain1"
+            ],
+            Type: "LOCAL",
+            Destination: {
+                Scope: null,
+                Node: "node1",
+                Port: 3
+            },
+            Status: "FREE"
+        },
+        {
+            Node: "node2",
+            Port: 2,
+            Domains: [
+                "mydomain1"
+            ],
+
+            Type: "LOCAL",
+            Destination: {
+                Scope: null,
+                Node: "node4",
+                Port: 3
+            },
+            Status: "FREE"
+        }
+    ]
+}

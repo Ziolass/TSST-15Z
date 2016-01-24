@@ -10,10 +10,17 @@ namespace RoutingController
     {
         private static void Main(string[] args)
         {
-
-            ElementConfigurator configurator = new ElementConfigurator("../../../Configs/RoutingController/routingControllerConfig.xml");
-            RoutingControllerCenter RC = configurator.ConfigureRoutingController();
-            RC.StartListening();
+            try
+            {
+                ElementConfigurator configurator = new ElementConfigurator("../../../Configs/RoutingController/routingControllerConfig.xml");
+                RoutingControllerCenter RC = configurator.ConfigureRoutingController();
+                Console.WriteLine("Routing Controller Console");
+                RC.StartListening();
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine(exp.ToString());
+            }
 
             /*
             RoutingController RC = new RoutingController();

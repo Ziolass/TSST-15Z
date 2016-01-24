@@ -21,7 +21,6 @@ namespace MockupClient
         string data = File.ReadAllText(json);
         //string data = "TEST";
         Console.WriteLine("Pressto send JSON");
-        Console.ReadKey();
         try {
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
@@ -60,7 +59,7 @@ namespace MockupClient
 
         public static void Main(String[] args)
         {
-            StartClient("../../../Configs/RoutingController/test.json");
+            StartClient("../../../Configs/RoutingController/test" + args[0] + ".json");
             Console.ReadLine();
         }
     }

@@ -5,7 +5,6 @@ namespace RoutingController.Elements
 {
     public class Link : ILink
     {
-        public string Node { get; private set; }
         public int Port { get; private set; }
         public List<string> Domains { get; private set; }
         public NodeType Type { get; private set; }
@@ -20,24 +19,13 @@ namespace RoutingController.Elements
             this.Status = NodeStatus.UNDEF;
         }*/
 
-        public Link(string node, int port, List<string> domains, NodeType type, Destination destination, NodeStatus status)
+        public Link(int port, List<string> domains, NodeType type, Destination destination, NodeStatus status)
         {
-            this.Node = node;
             this.Port = port;
             this.Domains = domains;
             this.Type = type;
             this.Destination = destination;
             this.Status = status;
-        }
-
-        /// <summary>
-        /// Return the identifier of destination node.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public string NodeId()
-        {
-            return Node + ":" + Port.ToString();
         }
     }
 }

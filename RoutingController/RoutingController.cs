@@ -70,6 +70,8 @@ namespace RoutingController
             }
             else
             {
+                //TODO tutaj mega sprytne tworzenie NetworkGraph
+
                 NetworkGraphs.Add(new NetworkGraph(topology));
                 return true;
             }

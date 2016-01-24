@@ -10,5 +10,7 @@ namespace RoutingController.Interfaces
     public interface ITopology
     {
         List<Link> LinkList { get; }
+        string Node { get; } //Which node send this info
+
     }
 }

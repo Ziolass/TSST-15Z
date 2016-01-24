@@ -43,9 +43,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Elements\Destination.cs" />
+    <Compile Include="Elements\QueryRequest.cs" />
     <Compile Include="Interfaces\IDestination.cs" />
     <Compile Include="Interfaces\ILinkResourceMenager.cs" />
     <Compile Include="Interfaces\ILink.cs" />
+    <Compile Include="Interfaces\IQuery.cs" />
     <Compile Include="Interfaces\IToplogy.cs" />
     <Compile Include="Interfaces\ISNPP.cs" />
     <Compile Include="Program.cs" />
@@ -53,7 +55,7 @@
     <Compile Include="Elements\Link.cs" />
     <Compile Include="Elements\NetworkGraph.cs" />
     <Compile Include="Elements\SNPP.cs" />
-    <Compile Include="Elements\Topology.cs" />
+    <Compile Include="Elements\TopologyRequest.cs" />
     <Compile Include="RoutingController.cs" />
     <Compile Include="Service\ElementConfigurator.cs" />
     <Compile Include="Service\RoutingControllerCenter.cs" />

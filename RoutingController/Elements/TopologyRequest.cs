@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using RoutingController.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,15 @@ namespace RoutingController.Elements
 {
     public class TopologyRequest : ITopology
     {
+        public string Node { get; private set; }
         public List<Link> LinkList { get; private set; }
 
+        [JsonConstructor]
+        public TopologyRequest(string node, List<Link> linkList)
+        {
+            this.Node = node;
+            this.LinkList = LinkList;
+        }
         public TopologyRequest()
         {
             this.LinkList = new List<Link>();
