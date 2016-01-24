@@ -1,7 +1,8 @@
 using RoutingController.Interfaces;
-using RoutingController.RoutingControllElements;
+using RoutingController.Elements;
 using System;
 using System.Collections.Generic;
+using RoutingController.Service;
 
 namespace RoutingController
 {
@@ -9,6 +10,12 @@ namespace RoutingController
     {
         private static void Main(string[] args)
         {
+
+            ElementConfigurator configurator = new ElementConfigurator("../../../Configs/RoutingController/routingControllerConfig.xml");
+            RoutingControllerCenter RC = configurator.ConfigureRoutingController();
+            RC.StartListening();
+
+            /*
             RoutingController RC = new RoutingController();
 
             Topology topo = new Topology();
@@ -62,6 +69,7 @@ namespace RoutingController
             test = RC.RouteTableResponse("Router 2", "Router 5", 0);
             test.ForEach(x => Console.WriteLine(x));
 
+             */
             Console.ReadLine();
         }
     }

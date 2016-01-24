@@ -4,25 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RoutingController.Interfaces;
-using RoutingController.RoutingControllElements;
+using RoutingController.Elements;
 
 namespace RoutingController
 {
     public class RoutingController
     {
-        private List<NetworkGraph> NetworkGraphs { get; set; }
         public String NetworkId { get; set; }
-
         public ILinkResourceMenager LRM { get; private set; }
+
+        private List<NetworkGraph> NetworkGraphs { get; set; }
 
         public RoutingController()
         {
-            NetworkGraphs = new List<NetworkGraph>();
+            this.NetworkGraphs = new List<NetworkGraph>();
         }
 
         public RoutingController(String networkId)
         {
-            NetworkGraphs = new List<NetworkGraph>();
+            this.NetworkGraphs = new List<NetworkGraph>();
             this.NetworkId = networkId;
         }
 

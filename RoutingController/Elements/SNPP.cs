@@ -1,6 +1,6 @@
 using RoutingController.Interfaces;
 
-namespace RoutingController.RoutingControllElements
+namespace RoutingController.Elements
 {
     public class SNPP : ISNPP
     {

@@ -1,7 +1,7 @@
 using RoutingController.Interfaces;
 using System.Collections.Generic;
 
-namespace RoutingController.RoutingControllElements
+namespace RoutingController.Elements
 {
     /// <summary>
     /// Represent graph of network

@@ -1,7 +1,7 @@
 using RoutingController.Interfaces;
 using System;
 
-namespace RoutingController.RoutingControllElements
+namespace RoutingController.Elements
 {
     public class Node : INode
     {

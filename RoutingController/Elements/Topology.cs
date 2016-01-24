@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace RoutingController.RoutingControllElements
+namespace RoutingController.Elements
 {
     public class Topology : ITopology
     {

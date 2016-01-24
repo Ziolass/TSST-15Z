@@ -48,12 +48,15 @@
     <Compile Include="Interfaces\ISNPP.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoutingControllElements\Link.cs" />
-    <Compile Include="RoutingControllElements\NetworkGraph.cs" />
-    <Compile Include="RoutingControllElements\Node.cs" />
-    <Compile Include="RoutingControllElements\SNPP.cs" />
-    <Compile Include="RoutingControllElements\Topology.cs" />
+    <Compile Include="Elements\Link.cs" />
+    <Compile Include="Elements\NetworkGraph.cs" />
+    <Compile Include="Elements\Node.cs" />
+    <Compile Include="Elements\SNPP.cs" />
+    <Compile Include="Elements\Topology.cs" />
     <Compile Include="RoutingController.cs" />
+    <Compile Include="Service\ElementConfigurator.cs" />
+    <Compile Include="Service\RoutingControllerCenter.cs" />
+    <Compile Include="Service\RoutingControllerPort.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -64,6 +67,7 @@
       <Name>NetworkNode</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
