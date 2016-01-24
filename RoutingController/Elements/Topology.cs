@@ -8,15 +8,13 @@ using System.Xml.Serialization;
 
 namespace RoutingController.Elements
 {
-    public class Topology : ITopology
+    public class TopologyRequest : ITopology
     {
-        public int NetworkLevel { get; set; }
-        public string NetworkId { get; set; }
-        public List<ILink> LinkList { get; set; }
+        public List<Link> LinkList { get; private set; }
 
-        public Topology()
+        public TopologyRequest()
         {
-            this.LinkList = new List<ILink>();
+            this.LinkList = new List<Link>();
         }
 
         /// <summary>
@@ -24,14 +22,14 @@ namespace RoutingController.Elements
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns></returns>
-        public static Topology ReadFromXML(string path)
+        public static TopologyRequest ReadFromXML(string path)
         {
             try
             {
-                Topology returnTopology = new Topology();
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(Topology));
+                TopologyRequest returnTopology = new TopologyRequest();
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(TopologyRequest));
                 FileStream myFileStream = new FileStream(ConvertPath(path), FileMode.Open);
-                returnTopology = (Topology)xmlSerializer.Deserialize(myFileStream);
+                returnTopology = (TopologyRequest)xmlSerializer.Deserialize(myFileStream);
                 return returnTopology;
             }
             catch (Exception exp)
@@ -49,7 +47,7 @@ namespace RoutingController.Elements
         {
             try
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(Topology));
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(TopologyRequest));
                 StringWriter stringWriter = new StringWriter();
                 XmlWriter xmlWriter = XmlWriter.Create(stringWriter);
                 xmlSerializer.Serialize(xmlWriter, this);

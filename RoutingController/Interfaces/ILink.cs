@@ -15,10 +15,15 @@ namespace RoutingController.Interfaces
     /// </summary>
     public interface ILink
     {
-        List<string> Domains { get; }
+        string Node { get; }
         int Port { get; }
+        List<string> Domains { get; }
         NodeType Type { get; }
         IDestination Destination { get; }
         NodeStatus Status { get; }
+
+
+        string NodeId();
+
     }
 }

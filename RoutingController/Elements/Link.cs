@@ -1,18 +1,43 @@
 using RoutingController.Interfaces;
+using System.Collections.Generic;
 
 namespace RoutingController.Elements
 {
     public class Link : ILink
     {
-        public string SourceId { get; set; }
-        public string DestinationId { get; set; }
-        public int Weight { get; set; }
+        public string Node { get; private set; }
+        public int Port { get; private set; }
+        public List<string> Domains { get; private set; }
+        public NodeType Type { get; private set; }
+        public IDestination Destination { get; private set; }
+        public NodeStatus Status { get; private set; }
 
-        public Link(string sourceId, string destinationId, int weight)
+        /*public Node()
         {
-            this.SourceId = sourceId;
-            this.DestinationId = destinationId;
-            this.Weight = weight;
+            this.Domains = new List<string>();
+            this.Type = NodeType.UNDEF;
+            this.Destination = new List<IDestination>();
+            this.Status = NodeStatus.UNDEF;
+        }*/
+
+        public Link(string node, int port, List<string> domains, NodeType type, Destination destination, NodeStatus status)
+        {
+            this.Node = node;
+            this.Port = port;
+            this.Domains = domains;
+            this.Type = type;
+            this.Destination = destination;
+            this.Status = status;
+        }
+
+        /// <summary>
+        /// Return the identifier of destination node.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public string NodeId()
+        {
+            return Node + ":" + Port.ToString();
         }
     }
 }

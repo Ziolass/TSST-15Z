@@ -38,9 +38,11 @@ namespace RoutingController
         /// or
         /// Error RouteTableResponse: NetworkGraph not found! 
         /// </exception>
-        public List<string> RouteTableResponse(string source, string destination, int networkLevel)
+        public List<string> RouteTableResponse(string source, string destination)
         {
-            NetworkGraph tempNetworkGraph = this.GetNetworkGraph(networkLevel);
+
+            //TODO : Zmiana na sprawdzenie w jakiej domenie jest destination
+            NetworkGraph tempNetworkGraph = this.GetNetworkGraph("mydomain1");
             if (tempNetworkGraph != null)
             {
                 List<string> returnList = tempNetworkGraph.ShortestPath(source, destination);
@@ -60,7 +62,7 @@ namespace RoutingController
         /// <returns></returns>
         public bool UpdateNetworkGraph(ITopology topology)
         {
-            NetworkGraph tempNetworkGraph = this.GetNetworkGraph(topology.NetworkLevel);
+            NetworkGraph tempNetworkGraph = this.GetNetworkGraph(topology.LinkList[0].Domains[0]);
             if (tempNetworkGraph != null)
             {
                 tempNetworkGraph.UpdateGraph(topology);
@@ -93,11 +95,11 @@ namespace RoutingController
         /// </summary>
         /// <param name="networkLevel">The network level.</param>
         /// <returns></returns>
-        private NetworkGraph GetNetworkGraph(int networkLevel)
+        private NetworkGraph GetNetworkGraph(string networkName)
         {
             foreach (NetworkGraph networkGraph in NetworkGraphs)
             {
-                if (networkGraph.NetworkLevel == networkLevel)
+                if (networkGraph.NetworkId == networkName)
                     return networkGraph;
             }
             return null;

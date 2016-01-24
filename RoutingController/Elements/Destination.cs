@@ -22,5 +22,15 @@ namespace RoutingController.Elements
             this.Node = node;
             this.Port = port;
         }
+
+        /// <summary>
+        /// Return the identifier of destination node.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public string NodeId()
+        {
+            return Node + ":" + Port.ToString();
+        }
     }
 }

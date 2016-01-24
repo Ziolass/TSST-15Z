@@ -55,7 +55,8 @@ namespace RoutingController.Service
                 if (metadata["Protocol"].ToString() == "resources")
                 {
                     request = request.Replace("Protocol: \"resources\",", "");
-                    Node serializedNode = JsonConvert.DeserializeObject<Node>(request);
+                    TopologyRequest serializedRequest = JsonConvert.DeserializeObject<TopologyRequest>(request);
+
                     return "Success";
                 }
                 else if (metadata["Protocol"].ToString() == "query")

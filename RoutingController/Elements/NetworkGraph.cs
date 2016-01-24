@@ -19,8 +19,8 @@ namespace RoutingController.Elements
 
         public NetworkGraph(ITopology topology)
         {
-            this.NetworkId = topology.NetworkId;
-            this.NetworkLevel = topology.NetworkLevel;
+            //this.NetworkId = topology.NetworkId;
+            //this.NetworkLevel = topology.NetworkLevel;
             this.Graph = new Dictionary<string, Dictionary<string, int>>();
             UpdateGraph(topology);
         }
@@ -33,7 +33,7 @@ namespace RoutingController.Elements
         {
             foreach (ILink link in topology.LinkList)
             {
-                if (!Graph.ContainsKey(link.SourceId)) //Graph doesn't have this link - add
+                if (!Graph.ContainsKey(link.NodeId())) //Graph doesn't have this link - add
                 {
                     AddVertex(link);
                 }
@@ -61,25 +61,29 @@ namespace RoutingController.Elements
         /// <param name="link">The link.</param>
         private void AddVertex(ILink link)
         {
-            Dictionary<string, int> edge = new Dictionary<string, int>();
-            edge.Add(link.DestinationId, link.Weight);
-            Graph[link.SourceId] = edge;
+                Dictionary<string, int> edge = new Dictionary<string, int>();
+            //TODO: zmiana weight
+                edge.Add(link.Destination.NodeId(), 1);
+                AddVertex(link.NodeId(), edge);
         }
 
+        //TODO:Zrobiæ usuwanie nieaktualnych linków
         /// <summary>
         /// Updates the vertex connection.
         /// </summary>
         /// <param name="link">The link.</param>
         private void UpdateVertexConnection(ILink link)
         {
-            Dictionary<string, int> edges = Graph[link.SourceId];
-            if (!edges.ContainsKey(link.DestinationId))
+            Dictionary<string, int> edges = Graph[link.NodeId()];
+            if (!edges.ContainsKey(link.Destination.NodeId()))
             {
-                edges.Add(link.DestinationId, link.Weight);
+                //TODO: zmiana weight
+                edges.Add(link.Destination.NodeId(), 1);
             }
             else
             {
-                edges[link.DestinationId] = link.Weight;
+                //TODO: zmiana weight
+                edges[link.Destination.NodeId()] = 1;
             }
         }
 

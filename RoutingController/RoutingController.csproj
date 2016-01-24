@@ -45,16 +45,13 @@
     <Compile Include="Elements\Destination.cs" />
     <Compile Include="Interfaces\IDestination.cs" />
     <Compile Include="Interfaces\ILinkResourceMenager.cs" />
-    <Compile Include="Interfaces\INode.cs" />
     <Compile Include="Interfaces\ILink.cs" />
-    <Compile Include="Interfaces\IRequest.cs" />
     <Compile Include="Interfaces\IToplogy.cs" />
     <Compile Include="Interfaces\ISNPP.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Elements\Link.cs" />
     <Compile Include="Elements\NetworkGraph.cs" />
-    <Compile Include="Elements\Node.cs" />
     <Compile Include="Elements\SNPP.cs" />
     <Compile Include="Elements\Topology.cs" />
     <Compile Include="RoutingController.cs" />
