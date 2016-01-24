@@ -55,7 +55,7 @@ namespace Policy
                     Console.WriteLine("Uzytkownik " + data.Split('|')[1] + " ma stosowne uprawnienia. Zezwalam.");
 
 
-                    string response = policy.verify(data) ? "CONFIRM" : "DECLINE";
+                    string response = policy.verify(data) ? "CONFIRM|" : "DECLINE|";
                   //  Console.WriteLine
                     // Echo the data back to the client.
                     byte[] msg = Encoding.ASCII.GetBytes(response);

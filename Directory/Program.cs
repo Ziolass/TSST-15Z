@@ -13,13 +13,16 @@ namespace Directory
 
         static void Main(string[] args)
         {
-            string id = args[0];
+            string id = "0";
             if (args.Length > 0)
             {
                 id = args[0];
             }
             Directory directory = new Directory();
-            Console.WriteLine("Start Directory...");
+            Console.WriteLine("╒═══════════╕");
+            Console.WriteLine("│ DIRECTORY │");
+            Console.WriteLine("╘═══════════╛");
+            Console.WriteLine("Directory starting...");
             directory.setUp(id);
             ConnectionHandler chandler = new ConnectionHandler(directory);
             chandler.StartListening();

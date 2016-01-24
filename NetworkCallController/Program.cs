@@ -11,8 +11,9 @@ namespace NetworkCallController
         static void Main(string[] args)
         {
             string id = "0";
-            Console.WriteLine("╔═╗     NCC     ╔═╗");
-            Console.WriteLine("╚═╝             ╚═╝");
+            Console.WriteLine("╒═══════════════════════╕");
+            Console.WriteLine("│ NetworkCallController │");
+            Console.WriteLine("╘═══════════════════════╛");
             Console.WriteLine("NCC starting...");
             if (args.Length > 0)
             {

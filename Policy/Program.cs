@@ -11,6 +11,9 @@ namespace Policy
         static void Main(string[] args)
         {
             string id = "0";
+            Console.WriteLine("╒════════╕");
+            Console.WriteLine("│ POLICY │");
+            Console.WriteLine("╘════════╛");
             Console.Out.WriteLine("Policy starting...");
             if (args.Length > 0)
             {
