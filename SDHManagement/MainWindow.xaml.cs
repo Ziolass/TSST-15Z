@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -23,24 +23,30 @@ namespace SDHManagement2
             "close-connection",
             "sub-connection-HPC",
             "get-connection-list",
-            "get-ports"
+            "get-ports",
+            "load-config"
         };
         // Krosownica
-        private string [] actionaNameList =
+        private string[] actionaNameList =
             {"Dezaktywuj krosownice",
             "Usuń istniejące połączenie",
             "Dodaj nowe połączenie",
             "Pobierz listę istniejących połączeń",
-            "Pobierz listę dostępnych portów"
+            "Pobierz listę dostępnych portów",
+            "Wczytaj plik konfiguracyjny"
         };
         private string[] clientAction =
             {"resource-location",
             "get-resource-list",
-            "delete-resource"};
+            "delete-resource",
+            "load-config"
+            };
         private string[] clientNameAction =
             {"Przydział zasobów",
             "Pobierz listę przyznanych zasobów",
-            "Odbierz przyznane zasoby"};
+            "Odbierz przyznane zasoby",
+            "Wczytaj plik konfiguracyjny"
+            };
 
         private string[] selection =
             {
@@ -63,11 +69,11 @@ namespace SDHManagement2
             actionBox.ItemsSource = actionaNameList.ToList();
             button2.IsEnabled = false;
             addNewButton.IsEnabled = false;
-        
+
         }
         public void Dispose()
         {
-           // Area.Dispose(); 
+            // Area.Dispose(); 
         }
         private void button_Click(object sender, RoutedEventArgs e)
         {
@@ -84,8 +90,8 @@ namespace SDHManagement2
                 action = clientAction[actionBox.SelectedIndex];
             }
 
-            socketHandler.commandHandle(action,nodeName);
-            
+            socketHandler.commandHandle(action, nodeName);
+
         }
         public void appendConsole(string text, string name, string command)
         {
@@ -135,32 +141,32 @@ namespace SDHManagement2
             }
             else
             {
-                console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt") + ": " + name+": "+text);
+                console.Items.Add(DateTime.Now.ToString("HH:mm:ss tt") + ": " + name + ": " + text);
             }
 
             console.SelectedIndex = console.Items.Count - 1;
             console.ScrollIntoView(console.SelectedItem);
         }
-        private string  stringToPortArray(String port_string)
+        private string stringToPortArray(String port_string)
         {
             string[] temp = port_string.Split('|');
             string[] temp2 = new string[temp.Length];
-            for(int i = 0; i < temp.Length; i++)
+            for (int i = 0; i < temp.Length; i++)
             {
                 string[] tmp = temp[i].Split('#');
                 temp2[i] = string.Join(":", tmp);
-            }       
-            return string.Join(", ",temp2);
+            }
+            return string.Join(", ", temp2);
 
         }
-        private string [] stringToConnectionArray(String con_string)
+        private string[] stringToConnectionArray(String con_string)
         {
             if (con_string.Equals(""))
             {
                 return new string[1] { "" };
             }
             string[] temp_connections = con_string.Split('|');
-            string [] connections = new string[temp_connections.Length];
+            string[] connections = new string[temp_connections.Length];
 
             for (int i = 0; i < temp_connections.Length; i++)
             {
@@ -172,7 +178,7 @@ namespace SDHManagement2
             }
             return connections;
         }
-        private string [] clientStringToConnectionArray (String constring)
+        private string[] clientStringToConnectionArray(String constring)
         {
             string[] temp_connections = constring.Split('|');
             string[] connections = new string[temp_connections.Length];
@@ -185,7 +191,7 @@ namespace SDHManagement2
                 connections[i] = "Polaczanie " + position + ".\n" +
                     "Numer portu: " + tmp[0] + ". STM na porcie: " + tmp[1] + ". Kontener: " + tmp[2] + ".\n" +
                     "HigherPath: " + tmp[3] + ". LowerPath: " + tmp[4];
-                    
+
             }
             return connections;
         }
@@ -194,26 +200,26 @@ namespace SDHManagement2
             Returnable returnable = ConfigReader.readPortsFromConfig("managementConfigFile.xml");
 
             List<int> portList = returnable.portList;
-             clientList = new List<Router>();
-           availableConteners = returnable.contenerList;
+            clientList = new List<Router>();
+            availableConteners = returnable.contenerList;
             availableModules = returnable.moduleList;
 
             routerList = new List<Router>();
 
-            
-            if (portList==null)
+
+            if (portList == null)
             {
-                appendConsole("Błąd odczytu pliku konfiguracyjnego, spróbuj ponownie.",null,null);
+                appendConsole("Błąd odczytu pliku konfiguracyjnego, spróbuj ponownie.", null, null);
                 return;
             }
             appendConsole("Obsługiwany moduł w sieci: " + availableModules[0], null, null);
             appendConsole("Obsługiwane kontenery:", null, null);
-            foreach(string s in availableConteners)
+            foreach (string s in availableConteners)
             {
                 appendConsole(s, null, null);
             }
 
-            socketHandler = new SocketHandler(portList, this,availableModules,availableConteners);
+            socketHandler = new SocketHandler(portList, this, availableModules, availableConteners);
             actionBox.IsEnabled = true;
             nodeBox.IsEnabled = true;
             selectionBox.IsEnabled = true;
@@ -231,17 +237,18 @@ namespace SDHManagement2
         private void addNewButton_Click(object sender, RoutedEventArgs e)
         {
 
-           Dictionary<int,string> commandDictionary= ConfigReader.readCommandsFromConfig("managementCommandsFile.xml");
+            Dictionary<int, string> commandDictionary = ConfigReader.readCommandsFromConfig("managementCommandsFile.xml");
 
             foreach (string s in socketHandler.nodelist)
             {
-                try {
+                try
+                {
                     string command = commandDictionary[socketHandler.GetRouter(s).port];
                     socketHandler.sendCommand(s, command, true);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    appendConsole("Experymentalny ficzer coś nie działa :(",null,null);
+                    appendConsole("Experymentalny ficzer coś nie działa :(", null, null);
                 }
             }
 
@@ -264,12 +271,12 @@ namespace SDHManagement2
         }
         private void nodeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
+
         }
         private void selectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
-            if(!initialised)
+            if (!initialised)
             {
                 nodeBox.ItemsSource = new List<string>();
                 return;
@@ -278,11 +285,11 @@ namespace SDHManagement2
             switch (selectionBox.SelectedItem.ToString())
             {
                 case "Klient":
-                   nodeBox.ItemsSource = socketHandler.clientNameList;
+                    nodeBox.ItemsSource = socketHandler.clientNameList;
 
                     actionBox.ItemsSource = clientNameAction.ToList();
                     break;
-                case "Krosownica" :
+                case "Krosownica":
 
                     nodeBox.ItemsSource = socketHandler.nodelist;
                     actionBox.ItemsSource = actionaNameList.ToList();

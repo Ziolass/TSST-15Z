@@ -13,6 +13,7 @@ namespace NetworkCallController
         private int foreignPort;
         private string ASname;
         private int directoryPort;
+        private int ccPort;
         public int getDirectoryPort()
         {
             return directoryPort;
@@ -25,26 +26,33 @@ namespace NetworkCallController
         {
             return foreignPort;
         }
+        public int getCCPort()
+        {
+            return ccPort;
+        }
         private int policyPort;
         private string ASforeignName;
         private ConnectionHandler chandler;
-        public NetworkCallController()
+        public NetworkCallController(string id)
         {
-            readConfig();
+            readConfig(id);
             chandler = new ConnectionHandler(localPort,this);
             
         }
 
 
-        private void readConfig()
+        private void readConfig(string id)
         {
-            Tuple<string, int,string,int,int,int> t = ConfigReader.readConfig("nccConfig.xml");
+
+            Tuple<string, int,string,int,int,int,int> t = ConfigReader.readConfig("nccConfig"+id+".xml");
             localPort = t.Item2;
             ASname = t.Item1;
             ASforeignName = t.Item3;
+            Console.WriteLine("Identyfikator podsieci: " + ASname);
             foreignPort = t.Item4;
             directoryPort = t.Item5;
             policyPort = t.Item6;
+            ccPort = t.Item7;
         }
     }
     

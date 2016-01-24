@@ -1,12 +1,40 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <links>
-	<server tcp="6000" buffer="10000" clientsNumber="100"/>
+	<server tcp="6000" buffer="10000" clientsNumber="100"/>	
 	<link>
-		<port tcp="3000" local="1" node="client1" />
-		<port tcp="4030" local="1" node="node1" />
+		<port tcp="3000" local="1" node="clientA" />
+		<port tcp="5000" local="1" node="node1" />
 	</link>
 	<link>
-		<port tcp="4031" local="2" node="node1" />
-		<port tcp="3000" local="1" node="client1" />
+		<port tcp="5001" local="2" node="node1" />
+		<port tcp="5010" local="1" node="node2" />
+	</link>
+	<link>
+		<port tcp="5002" local="3" node="node1" />
+		<port tcp="5030" local="1" node="node4" />
+	</link>
+	<link>
+		<port tcp="5011" local="2" node="node2" />
+		<port tcp="3010" local="1" node="clientB" />
+	</link>
+	<link>
+		<port tcp="5012" local="3" node="node2" />
+		<port tcp="5021" local="2" node="node3" />
+	</link>
+	<link>
+		<port tcp="5013" local="4" node="node2" />
+		<port tcp="5031" local="2" node="node4" />
+	</link>
+	<link>
+		<port tcp="5032" local="3" node="node4" />
+		<port tcp="5020" local="1" node="node3" />
+	</link>
+	<link>
+		<port tcp="5033" local="4" node="node4" />
+		<port tcp="3030" local="1" node="clientD" />
+	</link>
+	<link>
+		<port tcp="5022" local="3" node="node3" />
+		<port tcp="3020" local="1" node="clientC" />
 	</link>
 </links>

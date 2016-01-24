@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <management-ports>
 	<ports>
-		<port value="7000"/>		
+		<port value="7000"/>
+		<port value="7001"/>
+		<port value="7002"/>
+		<port value="7003"/>		
+		<port value="9900"/>  
 		<port value="9901"/>  
+		<port value="9902"/>  
+		<port value="9903"/>  
 	</ports>
 	<network-specifications>
 	<module value="STM1"/>

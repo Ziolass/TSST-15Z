@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<client>
+  <port local="1" tcp="3020" stm="STM1"/>
+  <node name="clientC"/>
+  <managment-port number ="9902"/>
+  <cloud-server tcp="6000"/>
+</client>
+

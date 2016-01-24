@@ -22,7 +22,7 @@ namespace NetworkCallController.FileUtils
             return sb.ToString();
         }
 
-        public static Tuple<string, int,string,int,int,int> readConfig(string configurationFileName)
+        public static Tuple<string, int,string,int,int,int,int> readConfig(string configurationFileName)
         {
             string network_identifier = "AS";
             int port = 0;
@@ -30,6 +30,7 @@ namespace NetworkCallController.FileUtils
             string foreiggnNetworkIdentifier = "AS";
             int directoryPort=0;
             int policyPort=0;
+            int ccPort = 0;
 
             string defaultDirectoryPath = Directory.GetCurrentDirectory();
             DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).FullName + "\\Configs\\NCC"); //sobczakj 
@@ -76,9 +77,16 @@ namespace NetworkCallController.FileUtils
                                 policyPort = int.Parse(configReader.GetAttribute("value"));
                             }
                         }
+                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "cc"))
+                        {
+                            if (configReader.HasAttributes)
+                            {
+                                ccPort = int.Parse(configReader.GetAttribute("value"));
+                            }
+                        }
 
                     }
-                    return Tuple.Create(network_identifier, port,foreiggnNetworkIdentifier,foreignPort,directoryPort,policyPort);
+                    return Tuple.Create(network_identifier, port,foreiggnNetworkIdentifier,foreignPort,directoryPort,policyPort,ccPort);
 
                 }
                 catch

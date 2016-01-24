@@ -10,10 +10,13 @@ namespace Policy
     class Policy
     {
         private int localPort;
+        private string ASidentifier;
 
-        public Policy()
+        public Policy(string id)
         {
-            Tuple<string,int,Dictionary<string,string>> t = ConfigReader.readEntriesFromConfig("policyConfig.xml");
+            Tuple<string,int,Dictionary<string,string>> t = ConfigReader.readEntriesFromConfig("policyConfig"+id+".xml");
+            ASidentifier = t.Item1;
+            Console.WriteLine("Identyfikator podsieci: " + ASidentifier);
             localPort = t.Item2;
         }
         public int getLocalPort()

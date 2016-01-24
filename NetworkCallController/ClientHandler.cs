@@ -41,15 +41,18 @@ namespace NetworkCallController
                     serverResponse = responseHandler(dataFromClient);
 
                     sendBytes = Encoding.ASCII.GetBytes(serverResponse);
-                    Console.ReadKey();
-
+                    // TODO
+                    // Console.ReadKey();
+                    clientSocket.Client.Send(sendBytes);
 
 
                 }
                 catch(Exception e)
-                {
-
+                {  
+                    Console.WriteLine("Error: "+e.Data);
                 }
+                clientSocket.Client.Shutdown(SocketShutdown.Both);
+                break;
             }
         }
         private string responseHandler(string query)
@@ -61,6 +64,8 @@ namespace NetworkCallController
             switch (temp[0])
             {
                 case "call-request":
+                    return callRequest(temp[1], temp[2]);
+                    /*
                     int callingPort;
                     int calledPort;
                     // sprawdzenie portu osoby zadajacej
@@ -75,8 +80,14 @@ namespace NetworkCallController
                     if(!int.TryParse(calledPartyPort,out calledPort))
                     {
                         Console.WriteLine("Brak rekordu "+temp[2]+". Sprawdzam w sasiednim AS");
+
                         string fResponse = checkForeignNCCForEntry(temp[2]);
-                        return "error|Zadne Directory nie posiada takiego wpisu";
+                        if (fResponse.Equals("no-such-entry"))
+                        {
+                            return "error|Zadne Directory nie posiada takiego wpisu";
+                        }
+                        Console.WriteLine("Rekord " + temp[2] + " zidentyfikowany w sasiednim AS.");
+
                     }
                     // no fajnie fajnie, adresy sa ale czy masz pozwolenie?
                     if (!askPolicy(temp[1]))
@@ -84,26 +95,73 @@ namespace NetworkCallController
                         Console.WriteLine("Policy nie wyrazilo zgody na realizacje polaczenia");
                         return "error|Policy nie wyrazilo zgody";
                     }
-                    
 
-
-                    break;
+                    return connectionRequst(callingPort, calledPort);
+                    */
                 case "get-address":
                     string foreignResponse = checkDictionaryForEntry(temp[1]);
                     return foreignResponse;
+
+                case "call-teardown":
+
+                    break;
                 default:
                     break;
             }
             return response;
         }
+        private string callRequest(string callingPartyName, string calledPartyName)
+        {
+            int callingPort;
+            int calledPort;
+            // sprawdzenie portu osoby zadajacej
+            string callingPartyPort = checkDictionaryForEntry(callingPartyName);
+            if (!int.TryParse(callingPartyPort, out callingPort))
+            {
+                return "error|Dictionary nie dziala";
+            }
+            // sprawdzenie rekordu osoby zadanej
+            string calledPartyPort = checkDictionaryForEntry(calledPartyName);
+            // jak nie ma rekordu to chill, sprawdzamy u ziomeczka
+            if (!int.TryParse(calledPartyPort, out calledPort))
+            {
+                Console.WriteLine("Brak rekordu " + calledPartyName + ". Sprawdzam w sasiednim AS");
 
+                string fResponse = checkForeignNCCForEntry(calledPartyName);
+                if (fResponse.Equals("no-such-entry"))
+                {
+                    return "error|Zadne Directory nie posiada takiego wpisu";
+                }
+                Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
+
+            }
+            // no fajnie fajnie, adresy sa ale czy masz pozwolenie?
+            if (!askPolicy(callingPartyName))
+            {
+                Console.WriteLine("Policy nie wyrazilo zgody na realizacje polaczenia");
+                return "error|Policy nie wyrazilo zgody";
+            }
+
+            return connectionRequst(callingPort, calledPort);
+        }
+
+        private void coordinateCall(int localPort,int ForeignPort)
+        {
+
+        }
+        private string connectionRequst(int localPort,int foreignPort)
+        {
+            //int ccPort = ncc.getCCPort();
+            //string response = sendCommand("connection-request|" + localPort + "|" + foreignPort,ccPort);
+            return "connection-established";//response;
+        }
         private string checkForeignNCCForEntry(string entry)
         {
             int foreignPort = ncc.getForeingPort();
             string response = sendCommand("get-address|" + entry, foreignPort);
             return response;
         }
-
+        
         private string checkDictionaryForEntry(string entry)
         {
             int dictPort = ncc.getDirectoryPort();
@@ -128,8 +186,6 @@ namespace NetworkCallController
             IPEndPoint endPoint = new IPEndPoint(ipAddress, port);
             Socket commandSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             
-            //LocalSocektBuilder local = LocalSocektBuilder.Instance;
-            //Socket commandSocket = local.getTcpSocket(port);
             byte[] bytes = new byte[100000];
             string response = null;
            

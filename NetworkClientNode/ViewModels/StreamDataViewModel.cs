@@ -8,7 +8,7 @@ using NetworkClientNode.Adaptation;
 
 namespace NetworkClientNode.ViewModels
 {
-    public class StreamDataViewModel : INotifyPropertyChanged
+    public class StreamDataViewModel : INotifyPropertyChanged, IEquatable<StreamDataViewModel>
     {
         public StreamData StreamData { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -31,6 +31,15 @@ namespace NetworkClientNode.ViewModels
             {
                 PropertyChanged(this, new PropertyChangedEventArgs("Id"));
             }
+        }
+
+        public bool Equals(StreamDataViewModel other)
+        {
+            if (StreamData.Equals(other.StreamData))
+            {
+                return true;
+            }
+            else return false;
         }
     }
 }

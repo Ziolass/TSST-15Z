@@ -1,0 +1,1 @@
+resource-relocation|1#STM1#VC32#0#0|1#STM1#VC32#0#1

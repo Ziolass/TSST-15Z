@@ -44,6 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallingPartyCallController.cs" />
+    <Compile Include="ClientHandler.cs" />
+    <Compile Include="ConnectionHandler.cs" />
+    <Compile Include="FileUtils\ConfigReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

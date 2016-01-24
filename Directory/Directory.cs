@@ -18,10 +18,10 @@ namespace Directory
             hostnames_ports_dictionary = dict;
             localPort = port;
         }
-        public void setUp()
+        public void setUp(string id)
         {
             try {
-                Tuple<string,int, Dictionary<string, string>> t = ConfigReader.readEntriesFromConfig("directoryConfig.xml");
+                Tuple<string,int, Dictionary<string, string>> t = ConfigReader.readEntriesFromConfig("directoryConfig"+id+".xml");
                 string network_name = t.Item1;
 
                 Console.WriteLine("Identyfikator sieci: " + network_name);
@@ -39,7 +39,7 @@ namespace Directory
                 return hostnames_ports_dictionary[query];
             }
             
-            return "no-such-entry|";
+            return "no-such-entry";
         }
         private string addEntry(string name,string address)
         {

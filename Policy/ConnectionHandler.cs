@@ -48,15 +48,15 @@ namespace Policy
                     string data = null;
 
                     // An incoming connection needs to be processed.
-
+                    Console.WriteLine("Otrzymano nowe zapytanie");
                     bytes = new byte[1024];
                     int bytesRec = handler.Receive(bytes);
                     data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-
+                    Console.WriteLine("Uzytkownik " + data.Split('|')[1] + " ma stosowne uprawnienia. Zezwalam.");
 
 
                     string response = policy.verify(data) ? "CONFIRM" : "DECLINE";
-
+                  //  Console.WriteLine
                     // Echo the data back to the client.
                     byte[] msg = Encoding.ASCII.GetBytes(response);
 

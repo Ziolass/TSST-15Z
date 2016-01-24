@@ -10,12 +10,17 @@ namespace NetworkCallController
     {
         static void Main(string[] args)
         {
+            string id = "0";
             Console.WriteLine("╔═╗     NCC     ╔═╗");
             Console.WriteLine("╚═╝             ╚═╝");
             Console.WriteLine("NCC starting...");
-            NetworkCallController ncc = new NetworkCallController();
+            if (args.Length > 0)
+            {
+                id = args[0];
+            }
+            NetworkCallController ncc = new NetworkCallController(id);
             
-            Console.Read();
+            //Console.Read();
         }
     }
 }

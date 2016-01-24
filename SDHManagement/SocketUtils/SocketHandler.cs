@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using SDHManagement2.Models;
 using SDHManagement2.AdditionalWindows;
 using SDHManagement2.FileUtils;
+using Microsoft.Win32;
+using System.IO;
 
 namespace SDHManagement2.SocketUtils
 {
@@ -273,10 +275,35 @@ namespace SDHManagement2.SocketUtils
                 // do klienta i krosownicy
                 case "get-ports":
                     return sendCommand(node, command + "|",true);
-
+                case "load-config":
+                    LoadConfig(node);
+                    return "DONE";
                 default:
                     mainWindow.appendConsole("Stało się niemożliwe",null,null);
                     return "ERROR";
+
+            }
+        }
+        public void LoadConfig(String nodeName)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            string defaultDirectoryPath = Directory.GetCurrentDirectory();
+            string path = new DirectoryInfo(((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).Parent).FullName + "\\Configs").ToString();
+            openFileDialog.InitialDirectory = path;
+            openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog.FilterIndex = 2;
+            openFileDialog.RestoreDirectory = true;
+
+            try
+            {
+
+                string result = "";
+                if (openFileDialog.ShowDialog() == true)
+                    result = File.ReadAllText(openFileDialog.FileName);
+                this.sendCommand(nodeName, result, true);
+            }
+            catch (Exception ex)
+            {
 
             }
         }

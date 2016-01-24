@@ -26,6 +26,7 @@ namespace NetworkClientNode
         public int SelectedStream { get; private set; }
         public string Id { get; set; }
         public event StreamChangedHandler StreamAdded;
+        public event StreamChangedHandler StreamRemoved;
 
         public NetworkClNode(AdaptationFunction adaptation, string id)
         {
@@ -54,9 +55,19 @@ namespace NetworkClientNode
             return executionResult;
         }
 
-        public  bool RemoveStreamData(StreamData record)
+        public  bool RemoveStreamData(StreamData stream)
         {
-            return Adaptation.RemoveStreamData(record);
+            if (Adaptation.RemoveStreamData(stream))
+            {
+                if (StreamRemoved != null)
+                {
+                    List<StreamData> streams = new List<StreamData>();
+                    streams.Add(stream);
+                    StreamRemoved(new StreamChangedArgs(streams));
+                }
+                return true;
+            }
+            else return false;
         }
 
         public void RegisterDataListener(HandleClientData clientDataDelegate)

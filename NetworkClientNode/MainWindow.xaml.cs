@@ -19,9 +19,19 @@ namespace NetworkClientNode
     /// </summary>
     public partial class MainWindow : Window
     {
+        public string MyTitle { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+            var args = Environment.GetCommandLineArgs();
+            int i = 0; //This is dumy variable for TryParse
+            if (args.Length < 3)
+                throw new Exception("Wrong application start argument");
+            else if (!int.TryParse(args[1], out i))
+                throw new Exception("Wrong application start argument");
+
+            DataContext = this;
+            MyTitle = "Client" + args[2];
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

@@ -14,7 +14,7 @@ namespace MockupCPCC
         {
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 1001);
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 50001);
 
             Socket sender = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
@@ -30,10 +30,10 @@ namespace MockupCPCC
 
                 byte[] msg = Encoding.ASCII.GetBytes(data);
                 int bytesSent = sender.Send(msg);
-
-                //int bytesRec = sender.Receive(bytes);
-                //Console.WriteLine("Echoed test = {0}",
-                //    Encoding.ASCII.GetString(bytes,0,bytesRec));
+                byte[] bytes = new byte[1024];
+                int bytesRec = sender.Receive(bytes);
+                Console.WriteLine("Echoed test = {0}",
+                    Encoding.ASCII.GetString(bytes,0,bytesRec));
                 sender.Shutdown(SocketShutdown.Both);
                 sender.Close();
 

@@ -1,6 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<node type="mux" number="1" name="client1">
-	<port local="1" tcp="4030" stm="STM1"/>
-	<cloud-server tcp="7001"/>
-	<managment-port number="9000"/>
-</node>
+<?xml version="1.0" encoding="utf-8"?>
+<client>
+  <port local="1" tcp="3000" stm="STM1"/>
+  <node name="clientA"/>
+  <managment-port number ="9900"/>
+  <cloud-server tcp="6000"/>
+</client>
+
