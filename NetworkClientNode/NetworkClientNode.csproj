@@ -54,6 +54,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ClientSetUpProcess.cs" />
+    <Compile Include="CPCC\CallingPartyCallController.cs" />
+    <Compile Include="CPCC\ClientHandler.cs" />
+    <Compile Include="CPCC\ConfigReader.cs" />
+    <Compile Include="CPCC\ConnectionHandler.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

@@ -1,0 +1,1 @@
+cd ..\..\Directory\bin\Debug\ & start Directory.exe 1

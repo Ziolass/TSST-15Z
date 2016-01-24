@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<directory-config>
+<network-info>
+<autonomous-system-name name="AS1"/>
+<localport value="50008"/>
+<ncc-port value="50001"/>
+</network-info>
+
+	
+</directory-config>

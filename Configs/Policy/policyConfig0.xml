@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<directory-config>
+<network-info>
+<autonomous-system-name name="AS1"/>
+<port value="50003"/>
+</network-info>
+
+</directory-config>

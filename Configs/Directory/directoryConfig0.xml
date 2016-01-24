@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<directory-config>
+<network-info>
+<autonomous-system-name name="AS1"/>
+<port value="50002"/>
+</network-info>
+
+	<entries>
+		<entry username="JAN" address ="50000"/>
+		<entry username="JACEK" address ="50008"/>  
+		<entry username="MICHAU" address ="50008"/>
+	</entries>
+	
+</directory-config>
