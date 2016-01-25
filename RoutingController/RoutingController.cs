@@ -62,7 +62,7 @@ namespace RoutingController
         /// <returns></returns>
         public bool UpdateNetworkGraph(ITopology topology)
         {
-            NetworkGraph tempNetworkGraph = this.GetNetworkGraph(topology.LinkList[0].Domains[0]);
+            NetworkGraph tempNetworkGraph = this.GetNetworkGraph("mydomain1");
             if (tempNetworkGraph != null)
             {
                 tempNetworkGraph.UpdateGraph(topology);

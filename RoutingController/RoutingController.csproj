@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Elements\Destination.cs" />
+    <Compile Include="Elements\Node.cs" />
     <Compile Include="Elements\QueryRequest.cs" />
     <Compile Include="Interfaces\IDestination.cs" />
     <Compile Include="Interfaces\ILinkResourceMenager.cs" />

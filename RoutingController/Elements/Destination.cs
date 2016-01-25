@@ -1,4 +1,5 @@
 ﻿
+using Newtonsoft.Json;
 using RoutingController.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,14 @@ namespace RoutingController.Elements
 
         public int Port { get; private set; }
 
+        public Destination()
+        {
+            this.Scope = null;
+            this.Node = null;
+            this.Port = -1;
+        }
+
+        [JsonConstructor]
         public Destination(string scope, string node, int port)
         {
             this.Scope = scope;

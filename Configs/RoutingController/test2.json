@@ -1,8 +1,8 @@
 {
     Protocol: "resources",
+    Node: "node2",
     LinkList: [
         {
-            Node: "node2",
             Port: 1,
             Domains: [
                 "mydomain1"
@@ -16,7 +16,6 @@
             Status: "FREE"
         },
         {
-            Node: "node2",
             Port: 2,
             Domains: [
                 "mydomain1"

@@ -18,7 +18,7 @@ namespace RoutingController.Elements
         public TopologyRequest(string node, List<Link> linkList)
         {
             this.Node = node;
-            this.LinkList = LinkList;
+            this.LinkList = linkList;
         }
         public TopologyRequest()
         {

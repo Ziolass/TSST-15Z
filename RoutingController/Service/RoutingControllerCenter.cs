@@ -9,6 +9,8 @@ using System.Threading;
 
 namespace RoutingController.Service
 {
+    public enum ActionType { LocalTopology, RouteTableQuery, Undef }
+
     // State object for reading client data asynchronously
     public class StateObject
     {
@@ -40,37 +42,66 @@ namespace RoutingController.Service
         }
 
         /// <summary>
+        /// Operations the type.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public ActionType OperationType(string request)
+        {
+            try
+            {
+                JObject metadata = JObject.Parse(request);
+                if (metadata["Protocol"] != null)
+                {
+                    //LocalTopology
+                    if (metadata["Protocol"].ToString() == "resources")
+                        return ActionType.LocalTopology;
+                    else if (metadata["Protocol"].ToString() == "query")
+                        return ActionType.RouteTableQuery;
+                    else return ActionType.Undef;
+                }
+                else return ActionType.Undef;
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine("Error! OperationType: " + exp.Message);
+                return ActionType.Undef;
+            }
+        }
+
+        /// <summary>
         /// Performs action depending on the request.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
         private string PerformAction(string request)
         {
-                //parse JSON
-                JObject metadata = JObject.Parse(request);
-                if (metadata["Protocol"] != null)
+            try
+            {
+                ActionType actionType = OperationType(request);
+                if (actionType == ActionType.LocalTopology)
                 {
-                    //LocalTopology
-                    if (metadata["Protocol"].ToString() == "resources")
-                    {
-                        request = request.Replace("Protocol: \"resources\",", "");
-                        TopologyRequest topologyRequest = JsonConvert.DeserializeObject<TopologyRequest>(request);
-                        this.RoutingController.UpdateNetworkGraph(topologyRequest);
-                        Console.WriteLine("Update from {0} ", topologyRequest.Node);
-                        return "OK";
-                    }
-                    //RouteTableQuery
-                    else if (metadata["Protocol"].ToString() == "query")
-                    {
-                        request = request.Replace("Protocol: \"query\",", "");
-                        QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
-                        Console.WriteLine("RouteTableQuery from {0} ", queryRequest.LrmId);
-                        return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest.Source, queryRequest.Destination));
-                    }
-                    else return "ERROR";
+                    request = request.Replace("Protocol: \"resources\",", "");
+                    TopologyRequest topologyRequest = JsonConvert.DeserializeObject<TopologyRequest>(request);
+                    this.RoutingController.UpdateNetworkGraph(topologyRequest);
+                    Console.WriteLine("Update from {0} ", topologyRequest.Node);
+                    return "OK";
+                }
+                //RouteTableQuery
+                else if (actionType == ActionType.RouteTableQuery)
+                {
+                    request = request.Replace("Protocol: \"query\",", "");
+                    QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
+                    Console.WriteLine("RouteTableQuery from {0} ", queryRequest.LrmId);
+                    return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest.Source, queryRequest.Destination));
                 }
                 else return "ERROR";
-            
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine(exp.Message);
+                return "ERROR";
+            }
         }
 
         /// <summary>
@@ -166,9 +197,6 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void AcceptCallback(IAsyncResult ar)
         {
-            // Signal the main thread to continue.
-            allDone.Set();
-
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
@@ -208,7 +236,19 @@ namespace RoutingController.Service
 
                 if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                 {
-                    string response = this.PerformAction(content);
+                    string response = string.Empty;
+                    if (this.OperationType(content) == ActionType.LocalTopology)
+                    {
+                        response = this.PerformAction(content);
+                        // Signal the main thread to continue.
+                        allDone.Set();
+                    }
+                    else
+                    {   
+                        // Signal the main thread to continue.
+                        allDone.Set();
+                        response = this.PerformAction(content);
+                    }
                     Send(handler, response);
                 }
                 else

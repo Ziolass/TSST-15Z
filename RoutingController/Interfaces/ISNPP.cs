@@ -8,7 +8,7 @@ namespace RoutingController.Interfaces
 {
     public interface ISNPP
     {
-        int NodeId { get; set; }
-        int Id { get; set; }
+        string NodeName { get; }
+        int Port { get; }
     }
 }

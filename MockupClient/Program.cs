@@ -11,6 +11,7 @@ namespace MockupClient
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
+    using System.Threading;
 
     public class SynchronousSocketClient
     {
@@ -60,7 +61,16 @@ namespace MockupClient
         public static void Main(String[] args)
         {
             StartClient("../../../Configs/RoutingController/test" + args[0] + ".json");
-            Console.ReadLine();
+            //Thread.Sleep(200);
+            StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
+            //Thread.Sleep(200);
+            StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
+            //Thread.Sleep(200);
+            StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
+            //Thread.Sleep(1000);
+            StartClient("../../../Configs/RoutingController/test" + args[4] + ".json");
+
+            //Console.ReadLine();
         }
     }
 }
