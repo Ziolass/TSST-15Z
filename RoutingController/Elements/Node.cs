@@ -10,31 +10,40 @@ namespace RoutingController.Elements
     public class Node : IComparer
     {
         public string Name { get; set; }
-        public List<Link> Port { get; private set; }
+        public int Port { get; private set; }
 
-        public Node(string name, List<Link> ports)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Node"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="ports">The ports.</param>
+        public Node(string name, int ports)
         {
             this.Name = name;
             this.Port = ports;
         }
-        public Node(string name)
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Node"/> class.
+        /// </summary>
+        /// <param name="nodeId">The node identifier. (node id + port = node1:1)</param>
+        public Node(string nodeId)
         {
-            this.Name = name;
-        }
-        public Node()
-        {
-            this.Name = string.Empty;
-            this.Port = new List<Link>();
+            this.Name = nodeId.Substring(0, nodeId.IndexOf(":"));
+            int port;
+            int.TryParse(nodeId.Substring(nodeId.IndexOf(':') + 1), out port);
+            this.Port = port;
+
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Node"/> class.
+        /// </summary>
+        /// <param name="node">The node.</param>
         public Node(Node node)
         {
             this.Name = node.Name;
-            this.Port = new List<Link>();
-            foreach (Link port in node.Port)
-            {
-                Port.Add(port);
-            }
+            this.Port = node.Port;
         }
 
         /// <summary>
@@ -56,11 +65,41 @@ namespace RoutingController.Elements
             else return 1;
         }
 
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
-            string ports = string.Empty;
-            Port.ForEach(x => ports += x.ToString());
-            return Name + ", " + ports;
+            return Name + ", " + Port;
+        }
+
+        /// <summary>
+        /// Gets the node identifier.
+        /// </summary>
+        /// <returns></returns>
+        public string GetNodeId()
+        {
+            return Name + ":" + Port;
+        }
+
+        public bool Equals(object y)
+        {
+            if (this is Node && y is Node)
+            {
+                if (this.Name == ((Node)y).Name && this.Port.Equals(((Node)y).Port))
+                    return true;
+                else return false;
+            }
+            else return false;
+        }
+
+        public int GetHashCode(object obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }

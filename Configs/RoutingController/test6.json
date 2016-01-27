@@ -1,0 +1,6 @@
+{
+    Protocol: "query",
+    Source: "client1:1",
+    Destination: "client2:1",
+    LrmId:  "testowyLRM"
+}

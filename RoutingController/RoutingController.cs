@@ -60,21 +60,29 @@ namespace RoutingController
         /// </summary>
         /// <param name="topology">The topology.</param>
         /// <returns></returns>
+        /// <exception cref="System.Exception">Error UpdateNetworkGraph: No domain name!</exception>
         public bool UpdateNetworkGraph(ITopology topology)
         {
-            NetworkGraph tempNetworkGraph = this.GetNetworkGraph("mydomain1");
-            if (tempNetworkGraph != null)
+            TopologyRequest topologyRequest = (TopologyRequest)topology;
+            List<string> domainNames = topologyRequest.GetDomains();
+            if (domainNames.Count != 0)
             {
-                tempNetworkGraph.UpdateGraph(topology);
+                foreach (string domainName in domainNames)
+                {
+                    NetworkGraph tempNetworkGraph = this.GetNetworkGraph(domainName);
+                    if (tempNetworkGraph != null)
+                    {
+                        tempNetworkGraph.UpdateGraph(topology);
+                    }
+                    else
+                    {
+                        NetworkGraphs.Add(new NetworkGraph(topology, domainName));
+                    }
+                }
                 return true;
             }
-            else
-            {
-                //TODO tutaj mega sprytne tworzenie NetworkGraph
-
-                NetworkGraphs.Add(new NetworkGraph(topology));
-                return true;
-            }
+            else throw new Exception("Error UpdateNetworkGraph: No domain name!");
+            
         }
 
         /// <summary>
@@ -101,7 +109,7 @@ namespace RoutingController
         {
             foreach (NetworkGraph networkGraph in NetworkGraphs)
             {
-                if (networkGraph.NetworkId == networkName)
+                if (networkGraph.NetworkName == networkName)
                     return networkGraph;
             }
             return null;

@@ -61,14 +61,13 @@ namespace MockupClient
         public static void Main(String[] args)
         {
             StartClient("../../../Configs/RoutingController/test" + args[0] + ".json");
-            //Thread.Sleep(200);
             StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
-            //Thread.Sleep(200);
             StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
-            //Thread.Sleep(200);
             StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
-            //Thread.Sleep(1000);
             StartClient("../../../Configs/RoutingController/test" + args[4] + ".json");
+            StartClient("../../../Configs/RoutingController/test" + args[5] + ".json");
+            StartClient("../../../Configs/RoutingController/test" + args[6] + ".json");
+
 
             //Console.ReadLine();
         }

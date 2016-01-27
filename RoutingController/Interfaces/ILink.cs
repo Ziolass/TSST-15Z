@@ -7,7 +7,7 @@ using RoutingController.Elements;
 
 namespace RoutingController.Interfaces
 {
-    public enum NodeType { LOCAL, NETWORK, CLIENT, UNDEF }
+    public enum NodeType { LOCAL, NETWORK, CLIENT, INTERNAL, UNDEF }
     public enum NodeStatus { FREE, OCCUPIED, UNDEF }
 
     /// <summary>

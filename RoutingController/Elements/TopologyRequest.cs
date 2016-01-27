@@ -14,15 +14,42 @@ namespace RoutingController.Elements
         public string Node { get; private set; }
         public List<Link> LinkList { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TopologyRequest"/> class.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <param name="linkList">The link list.</param>
         [JsonConstructor]
         public TopologyRequest(string node, List<Link> linkList)
         {
             this.Node = node;
             this.LinkList = linkList;
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TopologyRequest"/> class.
+        /// </summary>
         public TopologyRequest()
         {
             this.LinkList = new List<Link>();
+        }
+
+        /// <summary>
+        /// Gets all domains.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetDomains()
+        {
+            List<string> returnList = new List<string>();
+            foreach (Link link in LinkList)
+            {
+                foreach (string linkDomain in link.Domains)
+                {
+                    if (!returnList.Contains(linkDomain))
+                        returnList.Add(linkDomain);
+                    else continue;
+                }
+            }
+            return returnList;
         }
 
         /// <summary>

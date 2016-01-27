@@ -1,7 +1,7 @@
 {
     Protocol: "resources",
 
-    Node: "client2",
+    Node: "client1",
     LinkList: [
         {
             Port: 1,
@@ -11,7 +11,7 @@
             Type: "LOCAL",
             Destination: {
                 Scope: null,
-                Node: "node4",
+                Node: "node1",
                 Port: 4
             },
             Status: "FREE"

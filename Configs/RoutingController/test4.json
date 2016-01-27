@@ -43,6 +43,20 @@
                 Port: 2
             },
             Status: "FREE"
+        },
+        {
+            Port: 4,
+            Domains: [
+                "mydomain1"
+            ],
+
+            Type: "LOCAL",
+            Destination: {
+                Scope: null,
+                Node: "client2",
+                Port: 1
+            },
+            Status: "FREE"
         }
     ]
 }
