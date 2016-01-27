@@ -34,6 +34,14 @@ namespace NetworkClientNode.ViewModels
             get { return messageRecivedText; }
             set { messageRecivedText = value; }
         }
+
+        private string messageConsoleText;
+        public string MessageConsoleText
+        {
+            get { return messageConsoleText; }
+            set { messageConsoleText = value; }
+        }
+        
         public string ClientName
         {
             get { return this.ClientSetUpProccess.ClientNode.Id; }
@@ -97,6 +105,8 @@ namespace NetworkClientNode.ViewModels
             this.messageRecivedText += DateTime.Now + "\n" + data.ToString();
             RisePropertyChange(this, "MessageRecivedText");
         }
+
+
 
         private void OnStreamAdded(StreamChangedArgs args)
         {
