@@ -12,7 +12,7 @@ namespace NetworkNode
     {
         static void Main(string[] args)
         {
-            String id = "0";// args[0];
+            String id = args[0];
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\NetworkNode\\nodeConfig" + id + ".xml");
             NetworkNode node = setUpProcess.startNodeProcess();
             Console.WriteLine("Start emulation");
