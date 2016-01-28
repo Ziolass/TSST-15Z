@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode", "NetworkNode\NetworkNode.csproj", "{F2453730-6933-4343-856C-273A9FA16B6E}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoutingController", "RoutingController\RoutingController.csproj", "{B703FB71-1209-401D-862D-FF12250E54B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockupClient", "MockupClient\MockupClient.csproj", "{0450AB59-1D7D-4D0A-947E-29903FF02A46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConectionController", "ConectionController\ConectionController.csproj", "{97CACFCE-7A59-49AB-8FDA-D155FEF16080}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0450AB59-1D7D-4D0A-947E-29903FF02A46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97CACFCE-7A59-49AB-8FDA-D155FEF16080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97CACFCE-7A59-49AB-8FDA-D155FEF16080}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97CACFCE-7A59-49AB-8FDA-D155FEF16080}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97CACFCE-7A59-49AB-8FDA-D155FEF16080}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

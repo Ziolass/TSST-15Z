@@ -170,22 +170,18 @@ namespace NetworkNode.HPC
             }
         }
 
-        public void OccupyPorts(Dictionary<int, int> ports)
+        public Dictionary<int, int> OccupyPorts(Dictionary<int, int> ports)
         {
             lock (OccupationLock)
             {
-                if (ports.Count != 2)
-                {
-                    throw new Exception("API Interface error : OccupyPort");
-                }
-
                 List<int> exhausted = new List<int>();
 
                 foreach (int portNumber in ports.Keys)
                 {
                     int occupiedIndex = ports[portNumber];
 
-                    PortsResources[portNumber].SetOccupied(occupiedIndex);
+                    PortsResources[portNumber].SetOccupied(occupiedIndex);//TO może powodować błędy
+                    
                     if (PortsResources[portNumber].Counter == PortsResources[portNumber].MaxLength)
                     {
                         exhausted.Add(portNumber);
@@ -197,7 +193,7 @@ namespace NetworkNode.HPC
                     LinkOccupied(this, new LinkOccupiedArgs(exhausted));
                 }
             }
-
+            return ports;
         }
 
         public Dictionary<int, int> OccupyNextAvalible(List<int> ports)

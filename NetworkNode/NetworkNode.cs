@@ -26,7 +26,7 @@ namespace NetworkNode
 
         public ExecutionResult AddForwardingRecords(List<List<ForwardingRecord>> records)
         {
-            return hpc.AddForwardingRecords(records);
+            return hpc.AddForwardingRecords(records, true);
         }
 
         public bool ShudownInterface(int number)

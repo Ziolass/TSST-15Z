@@ -74,7 +74,7 @@ namespace NetworkNode.HPC
             }
         }
 
-        public ExecutionResult AddForwardingRecords(List<List<ForwardingRecord>> records)
+        public ExecutionResult AddForwardingRecords(List<List<ForwardingRecord>> records, bool resourceLocation)
         {
             int index = 0;
             List<ForwardingRecord> checkedRecords = new List<ForwardingRecord>();
@@ -95,7 +95,12 @@ namespace NetworkNode.HPC
                     index++;
                 }
                 Connections.Add(twoWayRecord[0]);
-                LinkResources.OccupyResources(twoWayRecord[0]);
+                
+                if (resourceLocation)
+                {
+                    LinkResources.OccupyResources(twoWayRecord[0]);
+                }
+                
             }
 
             foreach (ForwardingRecord record in checkedRecords) 
@@ -111,20 +116,44 @@ namespace NetworkNode.HPC
             return new ExecutionResult(true,null);
         }
 
-        public Dictionary<int, int> AllocateNextAvalible(List<int> ports)
+        public Dictionary<int, int> Allocate(Dictionary<int, int?> ports)
         {
             VirtualContainerLevel level = VirtualContainerLevel.VC32;
-            Dictionary<int, int> allocatedResources = LinkResources.OccupyNextAvalible(ports);
+            Dictionary<int, int> allocatedResources = new Dictionary<int, int>();
             
-            //TODO: DOPISAC DODAWANIE FORWARDING TABLE!
-            //allocatedResources = d³ugoœæ powinna byæ równa 2
+            foreach (KeyValuePair<int, int?> portWithIndex in ports)
+            {
+                int port = portWithIndex.Key;
+                int? resourceIndex = portWithIndex.Value;
+
+                if (resourceIndex == null)
+                {
+                    List<int> wrappedPort = new List<int>();
+                    wrappedPort.Add(port);
+                    foreach (KeyValuePair<int, int> entry in LinkResources.OccupyNextAvalible(wrappedPort))
+                    {
+                        allocatedResources.Add(entry.Key,entry.Value);
+                    }
+                    
+                }
+                else
+                {
+                    Dictionary<int, int> wrappedPort = new Dictionary<int, int>();
+                    wrappedPort.Add(port, resourceIndex.Value);
+                    
+                    foreach (KeyValuePair<int, int> entry in LinkResources.OccupyPorts(wrappedPort))
+                    {
+                        allocatedResources.Add(entry.Key, entry.Value);
+                    }
+                }
+            }
 
             List<ForwardingRecord> twoWayRecord = TranslateToRecords(allocatedResources, level);
-            
+
             List<List<ForwardingRecord>> records = new List<List<ForwardingRecord>>();
             records.Add(twoWayRecord);
 
-            AddForwardingRecords(records);
+            AddForwardingRecords(records, false);
 
             return allocatedResources;
         }

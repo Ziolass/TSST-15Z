@@ -95,7 +95,7 @@ namespace NetworkNode.LRM
             {
                 case "ADD":
                     {
-                        return AllocateEndpoints(endpoints);
+                        return Allocate(endpoints);
                     }
                 case "REMOVE":
                     {
@@ -118,24 +118,34 @@ namespace NetworkNode.LRM
             return "OK";
         }
 
-        private string AllocateEndpoints(List<string> endpoints)
+
+        private string Allocate(List<string> endpoints)
         {
-            List<int> ports = new List<int>();
+
+            Dictionary<int, int?> portsWithIndexes = new Dictionary<int, int?>();
             foreach (string endpoint in endpoints)
             {
-                ports.Add(int.Parse(endpoint));
+                string[] endpointDetails = endpoint.Split(':');
+                if (endpointDetails.Length == 1)
+                {
+                    portsWithIndexes.Add(int.Parse(endpointDetails[0]), null);
+                }
+                else
+                {
+                    portsWithIndexes.Add(int.Parse(endpointDetails[0]), int.Parse(endpointDetails[1]));
+                }
             }
 
-            Dictionary<int, int> allocatedResources = Hpc.AllocateNextAvalible(ports);
+            Dictionary<int, int> allocatedResources = Hpc.Allocate(portsWithIndexes);
 
             StringBuilder builder = new StringBuilder();
             int index = 0;
-            foreach (int port in ports)
+            foreach (int port in portsWithIndexes.Keys)
             {
                 builder.Append(port);
                 builder.Append(':');
                 builder.Append(allocatedResources[port]);
-                if (index < ports.Count)
+                if (index < portsWithIndexes.Count)
                 {
                     builder.Append('|');
                 }
