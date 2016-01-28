@@ -15,17 +15,17 @@ namespace RoutingController.Elements
 
         public string Node { get; private set; }
 
-        public int Port { get; private set; }
+        public string Port { get; private set; }
 
         public Destination()
         {
             this.Scope = null;
             this.Node = null;
-            this.Port = -1;
+            this.Port = null;
         }
 
         [JsonConstructor]
-        public Destination(string scope, string node, int port)
+        public Destination(string scope, string node, string port)
         {
             this.Scope = scope;
             this.Node = node;

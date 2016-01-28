@@ -10,8 +10,7 @@ namespace RoutingController.Interfaces
     {
         string Scope { get; } //Name of other subnetwork
         string Node { get; } //Node ID
-        int Port { get; } //Node Port
+        string Port { get; } //Node Port
 
-        string NodeId();
     }
 }

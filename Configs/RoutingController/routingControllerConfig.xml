@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <routing-controller>
 	<ports>
-		<port value="8888"/>
+		<port value="3778"/>
 	</ports>
 </routing-controller>

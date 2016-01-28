@@ -41,7 +41,7 @@ namespace RoutingController.Elements
         {
             //Create new graph
             Dictionary<Node, Dictionary<ILink, int>> newGraph = new Dictionary<Node, Dictionary<ILink, int>>();
-            foreach (ILink link in topology.LinkList)
+            foreach (ILink link in topology.Data)
             {
                 if (link.Status == NodeStatus.FREE)
                 {
@@ -227,10 +227,10 @@ namespace RoutingController.Elements
                 {
                     var alt = distances[smallest] + neighbor.Value;
 
-                    if (distances.ContainsKey(neighbor.Key.Destination.NodeId()) &&  alt < distances[neighbor.Key.Destination.NodeId()])
+                    if (distances.ContainsKey(((Destination)neighbor.Key.Destination).NodeId()) && alt < distances[((Destination)neighbor.Key.Destination).NodeId()])
                     {
-                        distances[neighbor.Key.Destination.NodeId()] = alt;
-                        previous[neighbor.Key.Destination.NodeId()] = smallest;
+                        distances[((Destination)neighbor.Key.Destination).NodeId()] = alt;
+                        previous[((Destination)neighbor.Key.Destination).NodeId()] = smallest;
                     }
                 }
             }

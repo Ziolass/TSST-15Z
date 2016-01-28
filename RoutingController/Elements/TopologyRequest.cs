@@ -12,7 +12,7 @@ namespace RoutingController.Elements
     public class TopologyRequest : ITopology
     {
         public string Node { get; private set; }
-        public List<Link> LinkList { get; private set; }
+        public List<ILink> Data { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TopologyRequest"/> class.
@@ -20,17 +20,17 @@ namespace RoutingController.Elements
         /// <param name="node">The node.</param>
         /// <param name="linkList">The link list.</param>
         [JsonConstructor]
-        public TopologyRequest(string node, List<Link> linkList)
+        public TopologyRequest(string node, List<ILink> linkList)
         {
             this.Node = node;
-            this.LinkList = linkList;
+            this.Data = linkList;
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="TopologyRequest"/> class.
         /// </summary>
         public TopologyRequest()
         {
-            this.LinkList = new List<Link>();
+            this.Data = new List<ILink>();
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace RoutingController.Elements
         public List<string> GetDomains()
         {
             List<string> returnList = new List<string>();
-            foreach (Link link in LinkList)
+            foreach (Link link in Data)
             {
                 foreach (string linkDomain in link.Domains)
                 {

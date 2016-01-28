@@ -10,14 +10,14 @@ namespace RoutingController.Elements
     public class Node : IComparer
     {
         public string Name { get; set; }
-        public int Port { get; private set; }
+        public string Port { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Node"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="ports">The ports.</param>
-        public Node(string name, int ports)
+        public Node(string name, string ports)
         {
             this.Name = name;
             this.Port = ports;
@@ -30,9 +30,7 @@ namespace RoutingController.Elements
         public Node(string nodeId)
         {
             this.Name = nodeId.Substring(0, nodeId.IndexOf(":"));
-            int port;
-            int.TryParse(nodeId.Substring(nodeId.IndexOf(':') + 1), out port);
-            this.Port = port;
+            this.Port = nodeId.Substring(nodeId.IndexOf(':') + 1);
 
         }
 

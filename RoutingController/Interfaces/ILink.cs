@@ -15,7 +15,7 @@ namespace RoutingController.Interfaces
     /// </summary>
     public interface ILink
     {
-        int Port { get; }
+        string Port { get; }
         List<string> Domains { get; }
         NodeType Type { get; }
         IDestination Destination { get; }
