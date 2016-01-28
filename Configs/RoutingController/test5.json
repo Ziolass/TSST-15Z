@@ -6,13 +6,27 @@
         {
             Port: 1,
             Domains: [
-                "mydomain1"
+                "mydomain2"
             ],
             Type: "LOCAL",
             Destination: {
                 Scope: null,
                 Node: "node4",
                 Port: 4
+            },
+            Status: "FREE"
+        },
+        {
+        
+            Port: 2,
+            Domains: [
+               "mydomain2"
+            ],
+            Type: "LOCAL",
+            Destination: {
+                Scope: null,
+                Node: "node4",
+                Port: 5
             },
             Status: "FREE"
         }

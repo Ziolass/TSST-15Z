@@ -8,7 +8,7 @@
             Domains: [
                 "mydomain1"
             ],
-            Type: "LOCAL",
+            Type: "NETWORK",
             Destination: {
                 Scope: null,
                 Node: "node3",
@@ -22,7 +22,7 @@
                 "mydomain1"
             ],
 
-            Type: "LOCAL",
+            Type: "NETWORK",
             Destination: {
                 Scope: null,
                 Node: "node1",
@@ -36,7 +36,7 @@
                 "mydomain1"
             ],
 
-            Type: "LOCAL",
+            Type: "NETWORK",
             Destination: {
                 Scope: null,
                 Node: "node2",
@@ -47,7 +47,7 @@
         {
             Port: 4,
             Domains: [
-                "mydomain1"
+                "mydomain2"
             ],
 
             Type: "LOCAL",
@@ -55,6 +55,20 @@
                 Scope: null,
                 Node: "client2",
                 Port: 1
+            },
+            Status: "FREE"
+        },
+        {
+            Port: 5,
+            Domains: [
+                "mydomain2"
+            ],
+
+            Type: "LOCAL",
+            Destination: {
+                Scope: null,
+                Node: "client2",
+                Port: 2
             },
             Status: "FREE"
         }

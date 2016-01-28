@@ -6,7 +6,7 @@
         {
             Port: 1,
             Domains: [
-                "mydomain1"
+               "mydomain1"
             ],
             Type: "LOCAL",
             Destination: {
@@ -19,10 +19,10 @@
         {
             Port: 2,
             Domains: [
-                "mydomain1"
+               "mydomain1"
             ],
 
-            Type: "LOCAL",
+            Type: "NETWORK",
             Destination: {
                 Scope: null,
                 Node: "node4",

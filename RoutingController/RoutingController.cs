@@ -40,19 +40,41 @@ namespace RoutingController
         /// </exception>
         public List<string> RouteTableResponse(string source, string destination)
         {
-
-            //TODO : Zmiana na sprawdzenie w jakiej domenie jest destination
-            NetworkGraph tempNetworkGraph = this.GetNetworkGraph("mydomain1");
-            if (tempNetworkGraph != null)
+            //What domain name?
+            string destinationDomainName = SearchDomainName(destination);
+            string sourceDomainName = SearchDomainName(source);
+            if (destinationDomainName == sourceDomainName)
             {
-                List<string> returnList = tempNetworkGraph.ShortestPath(source, destination);
-                if (returnList != null)
+                NetworkGraph tempNetworkGraph = this.GetNetworkGraph(destinationDomainName);
+                if (tempNetworkGraph != null)
                 {
-                    return returnList;
+                    List<string> returnList = tempNetworkGraph.ShortestPath(source, destination);
+                    if (returnList != null)
+                    {
+                        return returnList;
+                    }
+                    else throw new Exception("Error RouteTableResponse: Graph is uncomplete (ShortestPath)! ");
                 }
-                else throw new Exception("Error RouteTableResponse: Graph is uncomplete (ShortestPath)! ");
+                else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
             }
-            else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
+            else throw new Exception("Error RouteTableResponse: Two different domains! start: " + sourceDomainName + " destination: " + destinationDomainName );
+        }
+
+        /// <summary>
+        /// Searches name of the domain.
+        /// </summary>
+        /// <param name="nodeName">Name of the node. Source or destination</param>
+        /// <returns></returns>
+        private string SearchDomainName(string nodeName)
+        {
+            string domainName = string.Empty;
+            foreach (NetworkGraph networkGraph in NetworkGraphs)
+            {
+                domainName = networkGraph.GetDomainName(nodeName);
+                if (domainName != null)
+                    break;
+            }
+            return domainName;
         }
 
         /// <summary>
@@ -76,7 +98,9 @@ namespace RoutingController
                     }
                     else
                     {
-                        NetworkGraphs.Add(new NetworkGraph(topology, domainName));
+                        tempNetworkGraph = new NetworkGraph(topology, domainName);
+                        tempNetworkGraph.UpdateGraph(topology);
+                        NetworkGraphs.Add(tempNetworkGraph);
                     }
                 }
                 return true;

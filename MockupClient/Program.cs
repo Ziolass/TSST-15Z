@@ -66,7 +66,9 @@ namespace MockupClient
             StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
             StartClient("../../../Configs/RoutingController/test" + args[4] + ".json");
             StartClient("../../../Configs/RoutingController/test" + args[5] + ".json");
-            StartClient("../../../Configs/RoutingController/test" + args[6] + ".json");
+            StartClient("../../../Configs/RoutingController/testRequest0.json");
+            StartClient("../../../Configs/RoutingController/testRequest1.json");
+            //StartClient("../../../Configs/RoutingController/testRequest2.json");
 
 
             //Console.ReadLine();

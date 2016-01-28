@@ -60,7 +60,6 @@
     <Compile Include="RoutingController.cs" />
     <Compile Include="Service\ElementConfigurator.cs" />
     <Compile Include="Service\RoutingControllerCenter.cs" />
-    <Compile Include="Service\RoutingControllerPort.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

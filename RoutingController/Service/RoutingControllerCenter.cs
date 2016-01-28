@@ -77,7 +77,7 @@ namespace RoutingController.Service
         private string PerformAction(string request)
         {
             //try
-            //{
+           // {
                 ActionType actionType = OperationType(request);
                 if (actionType == ActionType.LocalTopology)
                 {
@@ -99,8 +99,8 @@ namespace RoutingController.Service
             //}
             //catch (Exception exp)
             //{
-            //    Console.WriteLine(exp.Message);
-            //    return "ERROR";
+             //   Console.WriteLine(exp.Message);
+              //  return "ERROR";
             //}
         }
 
@@ -244,7 +244,7 @@ namespace RoutingController.Service
                         allDone.Set();
                     }
                     else
-                    {   
+                    {
                         // Signal the main thread to continue.
                         allDone.Set();
                         response = this.PerformAction(content);
@@ -302,5 +302,6 @@ namespace RoutingController.Service
         }
 
         #endregion AsyncServer
+
     }
 }

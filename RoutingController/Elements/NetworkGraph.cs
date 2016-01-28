@@ -13,6 +13,7 @@ namespace RoutingController.Elements
         private static int ExternalLinkWeight = 1;
         public int NetworkLevel { get; set; }
         public string NetworkName { get; set; }
+        public string Log { get; set; }
         private Dictionary<Node, Dictionary<ILink, int>> Graph { get; set; }
 
         public NetworkGraph()
@@ -30,7 +31,6 @@ namespace RoutingController.Elements
             //TODO 
             this.NetworkName = networkName;
             this.Graph = new Dictionary<Node, Dictionary<ILink, int>>();
-            UpdateGraph(topology);
         }
 
         /// <summary>
@@ -43,8 +43,12 @@ namespace RoutingController.Elements
             Dictionary<Node, Dictionary<ILink, int>> newGraph = new Dictionary<Node, Dictionary<ILink, int>>();
             foreach (ILink link in topology.LinkList)
             {
-                Node newNode = new Node(topology.Node, link.Port);
-                AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
+                if (link.Status == NodeStatus.FREE)
+                {
+                    Node newNode = new Node(topology.Node, link.Port);
+                    AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
+                }
+                else Log += topology.Node + ":" + link.Port + " -> " + link.Destination.Node + ":" + link.Destination.Port + "\n";;
             }
 
             //Complete graph
@@ -57,7 +61,7 @@ namespace RoutingController.Elements
             }
             else
             {
-                Graph = new Dictionary<Node,Dictionary<ILink,int>>(CompereGraph(Graph, newGraph));
+                Graph = new Dictionary<Node, Dictionary<ILink, int>>(CompereGraph(Graph, newGraph));
             }
         }
 
@@ -109,7 +113,7 @@ namespace RoutingController.Elements
         private static Dictionary<Node, Dictionary<ILink, int>> CompereGraph(Dictionary<Node, Dictionary<ILink, int>> currentGraph, Dictionary<Node, Dictionary<ILink, int>> newGraph)
         {
             //Compere OLD -> NEW (remove old links, update links)
-            Dictionary<Node, Dictionary<ILink, int>> tempGraph = new Dictionary<Node,Dictionary<ILink,int>>(currentGraph);
+            Dictionary<Node, Dictionary<ILink, int>> tempGraph = new Dictionary<Node, Dictionary<ILink, int>>(currentGraph);
             foreach (var oldVertex in currentGraph)
             {
                 bool remove = true;
@@ -137,7 +141,7 @@ namespace RoutingController.Elements
                 }
                 else continue;
             }
-            currentGraph = new Dictionary<Node,Dictionary<ILink,int>>(tempGraph);
+            currentGraph = new Dictionary<Node, Dictionary<ILink, int>>(tempGraph);
             //Compere NEW -> OLD (add new links)
             foreach (var newVertex in newGraph)
             {
@@ -157,7 +161,7 @@ namespace RoutingController.Elements
             }
             return tempGraph;
         }
-        
+
         /// <summary>
         /// Calculate the shortests path using Dijkstra algorithm
         /// https://github.com/mburst/dijkstras-algorithm/blob/master/dijkstras.cs
@@ -223,7 +227,7 @@ namespace RoutingController.Elements
                 {
                     var alt = distances[smallest] + neighbor.Value;
 
-                    if (alt < distances[neighbor.Key.Destination.NodeId()])
+                    if (distances.ContainsKey(neighbor.Key.Destination.NodeId()) &&  alt < distances[neighbor.Key.Destination.NodeId()])
                     {
                         distances[neighbor.Key.Destination.NodeId()] = alt;
                         previous[neighbor.Key.Destination.NodeId()] = smallest;
@@ -241,6 +245,45 @@ namespace RoutingController.Elements
                 }
             }
             return returnPath;
+        }
+
+
+        /// <summary>
+        /// Gets the vertex.
+        /// </summary>
+        /// <param name="nodeName">Name of the node.</param>
+        /// <returns></returns>
+        public KeyValuePair<Node, Dictionary<ILink, int>> GetVertex(string nodeName)
+        {
+            foreach (var vertex in Graph)
+            {
+                if (vertex.Key.Name == nodeName || vertex.Key.GetNodeId() == nodeName)
+                {
+                    return vertex;
+                }
+                else return new KeyValuePair<Node, Dictionary<ILink, int>>();
+            }
+            return new KeyValuePair<Node, Dictionary<ILink, int>>();
+        }
+        /// <summary>
+        /// Gets the name of the domain.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public string GetDomainName(string source)
+        {
+            foreach (var vertex in Graph)
+            {
+                if (vertex.Key.GetNodeId() == source)
+                {
+                    foreach (var links in vertex.Value)
+                    {
+                        return links.Key.Domains[0];
+                    }
+                }
+            }
+            return null;
         }
     }
 }
