@@ -1,7 +1,7 @@
 {
     Protocol: "resources",
     Node: "node1",
-    LinkList: [
+    Data: [
         {
             Port: 1,
             Domains: [
@@ -46,7 +46,7 @@
             Domains: [
                 "mydomain1"
             ],
-            Type: "LOCAL",
+            Type: "CLIENT",
             Destination: {
                 Scope: null,
                 Node: "client1",

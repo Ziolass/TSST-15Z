@@ -38,7 +38,7 @@ namespace RoutingController
         /// or
         /// Error RouteTableResponse: NetworkGraph not found! 
         /// </exception>
-        public List<string> RouteTableResponse(string source, string destination)
+        public SNPP RouteTableResponse(string source, string destination)
         {
             //What domain name?
             string destinationDomainName = SearchDomainName(destination);
@@ -51,7 +51,8 @@ namespace RoutingController
                     List<string> returnList = tempNetworkGraph.ShortestPath(source, destination);
                     if (returnList != null)
                     {
-                        return returnList;
+                        SNPP returnSNPP = new SNPP(returnList);
+                        return returnSNPP;
                     }
                     else throw new Exception("Error RouteTableResponse: Graph is uncomplete (ShortestPath)! ");
                 }

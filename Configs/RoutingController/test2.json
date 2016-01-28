@@ -1,7 +1,7 @@
 {
     Protocol: "resources",
     Node: "node2",
-    LinkList: [
+    Data: [
         {
             Port: 1,
             Domains: [

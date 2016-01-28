@@ -60,15 +60,15 @@ namespace MockupClient
 
         public static void Main(String[] args)
         {
-            StartClient("../../../Configs/RoutingController/test" + args[0] + ".json");
+            //StartClient("../../../Configs/RoutingController/test" + args[0] + ".json");
             StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
             StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
             StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
             StartClient("../../../Configs/RoutingController/test" + args[4] + ".json");
-            StartClient("../../../Configs/RoutingController/test" + args[5] + ".json");
-            StartClient("../../../Configs/RoutingController/testRequest0.json");
-            StartClient("../../../Configs/RoutingController/testRequest1.json");
-            //StartClient("../../../Configs/RoutingController/testRequest2.json");
+            //StartClient("../../../Configs/RoutingController/test" + args[5] + ".json");
+            //StartClient("../../../Configs/RoutingController/testRequest0.json");
+            //StartClient("../../../Configs/RoutingController/testRequest1.json");
+            StartClient("../../../Configs/RoutingController/testRequest2.json");
 
 
             //Console.ReadLine();

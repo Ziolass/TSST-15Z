@@ -1,31 +1,65 @@
 using RoutingController.Interfaces;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace RoutingController.Elements
 {
     public class SNPP : ISNPP
     {
-        public string NodeName { get; set; }
-        public int Port { get; set; }
+        public List<SNP> Nodes { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SNPP" /> class.
         /// </summary>
         /// <param name="nodeName">Name of the node.</param>
         /// <param name="port">The port.</param>
-        public SNPP(string nodeName, int port)
+        [JsonConstructor]
+        public SNPP(List<SNP> nodes)
         {
-            this.NodeName = nodeName;
-            this.Port = port;
+            this.Nodes = new List<SNP>(nodes);
         }
-        public SNPP(string nodeName)
+
+        public SNPP(List<string> nodes)
         {
-            this.NodeName = nodeName;
-            this.Port = 0;
+            this.Nodes = new List<SNP>();
+            for (int i = 0; i < nodes.Count; i+=2)
+            {
+                if (i + 1 < nodes.Count)
+                {
+                    Node firstNode = new Node(nodes[i]);
+                    Node secondNode = new Node(nodes[i + 1]);
+                    List<string> portList = new List<string>();
+                    portList.Add(firstNode.Port);
+                    portList.Add(secondNode.Port);
+                    this.Nodes.Add(new SNP(firstNode.Name, portList));
+                }
+            }
+            /*foreach (string firstNodeId in nodes)
+            {
+                Node firstNode = new Node(firstNodeId);
+                Node secondNode = null;
+                foreach (string secondNodeId in nodes)
+                {
+                    secondNode = new Node(secondNodeId);
+                    if (firstNode.Name == secondNode.Name && firstNode.Port != secondNode.Port)
+                    {
+                        List<string> portList = new List<string>();
+                        portList.Add(firstNode.Port);
+                        portList.Add(secondNode.Port);
+                        this.Nodes.Add(new SNP(firstNode.Name, portList));
+                    }
+                }
+            }*/
         }
 
         public override string ToString()
         {
-            return NodeName + ": " + Port.ToString();
+            string returnString = string.Empty;
+            foreach (var item in Nodes)
+            {
+                returnString += item.ToString();
+            }
+            return returnString;
         }
 
     }

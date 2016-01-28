@@ -10,7 +10,7 @@ namespace RoutingController.Elements
     public class NetworkGraph
     {
         private static int InternalLinkWeight = 1;
-        private static int ExternalLinkWeight = 1;
+        private static int ExternalLinkWeight = 2;
         public int NetworkLevel { get; set; }
         public string NetworkName { get; set; }
         public string Log { get; set; }
@@ -41,18 +41,37 @@ namespace RoutingController.Elements
         {
             //Create new graph
             Dictionary<Node, Dictionary<ILink, int>> newGraph = new Dictionary<Node, Dictionary<ILink, int>>();
+            Dictionary<Node, Dictionary<ILink, int>> clientGraph = new Dictionary<Node, Dictionary<ILink, int>>();
             foreach (ILink link in topology.Data)
             {
                 if (link.Status == NodeStatus.FREE)
                 {
-                    Node newNode = new Node(topology.Node, link.Port);
-                    AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
+                    if (link.Type != NodeType.CLIENT)
+                    {
+                        Node newNode = new Node(topology.Node, link.Port);
+                        AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
+                    }
+                    else
+                    {
+                        Node newNode = new Node(topology.Node, link.Port);
+                        AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
+
+                        newNode = new Node(link.Destination.Node, link.Destination.Port);
+                        Link revLink = new Link(link.Destination.Port, link.Domains, link.Type, new Destination(null, topology.Node, link.Port), link.Status);
+                        AddVertex(clientGraph, newNode, revLink); //Add exp Node1:1 (id node : port of this node)
+                    }
                 }
-                else Log += topology.Node + ":" + link.Port + " -> " + link.Destination.Node + ":" + link.Destination.Port + "\n";;
+                else Log += topology.Node + ":" + link.Port + " -> " + link.Destination.Node + ":" + link.Destination.Port + "\n"; ;
             }
 
             //Complete graph
             newGraph = CompleteGraph(newGraph, this.NetworkName);
+            clientGraph = CompleteGraph(clientGraph, this.NetworkName);
+            
+            foreach (var item in clientGraph)
+            {
+                newGraph.Add(item.Key, item.Value);
+            }
 
             //Compere to local graph (remove old or not sent routes and update if link changed)
             if (Graph.Count == 0)

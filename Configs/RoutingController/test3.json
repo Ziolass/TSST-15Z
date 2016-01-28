@@ -2,7 +2,7 @@
     Protocol: "resources",
 
     Node: "node3",
-    LinkList: [
+    Data: [
         {
             Port: 1,
             Domains: [
