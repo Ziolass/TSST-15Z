@@ -6,7 +6,7 @@ namespace RoutingController.Elements
 {
     public class Link : ILink
     {
-        public int Port { get; private set; }
+        public string Port { get; private set; }
         public List<string> Domains { get; private set; }
         public NodeType Type { get; private set; }
         public IDestination Destination { get; private set; }
@@ -21,7 +21,7 @@ namespace RoutingController.Elements
         }
 
         [JsonConstructor]
-        public Link(int port, List<string> domains, NodeType type, Destination destination, NodeStatus status)
+        public Link(string port, List<string> domains, NodeType type, Destination destination, NodeStatus status)
         {
             this.Port = port;
             this.Domains = domains;

@@ -64,12 +64,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NetworkNode\NetworkNode.csproj">
-      <Project>{f2453730-6933-4343-856c-273a9fa16b6e}</Project>
-      <Name>NetworkNode</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
