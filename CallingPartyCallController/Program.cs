@@ -11,7 +11,7 @@ namespace CallingPartyCallController
         static void Main(string[] args)
         {
             string id = "0";
-            if(args.Length > 0)
+            if (args.Length > 0)
             {
                 id = args[0];
             }
@@ -26,13 +26,13 @@ namespace CallingPartyCallController
                 switch (a)
                 {
                     case "a":
-                        Console.WriteLine(ncc.callRequest("jan", "jacek"));
+                        Console.WriteLine(ncc.callRequest("jan1", "jacek"));
                         break;
                     case "b":
-                        Console.WriteLine(ncc.callRequest("jan", "monika"));
+                        Console.WriteLine(ncc.callRequest("jan1", "monika"));
                         break;
                     case "c":
-                        Console.WriteLine(ncc.callRequest("jacek", "jan"));
+                        Console.WriteLine(ncc.callRequest("jacek", "jan1"));
 
 
                         break;

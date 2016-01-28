@@ -55,7 +55,7 @@ namespace Directory
 
 
                     string response = directory.commandHandle(data);
-                    
+
                     // Echo the data back to the client.
                     byte[] msg = Encoding.ASCII.GetBytes(response);
 
