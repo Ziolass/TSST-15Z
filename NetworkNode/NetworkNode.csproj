@@ -48,6 +48,11 @@
     <Compile Include="Frame\FrameImp\Frame.cs" />
     <Compile Include="Frame\FrameImp\Header.cs" />
     <Compile Include="Frame\FrameImp\POH.cs" />
+    <Compile Include="HPC\Exceptions\AllLinksOccupied.cs" />
+    <Compile Include="HPC\LinkMatrix.cs" />
+    <Compile Include="LRM\LinkResourceManager.cs" />
+    <Compile Include="LRM\NodeInput.cs" />
+    <Compile Include="LRM\TopologyReports.cs" />
     <Compile Include="NetworkNodeSetupProcess.cs" />
     <Compile Include="ElementConfigurator.cs" />
     <Compile Include="HPC\HigherOrderPathConnection.cs" />

@@ -40,6 +40,33 @@ namespace NetworkNode.SDHFrame
                     }
             }
         }
+
+        public static int GetContainersNumber(VirtualContainerLevel level)
+        {
+            switch (level)
+            {
+                case VirtualContainerLevel.VC4:
+                    {
+                        return 1;
+                    }
+                case VirtualContainerLevel.VC32:
+                    {
+                        return 3;
+                    }
+                case VirtualContainerLevel.VC21:
+                    {
+                        return 21;
+                    }
+                case VirtualContainerLevel.VC12:
+                    {
+                        return 63;
+                    }
+                default:
+                    {
+                        throw new Exception("Not supported container level");
+                    }
+            }
+        }
     }
 
     public class StmLevelExt
@@ -71,6 +98,37 @@ namespace NetworkNode.SDHFrame
                 default:
                     {
                         return StmLevel.UNDEF;
+                    }
+            }
+        }
+
+        public static int GetHigherPathsNumber(StmLevel level)
+        {
+            switch (level)
+            {
+                case StmLevel.STM1:
+                    {
+                        return 1;
+                    }
+                case StmLevel.STM4:
+                    {
+                        return 4;
+                    }
+                case StmLevel.STM16:
+                    {
+                        return 16;
+                    }
+                case StmLevel.STM64:
+                    {
+                        return 64;
+                    }
+                case StmLevel.STM256:
+                    {
+                        return 256;
+                    }
+                default:
+                    {
+                        throw new Exception("Not supported STM");
                     }
             }
         }

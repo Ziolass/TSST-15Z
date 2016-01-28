@@ -120,5 +120,10 @@ namespace NetworkNode.TTF
             }
             return result;
         }
+
+        public void SendLrmData(int portNumber, string lrmData)
+        {
+            SendFrame("LRM@" + lrmData, portNumber);
+        }
     }
 }

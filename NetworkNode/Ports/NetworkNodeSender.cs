@@ -43,11 +43,11 @@ namespace WireCloud
                 ActionSocket.Shutdown(SocketShutdown.Both);
                 ActionSocket.Close();
             }
+
             catch (Exception e)
             {
-                Console.WriteLine("Unexpected exception : {0}", e.ToString());
+                Console.WriteLine("Unexpected exception : {0}", json);
             }
-
 
         }
     }

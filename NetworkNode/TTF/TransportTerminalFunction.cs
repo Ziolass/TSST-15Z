@@ -14,6 +14,13 @@ namespace NetworkNode.TTF
         MULTIPLEXER,
         CLIENT
     }
+
+    public enum DataType
+    {
+        LRM,
+        FRAME
+        
+    }
     public class InputFrameArgs : InputDataArgs
     {
         public IFrame Frame { get; set; }
@@ -24,7 +31,19 @@ namespace NetworkNode.TTF
         }
     }
 
+    public class InputLrmArgs : InputDataArgs
+    {
+        public string Data { get; set; }
+        public InputLrmArgs(int inputPort, string data)
+            : base(inputPort)
+        {
+            Data = data;
+        }
+    }
+
     public delegate void HandleInputFrame(object sender, InputFrameArgs args);
+    public delegate void HandleLrmData(object sender, InputLrmArgs args);
+
     public class TransportTerminalFunction
     {
         private SynchronousPhysicalInterface spi;        
@@ -35,6 +54,7 @@ namespace NetworkNode.TTF
         private NodeMode nodeMode;
 
         public event HandleInputFrame HandleInputFrame;
+        public event HandleLrmData HandleLrmData;
         public TransportTerminalFunction(SynchronousPhysicalInterface spi, NodeMode mode)
         {
             this.spi = spi;
@@ -44,20 +64,87 @@ namespace NetworkNode.TTF
             {
                 mst = new MultiplexSectionTermination();
             }
-            this.spi.HandleInputData += new HandleInputData(getInputData);
+            this.spi.HandleInputData += new HandleInputData(GetInputData);
             builder = new FrameBuilder();
         }
 
-        private void getInputData(object sender, InputDataArgs args)
+        public Dictionary<int, StmLevel> GetPorts()
+        {
+            return spi.GetPorts();
+        }
+        public void PassDataToInterfaces(Dictionary<int, IFrame> outputFrames)
+        {
+            foreach (int outputPort in outputFrames.Keys)
+            {
+                IFrame frame = outputFrames[outputPort];
+                rst.generateHeader(frame);
+                if (nodeMode == NodeMode.MULTIPLEXER)
+                {
+                    mst.generateHeader(frame);
+                }
+                String textForm = builder.BuildLiteral(frame);
+                spi.SendFrame(textForm, outputPort);
+                raportFrame(frame, "Output Frame");
+            }
+            //TODO tu może być zgłaszanie zdarzeia wysłania i powiadaomienie zegara zewnętrznego że wysyłamy ramkę.
+        }
+
+        public bool ShudownInterface(int number)
+        {
+            return spi.ShudownInterface(number);
+        }
+
+        public void SendLrmData(int portNumber, string lrmData)
+        {
+            spi.SendLrmData(portNumber, lrmData);
+        }
+
+        private void GetInputData(object sender, InputDataArgs args)
         {
             string bufferedData = spi.GetBufferedData(args.PortNumber);
 
+            DataType type = DetectDataType(bufferedData);
+
+            switch (type)
+            {
+                case DataType.FRAME:
+                    {
+                        HandleFrameData(bufferedData, args.PortNumber);
+                        break;
+                    }
+                case DataType.LRM:
+                    {
+                        HandleLrmFrame(bufferedData, args.PortNumber);
+                        break;
+                    }
+            }
+        }
+
+        private void HandleFrameData(string bufferedData, int portNumber)
+        {
             IFrame result = beginFrameEvaluation(bufferedData);
 
             if (HandleInputFrame != null)
             {
-                HandleInputFrame(this, new InputFrameArgs(args.PortNumber, result));
+                HandleInputFrame(this, new InputFrameArgs(portNumber, result));
             }
+        }
+
+        private void HandleLrmFrame(string bufferedData, int portNumber)
+        {
+            string[] normalizedData = bufferedData.Split('@');
+
+            string data = normalizedData[1];
+            if (HandleLrmData != null)
+            {
+                HandleLrmData(this, new InputLrmArgs(portNumber, data));
+            }
+        }
+
+        private DataType DetectDataType(string data)
+        {
+            string[] normalizedData = data.Split('@');
+            return normalizedData[0].Equals("LRM") ? DataType.LRM : DataType.FRAME;
         }
 
         private IFrame beginFrameEvaluation(string bufferedData)
@@ -92,31 +179,7 @@ namespace NetworkNode.TTF
             }
         }
 
-        public Dictionary<int, StmLevel>  GetPorts()
-        {
-            return spi.GetPorts();
-        }
-        public void PassDataToInterfaces(Dictionary<int,IFrame> outputFrames)
-        {
-            foreach (int outputPort in outputFrames.Keys)
-            {
-                IFrame frame = outputFrames[outputPort];
-                rst.generateHeader(frame);
-                if (nodeMode == NodeMode.MULTIPLEXER)
-                {
-                    mst.generateHeader(frame);
-                }                
-                String textForm = builder.BuildLiteral(frame);
-                spi.SendFrame(textForm, outputPort);
-                raportFrame(frame,"Output Frame");
-            }
-            //TODO tu może być zgłaszanie zdarzeia wysłania i powiadaomienie zegara zewnętrznego że wysyłamy ramkę.
-        }
-
-        public bool ShudownInterface(int number)
-        {
-            return spi.ShudownInterface(number);
-        }
+        
 
         internal void AddRsohContent(string dccContent)
         {
