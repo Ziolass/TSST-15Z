@@ -9,7 +9,7 @@ namespace RoutingController.Interfaces
 {
     public interface ITopology
     {
-        List<ILink> Data { get; }
+        List<Link> Data { get; }
         string Node { get; } //Which node send this info
 
     }

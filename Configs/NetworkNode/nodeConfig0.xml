@@ -5,5 +5,5 @@
 	<port local="3" tcp="5002" stm="STM4"/>
 	<cloud-server tcp="6000"/>
 	<managment-port number="7000"/>
-	<lrm domain="myDomain" cc-tcp="3777" rc-tcp="3778"/>
+	<lrm domain="myDomain" cc-tcp="8010" rc-tcp="8000"/>
 </node>

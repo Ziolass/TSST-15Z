@@ -25,7 +25,7 @@ namespace MockupClient
         try {
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 8888);
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 8000);
 
             Socket sender = new Socket(AddressFamily.InterNetwork, 
                 SocketType.Stream, ProtocolType.Tcp );
