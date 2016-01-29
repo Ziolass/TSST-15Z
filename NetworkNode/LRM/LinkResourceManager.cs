@@ -139,12 +139,18 @@ namespace NetworkNode.LRM
             Dictionary<int, int> allocatedResources = Hpc.Allocate(portsWithIndexes);
 
             StringBuilder builder = new StringBuilder();
+            builder.Append(NetworkNodeName);
+            builder.Append("|");
             int index = 0;
             foreach (int port in portsWithIndexes.Keys)
             {
                 builder.Append(port);
                 builder.Append(':');
                 builder.Append(allocatedResources[port]);
+                builder.Append('#');
+                builder.Append(DestinationsInfo[port].Node);
+                builder.Append('#');
+                builder.Append(DestinationsInfo[port].Port);
                 if (index < portsWithIndexes.Count)
                 {
                     builder.Append('|');
