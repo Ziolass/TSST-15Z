@@ -304,5 +304,21 @@ namespace RoutingController.Elements
             }
             return null;
         }
+
+        public Dictionary<Node, Node> GetRoutes()
+        {
+            Dictionary<Node, Node> returnDictionary = new Dictionary<Node,Node>();
+            foreach (var vertex in Graph)
+            {
+                foreach (var item in vertex.Value)
+                {
+                    if (item.Key.Destination.Node != vertex.Key.Name)
+                    {
+                        returnDictionary.Add(new Node(vertex.Key.Name,vertex.Key.Port), new Node(item.Key.Destination.Node,item.Key.Destination.Port));
+                    }
+                }
+            }
+            return returnDictionary;
+        }
     }
 }

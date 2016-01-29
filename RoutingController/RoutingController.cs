@@ -58,7 +58,7 @@ namespace RoutingController
                 }
                 else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
             }
-            else throw new Exception("Error RouteTableResponse: Two different domains! start: " + sourceDomainName + " destination: " + destinationDomainName );
+            else throw new Exception("Error RouteTableResponse: Two different domains! start: " + sourceDomainName + " destination: " + destinationDomainName);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace RoutingController
                 return true;
             }
             else throw new Exception("Error UpdateNetworkGraph: No domain name!");
-            
+
         }
 
         /// <summary>
@@ -140,9 +140,44 @@ namespace RoutingController
             return null;
         }
 
-        ISNPP NetworkTopology()
+
+        public string ShowRoutes()
         {
-            throw new NotImplementedException();
+            string returnString = null;
+            Dictionary<Node, Node> routes = new Dictionary<Node, Node>();
+            foreach (NetworkGraph item in NetworkGraphs)
+            {
+                routes = routes.Concat(item.GetRoutes()).ToDictionary(x => x.Key, x => x.Value);
+            }
+            Dictionary<Node, Node> returnRoutes = new Dictionary<Node, Node>(routes);
+
+
+            for (int i = 0; i < returnRoutes.Count; i++)
+            {
+                Node item = returnRoutes.ElementAt(i).Key;
+                for (int x = 0; x < returnRoutes.Count; x++)
+                {
+                    Node itemOther = returnRoutes.ElementAt(x).Key;
+                    Node itemOtherValue = returnRoutes.ElementAt(x).Value;
+                    if (item.GetNodeId() != itemOther.GetNodeId() && item.GetNodeId() == itemOtherValue.GetNodeId())
+                    {
+                        returnRoutes.Remove(itemOther);
+                        break;
+                    }
+                }
+
+            }
+            foreach (var item in returnRoutes)
+            {
+                returnString += item.Key.GetNodeId() + " <-> " + item.Value.GetNodeId() + "\n";
+            }
+            return returnString;
+        }
+
+        public bool ClearNetworkGraph()
+        {
+            NetworkGraphs = new List<NetworkGraph>();
+            return true;
         }
     }
 }

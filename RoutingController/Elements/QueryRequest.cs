@@ -11,13 +11,11 @@ namespace RoutingController.Elements
     {
         public string Source { get; private set; }
         public string Destination { get; private set; }
-        public string LrmId { get; private set; }
 
-        public QueryRequest(string source, string destination, string lrmId)
+        public QueryRequest(string source, string destination)
         {
             this.Source = source;
             this.Destination = destination;
-            this.LrmId = lrmId;
         }
     }
 }

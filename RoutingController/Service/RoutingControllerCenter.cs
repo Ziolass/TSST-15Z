@@ -76,8 +76,8 @@ namespace RoutingController.Service
         /// <returns></returns>
         private string PerformAction(string request)
         {
-          //  try
-          // {
+            try
+            {
                 ActionType actionType = OperationType(request);
                 if (actionType == ActionType.LocalTopology)
                 {
@@ -92,16 +92,16 @@ namespace RoutingController.Service
                 {
                     request = request.Replace("Protocol: \"query\",", "");
                     QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
-                    Console.WriteLine("RouteTableQuery from {0} ", queryRequest.LrmId);
+                    Console.WriteLine("RouteTableQuery request");
                     return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest.Source, queryRequest.Destination));
                 }
                 else return "ERROR";
-            /*}
+            }
             catch (Exception exp)
             {
-              Console.WriteLine(exp.Message);
-               return "ERROR";
-            }*/
+                Console.WriteLine(exp.Message);
+                return "ERROR";
+            }
         }
 
         /// <summary>
@@ -138,6 +138,8 @@ namespace RoutingController.Service
                 return false;
             }
         }
+
+              
 
         #region AsyncServer
 
@@ -176,7 +178,6 @@ namespace RoutingController.Service
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
                         listener);
-
                     // Wait until a connection is made before continuing.
                     allDone.WaitOne();
                 }
@@ -248,7 +249,7 @@ namespace RoutingController.Service
                         // Signal the main thread to continue.
                         allDone.Set();
                         response = this.PerformAction(content);
-                        Console.WriteLine(response);
+                        Console.WriteLine("RouteTableQuery sent");
                     }
                     Send(handler, response);
                 }
@@ -303,5 +304,20 @@ namespace RoutingController.Service
 
         #endregion AsyncServer
 
+
+        public string ShowRoutes()
+        {
+            return this.RoutingController.ShowRoutes();
+        }
+
+        internal string ClearRoutes()
+        {
+            if (this.RoutingController.ClearNetworkGraph())
+            {
+
+                return "Done!";
+            }
+            else return "Error!";
+        }
     }
 }
