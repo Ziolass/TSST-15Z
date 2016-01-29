@@ -14,37 +14,66 @@ namespace CallingPartyCallController
         private string clientName;
         private ConnectionHandler chandler;
         private string ASname;
-        private Dictionary<string, string> connectedClientsList;
+        private List<string> connectedClientsList;
 
         public CallingPartyCallController(string id)
         {
-            connectedClientsList = new Dictionary<string, string>();
+            connectedClientsList = new List<string>();
             readConfig(id);
             chandler = new ConnectionHandler(localPort, this);
         }
-        public void addToConnectedClients(string calling, string called)
+        public void addToConnectedClients(string called)
         {
-            connectedClientsList.Add(calling, called);
+            if (checkIfConnectionExist(called))
+            {
+                return;
+            }
+            connectedClientsList.Add(called);
         }
-        public bool checkIfConnectionExist()
+        public bool checkIfConnectionExist(string called)
         {
-            // todo 
+            
+            if (connectedClientsList.Contains(called))
+            {
+                return true;
+            }
             return false;
         }
         internal void deleteRecord(string v)
         {
-            foreach(var rec in connectedClientsList)
-            {
-                if(rec.Key.Equals(v) || rec.Value.Equals(v))
-                {
-                   // connectedClientsList.Remove(connectedClientsList.Keys[""])
-                }
-            }
+            connectedClientsList.Remove(v);
         }
-        public string callRequest(string callingName, string calledName)
+        public string callRequest(string calledName)
         {
+            if (checkIfConnectionExist(calledName))
+            {
+                return "error|Takie polaczenie juz istnieje";
+            }
+            if (calledName.ToLower().Equals(clientName.ToLower()))
+            {
+                return "error|nie mozesz sam sie do siebie polaczyc";
+            }
             string response = "error";
-            response = chandler.sendCommand("call-request|" + callingName.ToUpper() + "|" + calledName.ToUpper(), nccPort);
+            response = chandler.sendCommand("call-request|" + clientName.ToUpper() + "|" + calledName.ToUpper(), nccPort);
+            if (!response.Split('|')[0].Equals("error"))
+            {
+                connectedClientsList.Add(calledName);
+            }
+            return response;
+        }
+        public string callTeardown( string calledName)
+        {
+            if (!checkIfConnectionExist(calledName))
+            {
+                return "error|Takie polaczenie nie istnieje";
+            }
+           
+            string response = "error";
+            response = chandler.sendCommand("call-teardown|" + clientName.ToUpper() + "|" + calledName.ToUpper(), nccPort);
+            if (!response.Split('|')[0].Equals("error"))
+            {
+                deleteRecord(calledName);
+            }
             return response;
         }
         public int getLocalPort()
