@@ -6,9 +6,9 @@
 </network-info>
 
 	<entries>
-		<entry username="ADAM" address ="6001"/>
-		<entry username="MONIKA" address ="6002"/>  
-		<entry username="KOMANDO" address ="6003"/>
+		<entry username="ADAM" address ="60009"/>
+		<entry username="MONIKA" address ="60010"/>  
+		<entry username="KOMANDO" address ="60011"/>
 	</entries>
 	
 </directory-config>

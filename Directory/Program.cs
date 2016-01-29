@@ -26,9 +26,9 @@ namespace Directory
             directory.setUp(id);
             ConnectionHandler chandler = new ConnectionHandler(directory);
             chandler.StartListening();
-            
+
         }
 
-        
+
     }
 }

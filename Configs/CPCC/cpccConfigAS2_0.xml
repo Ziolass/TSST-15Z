@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <directory-config>
 <network-info>
-<autonomous-system-name name="AS1"/>
-<client-name name="JAN2"/>
-<localport value="60000"/>
+<autonomous-system-name name="AS2"/>
+<client-name name="MONIKA"/>
+<localport value="60010"/>
 <ncc-port value="60001"/>
 </network-info>
 

@@ -10,6 +10,5 @@ namespace RoutingController.Interfaces
     {
         string Source { get; }
         string Destination { get; }
-        string LrmId { get; }
     }
 }

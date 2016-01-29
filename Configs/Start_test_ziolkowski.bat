@@ -13,4 +13,5 @@ cd ..
 cd CPCC
 start cmd /c startCPCC0.bat
 start cmd /c startCPCC1.bat
+start cmd /c startCPCC2.bat
 exit

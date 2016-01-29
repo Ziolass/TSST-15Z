@@ -6,8 +6,8 @@
 </network-info>
 
 	<entries>
-		<entry username="JAN" address ="50000"/>
-		<entry username="JACEK" address ="50008"/>  
+		<entry username="JAN2" address ="50000"/>
+		<entry username="JAN1" address ="50008"/>  
 		<entry username="MICHAU" address ="50008"/>
 	</entries>
 	

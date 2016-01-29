@@ -11,18 +11,40 @@ namespace CallingPartyCallController
     {
         private int localPort;
         private int nccPort;
+        private string clientName;
         private ConnectionHandler chandler;
         private string ASname;
-        
+        private Dictionary<string, string> connectedClientsList;
+
         public CallingPartyCallController(string id)
         {
+            connectedClientsList = new Dictionary<string, string>();
             readConfig(id);
             chandler = new ConnectionHandler(localPort, this);
+        }
+        public void addToConnectedClients(string calling, string called)
+        {
+            connectedClientsList.Add(calling, called);
+        }
+        public bool checkIfConnectionExist()
+        {
+            // todo 
+            return false;
+        }
+        internal void deleteRecord(string v)
+        {
+            foreach(var rec in connectedClientsList)
+            {
+                if(rec.Key.Equals(v) || rec.Value.Equals(v))
+                {
+                   // connectedClientsList.Remove(connectedClientsList.Keys[""])
+                }
+            }
         }
         public string callRequest(string callingName, string calledName)
         {
             string response = "error";
-            response = chandler.sendCommand("call-request|"+callingName.ToUpper()+"|"+calledName.ToUpper(), nccPort);
+            response = chandler.sendCommand("call-request|" + callingName.ToUpper() + "|" + calledName.ToUpper(), nccPort);
             return response;
         }
         public int getLocalPort()
@@ -35,11 +57,18 @@ namespace CallingPartyCallController
         }
         private void readConfig(string id)
         {
-            Tuple<string, int,  int> t = ConfigReader.readConfig("cpccConfig"+id+".xml");
+            Tuple<string, int, int,string> t = ConfigReader.readConfig("cpccConfig" + id + ".xml");
             localPort = t.Item2;
             ASname = t.Item1;
             Console.WriteLine("Identyfikator podsieci: " + ASname);
             nccPort = t.Item3;
+            clientName = t.Item4;
+            Console.WriteLine("Nazwa klienta: " + clientName);
+        }
+
+        internal string getName()
+        {
+            return clientName;
         }
     }
 }
