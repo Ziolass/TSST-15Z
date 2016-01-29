@@ -61,30 +61,37 @@ namespace Cc.Communication
                 ActionSocket.Listen(MaxQueueLength);
                 while (true)
                 {
-                    Socket handler = ActionSocket.Accept();
-                    List<byte> recivedData = new List<byte>();
-
-                    string data = "";
-
-                    while (true)
+                    try
                     {
+                        Socket handler = ActionSocket.Accept();
+                        List<byte> recivedData = new List<byte>();
 
-                        Bytes = new byte[BufferSize];
-                        int bytesRec = HandlingSocket.Receive(Bytes);
-                        data += Encoding.ASCII.GetString(Bytes, 0, bytesRec);
+                        string data = "";
 
-                        if (BufferSize > bytesRec)
+                        while (true)
                         {
-                            break;
+
+                            Bytes = new byte[BufferSize];
+                            int bytesRec = handler.Receive(Bytes);
+                            data += Encoding.ASCII.GetString(Bytes, 0, bytesRec);
+
+                            if (BufferSize > bytesRec)
+                            {
+                                break;
+                            }
                         }
+
+                        data = ConnectionCtlr.HandleNccData(data);
+
+                        handler.Send(Encoding.ASCII.GetBytes(data));
+
+                        handler.Shutdown(SocketShutdown.Both); //TODO upewnic się że powininemzamykać socket
+                        handler.Close();
                     }
-
-                    data = ConnectionCtlr.HandleNccData(data);
-
-                    handler.Send(Encoding.ASCII.GetBytes(data));
-
-                    handler.Shutdown(SocketShutdown.Both); //TODO upewnic się że powininemzamykać socket
-                    handler.Close();
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
                 }
 
             }

@@ -58,7 +58,7 @@ namespace NetworkNode
 
             ConnectionController cc = new ConnectionController(rcPort,lrmPorts,gateways);
             NccServer nccServ = new NccServer(nccPort);
-
+            nccServ.ConnectionCtlr = cc;
             nccServ.SetUpServer(10000, 10);
             nccServ.StartListening();
 
