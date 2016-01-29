@@ -1,12 +1,14 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace NetworkClientNode.CPCC
+namespace CallingPartyCallController
 {
     class ConnectionHandler
     {
@@ -21,6 +23,12 @@ namespace NetworkClientNode.CPCC
         {
             this.cpcc = cppc;
             serverSetUp(port);
+            Thread th = new Thread(serverHandling);
+            th.Start();
+
+        }
+        private void serverHandling()
+        {
             while (true)
             {
                 clientSocket = serverSocket.AcceptTcpClient();
@@ -28,7 +36,6 @@ namespace NetworkClientNode.CPCC
                 ClientHandler clientHandler = new ClientHandler(this);
                 clientHandler.startClient(clientSocket);
             }
-
         }
         private void serverSetUp(int port)
         {
@@ -39,15 +46,13 @@ namespace NetworkClientNode.CPCC
             serverSocket.Start();
             Console.WriteLine("NCC waiting for requests...");
         }
-        private string sendCommand(string command, int port)
+        public string sendCommand(string command, int port)
         {
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddress, port);
             Socket commandSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            //LocalSocektBuilder local = LocalSocektBuilder.Instance;
-            //Socket commandSocket = local.getTcpSocket(port);
             byte[] bytes = new byte[100000];
             string response = null;
 
@@ -72,5 +77,6 @@ namespace NetworkClientNode.CPCC
             }
             return response;
         }
+
     }
 }

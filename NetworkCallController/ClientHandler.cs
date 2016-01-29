@@ -57,7 +57,6 @@ namespace NetworkCallController
         }
         private string responseHandler(string query)
         {
-            string response = "";
 
             string[] temp = query.Split('|');
 
@@ -74,12 +73,10 @@ namespace NetworkCallController
                     return interCallTeardown(query);
                 case "call-teardown":
                     return callTeardown(temp[1], temp[2]);
-                case "call-accept":
-                return callAccept()
+             
                 default:
                     return "coś sie zj. zepsulo.";
             }
-            return response;
         }
 
         private string interCallTeardown(string query)
@@ -107,31 +104,32 @@ namespace NetworkCallController
         }
         private string callTeardown(string callingPartyName, string calledPartyName)
         {
-            int ccPort = ncc.getCCPort();
             int callingSignalingPort;
             int calledSignalingPort;
             string callingAddress;
             string calledAddress;
+
             // sprawdzenie portu osoby zadajacej
             string[] callingPartyPorts = checkDictionaryForEntry(callingPartyName).Split('|');
             if (callingPartyPorts[0].Equals("brak_wpisu"))
             {
-                return "Lokalny Dictionary nie posiada wpisu " + callingPartyName;
+                return "Lokalny Directory nie posiada wpisu " + callingPartyName;
             }
             if (!int.TryParse(callingPartyPorts[0], out callingSignalingPort))
             {
-                return "error|Dictionary nie dziala";
+                return "error|Directory nie dziala";
             }
             callingAddress = callingPartyPorts[1];
+
+
             // sprawdzenie rekordu osoby zadanej
             string[] calledPartyPorts = checkDictionaryForEntry(calledPartyName).Split('|');
-
 
 
             // jak nie ma rekordu to chill, sprawdzamy u ziomeczka
             if (!int.TryParse(calledPartyPorts[0], out calledSignalingPort))
             {
-                Console.WriteLine("Brak rekordu " + calledPartyName + ". Sprawdzam w sasiednim AS");
+                //Console.WriteLine("Brak rekordu " + calledPartyName + ". Sprawdzam w sasiednim AS");
 
                 calledPartyPorts = checkForeignNCCForEntry(calledPartyName).Split('|');
                 if (calledPartyPorts[0].Equals("brak_wpisu"))
@@ -140,9 +138,17 @@ namespace NetworkCallController
                 }
                 else
                 {
-                    Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
+                    //Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
                     calledSignalingPort = int.Parse(calledPartyPorts[0]);
                     calledAddress = calledPartyPorts[1];
+                    
+
+                    string returnable =  coordinateTeardown(callingAddress, calledAddress);
+                    if (returnable.Equals("ok"))
+                    {
+                        informOtherParty(calledSignalingPort,callingPartyName);
+                    }
+                    return returnable;
 
                 }
             }
@@ -151,10 +157,32 @@ namespace NetworkCallController
             {
                 calledAddress = calledPartyPorts[1];
             }
-            string response = sendCommand("call-teardown|", ccPort);
-            ///////
-            return "";
+
+            informOtherParty(calledSignalingPort,callingPartyName);
+            return connectionTeardown(callingAddress, calledAddress);
         }
+
+        private string coordinateTeardown(string localAddress, string ForeignAddress)
+        {
+            int foreignNCCPort = ncc.getForeingPort();
+            int localCCport = ncc.getCCPort();
+            string foreignASName = ncc.getForeignASName();
+            string localASName = ncc.getASName();
+
+            string localResponse = sendCommand("inter-call-teardown|" + localAddress + "|" + foreignASName, localCCport);
+            if (!localResponse.Split('|')[0].ToLower().Equals("ok"))
+            {
+                return "error|local_failure";
+            }
+            string foreignResponse = sendCommand("inter-call-teardown|" + ForeignAddress + "|" + foreignASName, foreignNCCPort);
+            if (!foreignResponse.Split('|')[0].ToLower().Equals("ok"))
+            {
+                return "error|foreign_failure";
+            }
+            
+            return "ok";
+        }
+
         private string callRequest(string callingPartyName, string calledPartyName)
         {
             int callingSignalingPort;
@@ -225,9 +253,9 @@ namespace NetworkCallController
 
             return connectionRequst(callingAddress, calledAddress);
         }
-        private void informOtherParty(int signallingPort)
+        private void informOtherParty(int signallingPort,string teardownName)
         {
-            string response = sendCommand("call-teardown", signallingPort);
+            string response = sendCommand("call-teardown|"+teardownName, signallingPort);
         }
         private string coordinateCall(string localAddress, string ForeignAddress)
         {
@@ -253,6 +281,16 @@ namespace NetworkCallController
         {
             int ccPort = ncc.getCCPort();
             string response = sendCommand("connection-request|" + localPort + "|" + foreignPort, ccPort);
+            if (response.Split('|')[0].Equals("error"))
+            {
+                return "NCC nie moglo nawiazac polaczenia z CC";
+            }
+            return response;
+        }
+        private string connectionTeardown(string localPort, string ForeignPort)
+        {
+            int ccPort = ncc.getCCPort();
+            string response = sendCommand("call-teardown|" + localPort + "|" + ForeignPort, ccPort);
             if (response.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
