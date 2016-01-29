@@ -33,9 +33,10 @@ namespace NetworkClientNode.Adaptation
         private List<StreamData> Streams;
         private Dictionary<int, IFrame> OutputCredentials;
         private FrameBuilder Builder;
+        private String routerId;
 
         public event HandleClientData HandleClientData;
-        public AdaptationFunction(TransportTerminalFunction ttf)
+        public AdaptationFunction(TransportTerminalFunction ttf, string routerId)
         {
             Ttf = ttf;
             Builder = new FrameBuilder();
@@ -174,6 +175,23 @@ namespace NetworkClientNode.Adaptation
                 return true;
             }
             return false;
+        }
+
+        private void HandleLrmData(object sender, InputLrmArgs args)
+        {
+            string message = BuildLrmMessage(args.PortNumber);
+            Ttf.SendLrmData(args.PortNumber , message);
+        }
+
+        private string BuildLrmMessage(int portNumber)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append("CLIENT");
+            builder.Append("%");
+            builder.Append(routerId);
+            builder.Append("%");
+            builder.Append(portNumber);
+            return builder.ToString();
         }
     }
 }
