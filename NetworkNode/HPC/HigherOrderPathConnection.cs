@@ -107,12 +107,6 @@ namespace NetworkNode.HPC
 
         public List<ForwardingRecord> GetConnections()
         {
-            /*List<ForwardingRecord> routerRecords = new List<ForwardingRecord>();
-            foreach (List<ForwardingRecord> portRecords in ForwardingTable.Values)
-            {
-                routerRecords.AddRange(portRecords);
-            }*/
-
             return Connections;
         }
 
