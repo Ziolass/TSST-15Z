@@ -9,24 +9,26 @@ namespace Directory
 {
     class Directory
     {
-        private Dictionary<string, string> hostnames_ports_dictionary;
+        private Dictionary<string, string[]> hostnames_ports_dictionary;
         private int localPort;
-        
-     
-        private void setDict(int port,Dictionary<string, string> dict)
+
+
+        private void setDict(int port, Dictionary<string, string[]> dict)
         {
             hostnames_ports_dictionary = dict;
             localPort = port;
         }
         public void setUp(string id)
         {
-            try {
-                Tuple<string,int, Dictionary<string, string>> t = ConfigReader.readEntriesFromConfig("directoryConfig"+id+".xml");
+            try
+            {
+                Tuple<string, int, Dictionary<string, string[]>> t = ConfigReader.readEntriesFromConfig("directoryConfig" + id + ".xml");
                 string network_name = t.Item1;
 
                 Console.WriteLine("Identyfikator sieci: " + network_name);
-                setDict(t.Item2,t.Item3);
-            }catch(Exception e)
+                setDict(t.Item2, t.Item3);
+            }
+            catch (Exception e)
             {
                 Console.WriteLine("Blad! Sprawdz poprawnosc pliku konfiguracyjnego");
             }
@@ -36,15 +38,17 @@ namespace Directory
             if (hostnames_ports_dictionary.ContainsKey(query))
             {
                 Console.WriteLine("Znaleziono wpis: " + query);
-                return hostnames_ports_dictionary[query];
+                string[] tmp = hostnames_ports_dictionary[query];
+                return tmp[0] + "|" + tmp[1];
             }
-            
-            return "no-such-entry";
+
+            return "Brak_wpisu|";
         }
-        private string addEntry(string name,string address)
+        private string addEntry(string name, string address, string phys_address)
         {
-            hostnames_ports_dictionary.Add(name, address);
-            Console.WriteLine("Wpis: " + name + "/ " + address +" dodano pomyslnie.");
+            string[] tmp = { address, phys_address };
+            hostnames_ports_dictionary.Add(name, tmp);
+            Console.WriteLine("Wpis: " + name + "/ " + address + " dodano pomyslnie.");
             return "entry-added|";
         }
         public string commandHandle(string query)
@@ -55,7 +59,7 @@ namespace Directory
                 case "get-address":
                     return checkForEntries(temp[1]);
                 case "add-entry":
-                    return addEntry(temp[1], temp[2]);
+                    return addEntry(temp[1], temp[2], temp[3]);
                 default:
                     return "error|";
             }

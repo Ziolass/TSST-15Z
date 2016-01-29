@@ -22,10 +22,10 @@ namespace Directory.FileUtils
             return sb.ToString();
         }
 
-        public static Tuple<string,int,Dictionary<string,string>> readEntriesFromConfig(string configurationFileName)
+        public static Tuple<string, int, Dictionary<string, string[]>> readEntriesFromConfig(string configurationFileName)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            string network_identifier="AS";
+            Dictionary<string, string[]> dict = new Dictionary<string, string[]>();
+            string network_identifier = "AS";
             int port = 0;
 
             string defaultDirectoryPath = System.IO.Directory.GetCurrentDirectory();
@@ -55,13 +55,16 @@ namespace Directory.FileUtils
                         {
                             if (configReader.HasAttributes)
                             {
-                                dict.Add(configReader.GetAttribute("username"),configReader.GetAttribute("address"));
+                                string[] tmp = new string[2];
+                                tmp[0] = configReader.GetAttribute("address");
+                                tmp[1] = configReader.GetAttribute("physical-address");
+                                dict.Add(configReader.GetAttribute("username"), tmp);
                             }
                         }
-                        
+
 
                     }
-                    return Tuple.Create(network_identifier,port, dict);
+                    return Tuple.Create(network_identifier, port, dict);
 
                 }
                 catch
@@ -70,7 +73,7 @@ namespace Directory.FileUtils
                     return null;
                 }
         }
-        
+
 
     }
 }

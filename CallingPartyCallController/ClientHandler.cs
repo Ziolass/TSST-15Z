@@ -31,31 +31,31 @@ namespace CallingPartyCallController
             string dataFromClient = null;
             Byte[] sendBytes = null;
             string serverResponse = null;
-            
-                try
-                {
 
-                    int bytesRec = clientSocket.Client.Receive(bytesFrom);
-                    dataFromClient = Encoding.ASCII.GetString(bytesFrom, 0, bytesRec);
-                    Console.WriteLine(dataFromClient);
-                    //TODO
-                    serverResponse = responseHandler(dataFromClient);
+            try
+            {
 
-                   
-                    sendBytes = Encoding.ASCII.GetBytes(serverResponse);
-                    // TODO
-                    // Console.ReadKey();
-                    clientSocket.Client.Send(sendBytes);
-                   
+                int bytesRec = clientSocket.Client.Receive(bytesFrom);
+                dataFromClient = Encoding.ASCII.GetString(bytesFrom, 0, bytesRec);
+                Console.WriteLine(dataFromClient);
+                //TODO
+                serverResponse = responseHandler(dataFromClient);
 
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error: " + e.Data);
-                }
-                clientSocket.Client.Shutdown(SocketShutdown.Both);
-                clientSocket.Client.Close();
-            
+
+                sendBytes = Encoding.ASCII.GetBytes(serverResponse);
+                // TODO
+                // Console.ReadKey();
+                clientSocket.Client.Send(sendBytes);
+
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Data);
+            }
+            clientSocket.Client.Shutdown(SocketShutdown.Both);
+            clientSocket.Client.Close();
+
         }
         private string responseHandler(string query)
         {
@@ -66,7 +66,8 @@ namespace CallingPartyCallController
             switch (temp[0])
             {
                 case "call-teardown":
-                    break;
+                    callteardown(temp[1]);
+                    return "Acknowledged|";
                 case "call-accept":
                     return acceptCall(temp[1]);
                 default:
@@ -74,18 +75,21 @@ namespace CallingPartyCallController
             }
             return response;
         }
+
+        private void callteardown(string v)
+        {
+            ncc.deleteRecord(v);
+        }
+
         private string acceptCall(string foreignName)
         {
             // TODO
             Console.WriteLine("Zaakceptowano zestawienie polaczenia z " + foreignName);
+            ncc.addToConnectedClients(foreignName,ncc.getName());
             return "call-accepted|";
         }
-        
-        private void connectionRequst(int localPort, int foreignPort)
-        {
 
-        }
-       
+
         private string sendCommand(string command, int port)
         {
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
