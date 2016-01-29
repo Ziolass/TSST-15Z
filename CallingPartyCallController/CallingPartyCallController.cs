@@ -11,6 +11,7 @@ namespace CallingPartyCallController
     {
         private int localPort;
         private int nccPort;
+        private string clientName;
         private ConnectionHandler chandler;
         private string ASname;
         private Dictionary<string, string> connectedClientsList;
@@ -32,7 +33,13 @@ namespace CallingPartyCallController
         }
         internal void deleteRecord(string v)
         {
-            throw new NotImplementedException();
+            foreach(var rec in connectedClientsList)
+            {
+                if(rec.Key.Equals(v) || rec.Value.Equals(v))
+                {
+                   // connectedClientsList.Remove(connectedClientsList.Keys[""])
+                }
+            }
         }
         public string callRequest(string callingName, string calledName)
         {
@@ -50,13 +57,18 @@ namespace CallingPartyCallController
         }
         private void readConfig(string id)
         {
-            Tuple<string, int, int> t = ConfigReader.readConfig("cpccConfig" + id + ".xml");
+            Tuple<string, int, int,string> t = ConfigReader.readConfig("cpccConfig" + id + ".xml");
             localPort = t.Item2;
             ASname = t.Item1;
             Console.WriteLine("Identyfikator podsieci: " + ASname);
             nccPort = t.Item3;
+            clientName = t.Item4;
+            Console.WriteLine("Nazwa klienta: " + clientName);
         }
 
-
+        internal string getName()
+        {
+            return clientName;
+        }
     }
 }

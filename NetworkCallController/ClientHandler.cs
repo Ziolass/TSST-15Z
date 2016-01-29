@@ -68,17 +68,31 @@ namespace NetworkCallController
 
                 case "get-address":
                     return checkDictionaryForEntry(temp[1]);
-
+                case "inter-connection-request":
+                    return interConnectionRequest(query);
+                case "inter-call-teardown":
+                    return interCallTeardown(query);
                 case "call-teardown":
                     return callTeardown(temp[1], temp[2]);
-                    break;
                 case "call-accept":
-                //return callAccept()
+                return callAccept()
                 default:
                     return "coś sie zj. zepsulo.";
             }
             return response;
         }
+
+        private string interCallTeardown(string query)
+        {
+            int ccPort = ncc.getCCPort();
+            string response = sendCommand(query, ccPort);
+            if (response.Split('|')[0].Equals("error"))
+            {
+                return "NCC nie moglo nawiazac polaczenia z CC";
+            }
+            return response;
+        }
+
         private bool callAccept(string callingPartyName, int calledPartyPort, string calledPartyName)
         {
             string response = sendCommand("call-accept|" + callingPartyName, calledPartyPort);
@@ -147,21 +161,30 @@ namespace NetworkCallController
             int calledSignalingPort;
             string callingAddress;
             string calledAddress;
+
             // sprawdzenie portu osoby zadajacej
             string[] callingPartyPorts = checkDictionaryForEntry(callingPartyName).Split('|');
             if (callingPartyPorts[0].Equals("brak_wpisu"))
             {
-                return "Lokalny Dictionary nie posiada wpisu " + callingPartyName;
+                return "Lokalny Directory nie posiada wpisu " + callingPartyName;
             }
             if (!int.TryParse(callingPartyPorts[0], out callingSignalingPort))
             {
-                return "error|Dictionary nie dziala";
+                return "error|Directory nie dziala";
             }
             callingAddress = callingPartyPorts[1];
+
+            // no fajnie fajnie,ale czy masz pozwolenie?
+            if (!askPolicy(callingPartyName))
+            {
+                Console.WriteLine("Policy nie wyrazilo zgody na realizacje polaczenia");
+                return "error|Policy nie wyrazilo zgody";
+            }
+
+            
             // sprawdzenie rekordu osoby zadanej
             string[] calledPartyPorts = checkDictionaryForEntry(calledPartyName).Split('|');
-
-
+        
 
             // jak nie ma rekordu to chill, sprawdzamy u ziomeczka
             if (!int.TryParse(calledPartyPorts[0], out calledSignalingPort))
@@ -178,6 +201,13 @@ namespace NetworkCallController
                     Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
                     calledSignalingPort = int.Parse(calledPartyPorts[0]);
                     calledAddress = calledPartyPorts[1];
+                    // no to w sumie by wypadalo spytac ziomeczka czy chce wgl z nami gadac zeby nie bylo przykro
+                    if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
+                    {
+                        return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
+                    }
+
+                    return coordinateCall(callingAddress, calledAddress);
 
                 }
             }
@@ -186,34 +216,53 @@ namespace NetworkCallController
             {
                 calledAddress = calledPartyPorts[1];
             }
-            // no fajnie fajnie, adresy sa ale czy masz pozwolenie?
-            if (!askPolicy(callingPartyName))
-            {
-                Console.WriteLine("Policy nie wyrazilo zgody na realizacje polaczenia");
-                return "error|Policy nie wyrazilo zgody";
-            }
+            
             // no to w sumie by wypadalo spytac ziomeczka czy chce wgl z nami gadac zeby nie bylo przykro
             if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
             {
                 return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
             }
+
             return connectionRequst(callingAddress, calledAddress);
         }
         private void informOtherParty(int signallingPort)
         {
             string response = sendCommand("call-teardown", signallingPort);
         }
-        private string coordinateCall(int localPort, int ForeignPort)
+        private string coordinateCall(string localAddress, string ForeignAddress)
         {
             int foreignNCCPort = ncc.getForeingPort();
-            string response = sendCommand("call-request|" + localPort + "|" + ForeignPort, foreignNCCPort);
-            return response;
+            int localCCport = ncc.getCCPort();
+            string foreignASName = ncc.getForeignASName();
+            string localASName = ncc.getASName();
+
+            string localResponse = sendCommand("inter-connection-request|" + localAddress + "|" + foreignASName,localCCport);
+            if (!localResponse.Split('|')[0].ToLower().Equals("ok"))
+            {
+                return "error|local_failure";
+            }
+            string foreignResponse = sendCommand("inter-connection-request|" + ForeignAddress + "|" + foreignASName, foreignNCCPort);
+            if (!foreignResponse.Split('|')[0].ToLower().Equals("ok"))
+            {
+                return "error|foreign_failure";
+            }
+            return "ok";
 
         }
         private string connectionRequst(string localPort, string foreignPort)
         {
             int ccPort = ncc.getCCPort();
             string response = sendCommand("connection-request|" + localPort + "|" + foreignPort, ccPort);
+            if (response.Split('|')[0].Equals("error"))
+            {
+                return "NCC nie moglo nawiazac polaczenia z CC";
+            }
+            return response;
+        }
+        private string interConnectionRequest(string request)
+        {
+            int ccPort = ncc.getCCPort();
+            string response = sendCommand(request,ccPort);
             if (response.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";

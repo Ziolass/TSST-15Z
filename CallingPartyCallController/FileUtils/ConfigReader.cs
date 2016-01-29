@@ -22,11 +22,12 @@ namespace CallingPartyCallController.FileUtils
             return sb.ToString();
         }
 
-        public static Tuple<string, int,int> readConfig(string configurationFileName)
+        public static Tuple<string, int,int,string> readConfig(string configurationFileName)
         {
             string network_identifier = "AS";
             int localport = 0;
             int nccPort = 0;
+            string clientName = "client";
 
             string defaultDirectoryPath = Directory.GetCurrentDirectory();
             DirectoryInfo di = new DirectoryInfo((((new DirectoryInfo(defaultDirectoryPath).Parent).Parent).Parent).FullName + "\\Configs\\CPCC"); //sobczakj 
@@ -58,10 +59,17 @@ namespace CallingPartyCallController.FileUtils
                                 nccPort = int.Parse(configReader.GetAttribute("value"));
                             }
                         }
+                        else if ((configReader.NodeType == XmlNodeType.Element) && (configReader.Name == "client-name"))
+                        {
+                            if (configReader.HasAttributes)
+                            {
+                                clientName = configReader.GetAttribute("name");
+                            }
+                        }
 
 
                     }
-                    return Tuple.Create(network_identifier, localport, nccPort);
+                    return Tuple.Create(network_identifier, localport, nccPort,clientName);
 
                 }
                 catch

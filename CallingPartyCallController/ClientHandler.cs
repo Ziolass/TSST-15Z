@@ -85,14 +85,10 @@ namespace CallingPartyCallController
         {
             // TODO
             Console.WriteLine("Zaakceptowano zestawienie polaczenia z " + foreignName);
-
+            ncc.addToConnectedClients(foreignName,ncc.getName());
             return "call-accepted|";
         }
 
-        private void connectionRequst(int localPort, int foreignPort)
-        {
-
-        }
 
         private string sendCommand(string command, int port)
         {

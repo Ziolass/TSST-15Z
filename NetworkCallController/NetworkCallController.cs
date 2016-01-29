@@ -14,6 +14,14 @@ namespace NetworkCallController
         private string ASname;
         private int directoryPort;
         private int ccPort;
+        public string getASName()
+        {
+            return ASname;
+        }
+        public string getForeignASName()
+        {
+            return ASforeignName;
+        }
         public int getDirectoryPort()
         {
             return directoryPort;
