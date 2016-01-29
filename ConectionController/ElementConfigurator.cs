@@ -60,6 +60,7 @@ namespace NetworkNode
             NccServer nccServ = new NccServer(nccPort);
 
             nccServ.SetUpServer(10000, 10);
+            nccServ.ConnectionCtlr = cc;
             nccServ.StartListening();
 
             return cc;

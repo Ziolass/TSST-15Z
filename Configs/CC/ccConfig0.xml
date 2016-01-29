@@ -4,7 +4,7 @@
 	<gateway domian="myDomian3" gate="node9:2"/>
 	<gateway domian="myDomian4" gate="node6:1"/>
 	<ncc tcp="18000"/>
-	<rc tcp="3778"/>
-	<lrm node="node1" tcp="5700"/>
-	<lrm node="node2" tcp="5701"/>
+	<rc tcp="8000"/>
+	<lrm node="node1" tcp="8011"/>
+	<lrm node="node2" tcp="8012"/>
 </cc>
