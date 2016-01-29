@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Policy", "Policy\Policy.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkCallController", "NetworkCallController\NetworkCallController.csproj", "{95336BC8-DFA7-49B3-BF4F-26F52069240B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConectionController", "ConectionController\ConectionController.csproj", "{97CACFCE-7A59-49AB-8FDA-D155FEF16080}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{95336BC8-DFA7-49B3-BF4F-26F52069240B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95336BC8-DFA7-49B3-BF4F-26F52069240B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95336BC8-DFA7-49B3-BF4F-26F52069240B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97CACFCE-7A59-49AB-8FDA-D155FEF16080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97CACFCE-7A59-49AB-8FDA-D155FEF16080}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97CACFCE-7A59-49AB-8FDA-D155FEF16080}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97CACFCE-7A59-49AB-8FDA-D155FEF16080}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
