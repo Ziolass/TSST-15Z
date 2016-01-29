@@ -11,7 +11,7 @@ namespace Cc
     {
         static void Main(string[] args)
         {
-            String id = "0";//args[0];
+            String id = args[0];
             ElementConfigurator configurator = new ElementConfigurator("..\\..\\..\\Configs\\CC\\ccConfig" + id + ".xml");
             ConnectionController cc = configurator.configureController();
             Console.WriteLine("Start emulation");

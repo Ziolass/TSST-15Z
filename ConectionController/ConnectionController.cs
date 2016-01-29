@@ -48,7 +48,7 @@ namespace Cc
             RcSender = new NetworkNodeSender(rcPort, bufferSize);
             LrmSenders = new Dictionary<string, NetworkNodeSender>();
             Gateways = gateways;
-            Connections = new List<NetworkConnection>(); //sobczakj
+            Connections = new List<NetworkConnection>();
 
             foreach (KeyValuePair<string, int> lrmPort in lrmPorts)
             {
