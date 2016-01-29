@@ -63,7 +63,7 @@ namespace NetworkClientNode
 
             SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(ports, sender, nodeName);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, NodeMode.CLIENT);
-            AdaptationFunction adpt = new AdaptationFunction(ttf);
+            AdaptationFunction adpt = new AdaptationFunction(ttf, nodeName);
             NetworkClNode node = new NetworkClNode(adpt, nodeName);
             
             //TODO
