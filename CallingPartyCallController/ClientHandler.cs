@@ -85,7 +85,7 @@ namespace CallingPartyCallController
         {
             // TODO
             Console.WriteLine("Zaakceptowano zestawienie polaczenia z " + foreignName);
-            ncc.addToConnectedClients(foreignName,ncc.getName());
+            ncc.addToConnectedClients(foreignName);
             return "call-accepted|";
         }
 

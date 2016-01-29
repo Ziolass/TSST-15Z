@@ -224,7 +224,7 @@ namespace NetworkNode.LRM
             string protocolData = args.Data;
             string[] protocolComponents = protocolData.Split('%');
             string domain = protocolComponents[0];
-            string type = domain.Equals(Domain) ? "LOCAL" : "NETWORK";
+            string type = domain.Equals(Domain) ? "LOCAL" : domain.Equals("CLIENT") ? domain : " NETWORK";
             string name = protocolComponents[1];
             string port = protocolComponents[2];
 

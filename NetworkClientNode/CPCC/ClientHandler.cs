@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -7,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NetworkClientNode.CPCC
+namespace CallingPartyCallController
 {
     class ClientHandler
     {
@@ -29,29 +31,31 @@ namespace NetworkClientNode.CPCC
             string dataFromClient = null;
             Byte[] sendBytes = null;
             string serverResponse = null;
-            while (true)
+
+            try
             {
-                try
-                {
 
-                    int bytesRec = clientSocket.Client.Receive(bytesFrom);
-                    dataFromClient = Encoding.ASCII.GetString(bytesFrom, 0, bytesRec);
-                    Console.WriteLine(dataFromClient);
-                    //TODO
-                    serverResponse = responseHandler(dataFromClient);
-
-                    sendBytes = Encoding.ASCII.GetBytes(serverResponse);
-                    // TODO
-                    Console.ReadKey();
+                int bytesRec = clientSocket.Client.Receive(bytesFrom);
+                dataFromClient = Encoding.ASCII.GetString(bytesFrom, 0, bytesRec);
+                Console.WriteLine(dataFromClient);
+                //TODO
+                serverResponse = responseHandler(dataFromClient);
 
 
+                sendBytes = Encoding.ASCII.GetBytes(serverResponse);
+                // TODO
+                // Console.ReadKey();
+                clientSocket.Client.Send(sendBytes);
 
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error: " + e.Data);
-                }
+
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Data);
+            }
+            clientSocket.Client.Shutdown(SocketShutdown.Both);
+            clientSocket.Client.Close();
+
         }
         private string responseHandler(string query)
         {
@@ -62,22 +66,29 @@ namespace NetworkClientNode.CPCC
             switch (temp[0])
             {
                 case "call-teardown":
-                    break;
+                    callteardown(temp[1]);
+                    return "Acknowledged|";
                 case "call-accept":
-                    break;
+                    return acceptCall(temp[1]);
                 default:
                     break;
             }
             return response;
         }
-        private void coordinateCall(int localPort, int ForeignPort)
-        {
 
-        }
-        private void connectionRequst(int localPort, int foreignPort)
+        private void callteardown(string v)
         {
-
+            ncc.deleteRecord(v);
         }
+
+        private string acceptCall(string foreignName)
+        {
+            // TODO
+            Console.WriteLine("Zaakceptowano zestawienie polaczenia z " + foreignName);
+            ncc.addToConnectedClients(foreignName);
+            return "call-accepted|";
+        }
+
 
         private string sendCommand(string command, int port)
         {

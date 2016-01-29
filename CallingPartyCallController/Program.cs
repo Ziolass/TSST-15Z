@@ -26,15 +26,23 @@ namespace CallingPartyCallController
                 switch (a)
                 {
                     case "a":
-                        Console.WriteLine(ncc.callRequest("jan1", "jan2"));
+                        Console.WriteLine(ncc.callRequest("jan2"));
                         break;
                     case "b":
-                        Console.WriteLine(ncc.callRequest("jan1", "monika"));
+                        Console.WriteLine(ncc.callRequest("monika"));
                         break;
                     case "c":
-                        Console.WriteLine(ncc.callRequest("jan2", "jan1"));
-
-
+                        Console.WriteLine(ncc.callRequest("jan1"));
+                        break;
+                    case "d":
+                        Console.WriteLine(ncc.callTeardown("jan2"));
+                        break;
+                    case "e":
+                        Console.WriteLine(ncc.callTeardown("jan1"));
+                        break;
+                    case "f":
+                        Console.WriteLine(ncc.callTeardown("monika"));
+                        break;
                         break;
                 }
 

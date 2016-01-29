@@ -75,6 +75,7 @@ namespace NetworkNode.TTF
             builder.Append(sdhFrame);
             Sender.SendContent(builder.ToString());
         }
+
         //TODO: zweryfikować czy faktycznie usuniemy poprawnie dane z buffora
         public string GetBufferedData(int inputPort)
         {

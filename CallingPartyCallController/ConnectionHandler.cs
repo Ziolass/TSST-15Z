@@ -44,7 +44,7 @@ namespace CallingPartyCallController
             serverSocket = new TcpListener(ipAddress, port);
             clientSocket = default(TcpClient);
             serverSocket.Start();
-            Console.WriteLine("NCC waiting for requests...");
+            Console.WriteLine("CPCC waiting for requests...");
         }
         public string sendCommand(string command, int port)
         {
