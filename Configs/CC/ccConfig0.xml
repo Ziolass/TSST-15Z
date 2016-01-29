@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<cc type="mux" number="1" name="node2">
+	<gateway domian="myDomian2" gate="node5:1"/>
+	<gateway domian="myDomian3" gate="node9:2"/>
+	<gateway domian="myDomian4" gate="node6:1"/>
+	<ncc tcp="18000"/>
+	<rc tcp="3778"/>
+	<lrm node="node1" tcp="5700"/>
+	<lrm node="node2" tcp="5701"/>
+</cc>

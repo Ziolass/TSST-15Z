@@ -1,6 +1,4 @@
-﻿using NetworkNode.Ports;
-using NetworkNode.SDHFrame;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,18 +7,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NetworkNode.LRM
+namespace Cc.Communication
 {
-    public class NodeCcInput : Port
+    public class NccServer : Port
     {
         private int BufferSize;//SDH frame 2430
         private byte[] Bytes;
         private int MaxQueueLength;
         private Thread ServerThread;
-        public LinkResourceManager Lrm { get; set; }
+        public ConnectionController ConnectionCtlr { get; set; }
         private Socket HandlingSocket;
 
-        public NodeCcInput(int tcpPort)
+        public NccServer(int tcpPort)
             : base(tcpPort) { }
 
         public void SetUpServer(int bufferSize, int maxQueueLength)
@@ -81,7 +79,8 @@ namespace NetworkNode.LRM
                         }
                     }
 
-                    data = Lrm.HandleCcData(data);
+                    data = ConnectionCtlr.HandleNccData(data);
+
                     handler.Send(Encoding.ASCII.GetBytes(data));
 
                     handler.Shutdown(SocketShutdown.Both); //TODO upewnic się że powininemzamykać socket
