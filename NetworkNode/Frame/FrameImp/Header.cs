@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace NetworkNode.SDHFrame
 {
     public class Header : IContent
@@ -25,6 +19,7 @@ namespace NetworkNode.SDHFrame
             this.DCC = dcc;
             this.Type = ContentType.HEADER;
         }
+
         /// <summary>
         /// Initializes a new empty instance of the <see cref="Header"/> class.
         /// </summary>
@@ -35,6 +30,7 @@ namespace NetworkNode.SDHFrame
             this.DCC = null;
             this.Type = ContentType.HEADER;
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Header"/> class.
         /// </summary>
@@ -46,6 +42,7 @@ namespace NetworkNode.SDHFrame
             this.DCC = header.DCC;
             this.Type = ContentType.HEADER;
         }
+
         /// <summary>
         /// Determines whether the specified content is header.
         /// </summary>
@@ -69,7 +66,7 @@ namespace NetworkNode.SDHFrame
             string returnString = string.Empty;
             returnString += "Parity: " + this.Checksum + "\n";
             returnString += "EOW: " + this.EOW + "\n";
-            returnString += "DCC: " + this.DCC;            
+            returnString += "DCC: " + this.DCC;
             return returnString;
         }
     }

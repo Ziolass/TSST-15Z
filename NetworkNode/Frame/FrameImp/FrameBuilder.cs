@@ -27,7 +27,7 @@ namespace NetworkNode.SDHFrame
             if (metadata["Msoh"].HasValues)
                 returnFrame.Msoh = (Header)FrameBuilder.EvaluateContent((JObject)metadata["Msoh"]);
             if (metadata["Rsoh"].HasValues)
-                returnFrame.Rsoh = (Header)FrameBuilder.EvaluateContent((JObject)metadata["Rsoh"]);            
+                returnFrame.Rsoh = (Header)FrameBuilder.EvaluateContent((JObject)metadata["Rsoh"]);
             if (FrameBuilder.isJArray(metadata["Content"]))
             {
                 returnFrame.Content = FrameBuilder.evaluateContents((JArray)metadata["Content"]);
@@ -35,6 +35,7 @@ namespace NetworkNode.SDHFrame
             else return null;
             return returnFrame;
         }
+
         /// <summary>
         /// Builds the frame from JSON file.
         /// </summary>
@@ -115,6 +116,7 @@ namespace NetworkNode.SDHFrame
                 return null;
             }
         }
+
         /// <summary>
         /// Evaluates the contents. Iterate through the JArray to create IContent
         /// </summary>
@@ -208,6 +210,7 @@ namespace NetworkNode.SDHFrame
                 return false;
             }
         }
+
         /// <summary>
         /// Determines whether the specified token is POH.
         /// </summary>
@@ -227,6 +230,7 @@ namespace NetworkNode.SDHFrame
                 return false;
             }
         }
+
         /// <summary>
         /// Gets the type of the content.
         /// </summary>
@@ -271,6 +275,7 @@ namespace NetworkNode.SDHFrame
             else
                 throw new Exception("ERROR FrameBuilder: Could not read level of given token");
         }
+
         /// <summary>
         /// Gets the type of the signal.
         /// </summary>
@@ -285,6 +290,7 @@ namespace NetworkNode.SDHFrame
             else
                 throw new Exception("ERROR FrameBuilder: Could not read content type of given token");
         }
+
         private static StmLevel getStmLevel(JToken token)
         {
             StmLevel contentType;

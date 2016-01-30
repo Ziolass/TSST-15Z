@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetworkNode.SDHFrame
 {
-
     public enum StmLevel { STM1, STM4, STM16, STM64, STM256, UNDEF }
+
     public enum VirtualContainerLevel { VC12, VC21, VC32, VC4, UNDEF }
+
     public enum ContentType { VICONTAINER, TRIBUTARYUNIT, CONTAINER, HEADER, POH }
 
-    public class VirtualContainerLevelExt 
+    public class VirtualContainerLevelExt
     {
         public static VirtualContainerLevel GetContainer(string literalContainer)
         {
@@ -136,9 +133,15 @@ namespace NetworkNode.SDHFrame
 
     public interface IFrame
     {
-         Header Msoh { get; set; }
-         Header Rsoh { get; set; }
-         IContent GetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex);
-         bool SetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex, IContent content);
+        Header Msoh { get; set; }
+        Header Rsoh { get; set; }
+
+        IContent GetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex);
+
+        bool SetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex, IContent content);
+
+        FrameTuple SetNextAvalible(VirtualContainerLevel level, IContent content);
+
+        bool IsFrameOccupied(VirtualContainerLevel level);
     }
 }
