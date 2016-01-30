@@ -140,5 +140,7 @@ namespace NetworkNode.SDHFrame
          Header Rsoh { get; set; }
          IContent GetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex);
          bool SetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex, IContent content);
+         FrameTuple SetNextAvalible(VirtualContainerLevel level, IContent content);
+         bool IsFrameOccupied(VirtualContainerLevel level);
     }
 }
