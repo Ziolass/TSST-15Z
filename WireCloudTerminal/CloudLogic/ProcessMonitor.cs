@@ -44,6 +44,7 @@ namespace WireCloud.CloudLogic
         /// </summary>
         public void Stop()
         {
+            ProccessMonitorThread.Suspend();
             Server.StopServerThread();
         }
 
