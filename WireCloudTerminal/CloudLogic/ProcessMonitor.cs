@@ -12,14 +12,14 @@ namespace WireCloud.CloudLogic
         private CloudServer Server;
         public List<Link> Links { get; private set; }
 
-        private Thread ProccessMonitorThread { get; private set; }
+        private Thread ProccessMonitorThread { get; set; }
 
         public ProcessMonitor(CloudServer Server, List<Link> Links)
         {
             this.Server = Server;
             this.Links = Links;
             this.Server.HandleDataIncom += new HandleDataIncom(PullData);
-            ProccessMonitorThread = new Thread();
+            ProccessMonitorThread = new Thread(new ThreadStart(Server.StartListening));
         }
 
         private void PullData(IncomeDataArgs incomeData)
@@ -36,7 +36,8 @@ namespace WireCloud.CloudLogic
 
         public void StartAction()
         {
-            Server.StartListening();
+            ProccessMonitorThread.Start();
+            //Server.StartListening();
         }
         /// <summary>
         /// Stops this instance.
