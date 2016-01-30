@@ -1,38 +1,31 @@
 using NetworkNode.SDHFrame;
-using NetworkNode.HPC;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetworkNode
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
-
             Frame frameTest = new Frame(StmLevel.STM4);
 
             frameTest.SetVirtualContainer(VirtualContainerLevel.VC32, 0, 1, new VirtualContainer(VirtualContainerLevel.VC32, new Container("TEST")));
 
             var response = frameTest.IsFrameOccupied(VirtualContainerLevel.VC32);
             //index 0, 0
-            var response2 = frameTest.SetNextAvalible(VirtualContainerLevel.VC32, new VirtualContainer(VirtualContainerLevel.VC32, new Container("TEST2"))); 
+            var response2 = frameTest.SetNextAvalible(VirtualContainerLevel.VC32, new VirtualContainer(VirtualContainerLevel.VC32, new Container("TEST2")));
             //index 0, 2
             response2 = frameTest.SetNextAvalible(VirtualContainerLevel.VC32, new VirtualContainer(VirtualContainerLevel.VC32, new Container("TEST2")));
             //Doda do drugiego VC4 czyli indexy 1, 0
             response2 = frameTest.SetNextAvalible(VirtualContainerLevel.VC32, new VirtualContainer(VirtualContainerLevel.VC32, new Container("TEST2")));
             //Że jest to VC4 to zwroci 2, null;
-            response2 = frameTest.SetNextAvalible(VirtualContainerLevel.VC4, new VirtualContainer(VirtualContainerLevel.VC4, new Container("TEST2"))); 
+            response2 = frameTest.SetNextAvalible(VirtualContainerLevel.VC4, new VirtualContainer(VirtualContainerLevel.VC4, new Container("TEST2")));
 
             String id = args[0];
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\NetworkNode\\nodeConfig" + id + ".xml");
             NetworkNode node = setUpProcess.startNodeProcess();
             Console.WriteLine("Start emulation");
-            startReadingCommands(node);            
+            startReadingCommands(node);
         }
 
         private static void startReadingCommands(NetworkNode node)
@@ -49,7 +42,6 @@ namespace NetworkNode
                 {
                     string args = takeArgs();
                     node.AddRsohContent(args);
-
                 }
                 else if (command.Equals("M"))
                 {
@@ -70,5 +62,4 @@ namespace NetworkNode
             return Console.ReadLine();
         }
     }
-
 }

@@ -24,6 +24,7 @@ namespace NetworkNode.SDHFrame
         /// The index of the higher.
         /// </value>
         public int? HigherIndex { get { return this.Item1; } }
+
         /// <summary>
         /// Gets the index of the lower.
         /// </summary>
@@ -206,10 +207,9 @@ namespace NetworkNode.SDHFrame
                             {
                                 this.Content[hiIndex] = new VirtualContainer(VirtualContainerLevel.VC4);
                                 tempVirtualContainer = this.Content[hiIndex];
-                                if(((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, lowerIndex, content))
+                                if (((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, lowerIndex, content))
                                     return true;
                                 else return false;
-
                             }
                             else return false;
                         }
@@ -267,7 +267,7 @@ namespace NetworkNode.SDHFrame
                                     else continue;
                                 }
                             }
-                            else //VC4 is not in Content list 
+                            else //VC4 is not in Content list
                             {
                                 if (SetVirtualContainer(level, i, 0, content))
                                     return new FrameTuple(i, 0);
@@ -448,12 +448,16 @@ namespace NetworkNode.SDHFrame
             {
                 case VirtualContainerLevel.VC12:
                     return 63;
+
                 case VirtualContainerLevel.VC21:
                     return 21;
+
                 case VirtualContainerLevel.VC32:
                     return 3;
+
                 case VirtualContainerLevel.VC4:
                     return 1;
+
                 default:
                     return 63;
             }

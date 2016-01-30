@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetworkNode.SDHFrame
 {
@@ -29,6 +26,7 @@ namespace NetworkNode.SDHFrame
             this.Pointer = string.Empty;
             this.Content = this.GenerateContentList();
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="VirtualContainer"/> class.
         /// </summary>
@@ -43,6 +41,7 @@ namespace NetworkNode.SDHFrame
             this.POH = new POH();
             this.Pointer = string.Empty;
         }
+
         /// <summary>
         /// Determines whether the specified content is virtual container.
         /// </summary>
@@ -54,6 +53,7 @@ namespace NetworkNode.SDHFrame
                 return true;
             else return false;
         }
+
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
@@ -72,6 +72,7 @@ namespace NetworkNode.SDHFrame
             }
             return returnString;
         }
+
         /// <summary>
         /// Generates the list content depending on the current VirtualContainer level
         /// </summary>
@@ -87,6 +88,7 @@ namespace NetworkNode.SDHFrame
                         returnValue.Add(null);
                     }
                     break;
+
                 default:
                     returnValue.Add(null); //All others have one space for Container only
                     break;
@@ -96,7 +98,7 @@ namespace NetworkNode.SDHFrame
 
         /// <summary>
         /// Calculates the space used in the container.
-        /// If VC have only content it takes all free space 
+        /// If VC have only content it takes all free space
         /// </summary>
         /// <returns></returns>
         public int CalculateSpace()
@@ -107,12 +109,15 @@ namespace NetworkNode.SDHFrame
                 case VirtualContainerLevel.VC12:
                     usedSpace = 1;
                     break;
+
                 case VirtualContainerLevel.VC21:
                     usedSpace = 3;
                     break;
+
                 case VirtualContainerLevel.VC32:
                     usedSpace = 21;
                     break;
+
                 case VirtualContainerLevel.VC4:
                     foreach (var item in this.Content)
                     {
@@ -127,8 +132,10 @@ namespace NetworkNode.SDHFrame
                         }
                     }
                     break;
+
                 case VirtualContainerLevel.UNDEF:
                     break;
+
                 default:
                     break;
             }
@@ -151,6 +158,7 @@ namespace NetworkNode.SDHFrame
             }
             return returnValue;
         }
+
         /// <summary>
         /// Gets the index of the container. This convert user index for Frame index.
         /// VC12 has user index multiplied by 1
@@ -210,6 +218,7 @@ namespace NetworkNode.SDHFrame
                         counter++;
                     }
                     break;
+
                 case VirtualContainerLevel.UNDEF:
                     break;
             }
@@ -232,6 +241,7 @@ namespace NetworkNode.SDHFrame
             }
             else return false;
         }
+
         /// <summary>
         /// Sets the content.
         /// </summary>
@@ -240,6 +250,7 @@ namespace NetworkNode.SDHFrame
         {
             this.Content[0] = container;
         }
+
         /// <summary>
         /// Sets the content.
         /// </summary>
@@ -267,18 +278,21 @@ namespace NetworkNode.SDHFrame
                         testUp = true;
                     testDown = true;
                     break;
+
                 case VirtualContainerLevel.VC21:
                     if (this.CheckContainerUp(level, index))
                         testUp = true;
                     if (this.CheckContainerDown(level, index))
                         testDown = true;
                     break;
+
                 case VirtualContainerLevel.VC32:
                     if (this.CheckContainerUp(level, index))
                         testUp = true;
                     if (this.CheckContainerDown(level, index))
                         testDown = true;
                     break;
+
                 case VirtualContainerLevel.VC4:
                     if (this.CheckContainerDown(level, index))
                         testDown = true;
@@ -289,6 +303,7 @@ namespace NetworkNode.SDHFrame
                 return true;
             else return false;
         }
+
         /// <summary>
         /// Checks if upper virtual container exists and has higher level.
         /// </summary>
@@ -316,6 +331,7 @@ namespace NetworkNode.SDHFrame
                     }
                     else returnVal = false;
                     break;
+
                 case VirtualContainerLevel.VC21:
                     parentPostion = index / 7;
                     if (CheckContainerUp(VirtualContainerLevel.VC32, parentPostion))
@@ -326,6 +342,7 @@ namespace NetworkNode.SDHFrame
                     }
                     else returnVal = false;
                     break;
+
                 case VirtualContainerLevel.VC32:
                     parentPostion = index / 3;
                     if (CheckContainerUp(VirtualContainerLevel.VC4, parentPostion))
@@ -336,6 +353,7 @@ namespace NetworkNode.SDHFrame
                     }
                     else returnVal = false;
                     break;
+
                 case VirtualContainerLevel.VC4:
                     if (this.Content[contentPosition] != null && ((VirtualContainer)this.Content[contentPosition]).Level == VirtualContainerLevel.VC4)
                         returnVal = false;
@@ -344,6 +362,7 @@ namespace NetworkNode.SDHFrame
             }
             return returnVal;
         }
+
         /// <summary>
         /// Checks the lower virtual container exists and has lower virtual containers.
         /// </summary>
@@ -366,6 +385,7 @@ namespace NetworkNode.SDHFrame
                         returnVal = false;
                     else returnVal = true;
                     break;
+
                 case VirtualContainerLevel.VC21:
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
@@ -383,6 +403,7 @@ namespace NetworkNode.SDHFrame
                         }
                     }
                     break;
+
                 case VirtualContainerLevel.VC32:
                     childPosition = index * 7;
                     for (int i = childPosition; i < childPosition + 7; i++)
@@ -400,6 +421,7 @@ namespace NetworkNode.SDHFrame
                         }
                     }
                     break;
+
                 case VirtualContainerLevel.VC4:
                     childPosition = index * 3;
                     for (int i = childPosition; i < childPosition + 3; i++)
