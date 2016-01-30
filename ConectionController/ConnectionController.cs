@@ -234,7 +234,7 @@ namespace Cc
                     builder.Append("|");
                     builder.Append(snp.Ports[1]);
                 }
-
+                Console.WriteLine(builder.ToString());
                 lrmSender.SendContent(builder.ToString(), HandleLrmData);
             }
         }
