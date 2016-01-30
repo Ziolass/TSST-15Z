@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>49d7fda9-a580-4060-883f-0ba9b3974650</ProjectGuid>
+    <ProjectGuid>{222B3684-F432-4EB5-B140-261BBDE1F2FB}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LRM</RootNamespace>
@@ -41,6 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncCommunication.cs" />
+    <Compile Include="DeviceAllreadyConnected.cs" />
+    <Compile Include="LocalPort.cs" />
+    <Compile Include="LRMServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
