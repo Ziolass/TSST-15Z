@@ -59,6 +59,8 @@ namespace WireCloud.CloudLogic
 
             this.ElementConfigurator = new ElementConfigurator(this.ConfigurationFilePath);
             this.ProcessMonitor = this.ElementConfigurator.SetUpCloud();
+
+
             this.ProcessMonitor.StartAction();
             usedPorts = this.ProcessMonitor.Links;
             if (this.ProcessMonitor.Links.Count != 0)

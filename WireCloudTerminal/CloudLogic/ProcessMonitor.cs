@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WireCloud.CloudLogic
@@ -11,11 +12,14 @@ namespace WireCloud.CloudLogic
         private CloudServer Server;
         public List<Link> Links { get; private set; }
 
+        private Thread ProccessMonitorThread { get; private set; }
+
         public ProcessMonitor(CloudServer Server, List<Link> Links)
         {
             this.Server = Server;
             this.Links = Links;
             this.Server.HandleDataIncom += new HandleDataIncom(PullData);
+            ProccessMonitorThread = new Thread();
         }
 
         private void PullData(IncomeDataArgs incomeData)
