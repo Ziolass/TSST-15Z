@@ -34,7 +34,6 @@ namespace WireCloud
         {
             try
             {
-                Console.WriteLine(json);
                 SetSocket();
                 ActionSocket.Connect(ActionEndPoint);
                 

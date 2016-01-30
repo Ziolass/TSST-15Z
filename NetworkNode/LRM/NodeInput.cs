@@ -72,7 +72,7 @@ namespace NetworkNode.LRM
                     {
 
                         Bytes = new byte[BufferSize];
-                        int bytesRec = handler.Receive(Bytes);
+                        int bytesRec = HandlingSocket.Receive(Bytes);
                         data += Encoding.ASCII.GetString(Bytes, 0, bytesRec);
 
                         if (BufferSize > bytesRec)

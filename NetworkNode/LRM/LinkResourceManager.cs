@@ -272,7 +272,7 @@ namespace NetworkNode.LRM
                 List<string> domains = new List<string>();
                 domains.Add(Domain);
                 data.Domains = domains;
-                data.Port = port.ToString();
+                data.Port = portInfo.Port;
 
                 Destination dst = new Destination();
 

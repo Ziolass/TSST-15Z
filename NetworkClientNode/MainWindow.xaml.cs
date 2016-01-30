@@ -25,12 +25,11 @@ namespace NetworkClientNode
             InitializeComponent();
             var args = Environment.GetCommandLineArgs();
             int i = 0; //This is dumy variable for TryParse
-            
             if (args.Length < 3)
                 throw new Exception("Wrong application start argument");
             else if (!int.TryParse(args[1], out i))
                 throw new Exception("Wrong application start argument");
-            
+
             DataContext = this;
             MyTitle = "Client" + args[2];
         }
