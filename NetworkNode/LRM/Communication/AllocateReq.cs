@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.LRM.Communication
 {
-    class LrmPort
+    public class LrmPort
     {
         public string Number { get; set; }
         public string Index { get; set; }
