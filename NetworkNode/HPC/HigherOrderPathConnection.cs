@@ -174,7 +174,7 @@ namespace NetworkNode.HPC
             ForwardingRecord fwr2 =
                 CreateForwardingRecord(
                     new KeyValuePair<int, int>(ports[1], data[ports[1]]),
-                    new KeyValuePair<int, int>(ports[2], data[ports[2]]),
+                    new KeyValuePair<int, int>(ports[0], data[ports[0]]),
                     level
                 );
 
