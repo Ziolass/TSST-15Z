@@ -3,11 +3,42 @@ using System.Collections.Generic;
 
 namespace NetworkNode.SDHFrame
 {
+    /// <summary>
+    /// Naming Tuple
+    /// </summary>
+    public class FrameTuple : Tuple<int?, int?>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FrameTuple"/> class.
+        /// </summary>
+        /// <param name="higherIndex">Index of the higher.</param>
+        /// <param name="lowerIndex">Index of the lower.</param>
+        public FrameTuple(int? higherIndex, int? lowerIndex)
+            : base(higherIndex, lowerIndex)
+        { }
+
+        /// <summary>
+        /// Gets the index of the higher.
+        /// </summary>
+        /// <value>
+        /// The index of the higher.
+        /// </value>
+        public int? HigherIndex { get { return this.Item1; } }
+        /// <summary>
+        /// Gets the index of the lower.
+        /// </summary>
+        /// <value>
+        /// The index of the lower.
+        /// </value>
+        public int? LowerIndex { get { return this.Item2; } }
+    }
+
     public class Frame : IFrame
     {
         public Header Msoh { get; set; }
         public Header Rsoh { get; set; }
         public StmLevel Level { get; set; }
+
         /// <summary>
         /// Gets or sets the VC4 list
         /// </summary>
@@ -15,6 +46,7 @@ namespace NetworkNode.SDHFrame
         /// The content.
         /// </value>
         public List<IContent> Content { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Frame" /> class.
         /// This create empty Content List
@@ -31,6 +63,7 @@ namespace NetworkNode.SDHFrame
             this.Msoh = new Header();
             this.Rsoh = new Header();
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Frame"/> class. STM-1
         /// This create empty Content List.
@@ -43,6 +76,7 @@ namespace NetworkNode.SDHFrame
             this.Msoh = new Header();
             this.Rsoh = new Header();
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Frame"/> class.
         /// </summary>
@@ -54,6 +88,7 @@ namespace NetworkNode.SDHFrame
             this.Msoh = new Header(frame.Msoh);
             this.Rsoh = new Header(frame.Rsoh);
         }
+
         /// <summary>
         /// Converts the STM level.
         /// </summary>
@@ -65,49 +100,37 @@ namespace NetworkNode.SDHFrame
             {
                 case StmLevel.STM1:
                     return 1;
+
                 case StmLevel.STM4:
                     return 4;
+
                 case StmLevel.STM16:
                     return 16;
+
                 case StmLevel.STM64:
                     return 64;
+
                 case StmLevel.STM256:
                     return 256;
+
                 default:
                     return 1;
             }
         }
 
         /// <summary>
-        /// Gets the virtual container.
+        /// Determines whether frame is fully occupied.
         /// </summary>
-        /// <param name="level">The level of Virtual Container</param>
-        /// <param name="index">The index.</param>
+        /// <param name="level">The level.</param>
         /// <returns></returns>
-        public IContent GetVirtualContainer(VirtualContainerLevel level, int index)
+        /// <exception cref="NotImplementedException"></exception>
+        public bool IsFrameOccupied(VirtualContainerLevel level)
         {
-            IContent returnContent = null;
-            if (level == VirtualContainerLevel.VC4)
-            {
-                if (this.Content.Count >= index + 1)
-                {
-                    returnContent = this.Content[index];
-                }
-            }
-            else
-            {
-                int higherIndex = GetHigherContainerIndex(level, index);
-                if (this.Content.Count >= higherIndex + 1)
-                {
-                    returnContent = this.Content[higherIndex];
-                    if (VirtualContainer.isVirtualContainer(returnContent))
-                    {
-                        returnContent = ((VirtualContainer)returnContent).GetVirtualContainerAtIndex(level, index); //Get specific virtual container lower level
-                    }
-                }
-            }
-            return returnContent;
+            if (CalculateFreeSpace() >= ContainerSpaceConverter(level))
+                return true;
+            else return false;
         }
+
         /// <summary>
         /// Gets the virtual container.
         /// </summary>
@@ -139,6 +162,7 @@ namespace NetworkNode.SDHFrame
             }
             return returnContent;
         }
+
         /// <summary>
         /// Sets the virtual container. This overwrite the <see cref="Content" /> list member.
         /// Content must by VirtualContainer!
@@ -150,7 +174,7 @@ namespace NetworkNode.SDHFrame
         /// <returns>
         /// True - success, False - fail
         /// </returns>
-        public bool SetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex , IContent content)
+        public bool SetVirtualContainer(VirtualContainerLevel level, int hiIndex, int? lowIndex, IContent content)
         {
             if (VirtualContainer.isVirtualContainer(content))
             {
@@ -168,22 +192,26 @@ namespace NetworkNode.SDHFrame
                     }
                     else
                     {
-                        //int higherIndex = GetHigherContainerIndex(level, index);
                         if (this.Content.Count >= hiIndex + 1 && lowIndex != null)
                         {
                             int lowerIndex = (int)lowIndex;
                             IContent tempVirtualContainer = this.Content[hiIndex];
                             if (VirtualContainer.isVirtualContainer(tempVirtualContainer) && ((VirtualContainer)tempVirtualContainer).TryAddContainer(level, lowerIndex))
                             {
-                                ((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, lowerIndex, content);
+                                if (((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, lowerIndex, content))
+                                    return true;
+                                else return false;
                             }
                             else if (tempVirtualContainer == null) //Frame does not have VC4 to keep lower virtual container levels
                             {
                                 this.Content[hiIndex] = new VirtualContainer(VirtualContainerLevel.VC4);
                                 tempVirtualContainer = this.Content[hiIndex];
-                                ((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, lowerIndex, content);
+                                if(((VirtualContainer)tempVirtualContainer).SetVirtualContainerAtIndex(level, lowerIndex, content))
+                                    return true;
+                                else return false;
+
                             }
-                            return true;
+                            else return false;
                         }
                         else return false;
                     }
@@ -193,6 +221,64 @@ namespace NetworkNode.SDHFrame
             return false;
         }
 
+        /// <summary>
+        /// Sets content to the next avalible space in frame
+        /// Returns null if not possible.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="content">The content.</param>
+        /// <returns></returns>
+        public FrameTuple SetNextAvalible(VirtualContainerLevel level, IContent content)
+        {
+            if (VirtualContainer.isVirtualContainer(content))
+            {
+                VirtualContainer contentVC = (VirtualContainer)content;
+                if (level == contentVC.Level && this.CalculateFreeSpace() >= Frame.ContainerSpaceConverter(level)) //Frame have enough free space
+                {
+                    if (level == VirtualContainerLevel.VC4)
+                    {
+                        for (int i = 0; i < this.Content.Count; i++)
+                        {
+                            VirtualContainer tempVC = (VirtualContainer)this.Content[i];
+                            if (tempVC == null)
+                            {
+                                SetVirtualContainer(level, i, null, content);
+                                return new FrameTuple(i, null); ;
+                            }
+                            else continue;
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < this.Content.Count; i++)
+                        {
+                            if (VirtualContainer.isVirtualContainer(this.Content[i]) && this.Content[i] != null)
+                            {
+                                VirtualContainer tempVC4 = (VirtualContainer)this.Content[i];
+                                int contentCount = tempVC4.Content.Count;
+                                for (int x = 0; x < MaxVirtualContainerAmount(level); x++)
+                                {
+                                    var test = ContainerSpaceConverter(level);
+                                    if (GetVirtualContainer(level, i, x) == null)
+                                    {
+                                        if (SetVirtualContainer(level, i, x, content))
+                                            return new FrameTuple(i, x);
+                                    }
+                                    else continue;
+                                }
+                            }
+                            else //VC4 is not in Content list 
+                            {
+                                if (SetVirtualContainer(level, i, 0, content))
+                                    return new FrameTuple(i, 0);
+                            }
+                        }
+                    }
+                }
+                else return null;
+            }
+            return null;
+        }
 
         /// <summary>
         /// Gets the relative index for virtual container index position.
@@ -207,12 +293,15 @@ namespace NetworkNode.SDHFrame
                 case VirtualContainerLevel.VC12:
                     returnIndex = index - 21 * (GetHigherContainerIndex(level, index));
                     break;
+
                 case VirtualContainerLevel.VC21:
                     returnIndex = index - 7 * (GetHigherContainerIndex(level, index));
                     break;
+
                 case VirtualContainerLevel.VC32:
                     returnIndex = index - 3 * (GetHigherContainerIndex(level, index));
                     break;
+
                 default:
                     returnIndex = index;
                     break;
@@ -242,6 +331,7 @@ namespace NetworkNode.SDHFrame
             }
             return true;
         }
+
         /// <summary>
         /// Clears the virtual container.
         /// </summary>
@@ -270,7 +360,6 @@ namespace NetworkNode.SDHFrame
             return true;
         }
 
-
         /// <summary>
         /// Gets the index of the higher level container.
         /// </summary>
@@ -285,15 +374,19 @@ namespace NetworkNode.SDHFrame
                 case VirtualContainerLevel.VC12:
                     returnIndex = index / 63;
                     break;
+
                 case VirtualContainerLevel.VC21:
                     returnIndex = index / 21;
                     break;
+
                 case VirtualContainerLevel.VC32:
                     returnIndex = index / 3;
                     break;
+
                 case VirtualContainerLevel.VC4:
                     returnIndex = index;
                     break;
+
                 case VirtualContainerLevel.UNDEF:
                     break;
             }
@@ -306,7 +399,6 @@ namespace NetworkNode.SDHFrame
         /// <returns></returns>
         private int CalculateFreeSpace()
         {
-
             int freeSpace = 63 * this.ConvertSTMLevel(this.Level);
             for (int i = 0; i < Content.Count; i++)
             {
@@ -318,6 +410,7 @@ namespace NetworkNode.SDHFrame
             }
             return freeSpace;
         }
+
         /// <summary>
         /// Convert <see cref="ContainerLevel"/> enum to space occupied in <see cref="Frame"/>
         /// </summary>
@@ -329,12 +422,38 @@ namespace NetworkNode.SDHFrame
             {
                 case VirtualContainerLevel.VC12:
                     return 1;
+
                 case VirtualContainerLevel.VC21:
                     return 3;
+
                 case VirtualContainerLevel.VC32:
                     return 21;
+
                 case VirtualContainerLevel.VC4:
                     return 63;
+
+                default:
+                    return 63;
+            }
+        }
+
+        /// <summary>
+        /// Maximum virtual containers amount of certain level in VC4.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns></returns>
+        private static int MaxVirtualContainerAmount(VirtualContainerLevel level)
+        {
+            switch (level)
+            {
+                case VirtualContainerLevel.VC12:
+                    return 63;
+                case VirtualContainerLevel.VC21:
+                    return 21;
+                case VirtualContainerLevel.VC32:
+                    return 3;
+                case VirtualContainerLevel.VC4:
+                    return 1;
                 default:
                     return 63;
             }
@@ -376,7 +495,7 @@ namespace NetworkNode.SDHFrame
                     }
                 }
             }
-            return returnString.Remove(returnString.LastIndexOf('|'),1);
+            return returnString.Remove(returnString.LastIndexOf('|'), 1);
         }
     }
 }

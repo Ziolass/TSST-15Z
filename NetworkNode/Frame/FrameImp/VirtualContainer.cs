@@ -65,7 +65,8 @@ namespace NetworkNode.SDHFrame
             string returnString = string.Empty;
             foreach (var item in this.Content)
             {
-                if (item != null){
+                if (item != null)
+                {
                     returnString += this.Level.ToString() + "+POH|";
                 }
             }
@@ -142,8 +143,12 @@ namespace NetworkNode.SDHFrame
         /// <returns></returns>
         public IContent GetVirtualContainerAtIndex(VirtualContainerLevel level, int index)
         {
-            IContent returnValue;
-            returnValue = this.Content[GetContainerIndex(level, index)];
+            IContent returnValue = null;
+            int realIndex = GetContainerIndex(level, index);
+            if (realIndex != -1)
+            {
+                returnValue = this.Content[GetContainerIndex(level, index)];
+            }
             return returnValue;
         }
         /// <summary>
@@ -217,9 +222,15 @@ namespace NetworkNode.SDHFrame
         /// <param name="level">The level.</param>
         /// <param name="index">The index.</param>
         /// <param name="content">The content.</param>
-        public void SetVirtualContainerAtIndex(VirtualContainerLevel level, int index, IContent content)
+        public bool SetVirtualContainerAtIndex(VirtualContainerLevel level, int index, IContent content)
         {
-            this.Content[GetContainerIndex(level, index)] = content;
+            int realIndex = GetContainerIndex(level, index);
+            if (realIndex != -1)
+            {
+                this.Content[GetContainerIndex(level, index)] = content;
+                return true;
+            }
+            else return false;
         }
         /// <summary>
         /// Sets the content.
