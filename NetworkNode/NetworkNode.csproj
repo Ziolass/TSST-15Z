@@ -50,8 +50,16 @@
     <Compile Include="Frame\FrameImp\POH.cs" />
     <Compile Include="HPC\Exceptions\AllLinksOccupied.cs" />
     <Compile Include="HPC\LinkMatrix.cs" />
+    <Compile Include="LRM\Communication\AllocateReq.cs" />
+    <Compile Include="LRM\Communication\LrmDestination.cs" />
+    <Compile Include="LRM\Communication\LrmToken.cs" />
+    <Compile Include="LRM\Communication\SimpleLrmMsg.cs" />
+    <Compile Include="LRM\Communication\TokenAns.cs" />
+    <Compile Include="LRM\Exceptions\DeviceAllreadyConnected.cs" />
     <Compile Include="LRM\LinkResourceManager.cs" />
-    <Compile Include="LRM\NodeInput.cs" />
+    <Compile Include="LRM\LrmClient.cs" />
+    <Compile Include="LRM\LrmClientSender.cs" />
+    <Compile Include="LRM\NodeCcInput.cs" />
     <Compile Include="LRM\TopologyReports.cs" />
     <Compile Include="NetworkNodeSetupProcess.cs" />
     <Compile Include="ElementConfigurator.cs" />
@@ -87,6 +95,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LRM\LRM.csproj">
+      <Project>{222b3684-f432-4eb5-b140-261bbde1f2fb}</Project>
+      <Name>LRM</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

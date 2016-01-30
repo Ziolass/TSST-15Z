@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LRM
 {
-    class AsyncCommunication
+    public class AsyncCommunication
     {
         public Socket AsyncSocket { get; private set; }
         public bool LastOne { get; private set; }
@@ -57,6 +57,10 @@ namespace LRM
             catch (Exception ex)
             {
                 AsyncSocket = null;
+                if (ConnectionLostCallback != null)
+                {
+                    ConnectionLostCallback(this);
+                }
             }
         }
 
@@ -74,8 +78,8 @@ namespace LRM
                 if (bytesRead != StateObject.BufferSize)
                 {
                     string allData = state.ResponseBuilder.ToString();
-                    
-                    if (IdleState)
+
+                    if (SubscribeCallback != null && IdleState)
                     {
                         SubscribeCallback(allData, this);
                         IdleState = false;
@@ -110,7 +114,12 @@ namespace LRM
             }
             catch (Exception e)
             {
+                AsyncSocket = null;
                 Console.WriteLine(e.ToString());
+                if (ConnectionLostCallback != null)
+                {
+                    ConnectionLostCallback(this);
+                }
             }
         }
     }

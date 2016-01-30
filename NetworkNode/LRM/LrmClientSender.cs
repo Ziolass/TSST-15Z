@@ -3,9 +3,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using LRM;
 
 
-public class StateObject
+/*public class StateObject
 {
     public Socket WorkSocket { get; set; }
     public Action<string> Callback { get; set; }
@@ -16,44 +17,47 @@ public class StateObject
     {
         Sb = new StringBuilder();
     }
-}
+}*/
 
-public class LrmClientServer
+public class LrmClientServer : LocalPort
 {
     private int Port;
     private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
+    private AsyncCommunication Async;
+    private Action<string> DataRedCallback;
+    private Thread ReciverThread;
 
     private const int BUFFER_SIZE = 500;
 
-    public LrmClientServer(int port)
+    public LrmClientServer(int port, Action<string> callback)
+        : base(port)
     {
-        Port = port;
+        DataRedCallback = callback;
     }
 
-    public void SendMessage(string LrmMessage, Action<string> callback)
+    public void ConnectToLrm()
     {
-        try
+        lock (Async)
         {
-            Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint remoteEP = InitEndpoint();
-            client.BeginConnect(remoteEP,new AsyncCallback(ConnectCallback), client);
-            
-            ConnectDone.WaitOne();
-            Send(client, LrmMessage, callback);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
+            if (Async != null)
+            {
+                return;
+            }
+            StateObject state = new StateObject();
+            ActionSocket.BeginConnect(Endpoint, new AsyncCallback(ConnectCallback), null);
         }
     }
 
-    private static void ConnectCallback(IAsyncResult ar)
+    private void ConnectCallback(IAsyncResult ar)
     {
         try
         {
-            Socket client = (Socket)ar.AsyncState;
-            client.EndConnect(ar);
+            ActionSocket.EndConnect(ar);
             ConnectDone.Set();
+            Async = new AsyncCommunication(ActionSocket, null, DataRedCallback, null);
+            
+            ReciverThread = new Thread(new ThreadStart(Async.StartReciving));
+            ReciverThread.Start();
         }
         catch (Exception e)
         {
@@ -61,86 +65,9 @@ public class LrmClientServer
         }
     }
 
-    private static void Receive(StateObject state)
+    public void SendToLrm(string msg)
     {
-        try
-        {
-            state.Buffer = new byte[BUFFER_SIZE];
-            state.WorkSocket.BeginReceive(state.Buffer, 0, BUFFER_SIZE, 0,
-                new AsyncCallback(ReceiveCallback), state);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-        }
+        Async.Send(msg);
     }
 
-    private static void ReceiveCallback(IAsyncResult ar)
-    {
-        try
-        {
-            StateObject state = (StateObject)ar.AsyncState;
-            Socket client = state.WorkSocket;
-            int bytesRead = client.EndReceive(ar);
-
-            if (bytesRead > 0)
-            {
-                state.Sb.Append(Encoding.ASCII.GetString(state.Buffer, 0, bytesRead));
-                client.BeginReceive(state.Buffer, 0, BUFFER_SIZE, 0,
-                    new AsyncCallback(ReceiveCallback), state);
-            }
-            else
-            {
-
-                if (state.Sb.Length > 1)
-                {
-                    state.Callback(state.Sb.ToString());
-                }
-
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-        }
-    }
-
-    private static void Send(Socket client, String data, Action<string> callback)
-    {
-        byte[] byteData = Encoding.ASCII.GetBytes(data);
-        
-        StateObject state = new StateObject
-        {
-            Callback = callback,
-            WorkSocket = client
-        };
-
-        client.BeginSend(byteData, 0, byteData.Length, 0,
-            new AsyncCallback(SendCallback), state);
-    }
-
-    private static void SendCallback(IAsyncResult ar)
-    {
-        try
-        {
-            StateObject state = (StateObject)ar.AsyncState;
-            int bytesSent = state.WorkSocket.EndSend(ar);
-            Receive(state);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-        }
-    }
-
-    private IPEndPoint InitEndpoint()
-    {
-        IPHostEntry ipHostInfo = Dns.Resolve("127.0.0.1");
-        IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint remoteEP = new IPEndPoint(ipAddress, Port);
-
-        return remoteEP;
-    }
 }

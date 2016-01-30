@@ -8,46 +8,94 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.LRM
 {
+    public enum LrmCommunicationType
+    {
+        DATA, SIGNALLING
+    }
+
+    public enum LrmHeader
+    {
+        INFO, BROADCAST
+    }
+
     public delegate void LrmTokneAns(string ans);
     public class LrmClient
     {
         private LrmClientServer MsgClient;
 
         Action<string> BrodcastToken;
+        Action<string> HandleLrmAction;
 
-        public LrmClient(int msgClientPort, Action<string> brodcastToken)
+        public LrmClient(int msgClientPort,
+            Action<string> brodcastToken,
+            Action<string> handleLrmAction)
         {
-            MsgClient = new LrmClientServer(msgClientPort);
+            MsgClient = new LrmClientServer(msgClientPort, DispatchCommunication);
             BrodcastToken = brodcastToken;
+            HandleLrmAction = handleLrmAction;
         }
 
+        public void DispatchCommunication(string inputData)
+        {
+            string[] dataWithProtocol = inputData.Split('|');
+            string protocol = dataWithProtocol[0];
+            string data = dataWithProtocol[1];
+            LrmCommunicationType type = (LrmCommunicationType)Enum.Parse(typeof(LrmCommunicationType), protocol);
 
+            switch (type)
+            {
+                case LrmCommunicationType.SIGNALLING:
+                    {
+                        BrodcastToken(data);
+                        break;
+                    }
+                case LrmCommunicationType.DATA:
+                    {
+                        HandleLrmAction(data);
+                        break;
+                    }
+            }
+        }
+
+        private void HandleSignalling(string signallingPacket)
+        {
+            string[] signallingPacketParted = signallingPacket.Split('#');
+            string signallingType = signallingPacketParted[0];
+            string data = signallingPacketParted[0];
+            LrmHeader type = (LrmHeader)Enum.Parse(typeof(LrmHeader), signallingType);
+            switch (type)
+            {
+                case LrmHeader.INFO:
+                    {
+
+                        Console.WriteLine(data);
+                        break;
+                    }
+                case LrmHeader.BROADCAST:
+                    {
+                        BrodcastToken(data);
+                        break;
+                    }
+                
+            }
+
+        }
 
         public void ReportToken(LrmToken token)
         {
-            string lrmMessage = JsonConvert.SerializeObject(token); 
-            MsgClient.SendMessage(lrmMessage, (string ans) =>
-             {
-                 TokenAns tokenAns = JsonConvert.DeserializeObject<TokenAns>(ans);
-                 if (tokenAns.Status.Equals("OK"))
-                 {
-                     Console.WriteLine("Token Accepted");
-                 }
-                 else
-                 {
-                     Console.WriteLine("Token Cannot be accepted: " + lrmMessage);
-                 }
-             });
+            string lrmMessage = JsonConvert.SerializeObject(token);
+            MsgClient.SendToLrm(lrmMessage);
         }
 
         public void SendLrmHandshake()
         {
-            SimpleLrmMsg lrmHandshake = new SimpleLrmMsg(){
+            SimpleLrmMsg lrmHandshake = new SimpleLrmMsg()
+            {
                 Msg = "Hello"
             };
 
             string lrmMessage = JsonConvert.SerializeObject(lrmHandshake);
-            MsgClient.SendMessage(lrmMessage, BrodcastToken);
+            MsgClient.SendToLrm(lrmMessage);
         }
     }
 }
