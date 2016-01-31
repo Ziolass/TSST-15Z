@@ -67,27 +67,12 @@ namespace NetworkCallController
 
                 case "get-address":
                     return checkDictionaryForEntry(temp[1]);
-                case "inter-connection-request":
-                    return interConnectionRequest(query);
-                case "inter-call-teardown":
-                    return interCallTeardown(query);
                 case "call-teardown":
                     return callTeardown(temp[1], temp[2]);
              
                 default:
                     return "coś sie zj. zepsulo.";
             }
-        }
-
-        private string interCallTeardown(string query)
-        {
-            int ccPort = ncc.getCCPort();
-            string response = sendCommand(query, ccPort);
-            if (response.Split('|')[0].Equals("error"))
-            {
-                return "NCC nie moglo nawiazac polaczenia z CC";
-            }
-            return response;
         }
 
         private bool callAccept(string callingPartyName, int calledPartyPort, string calledPartyName)
@@ -143,7 +128,7 @@ namespace NetworkCallController
                     calledAddress = calledPartyPorts[1];
                     
 
-                    string returnable =  coordinateTeardown(callingAddress, calledAddress);
+                    string returnable =  connectionTeardown(callingAddress, calledAddress);
                     if (returnable.Equals("ok"))
                     {
                         informOtherParty(calledSignalingPort,callingPartyName);
@@ -162,26 +147,6 @@ namespace NetworkCallController
             return connectionTeardown(callingAddress, calledAddress);
         }
 
-        private string coordinateTeardown(string localAddress, string ForeignAddress)
-        {
-            int foreignNCCPort = ncc.getForeingPort();
-            int localCCport = ncc.getCCPort();
-            string foreignASName = ncc.getForeignASName();
-            string localASName = ncc.getASName();
-
-            string localResponse = sendCommand("inter-call-teardown|" + localAddress + "|" + foreignASName, localCCport);
-            if (!localResponse.Split('|')[0].ToLower().Equals("ok"))
-            {
-                return "error|local_failure";
-            }
-            string foreignResponse = sendCommand("inter-call-teardown|" + ForeignAddress + "|" + foreignASName, foreignNCCPort);
-            if (!foreignResponse.Split('|')[0].ToLower().Equals("ok"))
-            {
-                return "error|foreign_failure";
-            }
-            
-            return "ok";
-        }
 
         private string callRequest(string callingPartyName, string calledPartyName)
         {
@@ -235,7 +200,7 @@ namespace NetworkCallController
                         return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
                     }
 
-                    return coordinateCall(callingAddress, calledAddress);
+                    return connectionRequst(callingAddress, calledAddress);
 
                 }
             }
@@ -257,26 +222,6 @@ namespace NetworkCallController
         {
             string response = sendCommand("call-teardown|"+teardownName, signallingPort);
         }
-        private string coordinateCall(string localAddress, string ForeignAddress)
-        {
-            int foreignNCCPort = ncc.getForeingPort();
-            int localCCport = ncc.getCCPort();
-            string foreignASName = ncc.getForeignASName();
-            string localASName = ncc.getASName();
-
-            string localResponse = sendCommand("inter-connection-request|" + localAddress + "|" + foreignASName,localCCport);
-            if (!localResponse.Split('|')[0].ToLower().Equals("ok"))
-            {
-                return "error|local_failure";
-            }
-            string foreignResponse = sendCommand("inter-connection-request|" + ForeignAddress + "|" + foreignASName, foreignNCCPort);
-            if (!foreignResponse.Split('|')[0].ToLower().Equals("ok"))
-            {
-                return "error|foreign_failure";
-            }
-            return "ok";
-
-        }
         private string connectionRequst(string localPort, string foreignPort)
         {
             int ccPort = ncc.getCCPort();
@@ -291,16 +236,6 @@ namespace NetworkCallController
         {
             int ccPort = ncc.getCCPort();
             string response = sendCommand("call-teardown|" + localPort + "|" + ForeignPort, ccPort);
-            if (response.Split('|')[0].Equals("error"))
-            {
-                return "NCC nie moglo nawiazac polaczenia z CC";
-            }
-            return response;
-        }
-        private string interConnectionRequest(string request)
-        {
-            int ccPort = ncc.getCCPort();
-            string response = sendCommand(request,ccPort);
             if (response.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
