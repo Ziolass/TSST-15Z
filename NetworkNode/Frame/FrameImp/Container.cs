@@ -17,6 +17,7 @@ namespace NetworkNode.SDHFrame
             this.Type = ContentType.CONTAINER;
             this.Content = content;
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Container"/> class.
         /// </summary>
@@ -38,6 +39,7 @@ namespace NetworkNode.SDHFrame
                 return true;
             else return false;
         }
+
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>

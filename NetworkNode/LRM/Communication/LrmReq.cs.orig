@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.LRM.Communication
 {
+<<<<<<< HEAD:NetworkNode/LRM/Communication/LrmReq.cs
     public enum ReqType
     {
         ALLOC, DELLOC
     }
-
+=======
+>>>>>>> c2012301cdcf8fa98c28f0e7bfd104e39dec5b5d:NetworkNode/LRM/Communication/AllocateReq.cs
     public class LrmPort
     {
         public string Number { get; set; }

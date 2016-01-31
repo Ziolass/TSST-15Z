@@ -263,5 +263,10 @@ namespace Cc
             Actual.Steps.Add(ns);
         }
 
+        private void ReportStep(NodeStep ns)
+        {
+            Console.WriteLine("Node: " + ns.NodeName + " Port: ["+ns.Port1+" "+ ns.Index1+"]");
+        }
+
     }
 }
