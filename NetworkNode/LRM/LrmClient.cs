@@ -21,7 +21,7 @@ namespace NetworkNode.LRM
     public delegate void LrmTokneAns(string ans);
     public class LrmClient
     {
-        private LrmClientServer MsgClient;
+        private LrmClientSender LrmCommunication;
 
         Action<string> BrodcastToken;
         Action<string> HandleLrmAction;
@@ -30,7 +30,7 @@ namespace NetworkNode.LRM
             Action<string> brodcastToken,
             Action<string> handleLrmAction)
         {
-            MsgClient = new LrmClientServer(msgClientPort, DispatchCommunication);
+            LrmCommunication = new LrmClientSender(msgClientPort, DispatchCommunication);
             BrodcastToken = brodcastToken;
             HandleLrmAction = handleLrmAction;
         }
@@ -46,7 +46,7 @@ namespace NetworkNode.LRM
             {
                 case LrmCommunicationType.SIGNALLING:
                     {
-                        BrodcastToken(data);
+                        HandleSignalling(data);
                         break;
                     }
                 case LrmCommunicationType.DATA:
@@ -67,8 +67,7 @@ namespace NetworkNode.LRM
             {
                 case LrmHeader.INFO:
                     {
-
-                        Console.WriteLine(data);
+                        Console.WriteLine("LRM INFO: {0}", data);
                         break;
                     }
                 case LrmHeader.BROADCAST:
@@ -84,7 +83,7 @@ namespace NetworkNode.LRM
         public void ReportToken(LrmToken token)
         {
             string lrmMessage = JsonConvert.SerializeObject(token);
-            MsgClient.SendToLrm(lrmMessage);
+            LrmCommunication.SendToLrm(lrmMessage);
         }
 
         public void SendLrmHandshake()
@@ -95,7 +94,7 @@ namespace NetworkNode.LRM
             };
 
             string lrmMessage = JsonConvert.SerializeObject(lrmHandshake);
-            MsgClient.SendToLrm(lrmMessage);
+            LrmCommunication.SendToLrm(lrmMessage);
         }
     }
 }

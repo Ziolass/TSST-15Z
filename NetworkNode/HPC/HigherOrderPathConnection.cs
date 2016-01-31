@@ -1,3 +1,4 @@
+using NetworkNode.LRM.Communication;
 using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
 using System;
@@ -19,7 +20,8 @@ namespace NetworkNode.HPC
         private List<ForwardingRecord> Connections;
         private IFrameBuilder Builder;
         private LinkMatrix LinkResources;
-        
+        private VirtualContainerLevel NetworkDefaultLevel;
+
         private TransportTerminalFunction Ttf;
         //Credentials [Redundant but Faster]
         private Dictionary<int, IFrame> InputCredentials;
@@ -31,20 +33,21 @@ namespace NetworkNode.HPC
 
         object bufferLock = new object();
 
-        public HigherOrderPathConnection(TransportTerminalFunction ttf)
+        public HigherOrderPathConnection(TransportTerminalFunction ttf, VirtualContainerLevel networkDefaultLevel)
         {
+            NetworkDefaultLevel = networkDefaultLevel;
             ForwardingTable = new Dictionary<int, List<ForwardingRecord>>();
             Ttf = ttf;
             Ttf.HandleInputFrame += new HandleInputFrame(HandleIncomFrame);
             Ttf.HandleLrmData += new HandleLrmData(HandleLrm);
-            
+
             Builder = new FrameBuilder();
             InputCredentials = new Dictionary<int, IFrame>();
             OutputCredentials = new Dictionary<int, IFrame>();
             Connections = new List<ForwardingRecord>();
             //TODO may be configurable by injecting through constructor
             LinkResources = new LinkMatrix(VirtualContainerLevel.VC32);
-            
+
             Dictionary<int, StmLevel> allPorts = ttf.GetPorts();
             LinkResources.Inint(allPorts);
 
@@ -78,9 +81,11 @@ namespace NetworkNode.HPC
         {
             int index = 0;
             List<ForwardingRecord> checkedRecords = new List<ForwardingRecord>();
+            List<int> portOccupataion = new List<int>();
+            
             foreach (List<ForwardingRecord> twoWayRecord in records)
             {
-                
+
                 foreach (ForwardingRecord record in twoWayRecord)
                 {
                     if (!CheckForwardingRecord(record))
@@ -91,19 +96,23 @@ namespace NetworkNode.HPC
                         }
                         return new ExecutionResult(false, "Error at record " + index);
                     }
+                    //Asumption: two way record consisit of two one way records, in each, order of input and output 
+                    //is different
+                    if(InputCredentials[record.InputPort].)
                     checkedRecords.Add(record);
                     index++;
                 }
+
                 Connections.Add(twoWayRecord[0]);
-                
+
                 if (resourceLocation)
                 {
                     LinkResources.OccupyResources(twoWayRecord[0]);
                 }
-                
+
             }
 
-            foreach (ForwardingRecord record in checkedRecords) 
+            foreach (ForwardingRecord record in checkedRecords)
             {
                 if (!ForwardingTable.ContainsKey(record.InputPort))
                 {
@@ -113,57 +122,48 @@ namespace NetworkNode.HPC
                 ForwardingTable[record.InputPort].Add(record);
             }
 
-            return new ExecutionResult(true,null);
+            return new ExecutionResult(true, null);
         }
 
-        public Dictionary<int, int> Allocate(Dictionary<int, int?> ports)
+        public bool Allocate(List<LrmPort> ports)
         {
-            VirtualContainerLevel level = VirtualContainerLevel.VC32;
-            Dictionary<int, int> allocatedResources = new Dictionary<int, int>();
+            bool result;
+            List<ForwardingRecord> twoWayRecord = TransformToTwoWayRecord(ports);
             
-            foreach (KeyValuePair<int, int?> portWithIndex in ports)
-            {
-                int port = portWithIndex.Key;
-                int? resourceIndex = portWithIndex.Value;
-
-                if (resourceIndex == null)
-                {
-                    List<int> wrappedPort = new List<int>();
-                    wrappedPort.Add(port);
-                    foreach (KeyValuePair<int, int> entry in LinkResources.OccupyNextAvalible(wrappedPort))
-                    {
-                        allocatedResources.Add(entry.Key,entry.Value);
-                    }
-                    
-                }
-                else
-                {
-                    Dictionary<int, int> wrappedPort = new Dictionary<int, int>();
-                    wrappedPort.Add(port, resourceIndex.Value);
-                    
-                    foreach (KeyValuePair<int, int> entry in LinkResources.OccupyPorts(wrappedPort))
-                    {
-                        allocatedResources.Add(entry.Key, entry.Value);
-                    }
-                }
-            }
-
-            List<ForwardingRecord> twoWayRecord = TranslateToRecords(allocatedResources, level);
-
             List<List<ForwardingRecord>> records = new List<List<ForwardingRecord>>();
             records.Add(twoWayRecord);
 
-            AddForwardingRecords(records, false);
+            try
+            {
+                result = AddForwardingRecords(records, false).Result;
+                //
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
 
-            return allocatedResources;
+            return result;
+        }
+
+        private List<ForwardingRecord> TransformToTwoWayRecord(List<LrmPort> ports)
+        {
+            Dictionary<int, int> resources = new Dictionary<int, int>();
+
+            foreach (LrmPort lrmPort in ports)
+            {
+                int index = int.Parse(lrmPort.Index);
+                int number = int.Parse(lrmPort.Index);
+                resources.Add(index, number);
+            }
+
+            return TranslateToRecords(resources, NetworkDefaultLevel);
         }
 
         private List<ForwardingRecord> TranslateToRecords(Dictionary<int, int> data, VirtualContainerLevel level)
         {
             List<int> ports = new List<int>(data.Keys);
-            //TODO: DOPISAC DODAWANIE FORWARDING TABLE!
-            //allocatedResources = d³ugoœæ powinna byæ równa 2
-
+           
             List<ForwardingRecord> twoWayRecord = new List<ForwardingRecord>();
             ForwardingRecord fwr1 =
                 CreateForwardingRecord(
@@ -213,7 +213,7 @@ namespace NetworkNode.HPC
         public List<int> GetPortsForLrm()
         {
             return new List<int>(Ttf.GetPorts().Keys);
-        } 
+        }
 
         public bool RemoveTwWayRecord(List<ForwardingRecord> records)
         {
@@ -257,7 +257,7 @@ namespace NetworkNode.HPC
                 }
 
                 ((Frame)InputCredentials[record.InputPort]).ClearVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn);
-            } 
+            }
 
             return false;
         }
@@ -308,7 +308,7 @@ namespace NetworkNode.HPC
                 }
 
                 IFrame outputFrame = outputFrames[record.OutputPort];
-                IContent vContainer = frame.GetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?) record.VcNumberIn);
+                IContent vContainer = frame.GetVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn == -1 ? null : (int?)record.VcNumberIn);
 
                 outputFrame.SetVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut, vContainer);
             }
@@ -319,10 +319,10 @@ namespace NetworkNode.HPC
             Ttf.PassDataToInterfaces(outputFrames);
         }
 
-        
+
         private bool RemoveRecord(ForwardingRecord record)
         {
-            if(!ForwardingTable.ContainsKey(record.InputPort)) 
+            if (!ForwardingTable.ContainsKey(record.InputPort))
             {
                 return false;
             }
@@ -336,14 +336,14 @@ namespace NetworkNode.HPC
                     break;
                 }
             }
-            
+
             if (toRemove != null)
             {
-               ClearCredentials(toRemove);
-               ForwardingTable[record.InputPort].Remove(toRemove);
-               return true;
+                ClearCredentials(toRemove);
+                ForwardingTable[record.InputPort].Remove(toRemove);
+                return true;
             }
-           
+
             return false;
         }
     }

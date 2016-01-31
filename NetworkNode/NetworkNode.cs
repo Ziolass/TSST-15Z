@@ -71,7 +71,7 @@ namespace NetworkNode
 
         public void SendLrmToken(string lrmToken)
         {
-            
+
             foreach (KeyValuePair<int, StmLevel> port in Ttf.GetPorts())
             {
                 LrmToken token = new LrmToken
@@ -91,6 +91,39 @@ namespace NetworkNode
             token.Reciver.Name = Id;
             token.Reciver.Port = args.PortNumber.ToString();
             LrmClient.ReportToken(token);
+        }
+
+        private void HandleLrmResourceManagement(string data)
+        {
+            LrmReq request = JsonConvert.DeserializeObject<LrmReq>(data);
+
+            string textualRequest = request.ReqType;
+            ReqType reqType = (ReqType)Enum.Parse(typeof(ReqType), textualRequest);
+            
+            switch (reqType)
+            {
+                case ReqType.ALLOC:
+                    {
+                        Alloc(request.Ports);
+                        break;
+                    }
+                case ReqType.DELLOC:
+                    {
+                        Delloc(request.Ports);
+                        break;
+                    }
+            }
+
+        }
+
+        private void Alloc(List<LrmPort> ports)
+        {
+            Hpc.Allocate(ports);
+        }
+
+        private void Delloc(List<LrmPort> ports)
+        {
+
         }
     }
 }

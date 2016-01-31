@@ -5,21 +5,7 @@ using System.Threading;
 using System.Text;
 using LRM;
 
-
-/*public class StateObject
-{
-    public Socket WorkSocket { get; set; }
-    public Action<string> Callback { get; set; }
-    public byte[] Buffer { get; set; }
-    public StringBuilder Sb { get; set; }
-    
-    public StateObject()
-    {
-        Sb = new StringBuilder();
-    }
-}*/
-
-public class LrmClientServer : LocalPort
+public class LrmClientSender : LocalPort
 {
     private int Port;
     private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
@@ -29,7 +15,7 @@ public class LrmClientServer : LocalPort
 
     private const int BUFFER_SIZE = 500;
 
-    public LrmClientServer(int port, Action<string> callback)
+    public LrmClientSender(int port, Action<string> callback)
         : base(port)
     {
         DataRedCallback = callback;

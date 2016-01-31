@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.LRM.Communication
 {
-    class LrmPort
+    public enum ReqType
+    {
+        ALLOC, DELLOC
+    }
+    public class LrmPort
     {
         public string Number { get; set; }
         public string Index { get; set; }

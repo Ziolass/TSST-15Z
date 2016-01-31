@@ -50,7 +50,7 @@
     <Compile Include="Frame\FrameImp\POH.cs" />
     <Compile Include="HPC\Exceptions\AllLinksOccupied.cs" />
     <Compile Include="HPC\LinkMatrix.cs" />
-    <Compile Include="LRM\Communication\AllocateReq.cs" />
+    <Compile Include="LRM\Communication\LrmReq.cs" />
     <Compile Include="LRM\Communication\LrmDestination.cs" />
     <Compile Include="LRM\Communication\LrmToken.cs" />
     <Compile Include="LRM\Communication\SimpleLrmMsg.cs" />
@@ -59,7 +59,6 @@
     <Compile Include="LRM\LinkResourceManager.cs" />
     <Compile Include="LRM\LrmClient.cs" />
     <Compile Include="LRM\LrmClientSender.cs" />
-    <Compile Include="LRM\NodeCcInput.cs" />
     <Compile Include="LRM\TopologyReports.cs" />
     <Compile Include="NetworkNodeSetupProcess.cs" />
     <Compile Include="ElementConfigurator.cs" />
