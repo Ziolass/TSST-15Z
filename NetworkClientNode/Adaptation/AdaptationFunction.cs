@@ -1,5 +1,8 @@
+using NetworkNode.LRM;
+using NetworkNode.LRM.Communication;
 using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,14 +37,20 @@ namespace NetworkClientNode.Adaptation
         private Dictionary<int, IFrame> OutputCredentials;
         private FrameBuilder Builder;
         private String routerId;
+        private LrmClient LrmClient;
+        private VirtualContainerLevel NetworkDefaultLevel;
 
         public event HandleClientData HandleClientData;
-        public AdaptationFunction(TransportTerminalFunction ttf, string routerId)
+        public AdaptationFunction(TransportTerminalFunction ttf, 
+            string routerId, 
+            int lrmPort,
+            VirtualContainerLevel networkDefaultLevel)
         {
+            NetworkDefaultLevel = networkDefaultLevel;
             Ttf = ttf;
             Builder = new FrameBuilder();
             Ttf.HandleInputFrame += new HandleInputFrame(GetDataFromFrame);
-
+            LrmClient = new LrmClient(lrmPort, SendLrmToken, HandleLrmResourceManagement);
             this.Streams = new List<StreamData>();
 
             Dictionary<int, StmLevel> portsLevels = Ttf.GetPorts();
@@ -69,9 +78,6 @@ namespace NetworkClientNode.Adaptation
                     if (vc != null)
                     {
                         Container conteriner = vc.Content.Count > 0 ? vc.Content[0] as Container : null;
-
-
-
                         if (conteriner != null)
                         {
                             content = conteriner.Content;
@@ -127,19 +133,128 @@ namespace NetworkClientNode.Adaptation
         public ExecutionResult AddStreamData(List<StreamData> records)
         {
             int index = 0;
+            List<int> avaliblePorts = new List<int>();
             foreach (StreamData record in records)
             {
-
+                bool outputOccp = ((Frame)OutputCredentials[record.Port]).IsFrameOccupied(NetworkDefaultLevel);
+                
                 if (!CheckStreamData(record))
                 {
-                    return new ExecutionResult(false, "Error at record " + index);
+                    return new ExecutionResult
+                    {
+                        Result = false,
+                        Msg = "Error at record " + index
+                    };
+                }
+
+                if (!outputOccp && ((Frame)OutputCredentials[record.Port]).IsFrameOccupied(NetworkDefaultLevel))
+                {
+                    avaliblePorts.Add(record.Port);
                 }
                 index++;
             }
 
             Streams.AddRange(records);
 
-            return new ExecutionResult(true, null);
+            return new ExecutionResult
+            {
+                Result = true,
+                Msg = null,
+                Ports = avaliblePorts
+            };
+        }
+
+        public void SendLrmToken(string lrmToken)
+        {
+
+            foreach (KeyValuePair<int, StmLevel> port in Ttf.GetPorts())
+            {
+                LrmToken token = new LrmToken
+                {
+                    Tag = lrmToken,
+                    SenderPort = port.Key.ToString()
+                };
+
+                Ttf.SendLrmData(port.Key, JsonConvert.SerializeObject(token));
+            }
+        }
+
+        private void HandleLrmResourceManagement(string data)
+        {
+            LrmReq request = JsonConvert.DeserializeObject<LrmReq>(data);
+
+            string textualRequest = request.ReqType;
+            ReqType reqType = (ReqType)Enum.Parse(typeof(ReqType), textualRequest);
+
+            switch (reqType)
+            {
+                case ReqType.ALLOC:
+                    {
+                        Alloc(request.Ports);
+                        break;
+                    }
+                case ReqType.DELLOC:
+                    {
+                        Delloc(request.Ports);
+                        break;
+                    }
+            }
+
+        }
+
+        private void Alloc(List<LrmPort> ports)
+        {
+            List<StreamData> streamsToAdd = new List<StreamData>();
+            foreach (LrmPort port in ports)
+            {
+                streamsToAdd.Add(TransformLrmPort(port));
+            }
+
+            ExecutionResult allocationResult = AddStreamData(streamsToAdd);
+
+            LrmResp resp = new LrmResp
+            {
+                Type = ReqType.ALLOC.ToString(),
+                Status = allocationResult.Result ?
+                    LrmRespStatus.ACK.ToString()
+                    : LrmRespStatus.ERROR.ToString(),
+                Ports = allocationResult.Ports
+            };
+            LrmClient.SendLrmMessage(resp);
+        }
+
+        private void Delloc(List<LrmPort> ports)
+        {
+            List<StreamData> streamsToRemove = new List<StreamData>();
+            foreach (LrmPort port in ports)
+            {
+                streamsToRemove.Add(TransformLrmPort(port));
+            }
+
+            ExecutionResult delocationResult = RemoveStreamData(streamsToRemove);
+            
+            LrmResp resp = new LrmResp
+            {
+                Type = ReqType.DELLOC.ToString(),
+                Status = delocationResult.Result ?
+                    LrmRespStatus.ACK.ToString()
+                    : LrmRespStatus.ERROR.ToString(),
+                Ports = delocationResult.Ports
+            };
+            LrmClient.SendLrmMessage(resp);
+        }
+
+        private StreamData TransformLrmPort(LrmPort port)
+        {
+            int portNumber = int.Parse(port.Number);
+            int index = int.Parse(port.Index);
+            return new StreamData {
+                HigherPath = (int)(index / 3),
+                LowerPath = index % 3,
+                VcLevel = NetworkDefaultLevel,
+                Port = portNumber,
+                Stm = Ttf.GetPorts()[portNumber]
+            };
         }
 
         private bool CheckStreamData(StreamData record)
@@ -149,10 +264,25 @@ namespace NetworkClientNode.Adaptation
             
         }
 
-        private bool ClearCredentials(StreamData record)
+        private ExecutionResult ClearCredentials(StreamData record)
         {
+            List<int> avaliblePorts = new List<int>();
+            
+            bool outputOccp = ((Frame)OutputCredentials[record.Port]).IsFrameOccupied(NetworkDefaultLevel);
             Frame outputCredential = (Frame)OutputCredentials[record.Port];
-            return outputCredential.ClearVirtualContainer(record.VcLevel, record.HigherPath, record.LowerPath);
+            
+            bool result = outputCredential.ClearVirtualContainer(record.VcLevel, 
+                record.HigherPath, 
+                record.LowerPath);
+
+            if (outputOccp && !((Frame)OutputCredentials[record.Port]).IsFrameOccupied(NetworkDefaultLevel))
+            {
+                avaliblePorts.Add(record.Port);
+            }
+            return new ExecutionResult {
+                Ports = avaliblePorts,
+                Result = true
+            };
         }
 
 
@@ -166,15 +296,23 @@ namespace NetworkClientNode.Adaptation
             return Streams;
         }
 
-        public bool RemoveStreamData(StreamData record)
+        public ExecutionResult RemoveStreamData(List<StreamData> streams)
         {
-            if (Streams.Contains(record))
+            List<int> avaliblePorts = new List<int>();
+            foreach (StreamData stream in streams)
             {
-                Streams.Remove(record);
-                ClearCredentials(record);
-                return true;
+                if (Streams.Contains(stream))
+                {
+                    Streams.Remove(stream);
+                    avaliblePorts.AddRange(ClearCredentials(stream).Ports);
+                }
             }
-            return false;
+
+            return new ExecutionResult
+            {
+                Result = true,
+                Ports = avaliblePorts
+            };
         }
 
         private void HandleLrmData(object sender, InputLrmArgs args)

@@ -95,7 +95,7 @@ namespace NetworkNode.MenagmentModule
 
             List<ForwardingRecord> records = createRecord(literalRecord);
 
-            return node.RemoveTwWayRecord(records)  ? "OK" : "ERROR";
+            return node.RemoveTwWayRecord(records).Result  ? "OK" : "ERROR";
         }
 
         private string disableNode()

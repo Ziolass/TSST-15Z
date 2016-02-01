@@ -8,12 +8,9 @@ namespace NetworkNode.TTF
 {
         public class ExecutionResult
         {
-            public string Msg { get; private set; }
-            public bool Result { get; private set; }
-            public ExecutionResult(bool result, string msg)
-            {
-                Result = result;
-                Msg = msg;
-            }
+            public string Msg { get; set; }
+            public bool Result { get; set; }
+            public List<int> Ports { get; set; }
+            
         }
 }

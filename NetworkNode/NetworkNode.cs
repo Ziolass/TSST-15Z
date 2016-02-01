@@ -21,10 +21,14 @@ namespace NetworkNode
 
         public string Id { get; private set; }
 
-        public NetworkNode(HigherOrderPathConnection hpc, TransportTerminalFunction ttf, string id)
+        public NetworkNode(HigherOrderPathConnection hpc, 
+            TransportTerminalFunction ttf, 
+            string id, 
+            int lrmPort)
         {
             Ttf = ttf;
             Ttf.HandleLrmData += new HandleLrmData(ReportLrmToken);
+            LrmClient = new LrmClient(lrmPort, SendLrmToken, HandleLrmResourceManagement);
             Hpc = hpc;
             Id = id;
         }
@@ -64,7 +68,7 @@ namespace NetworkNode
             Ttf.AddMsohContent(dccContent);
         }
 
-        public bool RemoveTwWayRecord(List<ForwardingRecord> record)
+        public ExecutionResult RemoveTwWayRecord(List<ForwardingRecord> record)
         {
             return Hpc.RemoveTwWayRecord(record);
         }
@@ -90,7 +94,7 @@ namespace NetworkNode
             token.Reciver = new LrmDestination();
             token.Reciver.Name = Id;
             token.Reciver.Port = args.PortNumber.ToString();
-            LrmClient.ReportToken(token);
+            LrmClient.SendLrmMessage(token);
         }
 
         private void HandleLrmResourceManagement(string data)
@@ -118,12 +122,30 @@ namespace NetworkNode
 
         private void Alloc(List<LrmPort> ports)
         {
-            Hpc.Allocate(ports);
+            ExecutionResult allocationResult = Hpc.Allocate(ports);
+            LrmResp resp = new LrmResp {
+                Type = ReqType.ALLOC.ToString(),
+                Status = allocationResult.Result ?
+                    LrmRespStatus.ACK.ToString()
+                    : LrmRespStatus.ERROR.ToString(),
+                Ports = allocationResult.Ports
+            };
+            LrmClient.SendLrmMessage(resp);
         }
 
         private void Delloc(List<LrmPort> ports)
         {
-
+            ExecutionResult delocationResult = Hpc.FreeResources(ports);
+            LrmResp resp = new LrmResp
+            {
+                Type = ReqType.DELLOC.ToString(),
+                Status = delocationResult.Result ?
+                    LrmRespStatus.ACK.ToString()
+                    : LrmRespStatus.ERROR.ToString(),
+                Ports = delocationResult.Ports
+            };
+            LrmClient.SendLrmMessage(resp);
         }
+
     }
 }

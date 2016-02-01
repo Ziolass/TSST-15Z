@@ -55,9 +55,10 @@ namespace NetworkClientNode
             return executionResult;
         }
 
-        public  bool RemoveStreamData(StreamData stream)
+        public ExecutionResult RemoveStreamData(StreamData stream)
         {
-            if (Adaptation.RemoveStreamData(stream))
+            ExecutionResult result = Adaptation.RemoveStreamData(stream);
+            if (result.Result)
             {
                 if (StreamRemoved != null)
                 {
@@ -65,9 +66,9 @@ namespace NetworkClientNode
                     streams.Add(stream);
                     StreamRemoved(new StreamChangedArgs(streams));
                 }
-                return true;
+                
             }
-            else return false;
+            return result;
         }
 
         public void RegisterDataListener(HandleClientData clientDataDelegate)

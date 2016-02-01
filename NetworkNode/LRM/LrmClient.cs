@@ -80,9 +80,15 @@ namespace NetworkNode.LRM
 
         }
 
-        public void ReportToken(LrmToken token)
+        public void SendLrmMessage(LrmToken token)
         {
             string lrmMessage = JsonConvert.SerializeObject(token);
+            LrmCommunication.SendToLrm(lrmMessage);
+        }
+
+        public void SendLrmMessage(LrmResp resp)
+        {
+            string lrmMessage = JsonConvert.SerializeObject(resp);
             LrmCommunication.SendToLrm(lrmMessage);
         }
 

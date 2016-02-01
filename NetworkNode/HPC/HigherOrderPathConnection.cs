@@ -88,17 +88,30 @@ namespace NetworkNode.HPC
 
                 foreach (ForwardingRecord record in twoWayRecord)
                 {
+                    bool inputOcp = InputCredentials[record.InputPort].IsFrameOccupied(NetworkDefaultLevel);
+
                     if (!CheckForwardingRecord(record))
                     {
                         foreach (ForwardingRecord checkedRecord in checkedRecords)
                         {
                             ClearCredentials(checkedRecord);
                         }
-                        return new ExecutionResult(false, "Error at record " + index);
+
+                        return new ExecutionResult
+                        {
+                            Msg = "Error at record " + index,
+                            Ports = null,
+                            Result = false
+                        };
                     }
-                    //Asumption: two way record consisit of two one way records, in each, order of input and output 
-                    //is different
-                    if(InputCredentials[record.InputPort].)
+
+                    if (!inputOcp &&
+                        !portOccupataion.Contains(record.InputPort) && 
+                        InputCredentials[record.InputPort].IsFrameOccupied(NetworkDefaultLevel))
+                    {
+                        portOccupataion.Add(record.InputPort);
+                    }
+
                     checkedRecords.Add(record);
                     index++;
                 }
@@ -122,12 +135,16 @@ namespace NetworkNode.HPC
                 ForwardingTable[record.InputPort].Add(record);
             }
 
-            return new ExecutionResult(true, null);
+            return new ExecutionResult
+            {
+                Msg = null,
+                Ports = portOccupataion,
+                Result  = true
+            };
         }
 
-        public bool Allocate(List<LrmPort> ports)
+        public ExecutionResult Allocate(List<LrmPort> ports)
         {
-            bool result;
             List<ForwardingRecord> twoWayRecord = TransformToTwoWayRecord(ports);
             
             List<List<ForwardingRecord>> records = new List<List<ForwardingRecord>>();
@@ -135,15 +152,16 @@ namespace NetworkNode.HPC
 
             try
             {
-                result = AddForwardingRecords(records, false).Result;
-                //
+                return AddForwardingRecords(records, false);
             }
             catch (Exception ex)
             {
-                result = false;
+                return new ExecutionResult
+                {
+                    Result = false,
+                    Msg = ex.Message
+                };
             }
-
-            return result;
         }
 
         private List<ForwardingRecord> TransformToTwoWayRecord(List<LrmPort> ports)
@@ -183,10 +201,10 @@ namespace NetworkNode.HPC
             return twoWayRecord;
         }
 
-        public void FreeResources(Dictionary<int, int> data)
+        public ExecutionResult FreeResources(List<LrmPort> ports)
         {
-            List<ForwardingRecord> twoWayRecord = TranslateToRecords(data, VirtualContainerLevel.VC32);
-            RemoveTwWayRecord(twoWayRecord);
+            List<ForwardingRecord> twoWayRecord = TransformToTwoWayRecord(ports);
+            return RemoveTwWayRecord(twoWayRecord);
         }
 
         private ForwardingRecord CreateForwardingRecord(KeyValuePair<int, int> srcResources, KeyValuePair<int, int> dstResources, VirtualContainerLevel level)
@@ -215,34 +233,47 @@ namespace NetworkNode.HPC
             return new List<int>(Ttf.GetPorts().Keys);
         }
 
-        public bool RemoveTwWayRecord(List<ForwardingRecord> records)
+        public ExecutionResult RemoveTwWayRecord(List<ForwardingRecord> records)
         {
             if (records.Count != 2)
             {
-                return false;
+                return new ExecutionResult {
+                    Msg = "Attempt to delete one way of connection",
+                    Result = false
+                };
             }
+
+            List<int> avaliblePorts = new List<int>();
 
             foreach (ForwardingRecord record in records)
             {
-                RemoveRecord(record);
+                avaliblePorts.AddRange(RemoveRecord(record).Ports);
             }
 
             if (Connections.Contains(records[0]))
             {
                 LinkResources.FreeResources(records[0]);
                 Connections.Remove(records[0]);
-                return true;
+                return new ExecutionResult { 
+                    Result = true ,
+                    Ports = avaliblePorts
+                };
             }
 
             if (Connections.Contains(records[1]))
             {
                 LinkResources.FreeResources(records[0]);
                 Connections.Remove(records[1]);
-                return true;
+                return new ExecutionResult {
+                    Result = true,
+                    Ports = avaliblePorts 
+                };
             }
 
-            return false;
-
+            return new ExecutionResult { 
+                    Result = false,
+                    Msg = "Connection cannot be found" 
+                };
         }
 
         private bool CheckForwardingRecord(ForwardingRecord record)
@@ -262,14 +293,34 @@ namespace NetworkNode.HPC
             return false;
         }
 
-        private bool ClearCredentials(ForwardingRecord record)
+        private ExecutionResult ClearCredentials(ForwardingRecord record)
         {
             Frame inputCredential = (Frame)InputCredentials[record.InputPort];
             Frame outputCredential = (Frame)OutputCredentials[record.OutputPort];
+            
+            bool inputOccp = inputCredential.IsFrameOccupied(NetworkDefaultLevel);
+            bool outputOccp = outputCredential.IsFrameOccupied(NetworkDefaultLevel);
+
             bool result = true;
             result = result && inputCredential.ClearVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn);
             result = result && outputCredential.ClearVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut);
-            return result;
+            
+            List<int> ports = new List<int>();
+            
+            if (!inputCredential.IsFrameOccupied(NetworkDefaultLevel) && inputOccp)
+            {
+                ports.Add(record.InputPort);
+            }
+
+            if (!outputCredential.IsFrameOccupied(NetworkDefaultLevel) && outputOccp)
+            {
+                ports.Add(record.OutputPort);
+            }
+
+            return new ExecutionResult { 
+                Ports = ports,
+                Result = result
+            };
         }
 
         private void HandleIncomFrame(object sender, InputFrameArgs args)
@@ -320,11 +371,11 @@ namespace NetworkNode.HPC
         }
 
 
-        private bool RemoveRecord(ForwardingRecord record)
+        private ExecutionResult RemoveRecord(ForwardingRecord record)
         {
             if (!ForwardingTable.ContainsKey(record.InputPort))
             {
-                return false;
+                return null;
             }
             List<ForwardingRecord> scope = ForwardingTable[record.InputPort];
             ForwardingRecord toRemove = null;
@@ -339,12 +390,15 @@ namespace NetworkNode.HPC
 
             if (toRemove != null)
             {
-                ClearCredentials(toRemove);
+                //To chyba chcia³em sprawdzaæ czy siê usunie najpierw
                 ForwardingTable[record.InputPort].Remove(toRemove);
-                return true;
+                return ClearCredentials(toRemove);
             }
 
-            return false;
+            return new ExecutionResult
+                {
+                    Result = false
+                };
         }
     }
 }

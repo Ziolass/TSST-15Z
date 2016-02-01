@@ -15,6 +15,7 @@ namespace NetworkClientNode.Adaptation
         public StmLevel Stm { get; set; }
         public VirtualContainerLevel VcLevel { get; set; }
 
+        public StreamData() { }
         public StreamData(int port, StmLevel stm, VirtualContainerLevel vcLevel, int hpo, int? lpo)
         {
             Port = port;

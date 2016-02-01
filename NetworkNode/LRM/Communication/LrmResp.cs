@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.LRM.Communication
 {
-    class TokenAns
+    public enum LrmRespStatus
     {
+        ACK, ERROR
+    }
+    public class LrmResp
+    {
+        public string Type { get; set; }
         public string Status { get; set; }
+        public List<int> Ports { get; set; }
     }
 }

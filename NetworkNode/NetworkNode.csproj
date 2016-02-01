@@ -52,9 +52,9 @@
     <Compile Include="HPC\LinkMatrix.cs" />
     <Compile Include="LRM\Communication\LrmReq.cs" />
     <Compile Include="LRM\Communication\LrmDestination.cs" />
+    <Compile Include="LRM\Communication\LrmResp.cs" />
     <Compile Include="LRM\Communication\LrmToken.cs" />
     <Compile Include="LRM\Communication\SimpleLrmMsg.cs" />
-    <Compile Include="LRM\Communication\TokenAns.cs" />
     <Compile Include="LRM\Exceptions\DeviceAllreadyConnected.cs" />
     <Compile Include="LRM\LinkResourceManager.cs" />
     <Compile Include="LRM\LrmClient.cs" />
