@@ -17,7 +17,6 @@ namespace RoutingController.Interfaces
     {
         string Port { get; }
         List<string> Domains { get; }
-        NodeType Type { get; }
         IDestination Destination { get; }
         NodeStatus Status { get; }
     }

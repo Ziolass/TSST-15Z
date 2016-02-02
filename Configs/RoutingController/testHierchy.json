@@ -1,0 +1,135 @@
+{
+    Protocol: "resources",
+    Nodes: [
+        {
+            Node: "client1",
+            Domains: [
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "node1",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },
+        {
+            Node: "node1",
+            Domains: [
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "client1",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                },
+                {
+                    Port: 2,
+                    Destination: {
+                        Node: "node2",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },
+        {
+            Node: "node2",
+            Domains: [
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "node1",
+                        Port: 2
+                    },
+                    Status: "FREE"
+                },
+                {
+                    Port: 2,
+                    Destination: {
+                        Node: "node3",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },
+        {
+            Node: "node3",
+            Domains: [
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "node2",
+                        Port: 2
+                    },
+                    Status: "FREE"
+                },
+                {
+                    Port: 2,
+                    Destination: {
+                        Node: "node4",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },
+        {
+            Node: "node4",
+            Domains: [
+                "domenaB",                
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "node3",
+                        Port: 2
+                    },
+                    Status: "FREE"
+                },
+                {
+                    Port: 2,
+                    Destination: {
+                        Node: "client2",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },
+        {
+            Node: "client2",
+            Domains: [
+                "domenaB",
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "node3",
+                        Port: 2
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },
+    ]
+}

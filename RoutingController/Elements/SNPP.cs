@@ -26,12 +26,12 @@ namespace RoutingController.Elements
             {
                 if (i + 1 < nodes.Count)
                 {
-                    Node firstNode = new Node(nodes[i]);
-                    Node secondNode = new Node(nodes[i + 1]);
+                    NodeElement firstNode = new NodeElement(nodes[i]);
+                    NodeElement secondNode = new NodeElement(nodes[i + 1]);
                     List<string> portList = new List<string>();
                     portList.Add(firstNode.Port);
                     portList.Add(secondNode.Port);
-                    this.Nodes.Add(new SNP(firstNode.Name, portList));
+                    this.Nodes.Add(new SNP(firstNode.Node, portList));
                 }
             }
             /*foreach (string firstNodeId in nodes)

@@ -4,32 +4,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 namespace RoutingController.Elements
 {
-    public class Node : IComparer
+    public class NodeElement : IComparer
     {
-        public string Name { get; set; }
+        public string Node { get; set; }
         public string Port { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Node"/> class.
+        /// Initializes a new instance of the <see cref="Node" /> class.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="node">The node.</param>
         /// <param name="ports">The ports.</param>
-        public Node(string name, string ports)
+        [JsonConstructor]
+        public NodeElement(string node, string port)
         {
-            this.Name = name;
-            this.Port = ports;
+            this.Node = node;
+            this.Port = port;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Node"/> class.
         /// </summary>
         /// <param name="nodeId">The node identifier. (node id + port = node1:1)</param>
-        public Node(string nodeId)
+        public NodeElement(string nodeId)
         {
-            this.Name = nodeId.Substring(0, nodeId.IndexOf(":"));
+            this.Node = nodeId.Substring(0, nodeId.IndexOf(":"));
             this.Port = nodeId.Substring(nodeId.IndexOf(':') + 1);
 
         }
@@ -38,9 +39,9 @@ namespace RoutingController.Elements
         /// Initializes a new instance of the <see cref="Node"/> class.
         /// </summary>
         /// <param name="node">The node.</param>
-        public Node(Node node)
+        public NodeElement(NodeElement node)
         {
-            this.Name = node.Name;
+            this.Node = node.Node;
             this.Port = node.Port;
         }
 
@@ -54,9 +55,9 @@ namespace RoutingController.Elements
         /// </returns>
         public int Compare(object x, object y)
         {
-            if (x is Node && y is Node)
+            if (x is NodeElement && y is NodeElement)
             {
-                if (((Node)x).Name == ((Node)y).Name && ((Node)x).Port.Equals(((Node)y).Port))
+                if (((NodeElement)x).Node == ((NodeElement)y).Node && ((NodeElement)x).Port.Equals(((NodeElement)y).Port))
                     return 0;
                 else return 1;
             }
@@ -72,7 +73,7 @@ namespace RoutingController.Elements
         /// </returns>
         public override string ToString()
         {
-            return Name + ", " + Port;
+            return Node + ", " + Port;
         }
 
         /// <summary>
@@ -81,14 +82,14 @@ namespace RoutingController.Elements
         /// <returns></returns>
         public string GetNodeId()
         {
-            return Name + ":" + Port;
+            return Node + ":" + Port;
         }
 
         public bool Equals(object y)
         {
-            if (this is Node && y is Node)
+            if (this is NodeElement && y is NodeElement)
             {
-                if (this.Name == ((Node)y).Name && this.Port.Equals(((Node)y).Port))
+                if (this.Node == ((NodeElement)y).Node && this.Port.Equals(((NodeElement)y).Port))
                     return true;
                 else return false;
             }

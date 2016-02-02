@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RoutingController.Elements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace RoutingController.Service
         public RoutingControllerCenter ConfigureRoutingController()
         {
             int servicePort = 0;
+            List<NeighbourRoutingController> neighboursList = new List<NeighbourRoutingController>();
             while (ConfigReader.Read())
             {
                 if (ConfigReader.IsStartElement())
@@ -31,11 +33,22 @@ namespace RoutingController.Service
                                 throw new Exception("Error ElementConfigurator: Port value failed to parse!");
                         }   
                         //TODO: Dodanie możliwości startowania RC z NetworkGraph
+                        else if (ConfigReader.Name == "neighbour-rc")
+                        {
+                            int neighbourPort = -1;
+                            string neighbourDomainName = string.Empty;
+                            if (!int.TryParse(ConfigReader.GetAttribute("port"), out neighbourPort))
+                                throw new Exception("Error ElementConfigurator: Port value failed to parse!");
+
+                            neighbourDomainName = ConfigReader.GetAttribute("domain-name");
+
+                            neighboursList.Add(new NeighbourRoutingController(neighbourPort, neighbourDomainName));
+                        }
                     }
                 }
             }
 
-            RoutingControllerCenter routingControllCenter = new RoutingControllerCenter(servicePort);
+            RoutingControllerCenter routingControllCenter = new RoutingControllerCenter(servicePort, neighboursList);
             return routingControllCenter;
         }
     }
