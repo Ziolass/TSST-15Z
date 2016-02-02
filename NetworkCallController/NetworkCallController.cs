@@ -11,6 +11,7 @@ namespace NetworkCallController
     {
         private int localPort;
         private int foreignPort;
+        private Dictionary<string, Tuple<int,string, int,string>> connections;
         private string ASname;
         private int directoryPort;
         private int ccPort;
@@ -34,6 +35,10 @@ namespace NetworkCallController
         {
             return foreignPort;
         }
+        public Dictionary<string, Tuple<int, string, int, string>> getConnections()
+        {
+            return connections;
+        }
         public int getCCPort()
         {
             return ccPort;
@@ -43,6 +48,7 @@ namespace NetworkCallController
         private ConnectionHandler chandler;
         public NetworkCallController(string id)
         {
+            connections = new Dictionary<string, Tuple<int, string, int, string>>();
             readConfig(id);
             chandler = new ConnectionHandler(localPort,this);
             

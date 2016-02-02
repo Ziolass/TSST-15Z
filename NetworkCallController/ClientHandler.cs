@@ -69,12 +69,33 @@ namespace NetworkCallController
                     return checkDictionaryForEntry(temp[1]);
                 case "call-teardown":
                     return callTeardown(temp[1], temp[2]);
-             
+
+                case "call-malfunction":
+
+                    return callMalfunction(temp[1], temp[2]);
                 default:
                     return "coś sie zj. zepsulo.";
             }
         }
 
+        private string callMalfunction(string v1, string v2)
+        {
+            Tuple<int, string, int, string> tup;
+
+            if (ncc.getConnections().TryGetValue(v1 + "|" + v2, out tup))
+            {
+                informTeardownSides(tup.Item1, tup.Item2, tup.Item3, tup.Item4);
+                ncc.getConnections().Remove(v1 + "|" + v2);
+                return "OK|";
+            }
+            else if (ncc.getConnections().TryGetValue(v2 + "|" + v2, out tup))
+            {
+                informTeardownSides(tup.Item1, tup.Item2, tup.Item3, tup.Item4);
+                ncc.getConnections().Remove(v2 + "|" + v1);
+                return "OK|";
+            }
+            return "OK|";
+        }
         private bool callAccept(string callingPartyName, int calledPartyPort, string calledPartyName)
         {
             string response = sendCommand("call-accept|" + callingPartyName, calledPartyPort);
@@ -125,14 +146,14 @@ namespace NetworkCallController
                     Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
                     calledSignalingPort = int.Parse(calledPartyPorts[0]);
                     calledAddress = calledPartyPorts[1];
-                    
 
-                    string[] returnable =  connectionTeardown(callingAddress, calledAddress).Split('|');
-                    if (returnable[0].Equals("ok"))
+
+                    string[] returnable = connectionTeardown(callingAddress, calledAddress, callingSignalingPort, calledSignalingPort).Split('|');
+                    if (returnable[0].Equals("OK"))
                     {
-                        informOtherParty(calledSignalingPort,callingPartyName);
+                        informOtherParty(calledSignalingPort, callingPartyName);
                     }
-                    return string.Join("|",returnable);
+                    return string.Join("|", returnable);
 
                 }
             }
@@ -141,15 +162,13 @@ namespace NetworkCallController
             {
                 calledAddress = calledPartyPorts[1];
             }
-            string[] tmp = connectionTeardown(callingAddress, calledAddress).Split('|');
-            if (tmp[0].Equals("ok"))
+            string[] tmp = connectionTeardown(callingAddress, calledAddress, callingSignalingPort, calledSignalingPort).Split('|');
+            if (tmp[0].Equals("OK"))
             {
                 informOtherParty(calledSignalingPort, callingPartyName);
             }
-            return string.Join("|",tmp);
+            return string.Join("|", tmp);
         }
-
-
         private string callRequest(string callingPartyName, string calledPartyName)
         {
             int callingSignalingPort;
@@ -176,10 +195,10 @@ namespace NetworkCallController
                 return "error|Policy nie wyrazilo zgody";
             }
 
-            
+
             // sprawdzenie rekordu osoby zadanej
             string[] calledPartyPorts = checkDictionaryForEntry(calledPartyName).Split('|');
-        
+
 
             // jak nie ma rekordu to chill, sprawdzamy u ziomeczka
             if (!int.TryParse(calledPartyPorts[0], out calledSignalingPort))
@@ -202,7 +221,7 @@ namespace NetworkCallController
                         return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
                     }
 
-                    return connectionRequst(callingAddress, calledAddress);
+                    return connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName);
 
                 }
             }
@@ -211,38 +230,44 @@ namespace NetworkCallController
             {
                 calledAddress = calledPartyPorts[1];
             }
-            
+
             // no to w sumie by wypadalo spytac ziomeczka czy chce wgl z nami gadac zeby nie bylo przykro
             if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
             {
                 return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
             }
 
-            return connectionRequst(callingAddress, calledAddress);
+            return connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName);
         }
-        private void informOtherParty(int signallingPort,string teardownName)
+        private void informOtherParty(int signallingPort, string teardownName)
         {
-            string response = sendCommand("call-teardown|"+teardownName, signallingPort);
+            string response = sendCommand("call-teardown|" + teardownName, signallingPort);
         }
-        private string connectionRequst(string localPort, string foreignPort)
+        private string connectionRequst(string initAddress, string foreignAddress, int initSignalPort, string initName, int foreignSignalPort, string foreignName)
         {
             int ccPort = ncc.getCCPort();
-            string response = sendCommand("connection-request|" + localPort + "|" + foreignPort, ccPort);
+            string response = sendCommand("connection-request|" + initAddress + "|" + foreignAddress, ccPort);
+            if (response.Split('|')[0].Equals("error"))
+            {
+                return "NCC nie moglo nawiazac polaczenia z CC";
+            }
+            ncc.getConnections().Add(initAddress + "|" + foreignAddress, Tuple.Create(initSignalPort, initName, foreignSignalPort, foreignName));
+            return response;
+        }
+        private string connectionTeardown(string initAddress, string foreignAddress, int initSignalPort, int foreignSignalPort)
+        {
+            int ccPort = ncc.getCCPort();
+            string response = sendCommand("call-teardown|" + initAddress + "|" + foreignAddress, ccPort);
             if (response.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
             }
             return response;
         }
-        private string connectionTeardown(string localPort, string ForeignPort)
+        private void informTeardownSides(int initSignalPort, string initName, int foreignSignalPort, string foreignName)
         {
-            int ccPort = ncc.getCCPort();
-            string response = sendCommand("call-teardown|" + localPort + "|" + ForeignPort, ccPort);
-            if (response.Split('|')[0].Equals("error"))
-            {
-                return "NCC nie moglo nawiazac polaczenia z CC";
-            }
-            return response;
+            string initResponse = sendCommand("call-teardown|" + foreignName, initSignalPort);
+            string foreignResposne = sendCommand("call-teardown|" + initName, foreignSignalPort);
         }
         private string checkForeignNCCForEntry(string entry)
         {
@@ -254,7 +279,6 @@ namespace NetworkCallController
             }
             return response;
         }
-
         private string checkDictionaryForEntry(string entry)
         {
             int dictPort = ncc.getDirectoryPort();

@@ -42,9 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllocationRegister.cs" />
     <Compile Include="AsyncCommunication.cs" />
     <Compile Include="Communication\AllocReport.cs" />
     <Compile Include="Communication\CommunicationTypescs.cs" />
+    <Compile Include="Communication\ConnectionRequest.cs" />
     <Compile Include="Communication\LrmDestination.cs" />
     <Compile Include="Communication\LrmIntroduce.cs" />
     <Compile Include="Communication\LrmReq.cs" />

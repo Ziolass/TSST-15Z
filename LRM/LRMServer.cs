@@ -20,14 +20,14 @@ namespace LRM
         private LrmRegister LrmRegister;
         private Action<string, AsyncCommunication> DataRedCallback;
         private ManualResetEvent ConnectNew = new ManualResetEvent(false);
-        public LrmServer(int port, Action<string, VirtualNode> dataRedCallback, LrmRegister lrmRegister)
+        public LrmServer(int port, Action<string, AsyncCommunication> dataRedCallback, LrmRegister lrmRegister)
             : base(port)
         {
             LrmRegister = lrmRegister;
-            DataRedCallback = (string data, AsyncCommunication async) =>
+            DataRedCallback = dataRedCallback; /* (string data, AsyncCommunication async) =>
             {
                 dataRedCallback(data, LrmRegister.FindNodeByConnection(async));
-            };
+            };*/
         }
 
         public void Start()
@@ -83,14 +83,19 @@ namespace LRM
                     throw new DeviceAllreadyConnected();
                 }
                 LrmRegister.ConnectedNodes[node.Node].Async = ac;
+                LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
             }
             else
             {
-                LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+                lock (LrmRegister)
                 {
-                    Name = node.Node,
-                    Async = ac
-                });
+                    LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+                    {
+                        Name = node.Node,
+                        Async = ac,
+                        DomiansHierarchy = node.Domians
+                    });
+                }
             }
 
             if (NodeConnected != null)

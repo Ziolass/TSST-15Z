@@ -16,5 +16,6 @@ namespace NetworkNode.LRM.Communication
         public string Status { get; set; }
         public string Msg { get; set; }
         public string Id { get; set; }
+        public string ConnectionId { get; set; }
     }
 }

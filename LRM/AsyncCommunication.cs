@@ -47,7 +47,6 @@ namespace LRM
                 while (LastOne)
                 {
                     PacketsReceived.Reset();
-                    Console.WriteLine("Rozpoczynam nasłuchiwanie");
                     StateObject state = new StateObject();
                     AsyncSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReadCallback), state);
@@ -67,7 +66,6 @@ namespace LRM
         private void ReadCallback(IAsyncResult ar)
         {
             PacketsReceived.Set();
-            Console.WriteLine("Rozpoczynam odbieranie");
             String content = String.Empty;
             StateObject state = (StateObject)ar.AsyncState;
             int bytesRead = AsyncSocket.EndReceive(ar);
@@ -87,13 +85,11 @@ namespace LRM
                         IdleState = false;
                         return;
                     }
-                    Console.WriteLine("ASYNC RED: " + allData);
                     
                     DataRedCallback(allData,this);
                 }
                 else
                 {
-                    Console.WriteLine("ASYNC RED: " + "Partial");
                     AsyncSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReadCallback), state);
                 }
@@ -102,7 +98,6 @@ namespace LRM
 
         public void Send(String data)
         {
-            Console.WriteLine("ASYNC SENT: " + data);
             byte[] byteData = Encoding.ASCII.GetBytes(data);
             PacketsSend.Reset();
             StateObject state = new StateObject();

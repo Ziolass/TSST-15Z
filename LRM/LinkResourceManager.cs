@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LRM
@@ -17,6 +18,9 @@ namespace LRM
         private LrmRegister LrmRegister;
         private RcClinet RcClinet;
         private string DomianScope;
+        private Thread LocalTopologyRaport = null;
+        private bool InitPahse;
+        private AllocationRegister AllocationRegister;
 
 
         public LinkResourceManager(int serverPort, int rcPort, int ccPort, string domianScope)
@@ -26,6 +30,8 @@ namespace LRM
             LrmServer = new LrmServer(serverPort, HandleNodeData, LrmRegister);
             LrmServer.NodeConnected += new NodeConnected(HandleNodeConnection);
             RcClinet = new RcClinet(rcPort, HandleRcData);
+            InitPahse = true;
+            AllocationRegister = new AllocationRegister();
         }
 
         public void HandleRcData(string data, AsyncCommunication async)
@@ -33,22 +39,52 @@ namespace LRM
             Console.WriteLine("RC: " + data);
         }
 
-        public void HandleNodeData(string data, VirtualNode node)
+        public void HandleNodeData(string data, AsyncCommunication async)
         {
             Console.WriteLine(data);
             if(data.Contains(ReqType.ALLOC.ToString())
                 || data.Contains(ReqType.DELLOC.ToString())) 
             {
-                HandleResourceLocationData(data, node);
+                HandleResourceLocationData(data, LrmRegister.FindNodeByConnection(async));
+                return;
+            } else if(data.Contains(ReqType.CONNECTION_REQUEST.ToString())){
+                HandleConnectionRequest(data, async, ReqType.ALLOC);
+            }
+            else if (data.Contains(ReqType.DISCONNECTION_REQUEST.ToString()))
+            {
+                HandleConnectionRequest(data, async, ReqType.DELLOC);
+            } 
+            else if(data.Contains(ReqType.ALLOC_RESP.ToString())
+                || data.Contains(ReqType.DELLOC_RESP.ToString()))
+            {
+                HandleLocationResp(data);
             }
 
-            HandleTokenData(data,node);
+            HandleTokenData(data, LrmRegister.FindNodeByConnection(async));
+        }
+
+        private void HandleLocationResp(string data)
+        {
+            LrmResp response = JsonConvert.DeserializeObject<LrmResp>(data);
+            
+            if (AllocationRegister.ConfirmStep(response.ConnectionId, response.Id))
+            {
+                AsyncCommunication async = AllocationRegister.GetComm(response.ConnectionId);
+                async.Send(JsonConvert.SerializeObject(AllocationRegister.GetConnection(response.ConnectionId)));
+                AllocationRegister.Remove(response.ConnectionId);
+            }
         }
 
         
 
         public void HandleNodeConnection(string NodeName)
         {
+            if (LocalTopologyRaport == null)
+            {
+                LocalTopologyRaport = new Thread(new ThreadStart(SendLocalTopology));
+                LocalTopologyRaport.Start();
+            }
+
             AsyncCommunication async = LrmRegister.ConnectedNodes[NodeName].Async;
             LrmToken token = new LrmToken
             {
@@ -120,8 +156,71 @@ namespace LRM
 
             if (changedPorts.Count > 0)
             {
-                LocalTopology(changedPorts);
+                LocalTopology();
             }
+        }
+        //TODO zrobić ogarnianie indeksów
+        public void HandleConnectionRequest(string data, AsyncCommunication async, ReqType type)
+        {
+            ConnectionRequest connection = JsonConvert.DeserializeObject<ConnectionRequest>(data);
+            AllocationRegister.AddConnection(connection.Id, async, connection);
+            int stepIndex = 0;
+            foreach (ConnectionStep step in connection.Steps)
+            {
+                foreach (LrmPort port in step.Ports) {
+
+                    if (port.Index == null 
+                        && port.Equals(step.Ports[0]) 
+                        && stepIndex > 0)
+                    {
+                        ConnectionStep previous = connection.Steps[stepIndex - 1];
+                        port.Index = previous.Ports.Count == 1 ? previous.Ports[0].Index : previous.Ports[1].Index;
+                    }
+                    else if (port.Index == null)
+                    {
+                        int? index = AllocNextEmpty(step.Node, int.Parse(port.Number));
+                        if (index == null)
+                        {
+                            throw new Exception("Dupliacte Allocation");
+                        }
+                        port.Index = index.Value.ToString();
+                    }
+                }
+                string stepId = connection.Id + step.Node + step.Ports.GetHashCode() as string;
+
+                LrmReq request = new LrmReq{
+                    ConnectionId = connection.Id,
+                    Id = stepId,
+                    Ports = step.Ports,
+                    ReqType = type.ToString()
+                };
+
+                string allocRequest = JsonConvert.SerializeObject(request);
+                
+                AllocationRegister.RegisterStep(connection.Id, stepId);
+                
+                LrmRegister.ConnectedNodes[step.Node].Async.Send(allocRequest);
+                
+                stepIndex++;
+            }
+        }
+
+        private int? AllocNextEmpty(string node, int port)
+        {
+            VirtualNode vNode = LrmRegister.ConnectedNodes[node];
+            object[] resources = vNode.Resources[port];
+            int index = -1;
+            foreach (object res in resources)
+            {
+                if (res == null)
+                {
+                    break;
+                }
+                index++;
+            }
+
+            resources[index] = new object();
+            return index < 0 ? (int?)null : index; 
         }
 
         private void LocalTopology(List<int> changedPorts)
@@ -141,6 +240,7 @@ namespace LRM
                         Port = portNumber.ToString(),
                         Status = node.Destinations[portNumber].Item2 ? "FREE": "OCCUPIED"
                     };
+                    connections.Add(connection);
                 }
 
                 TopologyData nodeData = new TopologyData{
@@ -155,7 +255,8 @@ namespace LRM
                 Protocol = "resources",
                 Nodes = nodes
             };
-            
+
+            Console.WriteLine(JsonConvert.SerializeObject(LocalTopology));
 
         }
 
@@ -198,6 +299,13 @@ namespace LRM
             {
                 node.Destinations.Add(senderPort, new Tuple<LrmDestination, bool>(token.Reciver,true));
             }
+        }
+
+        private void SendLocalTopology()
+        {
+            Thread.Sleep(10000);
+            LocalTopology();
+            InitPahse = false;
         }
     }
 }
