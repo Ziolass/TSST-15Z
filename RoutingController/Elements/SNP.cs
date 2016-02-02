@@ -10,6 +10,7 @@ namespace RoutingController.Elements
     public class SNP : ISNP
     {
         public string Name { get; private set; }
+        public string Domain { get; set; }
         public List<string> Ports { get; private set; }
 
         /// <summary>
@@ -17,9 +18,10 @@ namespace RoutingController.Elements
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="ports">The ports.</param>
-        public SNP(string name, List<string> ports)
+        public SNP(string name, string domain, List<string> ports)
         {
             this.Name = name;
+            this.Domain = domain;
             this.Ports = ports;
         }
     }

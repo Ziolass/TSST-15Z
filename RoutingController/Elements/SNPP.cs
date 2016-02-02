@@ -31,7 +31,7 @@ namespace RoutingController.Elements
                     List<string> portList = new List<string>();
                     portList.Add(firstNode.Port);
                     portList.Add(secondNode.Port);
-                    this.Nodes.Add(new SNP(firstNode.Node, portList));
+                    this.Nodes.Add(new SNP(firstNode.Node,null, portList));
                 }
                 else
                 {
@@ -39,7 +39,7 @@ namespace RoutingController.Elements
                     List<string> portList = new List<string>();
                     portList.Add(firstNode.Port);
                     portList.Add(null);
-                    this.Nodes.Add(new SNP(firstNode.Node, portList));
+                    this.Nodes.Add(new SNP(firstNode.Node,null, portList));
                 }
             }
             /*foreach (string firstNodeId in nodes)
@@ -71,7 +71,7 @@ namespace RoutingController.Elements
                     List<string> portList = new List<string>();
                     portList.Add(firstNode.Port);
                     portList.Add(secondNode.Port);
-                    this.Nodes.Add(new SNP(firstNode.Node, portList));
+                    this.Nodes.Add(new SNP(firstNode.Node, null, portList));
                 }
             }
         }

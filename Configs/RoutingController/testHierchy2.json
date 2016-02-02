@@ -107,7 +107,7 @@
                 {
                     Port: 2,
                     Destination: {
-                        Node: "node5",
+                        Node: "node2",
                         Port: 1
                     },
                     Status: "FREE"
@@ -123,7 +123,7 @@
             ]
         },
         {
-            Node: "node5",
+            Node: "node2",
             Domains: [
                 "domenaB",
                 "domenaA"
@@ -165,7 +165,7 @@
                 {
                     Port: 2,
                     Destination: {
-                        Node: "node5",
+                        Node: "node2",
                         Port: 2
                     },
                     Status: "FREE"
@@ -183,7 +183,6 @@
         {
             Node: "node7",
             Domains: [
-                "domenaC",
                 "domenaA"
             ],
             Data: [

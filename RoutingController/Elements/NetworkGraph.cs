@@ -1,6 +1,7 @@
 using RoutingController.Interfaces;
 using System;
 using System.Collections.Generic;
+using RoutingController.Requests;
 
 namespace RoutingController.Elements
 {
@@ -95,6 +96,86 @@ namespace RoutingController.Elements
             }
         }
 
+        public void MakeMetroVertex(NetworkGraph otherGraph)
+        {
+            foreach (var item in this.Graph)
+            {
+                foreach (var otherItem in otherGraph.Graph)
+                {
+                    foreach (var otherItemConnections in otherItem.Value)
+                    {
+                        if (item.Key.Node == otherItemConnections.Key.Destination.Node && item.Key.Port == otherItemConnections.Key.Destination.Port)
+                        {
+                            List<string> domains = new List<string>();
+                            domains.Add(this.DomainName);
+                            Destination destination = new Destination();
+                            List<Link> linkData = new List<Link>();
+                            //Dodaj linki od node (domena tego graphu) do metro Node
+                            destination = new Destination(this.DomainName, item.Key.Node, item.Key.Port);
+                            linkData.Add(new Link(otherItemConnections.Key.Port, domains, destination, otherItemConnections.Key.Status));
+
+                            if (this.GetVertex(otherGraph.DomainName).Key != null) //Czy metroNode istnieje?
+                            {
+                                foreach (var existingLinks in this.GetVertex(otherGraph.DomainName).Value)
+                                {
+                                    linkData.Add((Link)existingLinks.Key);
+                                }
+                            }
+
+                            TopologyNode newTopologyNode = new TopologyNode(otherGraph.DomainName, domains, linkData);
+                            this.UpdateGraph(newTopologyNode);
+                            Link tempLink = Link.ReverseLink(linkData[0], otherGraph.DomainName);
+                            this.Graph[item.Key].Add(tempLink, ExternalLinkWeight);
+
+                        }
+                    }
+                }
+            }
+        }
+
+        public void MakeDomainConnection(NetworkGraph firstGraph, NetworkGraph secondGraph)
+        {
+            foreach (var fristItem in firstGraph.Graph)
+            {
+                foreach (var secondItem in secondGraph.Graph)
+                {
+                    foreach (var secondItemConnections in secondItem.Value)
+                    {
+                        if (fristItem.Key.Node == secondItemConnections.Key.Destination.Node && fristItem.Key.Port == secondItemConnections.Key.Destination.Port)
+                        {
+                           //does metro node exists in thid higher domain for lower domains
+                            if (this.GetVertex(secondGraph.DomainName).Key != null && this.GetVertex(firstGraph.DomainName).Key != null)
+                            {
+                                List<string> domains = new List<string>();
+                                domains.Add(this.DomainName);
+                                Destination destination = new Destination();
+                                List<Link> linkData = new List<Link>();
+
+                                //B <- C
+                                destination = new Destination(firstGraph.DomainName, fristItem.Key.Node, fristItem.Key.Port);
+                                linkData.Add(new Link(secondItemConnections.Key.Port, domains, destination, secondItemConnections.Key.Status));
+
+                                if (this.GetVertex(secondGraph.DomainName).Key != null) //Czy metroNode istnieje?
+                                {
+                                    foreach (var existingLinks in this.GetVertex(secondGraph.DomainName).Value)
+                                    {
+                                        linkData.Add((Link)existingLinks.Key);
+                                    }
+                                }
+
+                                TopologyNode newTopologyNode = new TopologyNode(secondGraph.DomainName, domains, linkData);
+                                this.UpdateGraph(newTopologyNode);
+
+                                //B -> C
+                                Link tempLink = Link.ReverseLink(linkData[0], secondGraph.DomainName);
+                                this.Graph[this.GetVertex(firstGraph.DomainName).Key].Add(tempLink, ExternalLinkWeight);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Complete the graph. Graf zupe³ny
         /// </summary>
@@ -186,18 +267,18 @@ namespace RoutingController.Elements
         /// <param name="start">The start.</param>
         /// <param name="finish">The finish.</param>
         /// <returns></returns>
-        public List<string> ShortestPath(string start, string finish)
+        public List<NodeElement> ShortestPath(string start, string finish)
         {
-            var previous = new Dictionary<string, string>();
-            var distances = new Dictionary<string, int>();
-            var nodes = new List<string>();
+            var previous = new Dictionary<NodeElement, NodeElement>();
+            var distances = new Dictionary<NodeElement, int>();
+            var nodes = new List<NodeElement>();
 
-            List<string> path = null;
+            List<NodeElement> path = null;
 
             foreach (var vertex in Graph)
             {
-                string vertexId = vertex.Key.GetNodeId();
-                if (vertexId == start)
+                NodeElement vertexId = vertex.Key;
+                if (vertexId.GetNodeId() == start)
                 {
                     distances[vertexId] = 0;
                 }
@@ -212,12 +293,12 @@ namespace RoutingController.Elements
             {
                 nodes.Sort((x, y) => distances[x] - distances[y]);
 
-                string smallest = nodes[0];
+                NodeElement smallest = nodes[0];
                 nodes.Remove(smallest);
 
-                if (smallest == finish)
+                if (smallest.GetNodeId() == finish)
                 {
-                    path = new List<string>();
+                    path = new List<NodeElement>();
                     while (previous.ContainsKey(smallest))
                     {
                         path.Add(smallest);
@@ -244,18 +325,20 @@ namespace RoutingController.Elements
                 {
                     var alt = distances[smallest] + neighbor.Value;
 
-                    if (distances.ContainsKey(((Destination)neighbor.Key.Destination).NodeId()) && alt < distances[((Destination)neighbor.Key.Destination).NodeId()])
+                    var nodeNeighbor = GetVertex(((Destination)neighbor.Key.Destination).NodeId()).Key;
+
+                    if (nodeNeighbor != null && distances.ContainsKey(nodeNeighbor) && alt < distances[nodeNeighbor])
                     {
-                        distances[((Destination)neighbor.Key.Destination).NodeId()] = alt;
-                        previous[((Destination)neighbor.Key.Destination).NodeId()] = smallest;
-                    }
+                        distances[nodeNeighbor] = alt;
+                        previous[nodeNeighbor] = smallest;
+                   }
                 }
             }
             //Change order
-            List<string> returnPath = null;
+            List<NodeElement> returnPath = null;
             if (path != null)
             {
-                returnPath = new List<string>();
+                returnPath = new List<NodeElement>();
                 for (int i = path.Count - 1; i >= 0; i--)
                 {
                     returnPath.Add(path[i]);

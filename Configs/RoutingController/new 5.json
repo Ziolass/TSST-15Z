@@ -1,0 +1,9 @@
+{
+    "Nodes": [
+        { "Name": "node1", "Ports": [ "1", "2" ] },
+        { "Name": "node2", "Ports": [ "1", "2" ] },
+        { "Name": "node3", "Ports": [ "1", "2" ] },
+        { "Name": "domenaB", "Ports": [ "1", "1" ] },
+        { "Name": "domenaC", "Ports": [ "2", "1" ] }
+    ]
+}

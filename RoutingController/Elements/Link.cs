@@ -26,5 +26,11 @@ namespace RoutingController.Elements
             this.Destination = destination;
             this.Status = status;
         }
+
+        public static Link ReverseLink(Link link, string nodeName)
+        {
+            Link returnLink = new Link(link.Destination.Port, link.Domains, new Destination(null, nodeName ,link.Port), link.Status);
+            return returnLink;
+        }
     }
 }

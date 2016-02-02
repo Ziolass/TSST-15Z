@@ -11,6 +11,7 @@ namespace RoutingController.Elements
     {
         public string Node { get; set; }
         public string Port { get; private set; }
+        public string Domain { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Node" /> class.
@@ -22,6 +23,13 @@ namespace RoutingController.Elements
         {
             this.Node = node;
             this.Port = port;
+            this.Domain = null;
+        }
+        public NodeElement(string node, string port, string domain)
+        {
+            this.Node = node;
+            this.Port = port;
+            this.Domain = domain;
         }
 
         /// <summary>
