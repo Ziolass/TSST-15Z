@@ -39,23 +39,34 @@ namespace RoutingController.Service
         /// or
         /// Error RouteTableResponse: NetworkGraph not found! 
         /// </exception>
-        public SNPP RouteTableResponse(QueryRequest queryRequest)
+        public RouteResponse RouteTableResponse(QueryRequest queryRequest)
         {
-            string source = queryRequest.Ends[0].GetNodeId();
-            string destination = queryRequest.Ends[1].GetNodeId();
+            NodeElement source = queryRequest.Ends[0];
+            NodeElement destination = queryRequest.Ends[1];
             //What domain name?
-            string destinationDomainName = SearchDomainName(destination);
-            string sourceDomainName = SearchDomainName(source);
+            string destinationDomainName = SearchDomainName(destination.GetNodeId());
+            string sourceDomainName = SearchDomainName(source.GetNodeId());
+
+            Ends sourceEnd = new Ends(null, source.Node, source.Port);
+            Ends destinationEnd;
+            List<Ends> endsList = new List<Ends>();
+            
             if (destinationDomainName == sourceDomainName)
             {
+                destinationEnd = new Ends(null, destination.Node, destination.Port);
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(destinationDomainName);
                 if (tempNetworkGraph != null)
                 {
-                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source, destination);
+                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
                     if (returnList != null)
                     {
-                        SNPP returnSNPP = new SNPP(returnList);
-                        return returnSNPP;
+                        RouteResponse returnResponse = new RouteResponse();
+                        returnResponse.AddNodes(returnList);
+                        endsList.Add(sourceEnd);
+                        endsList.Add(destinationEnd);
+                        returnResponse.Ends = endsList;
+
+                        return returnResponse;
                     }
                     else throw new Exception("Error RouteTableResponse: Graph is uncomplete (ShortestPath)! ");
                 }
@@ -66,17 +77,20 @@ namespace RoutingController.Service
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
                 if (tempNetworkGraph != null)
                 {
-                    string newDestination = tempNetworkGraph.GetVertex(destinationDomainName).Key.GetNodeId();
-                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source, newDestination);
-                    SNPP returnSNPP = null;
+                    NodeElement newDestination = tempNetworkGraph.GetVertex(destinationDomainName).Key;
+                    destinationEnd = new Ends(null, newDestination.Node, newDestination.Port);
+                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source.GetNodeId(), newDestination.GetNodeId());
                     if (returnList != null)
                     {
-                        //returnSNPP = new SNPP(returnList);
+                        RouteResponse returnResponse = new RouteResponse();
+                        returnResponse.AddNodes(returnList);
+                        endsList.Add(sourceEnd);
+                        endsList.Add(destinationEnd);
+                        returnResponse.Ends = endsList;
+
+                        return returnResponse;
                     }
                     else throw new Exception("Error RouteTableResponse: Graph is uncomplete (ShortestPath)! ");
-                    //return returnSNPP;
-                    return null;
-
                 }
                 else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
             }

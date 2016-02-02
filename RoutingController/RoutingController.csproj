@@ -64,6 +64,7 @@
     <Compile Include="Elements\Link.cs" />
     <Compile Include="Elements\NetworkGraph.cs" />
     <Compile Include="Elements\SNPP.cs" />
+    <Compile Include="Requests\RouteResponse.cs" />
     <Compile Include="Requests\TopologyNode.cs" />
     <Compile Include="Service\RoutingController.cs" />
     <Compile Include="Service\ElementConfigurator.cs" />
