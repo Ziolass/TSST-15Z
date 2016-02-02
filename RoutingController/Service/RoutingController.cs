@@ -315,6 +315,7 @@ namespace RoutingController.Service
             {
 
                 Dictionary<NodeElement, NodeElement> routes = new Dictionary<NodeElement, NodeElement>();
+
                 routes = routes.Concat(item.GetRoutes()).ToDictionary(x => x.Key, x => x.Value);
 
                 Dictionary<NodeElement, NodeElement> returnRoutes = new Dictionary<NodeElement, NodeElement>(routes);

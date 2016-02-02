@@ -17,6 +17,8 @@ namespace RoutingController.Elements
 
         public string Port { get; private set; }
 
+        public DestinationType Type { get; private set;}
+
         public Destination()
         {
             this.Scope = null;
@@ -30,6 +32,14 @@ namespace RoutingController.Elements
             this.Scope = scope;
             this.Node = node;
             this.Port = port;
+            this.Type = DestinationType.LOCAL;
+        }
+        public Destination(string scope, string node, string port, DestinationType type)
+        {
+            this.Scope = scope;
+            this.Node = node;
+            this.Port = port;
+            this.Type = type;
         }
 
         /// <summary>

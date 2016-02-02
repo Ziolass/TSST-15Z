@@ -50,7 +50,7 @@
     <Compile Include="Requests\NetworkRequest.cs" />
     <Compile Include="Elements\SNP.cs" />
     <Compile Include="Elements\Destination.cs" />
-    <Compile Include="Elements\Node.cs" />
+    <Compile Include="Elements\NodeElement.cs" />
     <Compile Include="Requests\QueryRequest.cs" />
     <Compile Include="Interfaces\IDestination.cs" />
     <Compile Include="Interfaces\ILinkResourceMenager.cs" />
