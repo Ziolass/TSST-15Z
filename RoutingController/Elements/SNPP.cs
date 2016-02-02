@@ -6,7 +6,7 @@ namespace RoutingController.Elements
 {
     public class SNPP : ISNPP
     {
-        public List<SNP> Nodes { get; set; }
+        public List<SNP> Steps { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SNPP" /> class.
@@ -16,22 +16,52 @@ namespace RoutingController.Elements
         [JsonConstructor]
         public SNPP(List<SNP> nodes)
         {
-            this.Nodes = new List<SNP>(nodes);
+            this.Steps = new List<SNP>(nodes);
         }
 
-        public SNPP(List<string> nodes)
+        public SNPP(List<NodeElement> nodes)
         {
-            this.Nodes = new List<SNP>();
-            for (int i = 0; i < nodes.Count; i+=2)
+            this.Steps = new List<SNP>();
+            for (int i = 0; i < nodes.Count; i += 2)
             {
+
                 if (i + 1 < nodes.Count)
                 {
-                    Node firstNode = new Node(nodes[i]);
-                    Node secondNode = new Node(nodes[i + 1]);
+                    NodeElement firstNode = nodes[i];
+                    NodeElement secondNode = nodes[i + 1];
+                    List<string> portList = new List<string>();
+
+                    SNP newSNP = null;
+                    if (firstNode.Scope != null)
+                    {
+                        firstNode = new NodeElement(firstNode.Scope);
+                        portList.Add(firstNode.Port);
+                        portList.Add(null);
+                        newSNP = new SNP(firstNode.Node, nodes[i].Node, portList);
+                        this.Steps.Add(newSNP);
+
+                        portList = new List<string>();
+                        secondNode = new NodeElement(secondNode.Scope);
+                        portList.Add(secondNode.Port);
+                        portList.Add(null);
+                        newSNP = new SNP(secondNode.Node, nodes[i].Node, portList);
+                        this.Steps.Add(newSNP);
+                    }
+                    else
+                    {
+                        portList.Add(firstNode.Port);
+                        portList.Add(secondNode.Port);
+                        newSNP = new SNP(firstNode.Node, null, portList);
+                        this.Steps.Add(newSNP);
+                    }
+                }
+                else
+                {
+                    NodeElement firstNode = nodes[i];
                     List<string> portList = new List<string>();
                     portList.Add(firstNode.Port);
-                    portList.Add(secondNode.Port);
-                    this.Nodes.Add(new SNP(firstNode.Name, portList));
+                    portList.Add(null);
+                    this.Steps.Add(new SNP(firstNode.Node, null, portList));
                 }
             }
             /*foreach (string firstNodeId in nodes)
@@ -51,11 +81,27 @@ namespace RoutingController.Elements
                 }
             }*/
         }
+        public void AddRange(List<string> nodes)
+        {
+            this.Steps = new List<SNP>();
+            for (int i = 0; i < nodes.Count; i += 2)
+            {
+                if (i + 1 < nodes.Count)
+                {
+                    NodeElement firstNode = new NodeElement(nodes[i]);
+                    NodeElement secondNode = new NodeElement(nodes[i + 1]);
+                    List<string> portList = new List<string>();
+                    portList.Add(firstNode.Port);
+                    portList.Add(secondNode.Port);
+                    this.Steps.Add(new SNP(firstNode.Node, null, portList));
+                }
+            }
+        }
 
         public override string ToString()
         {
             string returnString = string.Empty;
-            foreach (var item in Nodes)
+            foreach (var item in Steps)
             {
                 returnString += item.ToString();
             }

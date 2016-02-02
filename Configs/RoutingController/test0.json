@@ -1,6 +1,5 @@
 {
     Protocol: "resources",
-
     Node: "client1",
     LinkList: [
         {

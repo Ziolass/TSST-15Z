@@ -10,13 +10,13 @@ namespace RoutingController.Elements
         [JsonConstructor]
         public SNPP(List<SNP> nodes)
         {
-            this.Nodes = new List<SNP>(nodes);
+            this.Steps = new List<SNP>(nodes);
         }
 
         public override string ToString()
         {
             string returnString = string.Empty;
-            foreach (var item in Nodes)
+            foreach (var item in Steps)
             {
                 returnString += item.ToString();
             }
