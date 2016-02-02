@@ -190,22 +190,22 @@ namespace NetworkClientNode.Adaptation
             {
                 case ReqType.ALLOC:
                     {
-                        Alloc(request.Ports);
+                        Alloc(request);
                         break;
                     }
                 case ReqType.DELLOC:
                     {
-                        Delloc(request.Ports);
+                        Delloc(request);
                         break;
                     }
             }
 
         }
 
-        private void Alloc(List<LrmPort> ports)
+        private void Alloc(LrmReq request)
         {
             List<StreamData> streamsToAdd = new List<StreamData>();
-            foreach (LrmPort port in ports)
+            foreach (LrmPort port in request.Ports)
             {
                 streamsToAdd.Add(TransformLrmPort(port));
             }
@@ -218,28 +218,28 @@ namespace NetworkClientNode.Adaptation
                 Status = allocationResult.Result ?
                     LrmRespStatus.ACK.ToString()
                     : LrmRespStatus.ERROR.ToString(),
-                Ports = allocationResult.Ports
+                Id = request.Id
             };
             LrmClient.SendLrmMessage(resp);
         }
 
-        private void Delloc(List<LrmPort> ports)
+        private void Delloc(LrmReq request)
         {
             List<StreamData> streamsToRemove = new List<StreamData>();
-            foreach (LrmPort port in ports)
+            foreach (LrmPort port in request.Ports)
             {
                 streamsToRemove.Add(TransformLrmPort(port));
             }
 
             ExecutionResult delocationResult = RemoveStreamData(streamsToRemove);
-            
+
             LrmResp resp = new LrmResp
             {
-                Type = ReqType.DELLOC.ToString(),
+                Type = ReqType.ALLOC.ToString(),
                 Status = delocationResult.Result ?
                     LrmRespStatus.ACK.ToString()
                     : LrmRespStatus.ERROR.ToString(),
-                Ports = delocationResult.Ports
+                Id = request.Id
             };
             LrmClient.SendLrmMessage(resp);
         }

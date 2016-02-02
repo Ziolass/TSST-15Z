@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConectionController", "Cone
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LRM", "LRM\LRM.csproj", "{222B3684-F432-4EB5-B140-261BBDE1F2FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkNode2", "NetworkNode2\NetworkNode2.csproj", "{56C8157D-30E8-47E3-B2DC-503B4A253DF8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{222B3684-F432-4EB5-B140-261BBDE1F2FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{222B3684-F432-4EB5-B140-261BBDE1F2FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{222B3684-F432-4EB5-B140-261BBDE1F2FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56C8157D-30E8-47E3-B2DC-503B4A253DF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56C8157D-30E8-47E3-B2DC-503B4A253DF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56C8157D-30E8-47E3-B2DC-503B4A253DF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56C8157D-30E8-47E3-B2DC-503B4A253DF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

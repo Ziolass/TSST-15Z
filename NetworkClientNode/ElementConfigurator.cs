@@ -25,6 +25,9 @@ namespace NetworkClientNode
         public NetworkClNode ConfigureNode()
         {
             List<NodeInput> ports = new List<NodeInput>();
+            VirtualContainerLevel networkDefaultLevel = 0;
+            List<string> domians = null;
+            int lrmPort = 0;
             string nodeName = null;
             ManagementClientPort managementPort = null;
             NetworkNodeSender sender = null;
@@ -52,6 +55,22 @@ namespace NetworkClientNode
                             int portNumber = int.Parse(configReader.GetAttribute("number"));
                             managementPort = new ManagementClientPort(portNumber);
                         }
+                        else if (configReader.Name == "lrm-client")
+                        {
+                            lrmPort = int.Parse(configReader.GetAttribute("tcp"));
+                        }
+                        else if (configReader.Name == "domians")
+                        {
+                            int domiansNumber = int.Parse(configReader.GetAttribute("number"));
+                            domians = CreateDomainsHierarchy(configReader.ReadSubtree(), domiansNumber);
+
+                        }
+                        else if (configReader.Name == "network")
+                        {
+                            string levelTxt = configReader.GetAttribute("level");
+                            Type enumType = typeof(VirtualContainerLevel);
+                            networkDefaultLevel = (VirtualContainerLevel)Enum.Parse(enumType, levelTxt);
+                        }
                         else if (configReader.Name == "node" && configReader.IsStartElement())
                         {
                             nodeName = configReader.GetAttribute("name");
@@ -63,7 +82,7 @@ namespace NetworkClientNode
 
             SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(ports, sender, nodeName);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, NodeMode.CLIENT);
-            AdaptationFunction adpt = new AdaptationFunction(ttf, nodeName);
+            AdaptationFunction adpt = new AdaptationFunction(ttf, nodeName,lrmPort, networkDefaultLevel);
             NetworkClNode node = new NetworkClNode(adpt, nodeName);
             
             //TODO

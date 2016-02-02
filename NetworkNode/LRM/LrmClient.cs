@@ -1,4 +1,6 @@
-﻿using NetworkNode.LRM.Communication;
+﻿using LRM;
+using LRM.Communication;
+using NetworkNode.LRM.Communication;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,16 +10,6 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.LRM
 {
-    public enum LrmCommunicationType
-    {
-        DATA, SIGNALLING
-    }
-
-    public enum LrmHeader
-    {
-        INFO, BROADCAST
-    }
-
     public delegate void LrmTokneAns(string ans);
     public class LrmClient
     {
@@ -35,7 +27,12 @@ namespace NetworkNode.LRM
             HandleLrmAction = handleLrmAction;
         }
 
-        public void DispatchCommunication(string inputData)
+        public void Start()
+        {
+            LrmCommunication.ConnectToLrm();
+        }
+
+        public void DispatchCommunication(string inputData, AsyncCommunication async)
         {
             string[] dataWithProtocol = inputData.Split('|');
             string protocol = dataWithProtocol[0];
@@ -61,7 +58,7 @@ namespace NetworkNode.LRM
         {
             string[] signallingPacketParted = signallingPacket.Split('#');
             string signallingType = signallingPacketParted[0];
-            string data = signallingPacketParted[0];
+            string data = signallingPacketParted[1];
             LrmHeader type = (LrmHeader)Enum.Parse(typeof(LrmHeader), signallingType);
             switch (type)
             {
@@ -91,6 +88,19 @@ namespace NetworkNode.LRM
             string lrmMessage = JsonConvert.SerializeObject(resp);
             LrmCommunication.SendToLrm(lrmMessage);
         }
+
+        public void SendLrmMessage(LrmIntroduce introduce)
+        {
+            string lrmMessage = JsonConvert.SerializeObject(introduce);
+            LrmCommunication.SendToLrm(lrmMessage);
+        }
+
+        public void SendLrmMessage(ResourceLocation introduce)
+        {
+            string lrmMessage = JsonConvert.SerializeObject(introduce);
+            LrmCommunication.SendToLrm(lrmMessage);
+        }
+
 
         public void SendLrmHandshake()
         {

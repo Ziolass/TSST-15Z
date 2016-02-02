@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,11 +43,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncCommunication.cs" />
+    <Compile Include="Communication\AllocReport.cs" />
+    <Compile Include="Communication\CommunicationTypescs.cs" />
+    <Compile Include="Communication\LrmDestination.cs" />
+    <Compile Include="Communication\LrmIntroduce.cs" />
+    <Compile Include="Communication\LrmReq.cs" />
+    <Compile Include="Communication\LrmResp.cs" />
+    <Compile Include="Communication\LrmToken.cs" />
+    <Compile Include="Communication\RcClinet.cs" />
+    <Compile Include="Communication\SimpleLrmMsg.cs" />
+    <Compile Include="Communication\TopologyReports.cs" />
     <Compile Include="DeviceAllreadyConnected.cs" />
+    <Compile Include="ElementConfigurator.cs" />
+    <Compile Include="LinkResourceManager.cs" />
     <Compile Include="LocalPort.cs" />
+    <Compile Include="LrmRegister.cs" />
     <Compile Include="LrmServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VirtualNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

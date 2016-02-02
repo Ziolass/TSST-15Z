@@ -14,6 +14,7 @@ namespace NetworkNode.LRM.Communication
     {
         public string Type { get; set; }
         public string Status { get; set; }
-        public List<int> Ports { get; set; }
+        public string Msg { get; set; }
+        public string Id { get; set; }
     }
 }

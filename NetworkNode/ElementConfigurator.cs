@@ -1,5 +1,6 @@
 using NetworkNode.HPC;
 using NetworkNode.LRM;
+using NetworkNode.LRM.Communication;
 using NetworkNode.MenagmentModule;
 using NetworkNode.Ports;
 using NetworkNode.SDHFrame;
@@ -26,11 +27,11 @@ namespace NetworkNode
         public NetworkNode configureNode()
         {
             List<NodeInput> ports = new List<NodeInput>();
-            int rcPort = 0;
+            VirtualContainerLevel networkDefaultLevel = 0;
+            List<string> domians = null;
+            int lrmPort = 0;
             string nodeName = null;
             string nodeType = null;
-            string domain = null;
-            NodeCcInput ccServer = null;
             ManagementPort managementPort = null;
             NetworkNodeSender sender = null;
             while (configReader.Read())
@@ -57,12 +58,21 @@ namespace NetworkNode
                             int portNumber = int.Parse(configReader.GetAttribute("number"));
                             managementPort = new ManagementPort(portNumber);
                         }
-                        else if (configReader.Name == "lrm")
+                        else if (configReader.Name == "lrm-client")
                         {
-                            domain = configReader.GetAttribute("domain");
-                            int ccTcp = int.Parse(configReader.GetAttribute("cc-tcp"));
-                            rcPort = int.Parse(configReader.GetAttribute("rc-tcp"));
-                            ccServer = new NodeCcInput(ccTcp);
+                            lrmPort = int.Parse(configReader.GetAttribute("tcp"));
+                        }
+                        else if (configReader.Name == "domians")
+                        {
+                            int domiansNumber = int.Parse(configReader.GetAttribute("number"));
+                            domians = CreateDomainsHierarchy(configReader.ReadSubtree(), domiansNumber);
+                            
+                        }
+                        else if (configReader.Name == "network")
+                        {
+                            string levelTxt = configReader.GetAttribute("level");
+                            Type enumType = typeof(VirtualContainerLevel);
+                            networkDefaultLevel = (VirtualContainerLevel)Enum.Parse(enumType, levelTxt);
                         }
                         else if (configReader.Name == "node" && configReader.IsStartElement())
                         {
@@ -76,11 +86,13 @@ namespace NetworkNode
 
             SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(ports, sender, nodeName);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, getMode(nodeType));
-            HigherOrderPathConnection hpc = new HigherOrderPathConnection(ttf);
-            LinkResourceManager lrm = new LinkResourceManager(hpc, domain, nodeName, ccServer, rcPort);
-            ccServer.Lrm = lrm;
-
-            NetworkNode node = new NetworkNode(hpc, ttf, nodeName);
+            HigherOrderPathConnection hpc = new HigherOrderPathConnection(ttf,networkDefaultLevel);
+            LrmIntroduce lrmIntroduce = new LrmIntroduce
+            {
+                Domians = domians,
+                Node = nodeName
+            };
+            NetworkNode node = new NetworkNode(hpc, ttf,lrmIntroduce, lrmPort);
             
             ManagementCenter managementCenter = new ManagementCenter(managementPort,node);
             managementPort.SetManagementCenter(managementCenter);
@@ -92,11 +104,25 @@ namespace NetworkNode
                 input.StartListening();
             }
 
-            ccServer.SetUpServer(10000, 10);
-            ccServer.StartListening();
+            node.StartLrmClient();
+            node.IntroduceToLrm();
             
-            lrm.Strat();
             return node;
+        }
+
+        private List<string> CreateDomainsHierarchy(XmlReader reader, int domiansNumber)
+        {
+            string[] domians = new string[domiansNumber];
+            while (reader.Read())
+            {
+                if (reader.Name == "domian")
+                {
+                    int index = int.Parse(reader.GetAttribute("index"));
+                    string domian = reader.GetAttribute("name");
+                    domians[index] = domian;
+                }
+            }
+            return new List<string>(domians);
         }
 
         private NodeMode getMode(string mode)

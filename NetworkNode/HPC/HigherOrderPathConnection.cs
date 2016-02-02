@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 namespace NetworkNode.HPC
 {
     public delegate void HandleLrmInfo(object sender, InputLrmArgs args);
-    public delegate void LinkResourceExhausted(object sender, LinkOccupiedArgs args);
-    public delegate void LinkResourceFreed(object sender, LinkFreeArgs args);
+    public delegate void LinkResourceAlloc(object sender, List<LrmPort> args);
+    public delegate void LinkResourceDelloc(object sender, List<LrmPort> args);
 
     public class HigherOrderPathConnection
     {
         private Dictionary<int, List<ForwardingRecord>> ForwardingTable;
         private List<ForwardingRecord> Connections;
         private IFrameBuilder Builder;
-        private LinkMatrix LinkResources;
-        private VirtualContainerLevel NetworkDefaultLevel;
+        //private LinkMatrix LinkResources;
+        public VirtualContainerLevel NetworkDefaultLevel { get; private set; }
 
         private TransportTerminalFunction Ttf;
         //Credentials [Redundant but Faster]
@@ -28,8 +28,8 @@ namespace NetworkNode.HPC
         private Dictionary<int, IFrame> OutputCredentials;
 
         public event HandleLrmInfo HandleLrmInfo;
-        public event LinkResourceExhausted LinkResourceExhausted;
-        public event LinkResourceFreed LinkResourceFreed;
+        public event LinkResourceAlloc LinkResourceAlloc;
+        public event LinkResourceDelloc LinkResourceDelloc;
 
         object bufferLock = new object();
 
@@ -45,14 +45,8 @@ namespace NetworkNode.HPC
             InputCredentials = new Dictionary<int, IFrame>();
             OutputCredentials = new Dictionary<int, IFrame>();
             Connections = new List<ForwardingRecord>();
-            //TODO may be configurable by injecting through constructor
-            LinkResources = new LinkMatrix(VirtualContainerLevel.VC32);
 
             Dictionary<int, StmLevel> allPorts = ttf.GetPorts();
-            LinkResources.Inint(allPorts);
-
-            LinkResources.LinkFree += new LinkFree(HandleLinkResourceFreed);
-            LinkResources.LinkOccupied += new LinkOccupied(HandleLinkResourceExhausted);
 
             foreach (int port in allPorts.Keys)
             {
@@ -61,28 +55,12 @@ namespace NetworkNode.HPC
             }
         }
 
-        public void HandleLinkResourceExhausted(object sender, LinkOccupiedArgs args)
-        {
-            if (LinkResourceExhausted != null)
-            {
-                LinkResourceExhausted(this, args);
-            }
-        }
-
-        public void HandleLinkResourceFreed(object sender, LinkFreeArgs args)
-        {
-            if (LinkResourceFreed != null)
-            {
-                LinkResourceFreed(this, args);
-            }
-        }
-
         public ExecutionResult AddForwardingRecords(List<List<ForwardingRecord>> records, bool resourceLocation)
         {
             int index = 0;
             List<ForwardingRecord> checkedRecords = new List<ForwardingRecord>();
             List<int> portOccupataion = new List<int>();
-            
+
             foreach (List<ForwardingRecord> twoWayRecord in records)
             {
 
@@ -106,7 +84,7 @@ namespace NetworkNode.HPC
                     }
 
                     if (!inputOcp &&
-                        !portOccupataion.Contains(record.InputPort) && 
+                        !portOccupataion.Contains(record.InputPort) &&
                         InputCredentials[record.InputPort].IsFrameOccupied(NetworkDefaultLevel))
                     {
                         portOccupataion.Add(record.InputPort);
@@ -118,9 +96,15 @@ namespace NetworkNode.HPC
 
                 Connections.Add(twoWayRecord[0]);
 
-                if (resourceLocation)
+                if (!resourceLocation)
                 {
-                    LinkResources.OccupyResources(twoWayRecord[0]);
+                    List<LrmPort> ports = GetInexes(twoWayRecord[0]);
+                    
+                    if (LinkResourceAlloc != null)
+                    {
+                        LinkResourceAlloc(this, ports);
+                    }
+
                 }
 
             }
@@ -139,14 +123,14 @@ namespace NetworkNode.HPC
             {
                 Msg = null,
                 Ports = portOccupataion,
-                Result  = true
+                Result = true
             };
         }
 
         public ExecutionResult Allocate(List<LrmPort> ports)
         {
             List<ForwardingRecord> twoWayRecord = TransformToTwoWayRecord(ports);
-            
+
             List<List<ForwardingRecord>> records = new List<List<ForwardingRecord>>();
             records.Add(twoWayRecord);
 
@@ -181,7 +165,7 @@ namespace NetworkNode.HPC
         private List<ForwardingRecord> TranslateToRecords(Dictionary<int, int> data, VirtualContainerLevel level)
         {
             List<int> ports = new List<int>(data.Keys);
-           
+
             List<ForwardingRecord> twoWayRecord = new List<ForwardingRecord>();
             ForwardingRecord fwr1 =
                 CreateForwardingRecord(
@@ -204,7 +188,7 @@ namespace NetworkNode.HPC
         public ExecutionResult FreeResources(List<LrmPort> ports)
         {
             List<ForwardingRecord> twoWayRecord = TransformToTwoWayRecord(ports);
-            return RemoveTwWayRecord(twoWayRecord);
+            return RemoveTwWayRecord(twoWayRecord, true);
         }
 
         private ForwardingRecord CreateForwardingRecord(KeyValuePair<int, int> srcResources, KeyValuePair<int, int> dstResources, VirtualContainerLevel level)
@@ -233,47 +217,53 @@ namespace NetworkNode.HPC
             return new List<int>(Ttf.GetPorts().Keys);
         }
 
-        public ExecutionResult RemoveTwWayRecord(List<ForwardingRecord> records)
+        public ExecutionResult RemoveTwWayRecord(List<ForwardingRecord> records, bool resourceAllocation)
         {
             if (records.Count != 2)
             {
-                return new ExecutionResult {
+                return new ExecutionResult
+                {
                     Msg = "Attempt to delete one way of connection",
                     Result = false
                 };
             }
 
-            List<int> avaliblePorts = new List<int>();
-
             foreach (ForwardingRecord record in records)
             {
-                avaliblePorts.AddRange(RemoveRecord(record).Ports);
+                RemoveRecord(record);
             }
 
-            if (Connections.Contains(records[0]))
+            return DeleteFromConnections(records, resourceAllocation);
+        }
+
+        private ExecutionResult DeleteFromConnections(List<ForwardingRecord> records, bool resourceAction)
+        {
+            foreach (ForwardingRecord record in records)
             {
-                LinkResources.FreeResources(records[0]);
-                Connections.Remove(records[0]);
-                return new ExecutionResult { 
-                    Result = true ,
-                    Ports = avaliblePorts
-                };
+                if (Connections.Contains(record))
+                {
+                    Connections.Remove(record);
+
+                    if (!resourceAction)
+                    {
+                        List<LrmPort> ports = GetInexes(record);
+                        if (LinkResourceDelloc != null)
+                        {
+                            LinkResourceDelloc(this, ports);
+                        }
+                    }
+
+                    return new ExecutionResult
+                    {
+                        Result = true
+                    };
+                }
             }
 
-            if (Connections.Contains(records[1]))
+            return new ExecutionResult
             {
-                LinkResources.FreeResources(records[0]);
-                Connections.Remove(records[1]);
-                return new ExecutionResult {
-                    Result = true,
-                    Ports = avaliblePorts 
-                };
-            }
-
-            return new ExecutionResult { 
-                    Result = false,
-                    Msg = "Connection cannot be found" 
-                };
+                Result = false
+            };
         }
 
         private bool CheckForwardingRecord(ForwardingRecord record)
@@ -293,20 +283,36 @@ namespace NetworkNode.HPC
             return false;
         }
 
+        private List<LrmPort> GetInexes(ForwardingRecord record)
+        {
+            int VcMultiplaier = VirtualContainerLevelExt.GetContainersNumber(NetworkDefaultLevel);
+            List<LrmPort> result = new List<LrmPort>();
+            result.Add(new LrmPort {
+                Number = record.InputPort.ToString(), 
+                Index = (record.HigherPathIn * VcMultiplaier + record.VcNumberIn).ToString()
+            });
+            result.Add(new LrmPort
+            {
+                Number = record.OutputPort.ToString(),
+                Index = (record.HigherPathOut * VcMultiplaier + record.VcNumberOut).ToString()
+            });
+            return result;
+        }
+
         private ExecutionResult ClearCredentials(ForwardingRecord record)
         {
             Frame inputCredential = (Frame)InputCredentials[record.InputPort];
             Frame outputCredential = (Frame)OutputCredentials[record.OutputPort];
-            
+
             bool inputOccp = inputCredential.IsFrameOccupied(NetworkDefaultLevel);
             bool outputOccp = outputCredential.IsFrameOccupied(NetworkDefaultLevel);
 
             bool result = true;
             result = result && inputCredential.ClearVirtualContainer(record.ContainerLevel, record.HigherPathIn, record.VcNumberIn);
             result = result && outputCredential.ClearVirtualContainer(record.ContainerLevel, record.HigherPathOut, record.VcNumberOut);
-            
+
             List<int> ports = new List<int>();
-            
+
             if (!inputCredential.IsFrameOccupied(NetworkDefaultLevel) && inputOccp)
             {
                 ports.Add(record.InputPort);
@@ -317,7 +323,8 @@ namespace NetworkNode.HPC
                 ports.Add(record.OutputPort);
             }
 
-            return new ExecutionResult { 
+            return new ExecutionResult
+            {
                 Ports = ports,
                 Result = result
             };

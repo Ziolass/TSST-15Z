@@ -1,4 +1,6 @@
 ﻿using LRM.Exceptions;
+using NetworkNode.LRM.Communication;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +17,17 @@ namespace LRM
     {
         public event NodeConnected NodeConnected;
         public event NodeDisconnected NodeDisconnected;
-        private Dictionary<string, AsyncCommunication> LrmConnections;
-        private Action<string> DataRedCallback;
+        private LrmRegister LrmRegister;
+        private Action<string, AsyncCommunication> DataRedCallback;
         private ManualResetEvent ConnectNew = new ManualResetEvent(false);
-        public LrmServer(int port, Action<string> dataRedCallback)
+        public LrmServer(int port, Action<string, VirtualNode> dataRedCallback, LrmRegister lrmRegister)
             : base(port)
         {
-            DataRedCallback = dataRedCallback;
-            LrmConnections = new Dictionary<string, AsyncCommunication>();
+            LrmRegister = lrmRegister;
+            DataRedCallback = (string data, AsyncCommunication async) =>
+            {
+                dataRedCallback(data, LrmRegister.FindNodeByConnection(async));
+            };
         }
 
         public void Start()
@@ -69,40 +74,45 @@ namespace LRM
 
         private void SubscribeCallback(string data, AsyncCommunication ac)
         {
-            if (LrmConnections.ContainsKey(data))
-            {
-                throw new DeviceAllreadyConnected();
-            }
+            LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
 
-            LrmConnections.Add(data, ac);
+            if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
+            {
+                if (LrmRegister.ConnectedNodes[node.Node].Async != null)
+                {
+                    throw new DeviceAllreadyConnected();
+                }
+                LrmRegister.ConnectedNodes[node.Node].Async = ac;
+            }
+            else
+            {
+                LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+                {
+                    Name = node.Node,
+                    Async = ac
+                });
+            }
 
             if (NodeConnected != null)
             {
-                NodeConnected(data);
+                NodeConnected(node.Node);
             }
         }
 
         private void ConnectionLostCallback(AsyncCommunication ac)
         {
-            if (!LrmConnections.ContainsValue(ac))
+            VirtualNode disconnected = LrmRegister.FindNodeByConnection(ac);
+
+            if (disconnected == null)
             {
                 return;
             }
-            string name = null;
-            foreach (KeyValuePair<string, AsyncCommunication> lrmConnection in LrmConnections)
-            {
-                if (lrmConnection.Value == ac)
-                {
-                    name = lrmConnection.Key;
-                    break;
-                }
-            }
 
-            LrmConnections.Remove(name);
-            Console.WriteLine("Node : {0} DISCONECTED", name);
-            if (NodeConnected != null)
+            LrmRegister.ConnectedNodes.Remove(disconnected.Name);
+            Console.WriteLine("Node : {0} DISCONECTED", disconnected.Name);
+            if (NodeDisconnected != null)
             {
-                NodeConnected(name);
+                NodeDisconnected(disconnected.Name);
             }
         }
 

@@ -18,6 +18,7 @@ namespace NetworkNode.LRM.Communication
     }
     public class LrmReq
     {
+        public string Id { get; set; }
         public string ReqType { get; set; }
         public List<LrmPort> Ports { get; set; }
     }

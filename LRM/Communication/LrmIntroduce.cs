@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace NetworkNode.LRM.Communication
 {
-    public class LrmToken
+    public class LrmIntroduce
     {
-        public string Tag { get; set; }
-        public string SenderPort { get; set; }
-        public LrmDestination Reciver { get; set; }
+        public string Node { get; set; }
+        public List<string> Domians { get; set; }
     }
 }

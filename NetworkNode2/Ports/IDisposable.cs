@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetworkNode.LRM.Communication
+namespace NetworkNode.Ports
 {
-    class SimpleLrmMsg
+    public interface IDisposable
     {
-        public string Msg { get; set; }
+        bool Active { get; set; }
     }
 }

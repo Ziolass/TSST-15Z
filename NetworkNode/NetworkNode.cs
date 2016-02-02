@@ -18,19 +18,22 @@ namespace NetworkNode
         private HigherOrderPathConnection Hpc;
         private TransportTerminalFunction Ttf;
         private LrmClient LrmClient;
-
+        private LrmIntroduce LrmIntroduce;
         public string Id { get; private set; }
 
-        public NetworkNode(HigherOrderPathConnection hpc, 
-            TransportTerminalFunction ttf, 
-            string id, 
+        public NetworkNode(HigherOrderPathConnection hpc,
+            TransportTerminalFunction ttf,
+            LrmIntroduce lrmIntroduce,
             int lrmPort)
         {
             Ttf = ttf;
-            Ttf.HandleLrmData += new HandleLrmData(ReportLrmToken);
+            LrmIntroduce = lrmIntroduce;
             LrmClient = new LrmClient(lrmPort, SendLrmToken, HandleLrmResourceManagement);
+            Ttf.HandleLrmData += new HandleLrmData(ReportLrmToken);
             Hpc = hpc;
-            Id = id;
+            Hpc.LinkResourceAlloc += new LinkResourceAlloc(SendLrmResourceAlloc);
+            Hpc.LinkResourceDelloc += new LinkResourceDelloc(SendLrmResourceDelloc);
+            Id = lrmIntroduce.Node;
         }
 
         public ExecutionResult AddForwardingRecords(List<List<ForwardingRecord>> records)
@@ -70,7 +73,7 @@ namespace NetworkNode
 
         public ExecutionResult RemoveTwWayRecord(List<ForwardingRecord> record)
         {
-            return Hpc.RemoveTwWayRecord(record);
+            return Hpc.RemoveTwWayRecord(record, false);
         }
 
         public void SendLrmToken(string lrmToken)
@@ -78,14 +81,35 @@ namespace NetworkNode
 
             foreach (KeyValuePair<int, StmLevel> port in Ttf.GetPorts())
             {
-                LrmToken token = new LrmToken
-                {
-                    Tag = lrmToken,
-                    SenderPort = port.Key.ToString()
-                };
+                LrmToken token = JsonConvert.DeserializeObject<LrmToken>(lrmToken);
+                int hPathNo = StmLevelExt.GetHigherPathsNumber(port.Value);
+                int containers = VirtualContainerLevelExt.GetContainersNumber(Hpc.NetworkDefaultLevel);
+
+                token.SenderPort = port.Key.ToString();
+                token.StmMaxIndex = ((hPathNo * containers) - 1).ToString();
+
 
                 Ttf.SendLrmData(port.Key, JsonConvert.SerializeObject(token));
             }
+        }
+
+        private void SendLrmResourceAlloc(object sender, List<LrmPort> ports)
+        {
+            LrmClient.SendLrmMessage(new ResourceLocation
+            {
+                Type = ReqType.ALLOC.ToString(),
+                AllocatedPorts = ports
+            });
+            
+        }
+
+        private void SendLrmResourceDelloc(object sender, List<LrmPort> ports)
+        {
+            LrmClient.SendLrmMessage(new ResourceLocation
+            {
+                Type = ReqType.DELLOC.ToString(),
+                AllocatedPorts = ports
+            });
         }
 
         private void ReportLrmToken(object sender, InputLrmArgs args)
@@ -103,49 +127,59 @@ namespace NetworkNode
 
             string textualRequest = request.ReqType;
             ReqType reqType = (ReqType)Enum.Parse(typeof(ReqType), textualRequest);
-            
+
             switch (reqType)
             {
                 case ReqType.ALLOC:
                     {
-                        Alloc(request.Ports);
+                        Alloc(request);
                         break;
                     }
                 case ReqType.DELLOC:
                     {
-                        Delloc(request.Ports);
+                        Delloc(request);
                         break;
                     }
             }
 
         }
 
-        private void Alloc(List<LrmPort> ports)
+        private void Alloc(LrmReq request)
         {
-            ExecutionResult allocationResult = Hpc.Allocate(ports);
-            LrmResp resp = new LrmResp {
+            ExecutionResult allocationResult = Hpc.Allocate(request.Ports);
+            LrmResp resp = new LrmResp
+            {
                 Type = ReqType.ALLOC.ToString(),
                 Status = allocationResult.Result ?
                     LrmRespStatus.ACK.ToString()
                     : LrmRespStatus.ERROR.ToString(),
-                Ports = allocationResult.Ports
+                Id = request.Id
             };
             LrmClient.SendLrmMessage(resp);
         }
 
-        private void Delloc(List<LrmPort> ports)
+        private void Delloc(LrmReq request)
         {
-            ExecutionResult delocationResult = Hpc.FreeResources(ports);
+            ExecutionResult delocationResult = Hpc.FreeResources(request.Ports);
             LrmResp resp = new LrmResp
             {
                 Type = ReqType.DELLOC.ToString(),
                 Status = delocationResult.Result ?
                     LrmRespStatus.ACK.ToString()
                     : LrmRespStatus.ERROR.ToString(),
-                Ports = delocationResult.Ports
+                Id = request.Id
             };
             LrmClient.SendLrmMessage(resp);
         }
 
+        public void IntroduceToLrm()
+        {
+            LrmClient.SendLrmMessage(LrmIntroduce);
+        }
+
+        public void StartLrmClient()
+        {
+            LrmClient.Start();
+        }
     }
 }
