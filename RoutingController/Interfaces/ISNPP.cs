@@ -9,6 +9,6 @@ namespace RoutingController.Interfaces
 {
     public interface ISNPP
     {
-        List<SNP> Nodes { get; }
+        List<SNP> Steps { get; }
     }
 }

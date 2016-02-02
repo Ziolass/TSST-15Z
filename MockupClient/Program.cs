@@ -16,18 +16,17 @@ namespace MockupClient
     public class SynchronousSocketClient
     {
 
-        public static void StartClient() {
+        public static void StartClient(string data)
+        {
         byte[] bytes = new byte[5000];
 
         //string data = File.ReadAllText(json);
         //string data = "TEST";
         Console.WriteLine("Pressto send JSON");
         try {
-            while (true)
-            {
                 IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 3000);
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 8100);
 
                 Socket sender = new Socket(AddressFamily.InterNetwork,
                     SocketType.Stream, ProtocolType.Tcp);
@@ -36,14 +35,12 @@ namespace MockupClient
                 {
                     sender.Connect(remoteEP);
 
-                    string data = Console.ReadLine();
-
-                    byte[] msg = Encoding.ASCII.GetBytes(data);
+                    byte[] msg = Encoding.ASCII.GetBytes(File.ReadAllText(data));
                     int bytesSent = sender.Send(msg);
 
-                    //int bytesRec = sender.Receive(bytes);
-                    //Console.WriteLine("Echoed test = {0}",
-                    //    Encoding.ASCII.GetString(bytes,0,bytesRec));
+                    int bytesRec = sender.Receive(bytes);
+                    Console.WriteLine("Response:\n{0}\n",
+                    Encoding.ASCII.GetString(bytes,0,bytesRec));
                     sender.Shutdown(SocketShutdown.Both);
                     sender.Close();
 
@@ -60,7 +57,6 @@ namespace MockupClient
                 {
                     Console.WriteLine("Unexpected exception : {0}", e.ToString());
                 }
-            }
 
         } catch (Exception e) {
             Console.WriteLine( e.ToString());
@@ -69,19 +65,18 @@ namespace MockupClient
 
         public static void Main(String[] args)
         {
-            //StartClient("../../../Configs/RoutingController/test" + args[0] + ".json");
-            /*StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
-            StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
-            StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
-            StartClient("../../../Configs/RoutingController/test" + args[4] + ".json");
+            StartClient("../../../Configs/RoutingController/testHierchy.json");
+            //StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
+            //StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
+            //StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
+            //StartClient("../../../Configs/RoutingController/test" + args[4] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[5] + ".json");
             //StartClient("../../../Configs/RoutingController/testRequest0.json");
             //StartClient("../../../Configs/RoutingController/testRequest1.json");
-            StartClient("../../../Configs/RoutingController/testRequest2.json");*/
-            StartClient();
+            StartClient("../../../Configs/RoutingController/testRequest.json");
 
 
-            //Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }

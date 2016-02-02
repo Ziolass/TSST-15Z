@@ -106,7 +106,6 @@ namespace NetworkCallController
             }
             callingAddress = callingPartyPorts[1];
 
-
             // sprawdzenie rekordu osoby zadanej
             string[] calledPartyPorts = checkDictionaryForEntry(calledPartyName).Split('|');
 
@@ -114,7 +113,7 @@ namespace NetworkCallController
             // jak nie ma rekordu to chill, sprawdzamy u ziomeczka
             if (!int.TryParse(calledPartyPorts[0], out calledSignalingPort))
             {
-                //Console.WriteLine("Brak rekordu " + calledPartyName + ". Sprawdzam w sasiednim AS");
+                Console.WriteLine("Brak rekordu " + calledPartyName + ". Sprawdzam w sasiednim AS");
 
                 calledPartyPorts = checkForeignNCCForEntry(calledPartyName).Split('|');
                 if (calledPartyPorts[0].Equals("brak_wpisu"))
@@ -123,17 +122,17 @@ namespace NetworkCallController
                 }
                 else
                 {
-                    //Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
+                    Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
                     calledSignalingPort = int.Parse(calledPartyPorts[0]);
                     calledAddress = calledPartyPorts[1];
                     
 
-                    string returnable =  connectionTeardown(callingAddress, calledAddress);
-                    if (returnable.Equals("ok"))
+                    string[] returnable =  connectionTeardown(callingAddress, calledAddress).Split('|');
+                    if (returnable[0].Equals("ok"))
                     {
                         informOtherParty(calledSignalingPort,callingPartyName);
                     }
-                    return returnable;
+                    return string.Join("|",returnable);
 
                 }
             }
@@ -142,9 +141,12 @@ namespace NetworkCallController
             {
                 calledAddress = calledPartyPorts[1];
             }
-
-            informOtherParty(calledSignalingPort,callingPartyName);
-            return connectionTeardown(callingAddress, calledAddress);
+            string[] tmp = connectionTeardown(callingAddress, calledAddress).Split('|');
+            if (tmp[0].Equals("ok"))
+            {
+                informOtherParty(calledSignalingPort, callingPartyName);
+            }
+            return string.Join("|",tmp);
         }
 
 

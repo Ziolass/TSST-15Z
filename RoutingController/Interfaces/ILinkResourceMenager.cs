@@ -8,6 +8,6 @@ namespace RoutingController.Interfaces
 {
     public interface ILinkResourceMenager
     {
-        ITopology LocalTopology();
+        ITopologyNode LocalTopology();
     }
 }
