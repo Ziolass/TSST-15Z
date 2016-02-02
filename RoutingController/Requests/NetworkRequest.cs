@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoutingController.Interfaces
+namespace RoutingController.Requests
 {
-    public interface ISNP
+    public class NetworkRequest
     {
-        string Node { get; }
-        List<string> Ports { get; }
+
     }
 }
