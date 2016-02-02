@@ -8,7 +8,7 @@ namespace RoutingController.Interfaces
 {
     public interface ISNP
     {
-        string Name { get; }
+        string Node { get; }
         List<string> Ports { get; }
     }
 }

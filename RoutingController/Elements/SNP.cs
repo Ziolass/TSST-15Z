@@ -9,18 +9,19 @@ namespace RoutingController.Elements
 {
     public class SNP : ISNP
     {
-        public string Name { get; private set; }
+
         public string Domain { get; set; }
+        public string Node { get; private set; }
         public List<string> Ports { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SNP"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="node">The name.</param>
         /// <param name="ports">The ports.</param>
-        public SNP(string name, string domain, List<string> ports)
+        public SNP(string node, string domain, List<string> ports)
         {
-            this.Name = name;
+            this.Node = node;
             this.Domain = domain;
             this.Ports = ports;
         }

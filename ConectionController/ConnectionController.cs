@@ -197,10 +197,10 @@ namespace Cc
         {
             
             SNPP snpp = JsonConvert.DeserializeObject<SNPP>(data);
-            foreach (SNP snp in snpp.Nodes)
+            foreach (SNP snp in snpp.Steps)
             {
 
-                string nodeName = snp.Name;
+                string nodeName = snp.Node;
                 NetworkNodeSender lrmSender = LrmSenders[nodeName];
 
                 StringBuilder builder = new StringBuilder();

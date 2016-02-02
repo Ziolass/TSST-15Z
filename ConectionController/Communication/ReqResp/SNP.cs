@@ -18,7 +18,7 @@ namespace RoutingController.Elements
         /// <param name="ports">The ports.</param>
         public SNP(string name, List<string> ports)
         {
-            this.Name = name;
+            this.Node = name;
             this.Ports = ports;
         }
     }

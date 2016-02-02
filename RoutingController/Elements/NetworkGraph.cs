@@ -47,7 +47,7 @@ namespace RoutingController.Elements
             {
                 if (link.Status == NodeStatus.FREE)
                 {
-                    NodeElement newNode = new NodeElement(topology.Node, link.Port);
+                    NodeElement newNode = new NodeElement(topology.Node, link.Port, link.Destination.Scope);
                     AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
                 }
                 else Log += topology.Node + ":" + link.Port + " -> " + link.Destination.Node + ":" + link.Destination.Port + "\n"; ;
@@ -130,7 +130,7 @@ namespace RoutingController.Elements
                             //Numeracja wejœæ do metroNode
                             int newMetroPort = 1 + this.GetVertexes(otherGraph.DomainName).Count;
 
-                            destination = new Destination(null, thisItem.Key.Node, thisItem.Key.Port, DestinationType.DOMAIN);
+                            destination = new Destination(otherItem.Key.GetNodeId(), thisItem.Key.Node, thisItem.Key.Port, DestinationType.DOMAIN);
 
                             linkData.Add(new Link(newMetroPort.ToString(), domains, destination, otherItemConnections.Key.Status));
 

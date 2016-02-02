@@ -54,9 +54,8 @@ namespace RoutingController.Service
                     List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source, destination);
                     if (returnList != null)
                     {
-                        //SNPP returnSNPP; //= new SNPP(returnList);
-                        //return returnSNPP;
-                        return null;
+                        SNPP returnSNPP = new SNPP(returnList);
+                        return returnSNPP;
                     }
                     else throw new Exception("Error RouteTableResponse: Graph is uncomplete (ShortestPath)! ");
                 }
