@@ -33,6 +33,14 @@ namespace RoutingController.Elements
                     portList.Add(secondNode.Port);
                     this.Nodes.Add(new SNP(firstNode.Node, portList));
                 }
+                else
+                {
+                    NodeElement firstNode = new NodeElement(nodes[i]);
+                    List<string> portList = new List<string>();
+                    portList.Add(firstNode.Port);
+                    portList.Add(null);
+                    this.Nodes.Add(new SNP(firstNode.Node, portList));
+                }
             }
             /*foreach (string firstNodeId in nodes)
             {
@@ -50,6 +58,22 @@ namespace RoutingController.Elements
                     }
                 }
             }*/
+        }
+        public void AddRange(List<string> nodes)
+        {
+            this.Nodes = new List<SNP>();
+            for (int i = 0; i < nodes.Count; i += 2)
+            {
+                if (i + 1 < nodes.Count)
+                {
+                    NodeElement firstNode = new NodeElement(nodes[i]);
+                    NodeElement secondNode = new NodeElement(nodes[i + 1]);
+                    List<string> portList = new List<string>();
+                    portList.Add(firstNode.Port);
+                    portList.Add(secondNode.Port);
+                    this.Nodes.Add(new SNP(firstNode.Node, portList));
+                }
+            }
         }
 
         public override string ToString()

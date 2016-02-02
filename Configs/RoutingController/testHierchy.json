@@ -92,7 +92,7 @@
         {
             Node: "node4",
             Domains: [
-                "domenaB",                
+                "domenaB",
                 "domenaA"
             ],
             Data: [
@@ -101,6 +101,96 @@
                     Destination: {
                         Node: "node3",
                         Port: 2
+                    },
+                    Status: "FREE"
+                },
+                {
+                    Port: 2,
+                    Destination: {
+                        Node: "node5",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                },                
+                {
+                    Port: 3,
+                    Destination: {
+                        Node: "node6",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },
+        {
+            Node: "node5",
+            Domains: [
+                "domenaB",
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "node4",
+                        Port: 2
+                    },
+                    Status: "FREE"
+                },
+                {
+                    Port: 2,
+                    Destination: {
+                        Node: "node6",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },
+        {
+            Node: "node6",
+            Domains: [
+                "domenaB",
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "node4",
+                        Port: 3
+                    },
+                    Status: "FREE"
+                },
+                {
+                    Port: 2,
+                    Destination: {
+                        Node: "node5",
+                        Port: 2
+                    },
+                    Status: "FREE"
+                },
+                {
+                    Port: 3,
+                    Destination: {
+                        Node: "node7",
+                        Port: 1
+                    },
+                    Status: "FREE"
+                }
+            ]
+        },        
+        {
+            Node: "node7",
+            Domains: [
+                "domenaA"
+            ],
+            Data: [
+                {
+                    Port: 1,
+                    Destination: {
+                        Node: "node6",
+                        Port: 3
                     },
                     Status: "FREE"
                 },
@@ -117,14 +207,13 @@
         {
             Node: "client2",
             Domains: [
-                "domenaB",
                 "domenaA"
             ],
             Data: [
                 {
                     Port: 1,
                     Destination: {
-                        Node: "node3",
+                        Node: "node7",
                         Port: 2
                     },
                     Status: "FREE"

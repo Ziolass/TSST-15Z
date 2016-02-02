@@ -46,32 +46,14 @@ namespace RoutingController.Elements
             {
                 if (link.Status == NodeStatus.FREE)
                 {
-                    /*if (link.Type != NodeType.CLIENT)
-                    {
-                        Node newNode = new Node(topology.Node, link.Port);
-                        AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
-                    }
-                    else
-                    {*/
-                        NodeElement newNode = new NodeElement(topology.Node, link.Port);
-                        AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
-
-                        //newNode = new Node(link.Destination.Node, link.Destination.Port);
-                        //Link revLink = new Link(link.Destination.Port, link.Domains, new Destination(null, topology.Node, link.Port), link.Status);
-                        //AddVertex(clientGraph, newNode, revLink); //Add exp Node1:1 (id node : port of this node)
-                    //}
+                    NodeElement newNode = new NodeElement(topology.Node, link.Port);
+                    AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
                 }
                 else Log += topology.Node + ":" + link.Port + " -> " + link.Destination.Node + ":" + link.Destination.Port + "\n"; ;
             }
 
             //Complete graph
             newGraph = CompleteGraph(newGraph, this.DomainName);
-            clientGraph = CompleteGraph(clientGraph, this.DomainName);
-            
-            foreach (var item in clientGraph)
-            {
-                newGraph.Add(item.Key, item.Value);
-            }
 
             //Compere to local graph (remove old or not sent routes and update if link changed)
             if (Graph.Count == 0)
@@ -95,6 +77,22 @@ namespace RoutingController.Elements
             Dictionary<ILink, int> edge = new Dictionary<ILink, int>();
             edge.Add(link, ExternalLinkWeight);
             graph[node] = edge;
+        }
+
+        public void AddLink(NodeElement node, ILink link)
+        {
+            bool add = true;
+            foreach (var item in Graph[node])
+            {
+                if (item.Key.Destination.Node == link.Destination.Node && item.Key.Destination.Port == link.Destination.Port)
+                {
+                    add = false;
+                }
+            }
+            if (add)
+            {
+                Graph[node].Add(link, ExternalLinkWeight);
+            }
         }
 
         /// <summary>
@@ -167,7 +165,7 @@ namespace RoutingController.Elements
                 bool add = true;
                 foreach (var oldVertex in currentGraph)
                 {
-                    if (oldVertex.Key == newVertex.Key)
+                    if (oldVertex.Key.Equals(newVertex.Key))
                     {
                         add = false;
                     }
@@ -307,14 +305,14 @@ namespace RoutingController.Elements
 
         public Dictionary<NodeElement, NodeElement> GetRoutes()
         {
-            Dictionary<NodeElement, NodeElement> returnDictionary = new Dictionary<NodeElement,NodeElement>();
+            Dictionary<NodeElement, NodeElement> returnDictionary = new Dictionary<NodeElement, NodeElement>();
             foreach (var vertex in Graph)
             {
                 foreach (var item in vertex.Value)
                 {
                     if (item.Key.Destination.Node != vertex.Key.Node)
                     {
-                        returnDictionary.Add(new NodeElement(vertex.Key.Node,vertex.Key.Port), new NodeElement(item.Key.Destination.Node,item.Key.Destination.Port));
+                        returnDictionary.Add(new NodeElement(vertex.Key.Node, vertex.Key.Port), new NodeElement(item.Key.Destination.Node, item.Key.Destination.Port));
                     }
                 }
             }

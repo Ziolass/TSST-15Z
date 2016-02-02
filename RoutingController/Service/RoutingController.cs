@@ -61,7 +61,22 @@ namespace RoutingController.Service
                 }
                 else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
             }
-            else throw new Exception("Error RouteTableResponse: Two different domains! start: " + sourceDomainName + " destination: " + destinationDomainName);
+            else {
+                NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
+                if (tempNetworkGraph != null)                
+                {
+                    string newDestination = tempNetworkGraph.GetVertex(destinationDomainName).Key.GetNodeId();
+                    List<string> returnList = tempNetworkGraph.ShortestPath(source, newDestination);
+                    SNPP returnSNPP = null;
+                    if (returnList != null)
+                    {
+                        returnSNPP = new SNPP(returnList);
+                    }
+                    else throw new Exception("Error RouteTableResponse: Graph is uncomplete (ShortestPath)! ");
+                    return returnSNPP;
+                }
+                else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
+            }
         }
 
         /// <summary>
@@ -74,9 +89,10 @@ namespace RoutingController.Service
             string domainName = string.Empty;
             foreach (NetworkGraph networkGraph in NetworkGraphs)
             {
-                domainName = networkGraph.DomainName;
-                if (domainName != null)
-                    break;
+                    var vertex = networkGraph.GetVertex(nodeName);
+                    if (vertex.Key != null)
+                        return networkGraph.DomainName;
+                
             }
             return domainName;
         }
@@ -94,6 +110,8 @@ namespace RoutingController.Service
             {
                 UpdateGraph(this.GetMainDomain(topology), topologyNode, 0);
             }
+
+
 
             return true;
 
@@ -117,28 +135,33 @@ namespace RoutingController.Service
                 string lowerDomainName = topologyNode.Domains[topologyNode.Domains.Count - 1 - domainLevel];
                 UpdateGraph(lowerDomainName, topologyNode, domainLevel);
 
-                /*List<string> domainList = new List<string>();
+                List<string> domainList = new List<string>();
                 domainList.Add(domainName);
                 List<Link> linkList = new List<Link>();
 
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(domainName);
                 Dictionary<NodeElement, Dictionary<ILink, int>> vertex = new Dictionary<NodeElement, Dictionary<ILink, int>>();
+                Link currentLink = null;
                 foreach (var item in topologyNode.Data)
                 {
                     var test = tempNetworkGraph.GetVertex(item.Destination.Node + ":" + item.Destination.Port);
                     if (test.Key != null)
                     {
-
+                        currentLink = item;
                         vertex.Add(test.Key, test.Value);
                         break;
                     }
                 }
                 foreach (var item in vertex)
                 {
-
+                    linkList.Add(new Link(currentLink.Port, domainList, new Destination(null, item.Key.Node, item.Key.Port), currentLink.Status));
                     TopologyNode domainNode = new TopologyNode(lowerDomainName, domainList, linkList);
                     this.AddTopologyNodeToGraph(domainNode, domainName);
-                }*/
+
+                    
+                    //Upgrade link in node gateway
+                    tempNetworkGraph.AddLink(item.Key, new Link(item.Key.Port, domainList, new Destination(null, lowerDomainName, currentLink.Port), currentLink.Status));
+                }
 
             }
             //Node nale¿y do tej domeny i jest to jego domena najni¿sza (podstawowa)
