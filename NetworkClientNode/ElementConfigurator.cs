@@ -1,5 +1,6 @@
 using NetworkClientNode.Adaptation;
 using NetworkClientNode.Menagment;
+using NetworkNode.LRM.Communication;
 using NetworkNode.Ports;
 using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
@@ -82,7 +83,12 @@ namespace NetworkClientNode
 
             SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(ports, sender, nodeName);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, NodeMode.CLIENT);
-            AdaptationFunction adpt = new AdaptationFunction(ttf, nodeName,lrmPort, networkDefaultLevel);
+            AdaptationFunction adpt = new AdaptationFunction(ttf, new LrmIntroduce
+            {
+                Domians = domians,
+                Node = nodeName
+            }
+            , lrmPort, networkDefaultLevel);
             NetworkClNode node = new NetworkClNode(adpt, nodeName);
             
             //TODO
@@ -97,8 +103,26 @@ namespace NetworkClientNode
                 input.SetUpServer(10000, 10);
                 input.StartListening();
             }
+            adpt.ConnectClient();
+            adpt.IntroduceToLrm();
             return node;
         }
+
+        private List<string> CreateDomainsHierarchy(XmlReader reader, int domiansNumber)
+        {
+            string[] domians = new string[domiansNumber];
+            while (reader.Read())
+            {
+                if (reader.Name == "domian")
+                {
+                    int index = int.Parse(reader.GetAttribute("index"));
+                    string domian = reader.GetAttribute("name");
+                    domians[index] = domian;
+                }
+            }
+            return new List<string>(domians);
+        }
+
         
     }
 }

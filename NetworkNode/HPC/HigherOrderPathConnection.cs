@@ -1,6 +1,7 @@
 using NetworkNode.LRM.Communication;
 using NetworkNode.SDHFrame;
 using NetworkNode.TTF;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,11 +71,19 @@ namespace NetworkNode.HPC
 
                     if (!CheckForwardingRecord(record))
                     {
+                        Console.WriteLine("Sprawdzenie nie powiod³o siê");
                         foreach (ForwardingRecord checkedRecord in checkedRecords)
                         {
                             ClearCredentials(checkedRecord);
                         }
-
+                        Console.WriteLine();
+                        Console.WriteLine(JsonConvert.SerializeObject(new ExecutionResult
+                        {
+                            Msg = "Error at record " + index,
+                            Ports = null,
+                            Result = false
+                        }));
+                        Console.WriteLine();
                         return new ExecutionResult
                         {
                             Msg = "Error at record " + index,
@@ -118,7 +127,15 @@ namespace NetworkNode.HPC
 
                 ForwardingTable[record.InputPort].Add(record);
             }
-
+            
+            Console.WriteLine();
+            Console.WriteLine(JsonConvert.SerializeObject(new ExecutionResult
+            {
+                Msg = null,
+                Ports = portOccupataion,
+                Result = true
+            }));
+            Console.WriteLine();
             return new ExecutionResult
             {
                 Msg = null,
@@ -136,10 +153,16 @@ namespace NetworkNode.HPC
 
             try
             {
+                Console.WriteLine("Próbujê dodac rekord ");
+                Console.WriteLine();
+                Console.WriteLine(JsonConvert.SerializeObject(records[0][0]));
+                Console.WriteLine();
+                Console.WriteLine(JsonConvert.SerializeObject(records[0][1]));
                 return AddForwardingRecords(records, false);
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return new ExecutionResult
                 {
                     Result = false,
@@ -155,8 +178,8 @@ namespace NetworkNode.HPC
             foreach (LrmPort lrmPort in ports)
             {
                 int index = int.Parse(lrmPort.Index);
-                int number = int.Parse(lrmPort.Index);
-                resources.Add(index, number);
+                int number = int.Parse(lrmPort.Number);
+                resources.Add(number,index);
             }
 
             return TranslateToRecords(resources, NetworkDefaultLevel);

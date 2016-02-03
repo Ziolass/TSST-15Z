@@ -79,7 +79,7 @@ namespace LRM
                 {
                     string allData = state.ResponseBuilder.ToString();
 
-                    if (SubscribeCallback != null && IdleState)
+                    if (SubscribeCallback != null && IdleState && allData.Contains("INTRODUCE"))
                     {
                         SubscribeCallback(allData, this);
                         IdleState = false;

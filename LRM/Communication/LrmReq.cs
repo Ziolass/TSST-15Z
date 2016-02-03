@@ -8,7 +8,14 @@ namespace NetworkNode.LRM.Communication
 {
     public enum ReqType
     {
-        ALLOC, ALLOC_RESP, DELLOC, DELLOC_RESP, CONNECTION_REQUEST, DISCONNECTION_REQUEST
+        ALLOC, 
+        ALLOC_RESP, 
+        DELLOC, 
+        DELLOC_RESP, 
+        CONNECTION_REQUEST, 
+        DISCONNECTION_REQUEST, 
+        LRM_NEGOTIATION,
+        LRM_NEGOTIATION_RESP
     }
 
     public class LrmPort

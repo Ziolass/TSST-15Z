@@ -85,7 +85,7 @@ namespace NetworkClientNode.Menagment
 
             StreamData record = CreateRecord(literalRecord);
 
-            return node.RemoveStreamData(record) ? "OK" : "ERROR";
+            return node.RemoveStreamData(record).Result ? "OK" : "ERROR";
         }
 
         private string GetPortList()

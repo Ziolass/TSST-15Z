@@ -13,6 +13,6 @@ namespace LRM.Communication
 
     public enum LrmHeader
     {
-        INFO, BROADCAST
+        INFO, BROADCAST, NONE
     }
 }

@@ -9,6 +9,7 @@ namespace LRM.Communication
 {
     public class ConnectionRequest
     {
+        public string Type { get; set; }
         public string Id { get; set; }
         public List<ConnectionStep> Steps { get; set; }
     }

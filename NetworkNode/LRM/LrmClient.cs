@@ -86,6 +86,7 @@ namespace NetworkNode.LRM
         public void SendLrmMessage(LrmResp resp)
         {
             string lrmMessage = JsonConvert.SerializeObject(resp);
+            Console.WriteLine(lrmMessage);
             LrmCommunication.SendToLrm(lrmMessage);
         }
 

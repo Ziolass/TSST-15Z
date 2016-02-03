@@ -57,7 +57,9 @@ namespace NetworkClientNode
 
         public ExecutionResult RemoveStreamData(StreamData stream)
         {
-            ExecutionResult result = Adaptation.RemoveStreamData(stream);
+            List<StreamData> wrappedData = new List<StreamData>();
+            wrappedData.Add(stream);
+            ExecutionResult result = Adaptation.RemoveStreamData(wrappedData);
             if (result.Result)
             {
                 if (StreamRemoved != null)

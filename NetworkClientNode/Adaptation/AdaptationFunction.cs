@@ -37,12 +37,13 @@ namespace NetworkClientNode.Adaptation
         private Dictionary<int, IFrame> OutputCredentials;
         private FrameBuilder Builder;
         private String routerId;
+        private LrmIntroduce LrmIntroduce;
         private LrmClient LrmClient;
         private VirtualContainerLevel NetworkDefaultLevel;
 
         public event HandleClientData HandleClientData;
         public AdaptationFunction(TransportTerminalFunction ttf, 
-            string routerId, 
+            LrmIntroduce lrmIntroduce, 
             int lrmPort,
             VirtualContainerLevel networkDefaultLevel)
         {
@@ -50,7 +51,10 @@ namespace NetworkClientNode.Adaptation
             Ttf = ttf;
             Builder = new FrameBuilder();
             Ttf.HandleInputFrame += new HandleInputFrame(GetDataFromFrame);
+            Ttf.HandleLrmData += new HandleLrmData(ReportLrmToken);
             LrmClient = new LrmClient(lrmPort, SendLrmToken, HandleLrmResourceManagement);
+            LrmIntroduce = lrmIntroduce;
+            routerId = LrmIntroduce.Node;
             this.Streams = new List<StreamData>();
 
             Dictionary<int, StmLevel> portsLevels = Ttf.GetPorts();
@@ -169,11 +173,12 @@ namespace NetworkClientNode.Adaptation
 
             foreach (KeyValuePair<int, StmLevel> port in Ttf.GetPorts())
             {
-                LrmToken token = new LrmToken
-                {
-                    Tag = lrmToken,
-                    SenderPort = port.Key.ToString()
-                };
+                LrmToken token = JsonConvert.DeserializeObject<LrmToken>(lrmToken);
+                int hPathNo = StmLevelExt.GetHigherPathsNumber(port.Value);
+                int containers = VirtualContainerLevelExt.GetContainersNumber(NetworkDefaultLevel);
+
+                token.SenderPort = port.Key.ToString();
+                token.StmMaxIndex = ((hPathNo * containers) - 1).ToString();
 
                 Ttf.SendLrmData(port.Key, JsonConvert.SerializeObject(token));
             }
@@ -214,11 +219,12 @@ namespace NetworkClientNode.Adaptation
 
             LrmResp resp = new LrmResp
             {
-                Type = ReqType.ALLOC.ToString(),
+                Type = ReqType.ALLOC_RESP.ToString(),
                 Status = allocationResult.Result ?
                     LrmRespStatus.ACK.ToString()
                     : LrmRespStatus.ERROR.ToString(),
-                Id = request.Id
+                Id = request.Id,
+                ConnectionId = request.ConnectionId
             };
             LrmClient.SendLrmMessage(resp);
         }
@@ -235,11 +241,12 @@ namespace NetworkClientNode.Adaptation
 
             LrmResp resp = new LrmResp
             {
-                Type = ReqType.ALLOC.ToString(),
+                Type = ReqType.DELLOC_RESP.ToString(),
                 Status = delocationResult.Result ?
                     LrmRespStatus.ACK.ToString()
                     : LrmRespStatus.ERROR.ToString(),
-                Id = request.Id
+                Id = request.Id,
+                ConnectionId = request.ConnectionId
             };
             LrmClient.SendLrmMessage(resp);
         }
@@ -330,6 +337,25 @@ namespace NetworkClientNode.Adaptation
             builder.Append("%");
             builder.Append(portNumber);
             return builder.ToString();
+        }
+
+        public void ConnectClient()
+        {
+            LrmClient.Start();
+        }
+
+        private void ReportLrmToken(object sender, InputLrmArgs args)
+        {
+            LrmToken token = JsonConvert.DeserializeObject<LrmToken>(args.Data);
+            token.Reciver = new LrmDestination();
+            token.Reciver.Name = routerId;
+            token.Reciver.Port = args.PortNumber.ToString();
+            LrmClient.SendLrmMessage(token);
+        }
+
+        public void IntroduceToLrm()
+        {
+            LrmClient.SendLrmMessage(LrmIntroduce);
         }
     }
 }

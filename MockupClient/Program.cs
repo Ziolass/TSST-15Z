@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace MockupClient
 {
+    using LRM.Communication;
+    using NetworkNode.LRM.Communication;
+    using Newtonsoft.Json;
     using System;
     using System.IO;
     using System.Net;
@@ -18,15 +21,16 @@ namespace MockupClient
 
         public static void StartClient(string data)
         {
-        byte[] bytes = new byte[5000];
+            byte[] bytes = new byte[5000];
 
-        //string data = File.ReadAllText(json);
-        //string data = "TEST";
-        Console.WriteLine("Pressto send JSON");
-        try {
+            //string data = File.ReadAllText(json);
+            //string data = "TEST";
+            Console.WriteLine("Pressto send JSON");
+            try
+            {
                 IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 8100);
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 22000);
 
                 Socket sender = new Socket(AddressFamily.InterNetwork,
                     SocketType.Stream, ProtocolType.Tcp);
@@ -34,13 +38,44 @@ namespace MockupClient
                 try
                 {
                     sender.Connect(remoteEP);
-
-                    byte[] msg = Encoding.ASCII.GetBytes(File.ReadAllText(data));
+                    List<LrmPort> portsClientA = new List<LrmPort>();
+                    portsClientA.Add(new LrmPort
+                    {
+                        Number = "1"
+                    });
+                    List<LrmPort> portsNode1 = new List<LrmPort>();
+                    portsNode1.Add(new LrmPort
+                    {
+                        Number = "1"
+                    });
+                    portsNode1.Add(new LrmPort
+                    {
+                        Number = "2"
+                    });
+                    List<ConnectionStep> steps = new List<ConnectionStep>();
+                    steps.Add(new ConnectionStep
+                    {
+                        Node = "clientA",
+                        Ports = portsClientA
+                    });
+                    steps.Add(new ConnectionStep
+                    {
+                        Node = "node1",
+                        Ports = portsNode1
+                    });
+                    string textData = JsonConvert.SerializeObject(new ConnectionRequest
+                    {
+                        Id = "TROLOLO",
+                        Steps = steps,
+                        Type = ReqType.CONNECTION_REQUEST.ToString()
+                        
+                    });
+                    byte[] msg = Encoding.ASCII.GetBytes(textData);
                     int bytesSent = sender.Send(msg);
 
                     int bytesRec = sender.Receive(bytes);
                     Console.WriteLine("Response:\n{0}\n",
-                    Encoding.ASCII.GetString(bytes,0,bytesRec));
+                    Encoding.ASCII.GetString(bytes, 0, bytesRec));
                     sender.Shutdown(SocketShutdown.Both);
                     sender.Close();
 
@@ -58,10 +93,12 @@ namespace MockupClient
                     Console.WriteLine("Unexpected exception : {0}", e.ToString());
                 }
 
-        } catch (Exception e) {
-            Console.WriteLine( e.ToString());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
-    }
 
         public static void Main(String[] args)
         {

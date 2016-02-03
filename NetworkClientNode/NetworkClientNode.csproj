@@ -110,6 +110,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LRM\LRM.csproj">
+      <Project>{222b3684-f432-4eb5-b140-261bbde1f2fb}</Project>
+      <Name>LRM</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NetworkNode\NetworkNode.csproj">
       <Project>{f2453730-6933-4343-856c-273a9fa16b6e}</Project>
       <Name>NetworkNode</Name>

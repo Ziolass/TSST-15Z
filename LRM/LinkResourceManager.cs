@@ -21,6 +21,7 @@ namespace LRM
         private Thread LocalTopologyRaport = null;
         private bool InitPahse;
         private AllocationRegister AllocationRegister;
+        private AsyncCommunication HighestCc;
 
 
         public LinkResourceManager(int serverPort, int rcPort, int ccPort, string domianScope)
@@ -29,6 +30,7 @@ namespace LRM
             LrmRegister = new LrmRegister();
             LrmServer = new LrmServer(serverPort, HandleNodeData, LrmRegister);
             LrmServer.NodeConnected += new NodeConnected(HandleNodeConnection);
+            LrmServer.NodeDisconnected += new NodeDisconnected(HandleNodeDisconnection);
             RcClinet = new RcClinet(rcPort, HandleRcData);
             InitPahse = true;
             AllocationRegister = new AllocationRegister();
@@ -42,31 +44,66 @@ namespace LRM
         public void HandleNodeData(string data, AsyncCommunication async)
         {
             Console.WriteLine(data);
-            if(data.Contains(ReqType.ALLOC.ToString())
-                || data.Contains(ReqType.DELLOC.ToString())) 
+            if (data.Contains(ReqType.ALLOC_RESP.ToString())
+                 || data.Contains(ReqType.DELLOC_RESP.ToString()))
+            {
+                HandleLocationResp(data);
+                return;
+            }
+            else if (data.Contains(ReqType.ALLOC.ToString())
+                 || data.Contains(ReqType.DELLOC.ToString()))
             {
                 HandleResourceLocationData(data, LrmRegister.FindNodeByConnection(async));
                 return;
-            } else if(data.Contains(ReqType.CONNECTION_REQUEST.ToString())){
+            }
+            else if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
+            {
                 HandleConnectionRequest(data, async, ReqType.ALLOC);
+                return;
             }
             else if (data.Contains(ReqType.DISCONNECTION_REQUEST.ToString()))
             {
                 HandleConnectionRequest(data, async, ReqType.DELLOC);
-            } 
-            else if(data.Contains(ReqType.ALLOC_RESP.ToString())
-                || data.Contains(ReqType.DELLOC_RESP.ToString()))
+                return;
+            }
+            else if (data.Contains(ReqType.LRM_NEGOTIATION.ToString()))
             {
-                HandleLocationResp(data);
+                HandleLrmNegotiation(data, async);
+                return;
+            }
+            else if (data.Contains(ReqType.LRM_NEGOTIATION_RESP.ToString()))
+            {
+                HandleLrmNegotiationResp(data);
+                return;
             }
 
+
             HandleTokenData(data, LrmRegister.FindNodeByConnection(async));
+        }
+
+        private void HandleLrmNegotiationResp(string data)
+        {
+            //TODO ładne wypisywanie
+            Console.WriteLine("NEGOTIATION OK");
+        }
+
+        private void HandleLrmNegotiation(string data, AsyncCommunication async)
+        {
+            LrmReq request = JsonConvert.DeserializeObject<LrmReq>(data);
+            Console.WriteLine("NODE: " + request.Id + "PORT: " + request.Ports[0].Number + " INDEX: " + request.Ports[1].Index);
+            async.Send(JsonConvert.SerializeObject(new LrmResp
+            {
+                Type = ReqType.LRM_NEGOTIATION_RESP.ToString(),
+                Id = request.Id,
+                Msg = "@DOMIAN",
+                Status = LrmRespStatus.ACK.ToString()
+            }));
         }
 
         private void HandleLocationResp(string data)
         {
             LrmResp response = JsonConvert.DeserializeObject<LrmResp>(data);
-            
+
             if (AllocationRegister.ConfirmStep(response.ConnectionId, response.Id))
             {
                 AsyncCommunication async = AllocationRegister.GetComm(response.ConnectionId);
@@ -75,7 +112,7 @@ namespace LRM
             }
         }
 
-        
+
 
         public void HandleNodeConnection(string NodeName)
         {
@@ -91,9 +128,20 @@ namespace LRM
                 Tag = NodeName
             };
             string data = JsonConvert.SerializeObject(token);
-            data = WrapWithHeader(LrmCommunicationType.SIGNALLING,LrmHeader.BROADCAST, data);
+            data = WrapWithHeader(LrmCommunicationType.SIGNALLING, LrmHeader.BROADCAST, data);
 
             async.Send(data);
+        }
+
+        public void HandleNodeDisconnection(string NodeName)
+        {
+            string data = JsonConvert.SerializeObject(new PresenceRaport
+            {
+                Header = PresenceType.DISCONNECTED.ToString(),
+                Node = NodeName
+            });
+
+            HighestCc.Send(data);
         }
 
         public void RunServer()
@@ -106,8 +154,13 @@ namespace LRM
             StringBuilder builder = new StringBuilder();
             builder.Append(comm);
             builder.Append("|");
-            builder.Append(header);
-            builder.Append("#");
+            
+            if (!header.Equals(LrmHeader.NONE))
+            {
+                builder.Append(header);
+                builder.Append("#");
+            }
+            
             builder.Append(data);
             return builder.ToString();
         }
@@ -116,7 +169,7 @@ namespace LRM
         {
             ResourceLocation resource = JsonConvert.DeserializeObject<ResourceLocation>(data);
             List<int> changedPorts = new List<int>();
-            foreach(LrmPort port in resource.AllocatedPorts) 
+            foreach (LrmPort port in resource.AllocatedPorts)
             {
                 int portNumber = int.Parse(port.Number);
                 int resourceIndex = int.Parse(port.Index);
@@ -128,11 +181,11 @@ namespace LRM
                     case ReqType.ALLOC:
                         {
                             resources[resourceIndex] = new object();
-                            
+
                             if (Array.TrueForAll(resources, el => el != null) && isPortAvalible)
                             {
-                                node.Destinations[portNumber] 
-                                    = new Tuple<LrmDestination,bool>(node.Destinations[portNumber].Item1, false);
+                                node.Destinations[portNumber]
+                                    = new Tuple<LrmDestination, bool>(node.Destinations[portNumber].Item1, false);
                                 changedPorts.Add(portNumber);
                             }
 
@@ -163,14 +216,21 @@ namespace LRM
         public void HandleConnectionRequest(string data, AsyncCommunication async, ReqType type)
         {
             ConnectionRequest connection = JsonConvert.DeserializeObject<ConnectionRequest>(data);
+
+            if (HighestCc == null)
+            {
+                HighestCc = async;
+            }
+
             AllocationRegister.AddConnection(connection.Id, async, connection);
             int stepIndex = 0;
             foreach (ConnectionStep step in connection.Steps)
             {
-                foreach (LrmPort port in step.Ports) {
+                foreach (LrmPort port in step.Ports)
+                {
 
-                    if (port.Index == null 
-                        && port.Equals(step.Ports[0]) 
+                    if (port.Index == null
+                        && port.Equals(step.Ports[0])
                         && stepIndex > 0)
                     {
                         ConnectionStep previous = connection.Steps[stepIndex - 1];
@@ -188,7 +248,8 @@ namespace LRM
                 }
                 string stepId = connection.Id + step.Node + step.Ports.GetHashCode() as string;
 
-                LrmReq request = new LrmReq{
+                LrmReq request = new LrmReq
+                {
                     ConnectionId = connection.Id,
                     Id = stepId,
                     Ports = step.Ports,
@@ -196,11 +257,11 @@ namespace LRM
                 };
 
                 string allocRequest = JsonConvert.SerializeObject(request);
-                
+
                 AllocationRegister.RegisterStep(connection.Id, stepId);
-                
+                allocRequest = WrapWithHeader(LrmCommunicationType.DATA, LrmHeader.NONE, allocRequest);
                 LrmRegister.ConnectedNodes[step.Node].Async.Send(allocRequest);
-                
+
                 stepIndex++;
             }
         }
@@ -210,17 +271,17 @@ namespace LRM
             VirtualNode vNode = LrmRegister.ConnectedNodes[node];
             object[] resources = vNode.Resources[port];
             int index = -1;
-            foreach (object res in resources)
+            for (int i = 0; i < resources.Length; i++)
             {
-                if (res == null)
+                if (resources[i] == null)
                 {
+                    index = i;
                     break;
                 }
-                index++;
             }
 
             resources[index] = new object();
-            return index < 0 ? (int?)null : index; 
+            return index < 0 ? (int?)null : index;
         }
 
         private void LocalTopology(List<int> changedPorts)
@@ -230,20 +291,23 @@ namespace LRM
         private void LocalTopology()
         {
             List<TopologyData> nodes = new List<TopologyData>();
-            foreach(VirtualNode node in LrmRegister.ConnectedNodes.Values) 
+            foreach (VirtualNode node in LrmRegister.ConnectedNodes.Values)
             {
                 List<TopologyConnections> connections = new List<TopologyConnections>();
-                
-                foreach(int portNumber in node.Destinations.Keys) {
-                    TopologyConnections connection = new TopologyConnections {
+
+                foreach (int portNumber in node.Destinations.Keys)
+                {
+                    TopologyConnections connection = new TopologyConnections
+                    {
                         Destination = node.Destinations[portNumber].Item1,
                         Port = portNumber.ToString(),
-                        Status = node.Destinations[portNumber].Item2 ? "FREE": "OCCUPIED"
+                        Status = node.Destinations[portNumber].Item2 ? "FREE" : "OCCUPIED"
                     };
                     connections.Add(connection);
                 }
 
-                TopologyData nodeData = new TopologyData{
+                TopologyData nodeData = new TopologyData
+                {
                     Domains = node.DomiansHierarchy,
                     Node = node.Name,
                     Data = connections
@@ -251,7 +315,8 @@ namespace LRM
                 nodes.Add(nodeData);
             }
 
-            TopologyReports LocalTopology = new TopologyReports {
+            TopologyReports LocalTopology = new TopologyReports
+            {
                 Protocol = "resources",
                 Nodes = nodes
             };
@@ -277,27 +342,30 @@ namespace LRM
                 StmMaxIndex = token.StmMaxIndex,
                 Reciver = new LrmDestination
                 {
-                     Name = token.Tag,
-                     Port = token.SenderPort
+                    Name = token.Tag,
+                    Port = token.SenderPort
                 }
             };
         }
-
+        object assigementLock = new object();
         private void AssignToken(LrmToken token)
         {
-            VirtualNode node = LrmRegister.ConnectedNodes[token.Tag];
+            lock (assigementLock)
+            {
+                VirtualNode node = LrmRegister.ConnectedNodes[token.Tag];
 
-            int senderPort = int.Parse(token.SenderPort);
-            int resourcesNumber = int.Parse(token.StmMaxIndex);
-            
-            if (!node.Resources.ContainsKey(senderPort))
-            {
-                node.Resources.Add(senderPort, new object[resourcesNumber]);
-            }
-            
-            if (!node.Destinations.ContainsKey(senderPort))
-            {
-                node.Destinations.Add(senderPort, new Tuple<LrmDestination, bool>(token.Reciver,true));
+                int senderPort = int.Parse(token.SenderPort);
+                int resourcesNumber = int.Parse(token.StmMaxIndex);
+
+                if (!node.Resources.ContainsKey(senderPort))
+                {
+                    node.Resources.Add(senderPort, new object[resourcesNumber]);
+                }
+
+                if (!node.Destinations.ContainsKey(senderPort))
+                {
+                    node.Destinations.Add(senderPort, new Tuple<LrmDestination, bool>(token.Reciver, true));
+                }
             }
         }
 

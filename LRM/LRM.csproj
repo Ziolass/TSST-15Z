@@ -52,6 +52,7 @@
     <Compile Include="Communication\LrmReq.cs" />
     <Compile Include="Communication\LrmResp.cs" />
     <Compile Include="Communication\LrmToken.cs" />
+    <Compile Include="Communication\PresenceRaport.cs" />
     <Compile Include="Communication\RcClinet.cs" />
     <Compile Include="Communication\SimpleLrmMsg.cs" />
     <Compile Include="Communication\TopologyReports.cs" />

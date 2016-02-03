@@ -33,7 +33,7 @@ namespace LRM
 
         public bool ConfirmStep(string connectionName, string stepId)
         {
-            AllocationLog[connectionName].Add(stepId, true);
+            AllocationLog[connectionName][stepId] = true;
             return Array.TrueForAll(AllocationLog[connectionName].Values.ToArray(), x => x);
         }
         public AsyncCommunication GetComm(string connectionName)

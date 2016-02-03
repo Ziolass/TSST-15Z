@@ -23,7 +23,8 @@ namespace NetworkClientNode
         public MainWindow()
         {
             InitializeComponent();
-            var args = Environment.GetCommandLineArgs();
+            //var args = Environment.GetCommandLineArgs();
+            string[] args = { "0", "0", "0" };
             int i = 0; //This is dumy variable for TryParse
             
             if (args.Length < 3)

@@ -75,6 +75,11 @@ namespace LRM
         private void SubscribeCallback(string data, AsyncCommunication ac)
         {
             LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
+            
+            if (node.Node == null)
+            {
+                return;
+            }
 
             if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
             {

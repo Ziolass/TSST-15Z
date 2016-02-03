@@ -1,0 +1,40 @@
+﻿/*{
+    "Protocol": "resources",
+    "Nodes": [
+        {
+            "Node": "node1",
+            "Domains": [ "domianA", "domianB" ],
+            "Data": [
+                { "Port": "2", "Destination": { "Name": "node2", "Port": "1" }, "Status": "FREE" },
+                { "Port": "1", "Destination": { "Name": "clientA", "Port": "1" }, "Status": "FREE" }
+            ]
+        },
+        {
+            "Node": "node2",
+            "Domains": [ "domianA", "domianB" ],
+            "Data": [ { "Port": "1", "Destination": { "Name": "node1", "Port": "2" }, "Status": "FREE" } ]
+        },
+        {
+            "Node": "clientA",
+            "Domains": [ "domian A", "domianB" ],
+            "Data": [ { "Port": "1", "Destination": { "Name": "node1", "Port": "1" }, "Status": "FREE" } ]
+        }
+    ]
+} 
+
+{
+    "Node": "node1",
+    "Domians": [ "domianA", "domianB" ]
+} */
+{
+    "Protocol": "resources",
+    "Nodes": [
+        {
+            "Node": "node2",
+            "Domains": [ "domianA", "domianB" ],
+            "Data": [ { "Port": "1", "Destination": { "Name": "node1", "Port": "2" }, "Status": "FREE" } ]
+        },
+        { "Node": "node1", "Domains": [ "domianA", "domianB" ], "Data": [ { "Port": "2", "Destination": { "Name": "node2", "Port": "1" }, "Status": "FREE" }, { "Port": "1", "Destination": { "Name": "clientA", "Port": "1" }, "Status": "FREE" } ] },
+        { "Node": "clientA", "Domains": [ "domianA", "domianB" ], "Data": [ { "Port": "1", "Destination": { "Name": "node1", "Port": "1" }, "Status": "FREE" } ] }
+    ]
+}

@@ -11,13 +11,41 @@ namespace NetworkNode.HPC
 
     public class ForwardingRecord : IEquatable<ForwardingRecord>
     {
-        public VirtualContainerLevel ContainerLevel { get; private set; }
-        public int VcNumberIn { get; private set; }
-        public int HigherPathIn { get; private set; }
-        public int VcNumberOut { get; private set; }
-        public int OutputPort { get; private set; }
-        public int HigherPathOut { get; private set; }
-        public int InputPort { get; private set; }
+        public VirtualContainerLevel ContainerLevel
+        {
+            get;
+            set;
+        }
+        public int VcNumberIn
+        {
+            get;
+            set;
+        }
+        public int HigherPathIn
+        {
+            get;
+            set;
+        }
+        public int VcNumberOut
+        {
+            get;
+            set;
+        }
+        public int OutputPort
+        {
+            get;
+            set;
+        }
+        public int HigherPathOut
+        {
+            get;
+            set;
+        }
+        public int InputPort
+        {
+            get;
+            set;
+        }
 
         public ForwardingRecord(int inputPort, int outputPort, VirtualContainerLevel containerLevel, int vcNumberIn, int vcNumberOut, int hPathIn, int hPathOut)
         {

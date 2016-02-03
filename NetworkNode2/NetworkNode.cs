@@ -149,7 +149,7 @@ namespace NetworkNode
             ExecutionResult allocationResult = Hpc.Allocate(request.Ports);
             LrmResp resp = new LrmResp
             {
-                Type = ReqType.ALLOC.ToString(),
+                Type = ReqType.ALLOC_RESP.ToString(),
                 Status = allocationResult.Result ?
                     LrmRespStatus.ACK.ToString()
                     : LrmRespStatus.ERROR.ToString(),
@@ -163,7 +163,7 @@ namespace NetworkNode
             ExecutionResult delocationResult = Hpc.FreeResources(request.Ports);
             LrmResp resp = new LrmResp
             {
-                Type = ReqType.DELLOC.ToString(),
+                Type = ReqType.DELLOC_RESP.ToString(),
                 Status = delocationResult.Result ?
                     LrmRespStatus.ACK.ToString()
                     : LrmRespStatus.ERROR.ToString(),
