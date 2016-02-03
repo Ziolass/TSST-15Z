@@ -430,6 +430,18 @@ namespace RoutingController.Elements
             }
             return returnDictionary;
         }
+        public Dictionary<NodeElement, Dictionary<ILink, int>> GetNearVertexes(string nodeName)
+        {
+            Dictionary<NodeElement, Dictionary<ILink, int>> returnDictionary = new Dictionary<NodeElement, Dictionary<ILink, int>>();
+            foreach (var vertex in Graph)
+            {
+                if (vertex.Key.Node.Contains(nodeName))
+                {
+                    returnDictionary.Add(vertex.Key, vertex.Value);
+                }
+            }
+            return returnDictionary;
+        }
 
 
         /// <summary>

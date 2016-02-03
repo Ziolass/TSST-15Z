@@ -19,10 +19,10 @@ namespace RoutingController.Service
         // Client  socket.
         public Socket WorkSocket = null;
 
-        // Size of receive buffer.
+        // Size of receive Buffer.
         public const int BufferSize = 1024;
 
-        // Receive buffer.
+        // Receive Buffer.
         public byte[] Buffer = new byte[BufferSize];
 
         // Received data string.
@@ -34,16 +34,18 @@ namespace RoutingController.Service
     public class RoutingControllerCenter
     {
         public static ManualResetEvent allDone = new ManualResetEvent(false); // Thread signal.
+        public static ManualResetEvent connectDone = new ManualResetEvent(false);
+        public static ManualResetEvent receiveDone = new ManualResetEvent(false);
         public int Port { get; private set; }
         private RoutingController RoutingController { get; set; }
         public List<NeighbourRoutingController> NeighbourList { get; private set; }
         private Socket ServerSocket { get; set; }
 
-        public RoutingControllerCenter(int port, List<NeighbourRoutingController> neighbourList)
+        public RoutingControllerCenter(int port, List<NeighbourRoutingController> neighbourList, string networkName)
         {
             this.Port = port;
             this.NeighbourList = new List<NeighbourRoutingController>(neighbourList);
-            this.RoutingController = new RoutingController();
+            this.RoutingController = new RoutingController(networkName);
         }
 
         /// <summary>
@@ -63,6 +65,8 @@ namespace RoutingController.Service
                         return ActionType.LocalTopology;
                     else if (metadata["Protocol"].ToString() == "route")
                         return ActionType.RouteTableQuery;
+                    else if (metadata["Protocol"].ToString() == "network")
+                        return ActionType.NetworkTopology;
                     else return ActionType.Undef;
                 }
                 else return ActionType.Undef;
@@ -83,31 +87,30 @@ namespace RoutingController.Service
         {
             //try
             //{
-                ActionType actionType = OperationType(request);
-                if (actionType == ActionType.LocalTopology)
-                {
-                    request = request.Replace("Protocol: \"resources\",", "");
-                    LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
-                    this.RoutingController.UpdateNetworkGraph(topologyRequest);
-                    Console.WriteLine("Update from local topology");
-                    return "OK";
-                }
-                //RouteTableQuery
-                else if (actionType == ActionType.RouteTableQuery)
-                {
-                    request = request.Replace("Protocol: \"query\",", "");
-                    QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
-                    Console.WriteLine("RouteTableQuery request");
-                    return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest));
-                }
-                else if (actionType == ActionType.NetworkTopology)
-                {
-                    request = request.Replace("Protocol: \"query\",", "");
-                    NetworkRequest queryRequest = JsonConvert.DeserializeObject<NetworkRequest>(request);
+            ActionType actionType = OperationType(request);
+            if (actionType == ActionType.LocalTopology)
+            {
+                request = request.Replace("Protocol: \"resources\",", "");
+                LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
+                this.RoutingController.UpdateNetworkGraph(topologyRequest);
+                Console.WriteLine("Update from local topology");
+                return "OK";
+            }
+            //RouteTableQuery
+            else if (actionType == ActionType.RouteTableQuery)
+            {
+                request = request.Replace("Protocol: \"query\",", "");
+                QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
+                Console.WriteLine("RouteTableQuery request");
+                return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest));
+            }
+            else if (actionType == ActionType.NetworkTopology)
+            {
+                NetworkRequest queryRequest = JsonConvert.DeserializeObject<NetworkRequest>(request);
 
-                    return "ERROR";
-                }
-                else return "ERROR";
+                return "ERROR";
+            }
+            else return "ERROR";
             //}
             //catch (Exception exp)
             //{
@@ -122,9 +125,32 @@ namespace RoutingController.Service
         /// <returns></returns>
         private string SendNetworkTopology()
         {
+            NetworkRequest networkRequest = this.RoutingController.NetworkRequestResponse();
+            String message = JsonConvert.SerializeObject(networkRequest);
             foreach (NeighbourRoutingController neighbourRC in this.NeighbourList)
             {
-                //Send(handler, response);
+                byte[] bytes = new byte[5000];
+                try
+                {
+                    IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
+                    IPAddress ipAddress = ipHostInfo.AddressList[0];
+                    IPEndPoint remoteEP = new IPEndPoint(ipAddress, neighbourRC.Port);
+                    Socket sender = new Socket(AddressFamily.InterNetwork,
+                        SocketType.Stream, ProtocolType.Tcp);
+                    sender.Connect(remoteEP);
+                    byte[] msg = Encoding.ASCII.GetBytes(message);
+                    int bytesSent = sender.Send(msg);
+                    sender.Shutdown(SocketShutdown.Both);
+                    sender.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                finally
+                {
+                    Console.WriteLine("NetworkTopology sent!");
+                }
             }
             return string.Empty;
         }
@@ -163,7 +189,7 @@ namespace RoutingController.Service
                 return false;
             }
         }
- 
+
         #region AsyncServer
 
         /// <summary>
@@ -172,7 +198,7 @@ namespace RoutingController.Service
         /// </summary>
         public void StartListening()
         {
-            // Data buffer for incoming data.
+            // Data Buffer for incoming data.
             byte[] bytes = new Byte[1024];
 
             // Establish the local endpoint for the socket.
@@ -266,6 +292,10 @@ namespace RoutingController.Service
                         response = this.PerformAction(content);
                         // Signal the main thread to continue.
                         allDone.Set();
+                        new Thread(delegate()
+                        {
+                            SendNetworkTopology();
+                        });
                     }
                     else
                     {
@@ -275,6 +305,7 @@ namespace RoutingController.Service
                         Console.WriteLine("RouteTableQuery sent");
                     }
                     Send(handler, response);
+                    SendNetworkTopology();
                 }
                 else
                 {

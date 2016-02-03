@@ -7,26 +7,33 @@ using System.Threading;
 
 namespace RoutingController
 {
-    internal class Program
+    public class Program
     {
-        private static void Main(string[] args)
+
+        public static void Main(String[] args)
         {
             try
             {
-                ElementConfigurator configurator = new ElementConfigurator("../../../Configs/RoutingController/routingControllerConfig.xml");
+                ElementConfigurator configurator = new ElementConfigurator("..\\..\\..\\Configs\\RoutingController\\routingControllerConfig" + args[0].ToString() + ".xml");
                 RoutingControllerCenter RC = configurator.ConfigureRoutingController();
 
                 Console.WriteLine("Routing Controller Console");
                 Console.WriteLine();
 
-                new Thread(delegate()
-                {
-                    RC.StartListening();
-                }).Start();
+
                 new Thread(delegate()
                 {
                     startReadingCommands(RC);
                 }).Start();
+
+                new Thread(delegate()
+                {
+                    RC.StartListening();
+                }).Start();
+
+
+
+                Console.ReadLine();
             }
             catch (Exception exp)
             {
