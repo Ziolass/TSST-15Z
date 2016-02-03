@@ -266,6 +266,17 @@ namespace LRM
                 stepIndex++;
             }
         }
+        /*
+        private void CheckForwardAllocation(ConnectionStep actual, ConnectionStep next)
+        {
+
+        }
+
+        private void CheckBackwardAllocation(ConnectionStep actual, ConnectionStep previous)
+        {
+            VirtualNode actNode = LrmRegister.ConnectedNodes[actual.Node];
+
+        }*/
 
         private int? AllocNextEmpty(string node, int port)
         {

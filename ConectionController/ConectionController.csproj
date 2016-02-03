@@ -49,7 +49,6 @@
     <Compile Include="Communication\NetworkNodeSender.cs" />
     <Compile Include="Communication\Port.cs" />
     <Compile Include="Communication\ReqResp\SimpleConnection.cs" />
-    <Compile Include="Communication\ReqResp\SNP.cs" />
     <Compile Include="Communication\ReqResp\SNPP.cs" />
     <Compile Include="ConnectionController.cs" />
     <Compile Include="ElementConfigurator.cs" />
@@ -64,6 +63,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LRM\LRM.csproj">
+      <Project>{222b3684-f432-4eb5-b140-261bbde1f2fb}</Project>
+      <Name>LRM</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RoutingController\RoutingController.csproj">
       <Project>{b703fb71-1209-401d-862d-ff12250e54b6}</Project>
       <Name>RoutingController</Name>

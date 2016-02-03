@@ -1,7 +1,9 @@
 ﻿using Cc.Communication;
 using ConectionController.Communication.ReqResp;
+using LRM.Communication;
 using Newtonsoft.Json;
 using RoutingController.Elements;
+using RoutingController.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,32 +12,26 @@ using System.Threading.Tasks;
 
 namespace Cc
 {
-    public class NodeStep
+    public class Termination
     {
-        public string NodeName { get; set; }
-
-        public string Port1 { get; set; }
-        public string Index1 { get; set; }
-        public string Dest1 { get; set; }
-        public string DestPort1 { get; set; }
-
-        public string Dest2 { get; set; }
-        public string Port2 { get; set; }
-        public string Index2 { get; set; }
-        public string DestPort2 { get; set; }
-
+        public string Node { get; set; }
+        public string Port { get; set; }
+        public string Index { get; set; }
     }
-
+ 
     public class NetworkConnection
     {
-        public string End1 { get; set; }
-        public string End2 { get; set; }
-        public List<NodeStep> Steps { get; set; }
+        public Termination End1 { get; set; }
+        public Termination End2 { get; set; }
+        public List<SNP> AllSteps { get; set; }
+        public ConnectionRequest ActualLevelConnection { get; set; }
+        public Dictionary<SNP, SNP> ConnectionRequests { get; set; }
     }
     public class ConnectionController
     {
         private List<NetworkConnection> Connections;
-
+        private List<string> Domains;
+        private string Domain;
         private Dictionary<string, string> Gateways;
 
         private NetworkNodeSender RcSender;
@@ -52,9 +48,9 @@ namespace Cc
 
             foreach (KeyValuePair<string, int> lrmPort in lrmPorts)
             {
-                LrmSenders.Add(lrmPort.Key,new NetworkNodeSender(lrmPort.Value, bufferSize));
+                LrmSenders.Add(lrmPort.Key, new NetworkNodeSender(lrmPort.Value, bufferSize));
             }
-            
+
         }
         public string HandleNccData(string data)
         {
@@ -102,9 +98,17 @@ namespace Cc
         {
             Actual = new NetworkConnection
             {
-                End1 = arguments[0],
-                End2 = arguments[1],
-                Steps = new List<NodeStep>()
+                End1 = new Termination {
+                    Node = arguments[0].Split(':')[0],
+                    Port = arguments[0].Split(':')[1]
+                },
+                End2 = new Termination
+                {
+                    Node = arguments[1].Split(':')[0],
+                    Port = arguments[1].Split(':')[1]
+                },
+                AllSteps = new List<ConnectionStep>(),
+                ConnectionRequests = new Dictionary<string, string>()
             };
 
             Connections.Add(Actual);
@@ -118,6 +122,11 @@ namespace Cc
 
             RcSender.SendContent(JsonConvert.SerializeObject(sc), HandleRoutingData);
 
+        }
+
+        private ConnectionRequest GetMyConnection(NetworkConnection Actual)
+        {
+            throw new NotImplementedException();
         }
 
         private void InterConnectionRequest(List<string> arguments)
@@ -136,16 +145,16 @@ namespace Cc
             NetworkConnection connection = null;
             foreach (NetworkConnection conn in Connections)
             {
-                if((conn.End1.Equals(arguments[0]) && conn.End2.Equals(arguments[1])) ||
-                   (conn.End1.Equals(arguments[1]) && conn.End2.Equals(arguments[0]))) 
+                if ((conn.End1.Equals(arguments[0]) && conn.End2.Equals(arguments[1])) ||
+                   (conn.End1.Equals(arguments[1]) && conn.End2.Equals(arguments[0])))
                 {
-                     connection = conn;
-                     break;
+                    connection = conn;
+                    break;
                 }
             }
-            
+
             TearDownConnection(connection);
-            
+
         }
 
         private void TearDownConnection(NetworkConnection conn)
@@ -193,50 +202,83 @@ namespace Cc
             CallTeardown(localArguments);
         }
 
-        private void HandleRoutingData(string data)
+        private NetworkConnection GetActualConnection(RouteResponse snpp)
         {
             
-            SNPP snpp = JsonConvert.DeserializeObject<SNPP>(data);
-            foreach (SNP snp in snpp.Steps)
+            foreach (NetworkConnection conn in Connections)
             {
+                bool first = false;
+                bool second = false;
 
+                first = (snpp.Ends[0].Node == conn.End1.Node && snpp.Ends[0].Port == conn.End1.Port)
+                    || (snpp.Ends[0].Node == conn.End2.Node && snpp.Ends[0].Port == conn.End2.Port);
+
+                second = (snpp.Ends[1].Node == conn.End1.Node && snpp.Ends[1].Port == conn.End1.Port)
+                    || (snpp.Ends[1].Node == conn.End2.Node && snpp.Ends[1].Port == conn.End2.Port);
+
+                if (first && second)
+                {
+                    return conn;
+                }
+            }
+
+            return null;
+
+        }
+
+        private void HandleRoutingData(string data)
+        {
+
+            RouteResponse snpp = JsonConvert.DeserializeObject<RouteResponse>(data);
+            NetworkConnection actualNetworkConn = GetActualConnection(snpp);
+
+            ConnectionRequest conn = GetMyConnection(snpp);
+            actualNetworkConn.ActualLevelConnection = conn;
+            
+            
+            ConnectionRequest request = GetNewRequests(conn);
+            SendConnectionReq(request);
+            /*
+             * CALLBACKS!
+             * 
+             * UpdateNewRequests()
+                SendRequest(if ok SendNccConfirm())
+            */
+
+            
+
+            ConnectionRequest connection = GetMyConnection(Actual);
+        }
+
+        private void SendConnectionReq(ConnectionRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        private ConnectionRequest GetNewRequests(ConnectionRequest conn)
+        {
+            
+            throw new NotImplementedException();
+        }
+
+        private ConnectionRequest GetMyConnection(RouteResponse snpp)
+        {
+            List<ConnectionStep> Steps = new List<ConnectionStep>();
+
+            for (int i = 0 ; i < snpp.Steps.Count; i++)
+            {
+                 SNP snp = snpp.Steps[i];
+                if(snp.Domain != null)
+                    if
+                ConnectionStep step = new ConnectionStep {
+                    Node = snp.Ports
+                }
                 string nodeName = snp.Node;
                 NetworkNodeSender lrmSender = LrmSenders[nodeName];
 
                 StringBuilder builder = new StringBuilder();
-                builder.Append("ADD|");
-
-                if (Actual.Steps.Count > 0)
-                {
-                    NodeStep lastStep = Actual.Steps[Actual.Steps.Count - 1];
-
-                    if (lastStep.Dest1.Equals(nodeName))
-                    {
-                        builder.Append(lastStep.DestPort1);
-                        builder.Append(':');
-                        builder.Append(lastStep.Index1);
-                        builder.Append("|");
-                        builder.Append(snp.Ports[0].Equals(lastStep.DestPort1) ? snp.Ports[1] : snp.Ports[0]);
-                    }
-                    else
-                    {
-                        builder.Append(lastStep.DestPort2);
-                        builder.Append(':');
-                        builder.Append(lastStep.Index2);
-                        builder.Append("|");
-                        builder.Append(snp.Ports[0].Equals(lastStep.DestPort2) ? snp.Ports[1] : snp.Ports[0]);
-                    }
-
-                }
-                else
-                {
-                    builder.Append(snp.Ports[0]);
-                    builder.Append("|");
-                    builder.Append(snp.Ports[1]);
-                }
-                Console.WriteLine(builder.ToString());
-                lrmSender.SendContent(builder.ToString(), HandleLrmData);
             }
+            
         }
 
         private void HandleLrmData(string data)
@@ -265,7 +307,7 @@ namespace Cc
 
         private void ReportStep(NodeStep ns)
         {
-            Console.WriteLine("Node: " + ns.NodeName + " Port: ["+ns.Port1+" "+ ns.Index1+"]");
+            Console.WriteLine("Node: " + ns.NodeName + " Port: [" + ns.Port1 + " " + ns.Index1 + "]");
         }
 
     }
