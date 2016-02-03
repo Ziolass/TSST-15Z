@@ -70,12 +70,19 @@ namespace CallingPartyCallController
                     return "Acknowledged|";
                 case "call-accept":
                     return acceptCall(temp[1]);
+                case "call-malfunction":
+                    return callMalfuntion(temp[1]);
                 default:
                     break;
             }
             return response;
         }
+        private string callMalfuntion(string v)
+        {
 
+            ncc.deleteRecord(v);
+            return "Acknowledged|";
+        }
         private void callteardown(string v)
         {
             ncc.deleteRecord(v);

@@ -1,11 +1,10 @@
-﻿using CallingPartyCallController.FileUtils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CallingPartyCallController
+namespace NetworkClientNode.CPCC
 {
     class CallingPartyCallController
     {
@@ -19,6 +18,7 @@ namespace CallingPartyCallController
         public CallingPartyCallController(string id)
         {
             connectedClientsList = new List<string>();
+            ConsoleManager.Show();
             readConfig(id);
             chandler = new ConnectionHandler(localPort, this);
         }

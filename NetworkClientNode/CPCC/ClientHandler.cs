@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CallingPartyCallController
+namespace NetworkClientNode.CPCC
 {
     class ClientHandler
     {
@@ -70,10 +70,19 @@ namespace CallingPartyCallController
                     return "Acknowledged|";
                 case "call-accept":
                     return acceptCall(temp[1]);
+                case "call-malfuntion":
+                    return callMalfuntion(temp[1]);
                 default:
                     break;
             }
             return response;
+        }
+
+        private string callMalfuntion(string v)
+        {
+
+            ncc.deleteRecord(v);
+            return "Acknowledged|";
         }
 
         private void callteardown(string v)
@@ -85,7 +94,7 @@ namespace CallingPartyCallController
         {
             // TODO
             Console.WriteLine("Zaakceptowano zestawienie polaczenia z " + foreignName);
-            ncc.addToConnectedClients(foreignName);
+            ncc.addToConnectedClients(foreignName.ToUpper());
             return "call-accepted|";
         }
 

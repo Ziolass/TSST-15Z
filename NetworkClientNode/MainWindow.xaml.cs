@@ -1,3 +1,4 @@
+using NetworkClientNode.CPCC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace NetworkClientNode
     public partial class MainWindow : Window
     {
         public string MyTitle { get; set; }
+        private CallingPartyCallController cpcc;
         public MainWindow()
         {
             InitializeComponent();
@@ -34,6 +36,7 @@ namespace NetworkClientNode
             
             DataContext = this;
             MyTitle = "Client" + args[2];
+            cpcc = new CallingPartyCallController(args[3]);
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

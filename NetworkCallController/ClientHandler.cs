@@ -266,8 +266,8 @@ namespace NetworkCallController
         }
         private void informTeardownSides(int initSignalPort, string initName, int foreignSignalPort, string foreignName)
         {
-            string initResponse = sendCommand("call-teardown|" + foreignName, initSignalPort);
-            string foreignResposne = sendCommand("call-teardown|" + initName, foreignSignalPort);
+            string initResponse = sendCommand("call-malfunction|" + foreignName, initSignalPort);
+            string foreignResposne = sendCommand("call-malfunction|" + initName, foreignSignalPort);
         }
         private string checkForeignNCCForEntry(string entry)
         {
