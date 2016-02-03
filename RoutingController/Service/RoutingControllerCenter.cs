@@ -320,7 +320,10 @@ namespace RoutingController.Service
                         response = this.PerformAction(content);
                         // Signal the main thread to continue.
                         allDone.Set();
-                        SendNetworkTopology(); //My topology is new  send it
+                        new Thread(delegate()
+                        {
+                            SendNetworkTopology(); //My topology is new  send it
+                        }).Start();
                     }
                     else if (this.OperationType(content) == ActionType.RouteTableQuery)
                     {
