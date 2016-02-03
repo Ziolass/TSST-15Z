@@ -1,0 +1,27 @@
+{
+    "Protocol": "route",
+    "Ends": [
+        {
+            "OuterDomain": null,
+            "Node": "client1",
+            "Port": "1"
+        },
+        {
+            "OuterDomain": "domenaB",
+            "Node": "node4",
+            "Port": "2"
+        }
+    ],
+    "Steps": [
+        {
+            "Domain": null,
+            "Node": "node1",
+            "Ports": [ "3", "2" ]
+        },
+        {
+            "Domain": null,
+            "Node": "node4",
+            "Ports": [ "3", "2" ]
+        }
+    ]
+}

@@ -402,6 +402,10 @@ namespace RoutingController.Service
         {
             return this.RoutingController.ShowRoutes();
         }
+        public string ShowExternalClients()
+        {
+            return this.RoutingController.ShowExternalClients();
+        }
 
         /// <summary>
         /// Clears the routes.

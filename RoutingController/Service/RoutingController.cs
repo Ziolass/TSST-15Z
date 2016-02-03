@@ -79,12 +79,32 @@ namespace RoutingController.Service
             }
             else
             {
+                foreach (var item in this.ExternalClients)
+                {
+                    if (item.Value.Contains(destination.Node))
+                    {
+                        destinationDomainName = item.Key;
+                        break;
+                    }
+                    else if (item.Value.Contains(source.Node))
+                    {
+                        sourceDomainName = item.Key;
+                    }
+                    else continue;
+                }
+                foreach (var item in Gateways)
+                {
+                    if (item.Value == destinationDomainName)
+                    {
+                        destination = item.Key;
+                    }
+                }
+
+                destinationEnd = new Ends(destinationDomainName, destination.Node, destination.Port);
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
                 if (tempNetworkGraph != null)
                 {
-                    NodeElement newDestination = tempNetworkGraph.GetVertex(destinationDomainName).Key;
-                    destinationEnd = new Ends(null, newDestination.Node, newDestination.Port);
-                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source.GetNodeId(), newDestination.GetNodeId());
+                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
                     if (returnList != null)
                     {
                         RouteResponse returnResponse = new RouteResponse();
@@ -369,6 +389,26 @@ namespace RoutingController.Service
             }
             return returnString;
         }
+        /// <summary>
+        /// Shows the external clients.
+        /// </summary>
+        /// <returns></returns>
+        public string ShowExternalClients()
+        {
+            string returnString = null;
+            foreach (var item in this.ExternalClients)
+            {
+                returnString += "Clients in other domains \n";
+                returnString += item.Key + "\n";
+                returnString += "---------------------------\n";
+                foreach (var clients in item.Value)
+                {
+                    returnString += clients + "\n";
+                }
+            }
+            return returnString;
+
+        }
 
         public bool ClearNetworkGraph()
         {
@@ -419,7 +459,7 @@ namespace RoutingController.Service
                 }
             }
             else gateways = null;
-            NetworkRequest networkRequest = new NetworkRequest(this.NetworkName, null , clients);
+            NetworkRequest networkRequest = new NetworkRequest(this.NetworkName, null, clients);
             return networkRequest;
         }
 

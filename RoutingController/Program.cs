@@ -47,9 +47,13 @@ namespace RoutingController
 
                 string command = Console.ReadLine();
 
-                if (command.Equals("show"))
+                if (command.Equals("show routes"))
                 {
                     Console.WriteLine(rc.ShowRoutes());
+                }
+                else if (command.Equals("show external"))
+                {
+                    Console.WriteLine(rc.ShowExternalClients());
                 }
                 else if (command.Equals("clear"))
                 {
