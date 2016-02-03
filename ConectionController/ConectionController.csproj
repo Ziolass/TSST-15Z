@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CcClient.cs" />
     <Compile Include="Communication\NccServer.cs" />
     <Compile Include="Communication\NetworkNodeSender.cs" />
     <Compile Include="Communication\Port.cs" />
@@ -52,8 +53,10 @@
     <Compile Include="Communication\ReqResp\SNPP.cs" />
     <Compile Include="ConnectionController.cs" />
     <Compile Include="ElementConfigurator.cs" />
+    <Compile Include="LrmClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RcClinet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
