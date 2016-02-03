@@ -259,23 +259,43 @@ namespace NetworkCallController
         private string connectionRequst(string initAddress, string foreignAddress, int initSignalPort, string initName, int foreignSignalPort, string foreignName)
         {
             int ccPort = ncc.getCCPort();
-            string response = sendCommand("connection-request|" + initAddress + "|" + foreignAddress, ccPort);
-            if (response.Split('|')[0].Equals("error"))
+            // string response = sendCommand("connection-request|" + initAddress + "|" + foreignAddress, ccPort);
+            HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "connection-request");
+            string response = sendCommand(JsonConvert.SerializeObject(toSend),ccPort);
+            string translate = JsonConvert.DeserializeObject<CcResponse>(response).Response;
+            if (translate.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
             }
             ncc.getConnections().Add(initAddress + "|" + foreignAddress, Tuple.Create(initSignalPort, initName, foreignSignalPort, foreignName));
-            return response;
+            return translate;
+        }
+        private HigherLevelConnectionRequest prepareToSend(string initAddress, string destinationAddress, string type)
+        {
+            HigherLevelConnectionRequest toSend = new HigherLevelConnectionRequest();
+            toSend.Type = type;
+            string[] inits = initAddress.Split(':');
+            string[] destinatiosn = destinationAddress.Split(':');
+            LrmSnp init = new LrmSnp { Name = inits[0], Port = inits[1] };
+            LrmSnp dest = new LrmSnp { Name = destinatiosn[0], Port = destinatiosn[1] };
+            toSend.Src = init;
+            toSend.Dst = dest;
+            return toSend;
+
+
         }
         private string connectionTeardown(string initAddress, string foreignAddress, int initSignalPort, int foreignSignalPort)
         {
             int ccPort = ncc.getCCPort();
-            string response = sendCommand("call-teardown|" + initAddress + "|" + foreignAddress, ccPort);
-            if (response.Split('|')[0].Equals("error"))
+            // string response = sendCommand("call-teardown|" + initAddress + "|" + foreignAddress, ccPort);
+            HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "call-teardown");
+            string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
+            string translate = JsonConvert.DeserializeObject<CcResponse>(response).Response;
+            if (translate.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
             }
-            return response;
+            return translate;
         }
         private void informTeardownSides(int initSignalPort, string initName, int foreignSignalPort, string foreignName)
         {
