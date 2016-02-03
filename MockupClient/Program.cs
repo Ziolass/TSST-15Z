@@ -19,7 +19,7 @@ namespace MockupClient
     public class SynchronousSocketClient
     {
 
-        public static void StartClient(string data)
+        public static void StartClient(string data, int port)
         {
             byte[] bytes = new byte[5000];
 
@@ -30,7 +30,7 @@ namespace MockupClient
             {
                 IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 22000);
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
                 Socket sender = new Socket(AddressFamily.InterNetwork,
                     SocketType.Stream, ProtocolType.Tcp);
@@ -70,7 +70,7 @@ namespace MockupClient
                         Type = ReqType.CONNECTION_REQUEST.ToString()
                         
                     });
-                    byte[] msg = Encoding.ASCII.GetBytes(textData);
+                    byte[] msg = Encoding.ASCII.GetBytes(File.ReadAllText(data));
                     int bytesSent = sender.Send(msg);
 
                     int bytesRec = sender.Receive(bytes);
@@ -102,7 +102,8 @@ namespace MockupClient
 
         public static void Main(String[] args)
         {
-            StartClient("../../../Configs/RoutingController/testHierchy.json");
+            StartClient("../../../Configs/RoutingController/testHierchy" + args[1] + ".json", int.Parse(args[0]));
+            //StartClient("../../../Configs/RoutingController/testHierchy.json", 8100);
             //StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
@@ -110,7 +111,7 @@ namespace MockupClient
             //StartClient("../../../Configs/RoutingController/test" + args[5] + ".json");
             //StartClient("../../../Configs/RoutingController/testRequest0.json");
             //StartClient("../../../Configs/RoutingController/testRequest1.json");
-            StartClient("../../../Configs/RoutingController/testRequest.json");
+            //StartClient("../../../Configs/RoutingController/testRequest.json");
 
 
             Console.ReadLine();

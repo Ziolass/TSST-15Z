@@ -11,15 +11,15 @@ namespace RoutingController.Requests
     {
         public string Protocol { get; private set; }
         public string NetworkName { get; set; }
-        public List<NodeElement> Gateways { get; set; }
+        public List<string> OtherDomains { get; set; }
         public List<NodeElement> Clients { get; set; }
 
-        public NetworkRequest(string networkName, List<NodeElement> gateways, List<NodeElement> clients)
+        public NetworkRequest(string networkName, List<string> otherDomains, List<NodeElement> clients)
         {
 
             this.Protocol = "network";
             this.NetworkName = networkName;
-            this.Gateways = gateways;
+            this.OtherDomains = otherDomains;
             this.Clients = clients;
         }
     }

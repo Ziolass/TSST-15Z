@@ -18,7 +18,7 @@ namespace RoutingController
                 RoutingControllerCenter RC = configurator.ConfigureRoutingController();
 
                 Console.WriteLine("Routing Controller Console");
-                Console.WriteLine();
+                Console.WriteLine("Main domain: {0}", RC.NetworkName);
 
 
                 new Thread(delegate()

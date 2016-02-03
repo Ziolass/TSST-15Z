@@ -14,15 +14,21 @@ namespace RoutingController.Service
         public String NetworkName { get; set; }
         public ILinkResourceMenager LRM { get; private set; }
         private List<NetworkGraph> NetworkGraphs { get; set; }
+        private Dictionary<NodeElement, string> Gateways { get; set; }
+        private Dictionary<string, List<string>> ExternalClients { get; set; }
 
         public RoutingController()
         {
             this.NetworkGraphs = new List<NetworkGraph>();
+            this.Gateways = new Dictionary<NodeElement, string>();
+            this.ExternalClients = new Dictionary<string, List<string>>();
         }
 
         public RoutingController(String networkId)
         {
             this.NetworkGraphs = new List<NetworkGraph>();
+            this.Gateways = new Dictionary<NodeElement, string>();
+            this.ExternalClients = new Dictionary<string, List<string>>();
             this.NetworkName = networkId;
         }
 
@@ -49,7 +55,7 @@ namespace RoutingController.Service
             Ends sourceEnd = new Ends(null, source.Node, source.Port);
             Ends destinationEnd;
             List<Ends> endsList = new List<Ends>();
-            
+
             if (destinationDomainName == sourceDomainName)
             {
                 destinationEnd = new Ends(null, destination.Node, destination.Port);
@@ -121,13 +127,18 @@ namespace RoutingController.Service
         /// <exception cref="System.Exception">Error UpdateNetworkGraph: No domain name!</exception>
         public bool UpdateNetworkGraph(LocalTopologyRequest topology)
         {
+            Dictionary<string, int> domainHierarchy = new Dictionary<string, int>(this.GetHierarchyOfDomain(topology));
 
             foreach (TopologyNode topologyNode in topology.Nodes)
             {
-                UpdateGraph(this.GetMainDomain(topology), topologyNode, 0);
+                foreach (var domain in domainHierarchy)
+                {
+                    if (topologyNode.Domains.Contains(domain.Key))
+                    {
+                        UpdateGraph(domain.Key, topologyNode, 0);
+                    }
+                }
             }
-
-            Dictionary<string, int> domainHierarchy = new Dictionary<string, int>(this.GetHierarchyOfDomain(topology));
             foreach (var item in domainHierarchy)
             {
                 if (domainHierarchy.ContainsValue(item.Value + 1))
@@ -374,14 +385,70 @@ namespace RoutingController.Service
             List<NodeElement> clients = new List<NodeElement>();
             foreach (NetworkGraph item in this.NetworkGraphs)
             {
-                Dictionary<NodeElement,Dictionary<ILink,int>> vertexes = item.GetNearVertexes("client");
+                Dictionary<NodeElement, Dictionary<ILink, int>> vertexes = item.GetNearVertexes("client");
                 foreach (var clientElement in vertexes)
                 {
                     clients.Add(clientElement.Key);
                 }
             }
-            NetworkRequest networkRequest = new NetworkRequest(this.NetworkName, null, clients);
+            List<NodeElement> gateways = new List<NodeElement>();
+            if (this.NetworkGraphs.Count > 1)
+            {
+                foreach (NetworkGraph networkGraph in this.NetworkGraphs)
+                {
+                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexes = networkGraph.GetNearVertexes("");
+                    foreach (var item in vertexes)
+                    {
+                        foreach (var itemDestination in item.Value)
+                        {
+                            foreach (NetworkGraph networkGraphSearch in this.NetworkGraphs)
+                            {
+                                if (networkGraph != networkGraphSearch && !itemDestination.Key.Destination.Node.Contains("client"))
+                                {
+                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOther = networkGraphSearch.GetNearVertexes(itemDestination.Key.Destination.Node);
+                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOur = networkGraph.GetNearVertexes(itemDestination.Key.Destination.Node);
+
+                                    if (vertexesOther.Count == 1 && vertexesOur.Count == 0)
+                                    {
+                                        this.Gateways.Add(item.Key, networkGraphSearch.DomainName);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else gateways = null;
+            NetworkRequest networkRequest = new NetworkRequest(this.NetworkName, null , clients);
             return networkRequest;
+        }
+
+        //DODAJEMY sobie dictionary domena -> list clientów
+        /// <summary>
+        /// Updates the network topology.
+        /// </summary>
+        /// <param name="queryRequest">The query request.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void UpdateNetworkTopology(NetworkRequest queryRequest)
+        {
+            List<string> clientsList = new List<string>();
+            if (queryRequest.OtherDomains != null)
+            {
+                foreach (var externalClient in queryRequest.OtherDomains)
+                {
+                    clientsList.Add(externalClient);
+                }
+                this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
+            }
+            if (queryRequest.Clients != null)
+            {
+                foreach (var externalClient in queryRequest.Clients)
+                {
+                    clientsList.Add(externalClient.Node);
+                }
+                this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
+            }
+
         }
     }
 }
