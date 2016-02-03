@@ -40,12 +40,14 @@ namespace RoutingController.Service
         private RoutingController RoutingController { get; set; }
         public List<NeighbourRoutingController> NeighbourList { get; private set; }
         private Socket ServerSocket { get; set; }
+        public string NetworkName { get; private set; }
 
         public RoutingControllerCenter(int port, List<NeighbourRoutingController> neighbourList, string networkName)
         {
             this.Port = port;
             this.NeighbourList = new List<NeighbourRoutingController>(neighbourList);
             this.RoutingController = new RoutingController(networkName);
+            this.NetworkName = networkName;
         }
 
         /// <summary>
@@ -107,8 +109,20 @@ namespace RoutingController.Service
             else if (actionType == ActionType.NetworkTopology)
             {
                 NetworkRequest queryRequest = JsonConvert.DeserializeObject<NetworkRequest>(request);
+                this.RoutingController.UpdateNetworkTopology(queryRequest);
 
-                return "ERROR";
+                Console.WriteLine("Network topology updated from {0}", queryRequest.NetworkName);
+                if (this.NeighbourList.Count > 1)
+                {
+                    foreach (var item in this.NeighbourList)
+                    {
+                        if (item.NetworkName != queryRequest.NetworkName)
+                        {
+                            SendNetworkTopology(item);
+                        }
+                    }
+                }
+                return "OK";
             }
             else return "ERROR";
             //}
@@ -123,12 +137,22 @@ namespace RoutingController.Service
         /// Sends the network topology.
         /// </summary>
         /// <returns></returns>
-        private string SendNetworkTopology()
+        private void SendNetworkTopology(NeighbourRoutingController neighbourRC)
         {
             NetworkRequest networkRequest = this.RoutingController.NetworkRequestResponse();
             String message = JsonConvert.SerializeObject(networkRequest);
-            foreach (NeighbourRoutingController neighbourRC in this.NeighbourList)
+            if (networkRequest.Clients.Count >= 1)
             {
+                List<string> otherDomains = new List<string>();
+                foreach (NeighbourRoutingController otherNeighbour in this.NeighbourList)
+                {
+                    if (otherNeighbour != neighbourRC)
+                    {
+                        otherDomains.Add(otherNeighbour.NetworkName);
+                    }
+                }
+                networkRequest.OtherDomains = new List<string>(otherDomains);
+
                 byte[] bytes = new byte[5000];
                 try
                 {
@@ -142,17 +166,21 @@ namespace RoutingController.Service
                     int bytesSent = sender.Send(msg);
                     sender.Shutdown(SocketShutdown.Both);
                     sender.Close();
+                    Console.WriteLine("NetworkTopology sent!");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
-                finally
-                {
-                    Console.WriteLine("NetworkTopology sent!");
-                }
             }
-            return string.Empty;
+        }
+        private void SendNetworkTopology()
+        {
+            foreach (NeighbourRoutingController neighbourRC in this.NeighbourList)
+            {
+                SendNetworkTopology(neighbourRC);
+            }
+
         }
 
         /// <summary>
@@ -212,7 +240,7 @@ namespace RoutingController.Service
             Socket listener = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
 
-            Console.WriteLine("Start successful!");
+            Console.WriteLine("Start successful");
             // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
@@ -292,20 +320,26 @@ namespace RoutingController.Service
                         response = this.PerformAction(content);
                         // Signal the main thread to continue.
                         allDone.Set();
-                        new Thread(delegate()
-                        {
-                            SendNetworkTopology();
-                        });
+                        SendNetworkTopology(); //My topology is new  send it
                     }
-                    else
+                    else if (this.OperationType(content) == ActionType.RouteTableQuery)
                     {
                         // Signal the main thread to continue.
                         allDone.Set();
                         response = this.PerformAction(content);
-                        Console.WriteLine("RouteTableQuery sent");
+                        Console.WriteLine("Route table query sent");
+                    }
+                    else if (this.OperationType(content) == ActionType.NetworkTopology)
+                    {
+                        this.PerformAction(content);
+                        allDone.Set();
+                    }
+                    else
+                    {
+                        allDone.Set();
+                        Console.WriteLine("Wrong request!");
                     }
                     Send(handler, response);
-                    SendNetworkTopology();
                 }
                 else
                 {
@@ -367,6 +401,10 @@ namespace RoutingController.Service
         public string ShowRoutes()
         {
             return this.RoutingController.ShowRoutes();
+        }
+        public string ShowExternalClients()
+        {
+            return this.RoutingController.ShowExternalClients();
         }
 
         /// <summary>
