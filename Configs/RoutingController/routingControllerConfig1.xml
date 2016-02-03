@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <routing-controller>
-	<ports>
+		<network-name value="SiecA"/>
 		<port value="8100"/>
-	</ports>
+		<neighbour-rc port="8101" domain-name="SiecB"/>
+	
 </routing-controller>

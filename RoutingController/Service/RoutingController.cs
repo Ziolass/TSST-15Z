@@ -11,9 +11,8 @@ namespace RoutingController.Service
 {
     public class RoutingController
     {
-        public String NetworkId { get; set; }
+        public String NetworkName { get; set; }
         public ILinkResourceMenager LRM { get; private set; }
-
         private List<NetworkGraph> NetworkGraphs { get; set; }
 
         public RoutingController()
@@ -24,7 +23,7 @@ namespace RoutingController.Service
         public RoutingController(String networkId)
         {
             this.NetworkGraphs = new List<NetworkGraph>();
-            this.NetworkId = networkId;
+            this.NetworkName = networkId;
         }
 
         /// <summary>
@@ -364,6 +363,25 @@ namespace RoutingController.Service
         {
             NetworkGraphs = new List<NetworkGraph>();
             return true;
+        }
+
+        /// <summary>
+        /// Networks the request response.
+        /// </summary>
+        /// <returns></returns>
+        public NetworkRequest NetworkRequestResponse()
+        {
+            List<NodeElement> clients = new List<NodeElement>();
+            foreach (NetworkGraph item in this.NetworkGraphs)
+            {
+                Dictionary<NodeElement,Dictionary<ILink,int>> vertexes = item.GetNearVertexes("client");
+                foreach (var clientElement in vertexes)
+                {
+                    clients.Add(clientElement.Key);
+                }
+            }
+            NetworkRequest networkRequest = new NetworkRequest(this.NetworkName, null, clients);
+            return networkRequest;
         }
     }
 }

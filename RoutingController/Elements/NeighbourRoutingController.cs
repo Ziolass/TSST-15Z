@@ -9,11 +9,11 @@ namespace RoutingController.Elements
     public class NeighbourRoutingController
     {
         public int Port { get; set; }
-        public string DomainName { get; set; }
-        public NeighbourRoutingController(int port, string DomainName)
+        public string NetworkName { get; set; }
+        public NeighbourRoutingController(int port, string networkName)
         {
             this.Port = port;
-            this.DomainName = DomainName;
+            this.NetworkName = networkName;
         }
     }
 }

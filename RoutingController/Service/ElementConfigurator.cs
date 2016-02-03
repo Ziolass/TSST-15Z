@@ -20,6 +20,7 @@ namespace RoutingController.Service
         public RoutingControllerCenter ConfigureRoutingController()
         {
             int servicePort = 0;
+            string networkName = string.Empty;
             List<NeighbourRoutingController> neighboursList = new List<NeighbourRoutingController>();
             while (ConfigReader.Read())
             {
@@ -44,11 +45,15 @@ namespace RoutingController.Service
 
                             neighboursList.Add(new NeighbourRoutingController(neighbourPort, neighbourDomainName));
                         }
+                        else if (ConfigReader.Name == "network-name")
+                        {
+                            networkName = ConfigReader.GetAttribute("value");
+                        }
                     }
                 }
             }
 
-            RoutingControllerCenter routingControllCenter = new RoutingControllerCenter(servicePort, neighboursList);
+            RoutingControllerCenter routingControllCenter = new RoutingControllerCenter(servicePort, neighboursList, networkName);
             return routingControllCenter;
         }
     }
