@@ -147,6 +147,7 @@ namespace LRM
         public void RunServer()
         {
             LrmServer.Start();
+            RcClinet.ConnectToRc();
         }
 
         private string WrapWithHeader(LrmCommunicationType comm, LrmHeader header, string data)
@@ -322,6 +323,7 @@ namespace LRM
             };
 
             Console.WriteLine(JsonConvert.SerializeObject(LocalTopology));
+            RcClinet.SendToRc(JsonConvert.SerializeObject(LocalTopology));
 
         }
 
