@@ -13,7 +13,7 @@ namespace RoutingController.Service
     {
         public String NetworkName { get; set; }
         public ILinkResourceMenager LRM { get; private set; }
-        private List<NetworkGraph> NetworkGraphs { get; set; }
+        public List<NetworkGraph> NetworkGraphs { get; private set; }
         private Dictionary<NodeElement, string> Gateways { get; set; }
         private Dictionary<string, List<string>> ExternalClients { get; set; }
 
@@ -62,9 +62,13 @@ namespace RoutingController.Service
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(destinationDomainName);
                 if (tempNetworkGraph != null)
                 {
-                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
-                    if (returnList != null)
+                    List<NodeElement> tempList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
+                    if (tempList != null)
                     {
+                        List<NodeElement> returnList = new List<NodeElement>(); //Add source to steps
+                        returnList.Add(source);
+                        returnList.AddRange(tempList);
+
                         RouteResponse returnResponse = new RouteResponse();
                         returnResponse.AddNodes(returnList);
                         endsList.Add(sourceEnd);
@@ -104,9 +108,16 @@ namespace RoutingController.Service
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
                 if (tempNetworkGraph != null)
                 {
-                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
-                    if (returnList != null)
+                    List<NodeElement> tempList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
+                    if (tempList != null)
                     {
+                        List<NodeElement> returnList = new List<NodeElement>(); //Add source to steps
+                        returnList.Add(source);
+                        returnList.AddRange(tempList);
+
+                        //Add external gateway
+                        NodeElement externalGateway = GetExternalGateway(returnList[returnList.Count - 1],sourceDomainName, destinationDomainName);
+                        returnList.Add(externalGateway);
                         RouteResponse returnResponse = new RouteResponse();
                         returnResponse.AddNodes(returnList);
                         endsList.Add(sourceEnd);
@@ -348,6 +359,26 @@ namespace RoutingController.Service
                     return networkGraph;
             }
             return null;
+        }
+
+        public NodeElement GetExternalGateway(NodeElement ourGatewayNode, string sourceDomainName, string externalDomainName)
+        {
+            NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
+            NodeElement returnNode = null;
+            var vertex = tempNetworkGraph.GetVertex(ourGatewayNode.GetNodeId());
+
+            tempNetworkGraph = this.GetNetworkGraph(externalDomainName);
+            foreach (var item in tempNetworkGraph.Graph)
+            {
+                foreach (var itemRoutes in item.Value)
+                {
+                    if (itemRoutes.Key.Destination.Node == ourGatewayNode.Node && itemRoutes.Key.Destination.Port == ourGatewayNode.Port)
+                    {
+                        returnNode = item.Key;
+                    }
+                }
+            }
+            return returnNode;
         }
 
 

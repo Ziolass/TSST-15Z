@@ -89,42 +89,42 @@ namespace RoutingController.Service
         {
             //try
             //{
-            ActionType actionType = OperationType(request);
-            if (actionType == ActionType.LocalTopology)
-            {
-                request = request.Replace("Protocol: \"resources\",", "");
-                LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
-                this.RoutingController.UpdateNetworkGraph(topologyRequest);
-                Console.WriteLine("Update from local topology");
-                return "OK";
-            }
-            //RouteTableQuery
-            else if (actionType == ActionType.RouteTableQuery)
-            {
-                request = request.Replace("Protocol: \"query\",", "");
-                QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
-                Console.WriteLine("RouteTableQuery request");
-                return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest));
-            }
-            else if (actionType == ActionType.NetworkTopology)
-            {
-                NetworkRequest queryRequest = JsonConvert.DeserializeObject<NetworkRequest>(request);
-                this.RoutingController.UpdateNetworkTopology(queryRequest);
-
-                Console.WriteLine("Network topology updated from {0}", queryRequest.NetworkName);
-                if (this.NeighbourList.Count > 1)
+                ActionType actionType = OperationType(request);
+                if (actionType == ActionType.LocalTopology)
                 {
-                    foreach (var item in this.NeighbourList)
+                    request = request.Replace("Protocol: \"resources\",", "");
+                    LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
+                    this.RoutingController.UpdateNetworkGraph(topologyRequest);
+                    Console.WriteLine("Update from local topology");
+                    return "OK";
+                }
+                //RouteTableQuery
+                else if (actionType == ActionType.RouteTableQuery)
+                {
+                    request = request.Replace("Protocol: \"query\",", "");
+                    QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
+                    Console.WriteLine("RouteTableQuery request");
+                    return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest));
+                }
+                else if (actionType == ActionType.NetworkTopology)
+                {
+                    NetworkRequest queryRequest = JsonConvert.DeserializeObject<NetworkRequest>(request);
+                    this.RoutingController.UpdateNetworkTopology(queryRequest);
+
+                    Console.WriteLine("Network topology updated from {0}", queryRequest.NetworkName);
+                    if (this.NeighbourList.Count > 1)
                     {
-                        if (item.NetworkName != queryRequest.NetworkName)
+                        foreach (var item in this.NeighbourList)
                         {
-                            SendNetworkTopology(item);
+                            if (item.NetworkName != queryRequest.NetworkName)
+                            {
+                                SendNetworkTopology(item);
+                            }
                         }
                     }
+                    return "OK";
                 }
-                return "OK";
-            }
-            else return "ERROR";
+                else return "ERROR";
             //}
             //catch (Exception exp)
             //{
