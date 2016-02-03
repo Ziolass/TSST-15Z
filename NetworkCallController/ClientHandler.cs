@@ -1,4 +1,6 @@
-﻿using NetworkCallController.SocketUtils;
+﻿using NetworkCallController.Adapters;
+using NetworkCallController.SocketUtils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +40,8 @@ namespace NetworkCallController
                 dataFromClient = Encoding.ASCII.GetString(bytesFrom, 0, bytesRec);
                 Console.WriteLine(dataFromClient);
                 //TODO
-                serverResponse = responseHandler(dataFromClient);
+
+                serverResponse = HandleJsonInput(dataFromClient);
 
                 sendBytes = Encoding.ASCII.GetBytes(serverResponse);
                 // TODO
@@ -53,6 +56,16 @@ namespace NetworkCallController
             }
             clientSocket.Client.Shutdown(SocketShutdown.Both);
             clientSocket.Client.Close();
+
+        }
+        private string HandleJsonInput(string data)
+        {
+            if (data.Contains(CommunicationType.CC_COMMUNICATION.ToString()))
+            {
+                CcResponse resp = JsonConvert.DeserializeObject<CcResponse>(data);
+                data = resp.Response;
+            }
+            return responseHandler(data);
 
         }
         private string responseHandler(string query)
