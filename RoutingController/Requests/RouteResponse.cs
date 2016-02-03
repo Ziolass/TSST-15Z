@@ -43,7 +43,7 @@ namespace RoutingController.Requests
         public void AddNodes(List<NodeElement> nodes)
         {
             this.Steps = new List<SNP>();
-            for (int i = 0; i < nodes.Count; i += 2)
+            for (int i = 0; i < nodes.Count; )
             {
 
                 if (i + 1 < nodes.Count)
@@ -53,27 +53,44 @@ namespace RoutingController.Requests
                     List<string> portList = new List<string>();
 
                     SNP newSNP = null;
-                    if (firstNode.Scope != null)
-                    {
-                        firstNode = new NodeElement(firstNode.Scope);
-                        portList.Add(firstNode.Port);
-                        portList.Add(null);
-                        newSNP = new SNP(firstNode.Node, nodes[i].Node, portList);
-                        this.Steps.Add(newSNP);
 
-                        portList = new List<string>();
-                        secondNode = new NodeElement(secondNode.Scope);
-                        portList.Add(secondNode.Port);
-                        portList.Add(null);
-                        newSNP = new SNP(secondNode.Node, nodes[i].Node, portList);
-                        this.Steps.Add(newSNP);
+                    if (firstNode.Node == secondNode.Node)
+                    {
+                        if (firstNode.Scope != null)
+                        {
+                            firstNode = new NodeElement(firstNode.Scope);
+                            portList.Add(firstNode.Port);
+                            portList.Add(null);
+                            newSNP = new SNP(firstNode.Node, nodes[i].Node, portList);
+                            this.Steps.Add(newSNP);
+
+                            portList = new List<string>();
+                            secondNode = new NodeElement(secondNode.Scope);
+                            portList.Add(secondNode.Port);
+                            portList.Add(null);
+                            newSNP = new SNP(secondNode.Node, nodes[i].Node, portList);
+                            this.Steps.Add(newSNP);
+                        }
+                        else
+                        {
+                            portList.Add(firstNode.Port);
+                            portList.Add(secondNode.Port);
+                            newSNP = new SNP(firstNode.Node, null, portList);
+                            this.Steps.Add(newSNP);
+                        }
+                        if (i + 2 < nodes.Count)
+                        {
+                            i += 2;
+                        }
+                        else i++;
                     }
                     else
                     {
+                        portList = new List<string>();
                         portList.Add(firstNode.Port);
-                        portList.Add(secondNode.Port);
-                        newSNP = new SNP(firstNode.Node, null, portList);
-                        this.Steps.Add(newSNP);
+                        portList.Add(null);
+                        this.Steps.Add(new SNP(firstNode.Node, null, portList));
+                        i++;
                     }
                 }
                 else
@@ -83,6 +100,7 @@ namespace RoutingController.Requests
                     portList.Add(firstNode.Port);
                     portList.Add(null);
                     this.Steps.Add(new SNP(firstNode.Node, null, portList));
+                    i++;
                 }
             }
         }

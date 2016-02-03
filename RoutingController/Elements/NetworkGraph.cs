@@ -15,7 +15,7 @@ namespace RoutingController.Elements
         public int NetworkLevel { get; set; }
         public string DomainName { get; set; }
         public string Log { get; set; }
-        private Dictionary<NodeElement, Dictionary<ILink, int>> Graph { get; set; }
+        public Dictionary<NodeElement, Dictionary<ILink, int>> Graph { get; private set; }
 
         public NetworkGraph()
         {

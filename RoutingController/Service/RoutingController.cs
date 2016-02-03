@@ -13,16 +13,22 @@ namespace RoutingController.Service
     {
         public String NetworkName { get; set; }
         public ILinkResourceMenager LRM { get; private set; }
-        private List<NetworkGraph> NetworkGraphs { get; set; }
+        public List<NetworkGraph> NetworkGraphs { get; private set; }
+        private Dictionary<NodeElement, string> Gateways { get; set; }
+        private Dictionary<string, List<string>> ExternalClients { get; set; }
 
         public RoutingController()
         {
             this.NetworkGraphs = new List<NetworkGraph>();
+            this.Gateways = new Dictionary<NodeElement, string>();
+            this.ExternalClients = new Dictionary<string, List<string>>();
         }
 
         public RoutingController(String networkId)
         {
             this.NetworkGraphs = new List<NetworkGraph>();
+            this.Gateways = new Dictionary<NodeElement, string>();
+            this.ExternalClients = new Dictionary<string, List<string>>();
             this.NetworkName = networkId;
         }
 
@@ -49,16 +55,20 @@ namespace RoutingController.Service
             Ends sourceEnd = new Ends(null, source.Node, source.Port);
             Ends destinationEnd;
             List<Ends> endsList = new List<Ends>();
-            
+
             if (destinationDomainName == sourceDomainName)
             {
                 destinationEnd = new Ends(null, destination.Node, destination.Port);
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(destinationDomainName);
                 if (tempNetworkGraph != null)
                 {
-                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
-                    if (returnList != null)
+                    List<NodeElement> tempList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
+                    if (tempList != null)
                     {
+                        List<NodeElement> returnList = new List<NodeElement>(); //Add source to steps
+                        returnList.Add(source);
+                        returnList.AddRange(tempList);
+
                         RouteResponse returnResponse = new RouteResponse();
                         returnResponse.AddNodes(returnList);
                         endsList.Add(sourceEnd);
@@ -73,14 +83,41 @@ namespace RoutingController.Service
             }
             else
             {
+                foreach (var item in this.ExternalClients)
+                {
+                    if (item.Value.Contains(destination.Node))
+                    {
+                        destinationDomainName = item.Key;
+                        break;
+                    }
+                    else if (item.Value.Contains(source.Node))
+                    {
+                        sourceDomainName = item.Key;
+                    }
+                    else continue;
+                }
+                foreach (var item in Gateways)
+                {
+                    if (item.Value == destinationDomainName)
+                    {
+                        destination = item.Key;
+                    }
+                }
+
+                destinationEnd = new Ends(destinationDomainName, destination.Node, destination.Port);
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
                 if (tempNetworkGraph != null)
                 {
-                    NodeElement newDestination = tempNetworkGraph.GetVertex(destinationDomainName).Key;
-                    destinationEnd = new Ends(null, newDestination.Node, newDestination.Port);
-                    List<NodeElement> returnList = tempNetworkGraph.ShortestPath(source.GetNodeId(), newDestination.GetNodeId());
-                    if (returnList != null)
+                    List<NodeElement> tempList = tempNetworkGraph.ShortestPath(source.GetNodeId(), destination.GetNodeId());
+                    if (tempList != null)
                     {
+                        List<NodeElement> returnList = new List<NodeElement>(); //Add source to steps
+                        returnList.Add(source);
+                        returnList.AddRange(tempList);
+
+                        //Add external gateway
+                        NodeElement externalGateway = GetExternalGateway(returnList[returnList.Count - 1],sourceDomainName, destinationDomainName);
+                        returnList.Add(externalGateway);
                         RouteResponse returnResponse = new RouteResponse();
                         returnResponse.AddNodes(returnList);
                         endsList.Add(sourceEnd);
@@ -121,13 +158,18 @@ namespace RoutingController.Service
         /// <exception cref="System.Exception">Error UpdateNetworkGraph: No domain name!</exception>
         public bool UpdateNetworkGraph(LocalTopologyRequest topology)
         {
+            Dictionary<string, int> domainHierarchy = new Dictionary<string, int>(this.GetHierarchyOfDomain(topology));
 
             foreach (TopologyNode topologyNode in topology.Nodes)
             {
-                UpdateGraph(this.GetMainDomain(topology), topologyNode, 0);
+                foreach (var domain in domainHierarchy)
+                {
+                    if (topologyNode.Domains.Contains(domain.Key))
+                    {
+                        UpdateGraph(domain.Key, topologyNode, 0);
+                    }
+                }
             }
-
-            Dictionary<string, int> domainHierarchy = new Dictionary<string, int>(this.GetHierarchyOfDomain(topology));
             foreach (var item in domainHierarchy)
             {
                 if (domainHierarchy.ContainsValue(item.Value + 1))
@@ -319,6 +361,26 @@ namespace RoutingController.Service
             return null;
         }
 
+        public NodeElement GetExternalGateway(NodeElement ourGatewayNode, string sourceDomainName, string externalDomainName)
+        {
+            NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
+            NodeElement returnNode = null;
+            var vertex = tempNetworkGraph.GetVertex(ourGatewayNode.GetNodeId());
+
+            tempNetworkGraph = this.GetNetworkGraph(externalDomainName);
+            foreach (var item in tempNetworkGraph.Graph)
+            {
+                foreach (var itemRoutes in item.Value)
+                {
+                    if (itemRoutes.Key.Destination.Node == ourGatewayNode.Node && itemRoutes.Key.Destination.Port == ourGatewayNode.Port)
+                    {
+                        returnNode = item.Key;
+                    }
+                }
+            }
+            return returnNode;
+        }
+
 
         public string ShowRoutes()
         {
@@ -358,6 +420,26 @@ namespace RoutingController.Service
             }
             return returnString;
         }
+        /// <summary>
+        /// Shows the external clients.
+        /// </summary>
+        /// <returns></returns>
+        public string ShowExternalClients()
+        {
+            string returnString = null;
+            foreach (var item in this.ExternalClients)
+            {
+                returnString += "Clients in other domains \n";
+                returnString += item.Key + "\n";
+                returnString += "---------------------------\n";
+                foreach (var clients in item.Value)
+                {
+                    returnString += clients + "\n";
+                }
+            }
+            return returnString;
+
+        }
 
         public bool ClearNetworkGraph()
         {
@@ -374,14 +456,70 @@ namespace RoutingController.Service
             List<NodeElement> clients = new List<NodeElement>();
             foreach (NetworkGraph item in this.NetworkGraphs)
             {
-                Dictionary<NodeElement,Dictionary<ILink,int>> vertexes = item.GetNearVertexes("client");
+                Dictionary<NodeElement, Dictionary<ILink, int>> vertexes = item.GetNearVertexes("client");
                 foreach (var clientElement in vertexes)
                 {
                     clients.Add(clientElement.Key);
                 }
             }
+            List<NodeElement> gateways = new List<NodeElement>();
+            if (this.NetworkGraphs.Count > 1)
+            {
+                foreach (NetworkGraph networkGraph in this.NetworkGraphs)
+                {
+                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexes = networkGraph.GetNearVertexes("");
+                    foreach (var item in vertexes)
+                    {
+                        foreach (var itemDestination in item.Value)
+                        {
+                            foreach (NetworkGraph networkGraphSearch in this.NetworkGraphs)
+                            {
+                                if (networkGraph != networkGraphSearch && !itemDestination.Key.Destination.Node.Contains("client"))
+                                {
+                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOther = networkGraphSearch.GetNearVertexes(itemDestination.Key.Destination.Node);
+                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOur = networkGraph.GetNearVertexes(itemDestination.Key.Destination.Node);
+
+                                    if (vertexesOther.Count == 1 && vertexesOur.Count == 0)
+                                    {
+                                        this.Gateways.Add(item.Key, networkGraphSearch.DomainName);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else gateways = null;
             NetworkRequest networkRequest = new NetworkRequest(this.NetworkName, null, clients);
             return networkRequest;
+        }
+
+        //DODAJEMY sobie dictionary domena -> list clientów
+        /// <summary>
+        /// Updates the network topology.
+        /// </summary>
+        /// <param name="queryRequest">The query request.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void UpdateNetworkTopology(NetworkRequest queryRequest)
+        {
+            List<string> clientsList = new List<string>();
+            if (queryRequest.OtherDomains != null)
+            {
+                foreach (var externalClient in queryRequest.OtherDomains)
+                {
+                    clientsList.Add(externalClient);
+                }
+                this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
+            }
+            if (queryRequest.Clients != null)
+            {
+                foreach (var externalClient in queryRequest.Clients)
+                {
+                    clientsList.Add(externalClient.Node);
+                }
+                this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
+            }
+
         }
     }
 }

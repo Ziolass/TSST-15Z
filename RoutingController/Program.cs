@@ -18,17 +18,18 @@ namespace RoutingController
                 RoutingControllerCenter RC = configurator.ConfigureRoutingController();
 
                 Console.WriteLine("Routing Controller Console");
-                Console.WriteLine();
+                Console.WriteLine("Main domain: {0}", RC.NetworkName);
+                
+                new Thread(delegate()
+                {
+                    RC.StartListening();
+                }).Start();
+
 
 
                 new Thread(delegate()
                 {
                     startReadingCommands(RC);
-                }).Start();
-
-                new Thread(delegate()
-                {
-                    RC.StartListening();
                 }).Start();
 
 
@@ -47,9 +48,13 @@ namespace RoutingController
 
                 string command = Console.ReadLine();
 
-                if (command.Equals("show"))
+                if (command.Equals("show routes"))
                 {
                     Console.WriteLine(rc.ShowRoutes());
+                }
+                else if (command.Equals("show external"))
+                {
+                    Console.WriteLine(rc.ShowExternalClients());
                 }
                 else if (command.Equals("clear"))
                 {

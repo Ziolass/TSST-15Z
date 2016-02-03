@@ -8,7 +8,7 @@ namespace RoutingController.Elements
 {
     public class SNP
     {
-        public string Name { get; private set; }
+        public string Node { get; private set; }
         public List<string> Ports { get; private set; }
 
         /// <summary>

@@ -1,7 +1,12 @@
 ﻿using Cc.Communication;
+using ConectionController;
 using ConectionController.Communication.ReqResp;
+using LRM;
+using LRM.Communication;
+using NetworkNode.LRM.Communication;
 using Newtonsoft.Json;
 using RoutingController.Elements;
+using RoutingController.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,51 +15,47 @@ using System.Threading.Tasks;
 
 namespace Cc
 {
-    public class NodeStep
+    public enum TerminationType
     {
-        public string NodeName { get; set; }
-
-        public string Port1 { get; set; }
-        public string Index1 { get; set; }
-        public string Dest1 { get; set; }
-        public string DestPort1 { get; set; }
-
-        public string Dest2 { get; set; }
-        public string Port2 { get; set; }
-        public string Index2 { get; set; }
-        public string DestPort2 { get; set; }
-
+        CLIENT, GATEWAY
     }
-
+    public class Termination
+    {
+        public string Node { get; set; }
+        public string Port { get; set; }
+        public string Index { get; set; }
+        public string Type { get; set; }
+        public string Domian { get; set; }
+    }
+ 
     public class NetworkConnection
     {
-        public string End1 { get; set; }
-        public string End2 { get; set; }
-        public List<NodeStep> Steps { get; set; }
+        public Termination End1 { get; set; }
+        public Termination End2 { get; set; }
+        public string Id { get; set; }
+        public List<SNP> AllSteps { get; set; }
+        public ConnectionRequest ActualLevelConnection { get; set; }
+        public Dictionary<SNP, SNP> ConnectionRequests { get; set; }
+        public Termination DstGateway { get; set; }
+        public Termination SrcGateway { get; set; }
     }
     public class ConnectionController
     {
-        private List<NetworkConnection> Connections;
-
-        private Dictionary<string, string> Gateways;
+        private Dictionary<string,NetworkConnection> Connections;
+        private List<string> Domains;
+        private string Domain;
+        //private CcClient parentCc;
+        private Dictionary<string, CcClient> LowerClients;
 
         private NetworkNodeSender RcSender;
-        private Dictionary<string, NetworkNodeSender> LrmSenders;
+        private LrmClient LrmClient;
 
         private NetworkConnection Actual;
         public ConnectionController(int rcPort, Dictionary<string, int> lrmPorts, Dictionary<string, string> gateways)
         {
             int bufferSize = 6000;
             RcSender = new NetworkNodeSender(rcPort, bufferSize);
-            LrmSenders = new Dictionary<string, NetworkNodeSender>();
-            Gateways = gateways;
-            Connections = new List<NetworkConnection>();
-
-            foreach (KeyValuePair<string, int> lrmPort in lrmPorts)
-            {
-                LrmSenders.Add(lrmPort.Key,new NetworkNodeSender(lrmPort.Value, bufferSize));
-            }
-            
+            Connections = new Dictionary<string, NetworkConnection>();
         }
         public string HandleNccData(string data)
         {
@@ -100,14 +101,23 @@ namespace Cc
 
         private void ConnectionRequest(List<string> arguments)
         {
-            Actual = new NetworkConnection
+            NetworkConnection  actual = new NetworkConnection
             {
-                End1 = arguments[0],
-                End2 = arguments[1],
-                Steps = new List<NodeStep>()
+                End1 = new Termination {
+                    Node = arguments[0].Split(':')[0],
+                    Port = arguments[0].Split(':')[1]
+                },
+                End2 = new Termination
+                {
+                    Node = arguments[1].Split(':')[0],
+                    Port = arguments[1].Split(':')[1]
+                },
+                AllSteps = new List<SNP>(),
+                ConnectionRequests = new Dictionary<SNP,SNP>()
             };
 
-            Connections.Add(Actual);
+            string id = actual.End1.Node + actual.End1.Port + actual.End2.Node + actual.End2.Port;
+            Connections.Add(id, actual);
 
             SimpleConnection sc = new SimpleConnection
             {
@@ -118,6 +128,11 @@ namespace Cc
 
             RcSender.SendContent(JsonConvert.SerializeObject(sc), HandleRoutingData);
 
+        }
+
+        private ConnectionRequest GetMyConnection(NetworkConnection Actual)
+        {
+            throw new NotImplementedException();
         }
 
         private void InterConnectionRequest(List<string> arguments)
@@ -136,16 +151,16 @@ namespace Cc
             NetworkConnection connection = null;
             foreach (NetworkConnection conn in Connections)
             {
-                if((conn.End1.Equals(arguments[0]) && conn.End2.Equals(arguments[1])) ||
-                   (conn.End1.Equals(arguments[1]) && conn.End2.Equals(arguments[0]))) 
+                if ((conn.End1.Equals(arguments[0]) && conn.End2.Equals(arguments[1])) ||
+                   (conn.End1.Equals(arguments[1]) && conn.End2.Equals(arguments[0])))
                 {
-                     connection = conn;
-                     break;
+                    connection = conn;
+                    break;
                 }
             }
-            
+
             TearDownConnection(connection);
-            
+
         }
 
         private void TearDownConnection(NetworkConnection conn)
@@ -193,50 +208,113 @@ namespace Cc
             CallTeardown(localArguments);
         }
 
-        private void HandleRoutingData(string data)
+        private NetworkConnection GetActualConnection(RouteResponse snpp)
         {
             
-            SNPP snpp = JsonConvert.DeserializeObject<SNPP>(data);
-            foreach (SNP snp in snpp.Steps)
+            foreach (NetworkConnection conn in Connections)
             {
+                bool first = false;
+                bool second = false;
 
-                string nodeName = snp.Node;
-                NetworkNodeSender lrmSender = LrmSenders[nodeName];
+                first = (snpp.Ends[0].Node == conn.End1.Node && snpp.Ends[0].Port == conn.End1.Port)
+                    || (snpp.Ends[0].Node == conn.End2.Node && snpp.Ends[0].Port == conn.End2.Port);
 
-                StringBuilder builder = new StringBuilder();
-                builder.Append("ADD|");
+                second = (snpp.Ends[1].Node == conn.End1.Node && snpp.Ends[1].Port == conn.End1.Port)
+                    || (snpp.Ends[1].Node == conn.End2.Node && snpp.Ends[1].Port == conn.End2.Port);
 
-                if (Actual.Steps.Count > 0)
+                if (first && second)
                 {
-                    NodeStep lastStep = Actual.Steps[Actual.Steps.Count - 1];
-
-                    if (lastStep.Dest1.Equals(nodeName))
-                    {
-                        builder.Append(lastStep.DestPort1);
-                        builder.Append(':');
-                        builder.Append(lastStep.Index1);
-                        builder.Append("|");
-                        builder.Append(snp.Ports[0].Equals(lastStep.DestPort1) ? snp.Ports[1] : snp.Ports[0]);
-                    }
-                    else
-                    {
-                        builder.Append(lastStep.DestPort2);
-                        builder.Append(':');
-                        builder.Append(lastStep.Index2);
-                        builder.Append("|");
-                        builder.Append(snp.Ports[0].Equals(lastStep.DestPort2) ? snp.Ports[1] : snp.Ports[0]);
-                    }
-
+                    return conn;
                 }
-                else
-                {
-                    builder.Append(snp.Ports[0]);
-                    builder.Append("|");
-                    builder.Append(snp.Ports[1]);
-                }
-                Console.WriteLine(builder.ToString());
-                lrmSender.SendContent(builder.ToString(), HandleLrmData);
             }
+
+            return null;
+
+        }
+
+        private void HandleRoutingData(string data)
+        {
+
+            RouteResponse snpp = JsonConvert.DeserializeObject<RouteResponse>(data);
+            NetworkConnection actualNetworkConn = GetActualConnection(snpp);
+
+            ConnectionRequest conn = GetMyConnection(snpp, actualNetworkConn);
+            actualNetworkConn.ActualLevelConnection = conn;
+
+            SendConnectionReq(conn);
+        }
+
+        private void SendConnectionReq(ConnectionRequest request)
+        {
+            LrmClient.SendToLrm(JsonConvert.SerializeObject(request));
+        }
+
+        
+
+        private ConnectionRequest GetMyConnection(RouteResponse snpp, NetworkConnection actualConn)
+        {
+            List<ConnectionStep> steps = new List<ConnectionStep>();
+
+            for (int i = 0 ; i < snpp.Steps.Count; i++)
+            {
+                SNP previous = i ==0? null:snpp.Steps[i-1];
+                 SNP actual = snpp.Steps[i];
+                
+                if(actual.Domain != null){
+                    //Przypadek gdy ostatni punkt jest gatewayem
+                    if(!Domains.Contains(actual.Domain)) {
+                        actualConn.DstGateway = PrepareGateWay(actual);
+                        if(previous.Domain == null) {
+                            actualConn.DstGateway = PrepareGateWay(previous);
+                        }
+                    }
+                    //Wejścia do niższych domen
+                    if(i != 0 && previous.Domain != null && previous.Domain.Equals(actual.Domain)){  
+                        actualConn.ConnectionRequests[previous] = actual;
+                    } 
+                    else 
+                    {
+                        actualConn.ConnectionRequests.Add(actual, null);
+                    }
+
+                    continue;
+                }
+                List<LrmPort> lrmPorts = new List<LrmPort>();
+                foreach(string port in actual.Ports) {
+                    lrmPorts.Add(new LrmPort {
+                        Number = port
+                    });
+                }
+
+
+                ConnectionStep step = new ConnectionStep
+                {
+                    Node = actual.Node,
+                    Ports = lrmPorts
+                };
+                steps.Add(step);
+            }
+
+            actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
+
+            return new ConnectionRequest
+            {
+                Steps=steps,
+                Type = ReqType.CONNECTION_REQUEST.ToString(),
+                Id = actualConn.Id 
+            };
+            
+        }
+
+        private Termination PrepareGateWay(SNP gatewaySnp)
+        {
+            return new Termination
+            {
+                Node = gatewaySnp.Node,
+                Domian = gatewaySnp.Domain,
+                Port = gatewaySnp.Ports[0],
+                Type = TerminationType.GATEWAY.ToString()
+            };
         }
 
         private void HandleLrmData(string data)
@@ -265,7 +343,28 @@ namespace Cc
 
         private void ReportStep(NodeStep ns)
         {
-            Console.WriteLine("Node: " + ns.NodeName + " Port: ["+ns.Port1+" "+ ns.Index1+"]");
+            Console.WriteLine("Node: " + ns.NodeName + " Port: [" + ns.Port1 + " " + ns.Index1 + "]");
+        }
+
+
+        private void HandleLrmData(string data, AsyncCommunication async) {
+            
+            if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
+            {
+                HandleConnectionAns(data, async);
+            }
+        }
+
+        private void HandleConnectionAns(string data, AsyncCommunication async)
+        {
+            ConnectionRequest reqResp = JsonConvert.DeserializeObject<ConnectionRequest>(data);
+            string connectionId = reqResp.Id;
+            NetworkConnection actual = Connections[connectionId];
+            actual.ActualLevelConnection = reqResp;
+            if (actual.ConnectionRequests.Count > 0)
+            {
+                foreach(SNP snp in snp.Keys)
+            }
         }
 
     }
