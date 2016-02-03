@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetworkNode.LRM.Communication;
 
 namespace ConectionController.Communication.ReqResp
 {
-    class SimpleConnection
+    public class HigherLevelConnectionRequest
     {
         public string Id { get; set; }
-        public string Protocol { get; set; }
-        public string Source { get; set; }
-        public string Destination { get; set; }
+        public String Type { get; set; } 
+        public LrmSnp  Src {get;set;}
+        public LrmSnp Dst { get; set; }
     }
 }
