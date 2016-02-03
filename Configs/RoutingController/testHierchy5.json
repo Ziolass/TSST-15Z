@@ -1,0 +1,13 @@
+{
+	Protocol: "route",
+	Domian: "domenaA",
+	Ends:[{
+			Node:"client1",
+			Port:"1"
+		}, 
+		{
+			Node:"client2",
+			Port:"1"
+		}
+	]
+}
