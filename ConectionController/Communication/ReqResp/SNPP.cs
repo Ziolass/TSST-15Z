@@ -5,7 +5,7 @@ namespace RoutingController.Elements
 {
     public class SNPP
     {
-        public List<SNP> Nodes { get; set; }
+        public List<SNP> Steps { get; set; }
 
         [JsonConstructor]
         public SNPP(List<SNP> nodes)
