@@ -14,10 +14,10 @@ namespace NetworkClientNode.CPCC
     class ClientHandler
     {
         TcpClient clientSocket;
-        CallingPartyCallController ncc;
+        CallingPartyCallController cpcc;
         public ClientHandler(ConnectionHandler chandler)
         {
-            this.ncc = chandler.getCPCC();
+            this.cpcc = chandler.getCPCC();
         }
         public void startClient(TcpClient inClientSocket)
         {
@@ -51,7 +51,7 @@ namespace NetworkClientNode.CPCC
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error: " + e.Data);
+               cpcc.updateConsole("Error: " + e.Data);
             }
             clientSocket.Client.Shutdown(SocketShutdown.Both);
             clientSocket.Client.Close();
@@ -81,20 +81,20 @@ namespace NetworkClientNode.CPCC
         private string callMalfuntion(string v)
         {
 
-            ncc.deleteRecord(v);
+            cpcc.deleteRecord(v);
             return "Acknowledged|";
         }
 
         private void callteardown(string v)
         {
-            ncc.deleteRecord(v);
+            cpcc.deleteRecord(v);
         }
 
         private string acceptCall(string foreignName)
         {
             // TODO
-            Console.WriteLine("Zaakceptowano zestawienie polaczenia z " + foreignName);
-            ncc.addToConnectedClients(foreignName.ToUpper());
+            cpcc.updateConsole("Zaakceptowano zestawienie polaczenia z " + foreignName);
+            cpcc.addToConnectedClients(foreignName.ToUpper());
             return "call-accepted|";
         }
 

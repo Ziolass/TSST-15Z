@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetworkClientNode.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,16 +12,23 @@ namespace NetworkClientNode.CPCC
         private int localPort;
         private int nccPort;
         private string clientName;
+        private ClientViewModel ClientView;
         private ConnectionHandler chandler;
         private string ASname;
         private List<string> connectedClientsList;
 
-        public CallingPartyCallController(string id)
+        public CallingPartyCallController(string id,ClientViewModel cview)
         {
             connectedClientsList = new List<string>();
+            this.ClientView = cview;
            // ConsoleManager.Show();
             readConfig(id);
             chandler = new ConnectionHandler(localPort, this);
+        }
+        public void updateConsole(string s)
+        {
+            ClientView.messageRecivedText += DateTime.Now + ": " + s.ToString()+"\n";
+            ClientView.RisePropertyChange(ClientView, "MessageRecivedText");
         }
         public void addToConnectedClients(string called)
         {
@@ -59,6 +67,10 @@ namespace NetworkClientNode.CPCC
             {
                 connectedClientsList.Add(calledName);
             }
+            else
+            {
+                updateConsole(response.Split('|')[1]);
+            }
             return response;
         }
         public string callTeardown(string calledName)
@@ -89,10 +101,10 @@ namespace NetworkClientNode.CPCC
             Tuple<string, int, int, string> t = ConfigReader.readConfig("cpccConfig" + id + ".xml");
             localPort = t.Item2;
             ASname = t.Item1;
-            Console.WriteLine("Identyfikator podsieci: " + ASname);
+            updateConsole("Identyfikator podsieci: " + ASname);
             nccPort = t.Item3;
             clientName = t.Item4;
-            Console.WriteLine("Nazwa klienta: " + clientName);
+            updateConsole("Nazwa klienta: " + clientName);
         }
 
         internal string getName()

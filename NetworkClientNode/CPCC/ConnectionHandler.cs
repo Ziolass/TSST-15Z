@@ -32,7 +32,7 @@ namespace NetworkClientNode.CPCC
             while (true)
             {
                 clientSocket = serverSocket.AcceptTcpClient();
-                Console.WriteLine("Request receied");
+                cpcc.updateConsole("Request receied");
                 ClientHandler clientHandler = new ClientHandler(this);
                 clientHandler.startClient(clientSocket);
             }
@@ -44,8 +44,9 @@ namespace NetworkClientNode.CPCC
             serverSocket = new TcpListener(ipAddress, port);
             clientSocket = default(TcpClient);
             serverSocket.Start();
-            Console.WriteLine("NCC waiting for requests...");
+            cpcc.updateConsole("CPCC waiting for requests...");
         }
+       
         public string sendCommand(string command, int port)
         {
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
@@ -74,6 +75,7 @@ namespace NetworkClientNode.CPCC
             }
             catch (Exception e)
             {
+                return "error|NCC nieosiagalne";
             }
             return response;
         }
