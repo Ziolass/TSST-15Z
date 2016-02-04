@@ -272,6 +272,7 @@ namespace Cc
 
         private void ConnectionRequest(HigherLevelConnectionRequest request, AsyncCommunication async)
         {
+            ConsoleLogger.PrintConnectionRequest(request);
             NetworkConnection actual = new NetworkConnection
             {
                 End1 = new Termination
@@ -325,9 +326,8 @@ namespace Cc
                 Ends = ends,
                 Domian = Domain
             };
-
+            ConsoleLogger.PrintRouteTableQuery(sc);
             RcSender.SendToRc(JsonConvert.SerializeObject(sc));
-
         }
 
         private string GenerateConnectionId(HigherLevelConnectionRequest request)
@@ -374,6 +374,10 @@ namespace Cc
         private ConnectionRequest GetMyConnection(RouteResponse snpp, NetworkConnection actualConn)
         {
             List<ConnectionStep> steps = new List<ConnectionStep>();
+            Console.WriteLine();
+            Console.WriteLine("SNPP :");
+            Console.WriteLine(TextUtils.Dash);
+            ConsoleLogger.PrintSNPP(snpp.Steps);
 
             for (int i = 0; i < snpp.Steps.Count; i++)
             {
@@ -444,12 +448,17 @@ namespace Cc
             }
 
             actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
-
-            return new ConnectionRequest
+            ConnectionRequest req = new ConnectionRequest
             {
                 Steps = steps,
                 Id = actualConn.Id
             };
+            Console.WriteLine();
+            Console.WriteLine("My domain snpp : ");
+            Console.WriteLine(TextUtils.Dash);
+
+            ConsoleLogger.PrintConnection(req, false);
+            return req;
 
         }
 
