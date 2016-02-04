@@ -12,7 +12,7 @@ namespace NetworkNode.LRM.Communication
         public string Port { get; set; }
     }
 
-    public class LrmSnp
+    public class LrmSnp : LrmDestination
     {
         public string Index { get; set; }
     }

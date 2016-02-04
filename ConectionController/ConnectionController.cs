@@ -80,10 +80,14 @@ namespace Cc
             Dictionary<string, int> peers,
             int peerCoordinationServer,
             int nccPort,
-            int? notifier)
+            int lrmPort,
+            int? notifier,
+            List<string> domains)
         {
+
             NccServer = new NccServer(nccPort, HandleNccData);
             RcSender = new RcClinet(rcPort, HandleRoutingData);
+            LrmClient = new LrmClient(lrmPort, HandleConnectionAns);
             Connections = new Dictionary<string, NetworkConnection>();
             SubnetworkCc = new Dictionary<string, CcClient>();
             PeerCoordinationServer = new CcServer(peerCoordinationServer, HandlePeerData);
@@ -213,14 +217,15 @@ namespace Cc
                 }
                 else
                 {
-                    if (PeerCoordinationServer != null)
+                    if (Connections[ConnectionId].DstGateway == null)
                     {
                         NccServer.Send(JsonConvert.SerializeObject(resp));
                     }
                     else
                     {
                         HigherLevelConnectionRequest request = PreparePeerRequest(Connections[ConnectionId]);
-                        PeerCoordinationServer.Send(JsonConvert.SerializeObject(resp));
+                        string domain = Connections[ConnectionId].DstGateway.Domian;
+                        PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
                     }
                 }
 
@@ -481,27 +486,35 @@ namespace Cc
             }
 
 
-
-            foreach (string subconnectionId in actual.SubConnections.Keys)
+            if (actual.SubConnections.Count > 0)
             {
-                Tuple<LrmSnp, LrmSnp> edges = actual.SubConnections[subconnectionId];
-
-                if (reqResp.Type.Equals(ReqType.CONNECTION_REQUEST.ToString()))
+                foreach (string subconnectionId in actual.SubConnections.Keys)
                 {
-                    UpdateEdgeSnp(actual, edges);
+                    Tuple<LrmSnp, LrmSnp> edges = actual.SubConnections[subconnectionId];
+
+                    if (reqResp.Type.Equals(ReqType.CONNECTION_REQUEST.ToString()))
+                    {
+                        UpdateEdgeSnp(actual, edges);
+                    }
+
+                    string domian = actual.SubConnectionsDomians[subconnectionId];
+                    //Sprawdzać kolejność
+                    HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
+                    {
+                        Src = edges.Item1,
+                        Dst = edges.Item2,
+                        Id = connectionId + "|" + subconnectionId,
+                        Type = reqResp.Type
+                    };
+
+                    SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
                 }
-
-                string domian = actual.SubConnectionsDomians[subconnectionId];
-                //Sprawdzać kolejność
-                HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
-                {
-                    Src = edges.Item1,
-                    Dst = edges.Item2,
-                    Id = connectionId + "|" + subconnectionId,
-                    Type = reqResp.Type
-                };
-
-                SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
+            }
+            else
+            {
+                HigherLevelConnectionRequest request = PreparePeerRequest(actual);
+                string domain = actual.DstGateway.Domian;
+                PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
             }
 
         }
