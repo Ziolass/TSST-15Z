@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ConectionController.Communication.ReqResp
 {
-    class SimpleConnection
+    public class SimpleConnection
     {
         public string Id { get; set; }
         public string Protocol { get; set; }
