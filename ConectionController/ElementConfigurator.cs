@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using Cc;
-using Cc.Communication;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace CcConfig
 {
@@ -27,10 +22,10 @@ namespace CcConfig
             int? notifierPort = null;
             List<string> domians = null;
 
-            Dictionary<string, int> subnetworksCc = new Dictionary<string,int>();
-            Dictionary<string, int> peers = new Dictionary<string,int>();
+            Dictionary<string, int> subnetworksCc = new Dictionary<string, int>();
+            Dictionary<string, int> peers = new Dictionary<string, int>();
 
-            string domian = null; 
+            string domian = null;
 
             while (configReader.Read())
             {
@@ -38,31 +33,29 @@ namespace CcConfig
                 {
                     if (configReader.NodeType == XmlNodeType.Element)
                     {
-                         if (configReader.Name == "cc")
+                        if (configReader.Name == "cc")
                         {
                             peerCoordinationPort = int.Parse(configReader.GetAttribute("peer-coordination"));
-                             nccPort = int.Parse(configReader.GetAttribute("ncc-tcp"));
-                             rcPort = int.Parse(configReader.GetAttribute("rc-tcp"));
-                             lrmPort = int.Parse(configReader.GetAttribute("lrm-tcp"));
-                             string notifier = configReader.GetAttribute("notifier");  
-                             notifierPort = notifier == "" ? null : (int?)int.Parse(notifier);
+                            nccPort = int.Parse(configReader.GetAttribute("ncc-tcp"));
+                            rcPort = int.Parse(configReader.GetAttribute("rc-tcp"));
+                            lrmPort = int.Parse(configReader.GetAttribute("lrm-tcp"));
+                            string notifier = configReader.GetAttribute("notifier");
+                            notifierPort = notifier == "" ? null : (int?)int.Parse(notifier);
                         }
                         else if (configReader.Name == "domians")
                         {
                             int domiansNumber = int.Parse(configReader.GetAttribute("number"));
                             domians = CreateDomainsHierarchy(configReader.ReadSubtree(), domiansNumber);
-                            
-                        }     
+                        }
                         else if (configReader.Name == "sub-networks")
                         {
-                            subnetworksCc = CreateSubnetworkCc(configReader.ReadSubtree(), "sub-network"); 
+                            subnetworksCc = CreateSubnetworkCc(configReader.ReadSubtree(), "sub-network");
                         }
                         else if (configReader.Name == "peers")
                         {
-                            peers = CreateSubnetworkCc(configReader.ReadSubtree(), "peer"); 
+                            peers = CreateSubnetworkCc(configReader.ReadSubtree(), "peer");
                         }
                     }
-
                 }
             }
 
@@ -75,7 +68,7 @@ namespace CcConfig
                 lrmPort,
                 notifierPort,
                 domians);
-            
+
             cc.Start();
 
             return cc;

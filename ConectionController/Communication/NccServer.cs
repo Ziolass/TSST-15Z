@@ -1,22 +1,13 @@
 ﻿using LRM;
-using NetworkNode.LRM.Communication;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using ConectionController.Communication;
-using Newtonsoft.Json;
 
 namespace Cc.Communication
 {
-    class NccServer : LocalPort
+    internal class NccServer : LocalPort
     {
         private Action<string, AsyncCommunication> DataRedCallback;
         private AsyncCommunication NccCommunication;
+
         public NccServer(int port, Action<string, AsyncCommunication> dataRedCallback)
             : base(port)
         {
@@ -30,7 +21,6 @@ namespace Cc.Communication
                 ActionSocket.Bind(Endpoint);
                 ActionSocket.Listen(100);
 
-
                 Console.WriteLine("Waiting for a connection...");
                 ActionSocket.BeginAccept(
                        new AsyncCallback(AcceptCallback),
@@ -40,7 +30,6 @@ namespace Cc.Communication
             {
                 Console.WriteLine(e.ToString());
             }
-
         }
 
         public void AcceptCallback(IAsyncResult ar)
@@ -57,6 +46,5 @@ namespace Cc.Communication
         {
             NccCommunication.Send(data);
         }
-
     }
 }

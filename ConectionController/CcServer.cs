@@ -1,8 +1,5 @@
 ﻿using LRM;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ConectionController
 {
@@ -10,6 +7,7 @@ namespace ConectionController
     {
         private Action<string, AsyncCommunication> DataRedCallback;
         private AsyncCommunication NccCommunication;
+
         public CcServer(int port, Action<string, AsyncCommunication> dataRedCallback)
             : base(port)
         {
@@ -23,7 +21,6 @@ namespace ConectionController
                 ActionSocket.Bind(Endpoint);
                 ActionSocket.Listen(100);
 
-
                 Console.WriteLine("Waiting for a connection...");
                 ActionSocket.BeginAccept(
                        new AsyncCallback(AcceptCallback),
@@ -33,7 +30,6 @@ namespace ConectionController
             {
                 Console.WriteLine(e.ToString());
             }
-
         }
 
         public void AcceptCallback(IAsyncResult ar)

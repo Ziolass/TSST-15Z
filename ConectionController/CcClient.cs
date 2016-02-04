@@ -1,16 +1,12 @@
 ﻿using LRM;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ConectionController
 {
-    class CcClient : LocalPort
+    internal class CcClient : LocalPort
     {
-         private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
+        private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
         private AsyncCommunication Async;
         private Action<string, AsyncCommunication> DataRedCallback;
         private Thread ReciverThread;

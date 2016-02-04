@@ -1,14 +1,10 @@
 ﻿using LRM;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ConectionController
 {
-    class LrmClient : LocalPort
+    internal class LrmClient : LocalPort
     {
         private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
         private AsyncCommunication Async;

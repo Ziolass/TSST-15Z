@@ -1,24 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Cc.Communication
 {
     public class NetworkNodeSender : Port
     {
         private int BufferSize;
-        
+
         public NetworkNodeSender(int port, int bufferSize)
             : base(port)
         {
-            BufferSize = bufferSize; 
+            BufferSize = bufferSize;
         }
-        
+
         public void SetUpClinet()
         {
             try
@@ -33,16 +28,16 @@ namespace Cc.Communication
 
         public void SendContent(string json, Action<string> callback)
         {
-            byte[] bytes = new byte[BufferSize]; 
+            byte[] bytes = new byte[BufferSize];
             try
             {
                 SetSocket();
                 ActionSocket.Connect(ActionEndPoint);
-                
+
                 byte[] msg = Encoding.ASCII.GetBytes(json);
-                
+
                 ActionSocket.Send(msg);
-                
+
                 int bytesRec = ActionSocket.Receive(bytes);
 
                 string incomingData = Encoding.ASCII.GetString(bytes, 0, bytesRec);
@@ -51,12 +46,10 @@ namespace Cc.Communication
                 ActionSocket.Shutdown(SocketShutdown.Both);
                 ActionSocket.Close();
             }
-
             catch (Exception e)
             {
                 Console.WriteLine("Unexpected exception : {0}", json);
             }
-
         }
     }
 }

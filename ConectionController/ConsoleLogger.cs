@@ -4,9 +4,6 @@ using NetworkNode.LRM.Communication;
 using RoutingController.Elements;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConectionController
 {
@@ -41,7 +38,7 @@ namespace ConectionController
         {
             foreach (ConnectionStep step in connection.Steps)
             {
-                foreach(LrmPort port in step.Ports) 
+                foreach (LrmPort port in step.Ports)
                 {
                     Log("Element : " + step.Node + " at port " + port.Number);
                     if (details)
@@ -67,6 +64,5 @@ namespace ConectionController
                 Log("");
             }
         }
-
     }
 }
