@@ -1,1 +1,1 @@
-cd ..\..\NetworkClientNode\bin\Debug\ & start NetworkClientNode.exe 1 B
+cd ..\..\NetworkClientNode\bin\Debug\ & start NetworkClientNode.exe 1 AS1_1

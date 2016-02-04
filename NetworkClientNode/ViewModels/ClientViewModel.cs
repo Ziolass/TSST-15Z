@@ -71,7 +71,7 @@ namespace NetworkClientNode.ViewModels
                 if (args.Length < 2)
                     throw new Exception("Wrong application start argument");
 
-                this.cpcc = new CallingPartyCallController(args[1], this);
+                this.cpcc = new CallingPartyCallController(args[2], this);
                 this.Streams = new ObservableCollection<StreamDataViewModel>();
                 this.ClientSetUpProccess = new ClientSetUpProcess("..\\..\\..\\Configs\\NetworkClient\\clientConfig" + args[1] + ".xml");
                 this.ClientName = this.ClientSetUpProccess.ClientName;
