@@ -223,6 +223,10 @@ namespace NetworkCallController
                 {
                     return "error|Zadne Directory nie posiada takiego wpisu";
                 }
+                else if (calledPartyPorts[0].Equals("Blad polaczenia z obcym Directory"))
+                {
+                    return "error|Blad polaczenia z obcym Directory";
+                }
                 else
                 {
                     Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
@@ -238,7 +242,6 @@ namespace NetworkCallController
 
                 }
             }
-
             else
             {
                 calledAddress = calledPartyPorts[1];
