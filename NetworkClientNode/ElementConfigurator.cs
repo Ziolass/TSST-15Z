@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using WireCloud;
@@ -103,8 +104,11 @@ namespace NetworkClientNode
                 input.SetUpServer(10000, 10);
                 input.StartListening();
             }
-            adpt.ConnectClient();
-            adpt.IntroduceToLrm();
+            new Thread(delegate()
+            {
+                adpt.ConnectClient();
+                adpt.IntroduceToLrm();
+            }).Start();
             return node;
         }
 
