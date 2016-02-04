@@ -103,8 +103,10 @@ namespace RoutingController.Service
                 {
                     request = request.Replace("Protocol: \"query\",", "");
                     QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
-                    Console.WriteLine("RouteTableQuery request");
-                    return JsonConvert.SerializeObject(this.RoutingController.RouteTableResponse(queryRequest));
+                    Console.WriteLine("RouteTableQuery request from {0}", queryRequest.Id);
+                    RouteResponse routeResponse = this.RoutingController.RouteTableResponse(queryRequest);
+                    routeResponse.Id = queryRequest.Id;
+                    return JsonConvert.SerializeObject(routeResponse);
                 }
                 else if (actionType == ActionType.NetworkTopology)
                 {

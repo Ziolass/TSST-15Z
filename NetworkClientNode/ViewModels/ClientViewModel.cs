@@ -8,16 +8,19 @@ using System.Collections.ObjectModel;
 using NetworkClientNode.Adaptation;
 using NetworkClientNode.ViewModelUtils;
 using System.Windows.Input;
+using NetworkClientNode.CPCC;
 
 namespace NetworkClientNode.ViewModels
 {
     public class ClientViewModel : INotifyPropertyChanged
     {
         private ClientSetUpProcess ClientSetUpProccess;
-
+        private CallingPartyCallController cpcc;
         public ObservableCollection<StreamDataViewModel> Streams { get; set; }
         public string MessageSendText { get; set; }
+        public string ClientToConnect { get; set; }
         public ExternalCommand SendMessage { get; set; }
+        public ExternalCommand Connect { get; set; }
         private StreamDataViewModel selectedStream;
         public StreamDataViewModel SelectedStream
         {
@@ -28,7 +31,7 @@ namespace NetworkClientNode.ViewModels
                 RisePropertyChange(this, "SelectedStream");
             }
         }
-        private string messageRecivedText;
+        public string messageRecivedText;
         public string MessageRecivedText
         {
             get { return messageRecivedText; }
@@ -62,13 +65,13 @@ namespace NetworkClientNode.ViewModels
             try
             {
                 //var args = Environment.GetCommandLineArgs();
-                string[] args = { "0", "0", "0" };
+                string[] args = { "0", "0", "0", "0" };
                 int i = 0; //This is dumy variable for TryParse
                 if (args.Length < 2)
                     throw new Exception("Wrong application start argument");
                 else if (!int.TryParse(args[1], out i))
                     throw new Exception("Wrong application start argument");
-
+                this.cpcc = new CallingPartyCallController(args[3],this);
                 this.Streams = new ObservableCollection<StreamDataViewModel>();
                 this.ClientSetUpProccess = new ClientSetUpProcess("..\\..\\..\\Configs\\NetworkClient\\clientConfig" + args[1] + ".xml");
                 this.ClientSetUpProccess.StreamsCreated += new StreamsCreatedHandler(OnStreamsCreated);
@@ -78,6 +81,7 @@ namespace NetworkClientNode.ViewModels
                 this.ClientSetUpProccess.ClientNode.StreamRemoved += new StreamChangedHandler(OnStreamRemoved);
                 this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
                 this.SendMessage = new ExternalCommand(SendNewMessage, true);
+                this.Connect = new ExternalCommand(ConnectNew, true);
             }
             catch (Exception e)
             {
@@ -143,7 +147,13 @@ namespace NetworkClientNode.ViewModels
             this.ClientSetUpProccess.ClientNode.SelectStream(this.selectedStream.StreamData);
             this.ClientSetUpProccess.ClientNode.SendData(this.MessageSendText);
         }
-        private void RisePropertyChange(object sender, String property)
+        private void ConnectNew()
+        {
+            
+            this.messageRecivedText += DateTime.Now + ": " + cpcc.callRequest(this.ClientToConnect)+"\n";
+            RisePropertyChange(this, "MessageRecivedText");
+        }
+        public void RisePropertyChange(object sender, String property)
         {
             if (PropertyChanged != null)
             {

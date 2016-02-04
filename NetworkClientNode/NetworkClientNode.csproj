@@ -62,7 +62,6 @@
     <Compile Include="CPCC\ClientHandler.cs" />
     <Compile Include="CPCC\ConfigReader.cs" />
     <Compile Include="CPCC\ConnectionHandler.cs" />
-    <Compile Include="CPCC\ConsoleManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

@@ -1,5 +1,6 @@
 {
-	Protocol: "route",
+	Protocol: "route",		
+	Id: "CC",
 	Domian: "domenaA",
 	Ends:[{
 			Node:"client1",

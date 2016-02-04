@@ -48,6 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\CcResponse.cs" />
+    <Compile Include="Adapters\HigherLevelConnectionRequest.cs" />
+    <Compile Include="Adapters\LrmDestination.cs" />
+    <Compile Include="Adapters\LrmSnp .cs" />
     <Compile Include="ClientHandler.cs" />
     <Compile Include="ConnectionHandler.cs" />
     <Compile Include="FileUtils\ConfigReader.cs" />

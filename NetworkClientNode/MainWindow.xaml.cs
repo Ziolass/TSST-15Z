@@ -36,11 +36,15 @@ namespace NetworkClientNode
             
             DataContext = this;
             MyTitle = "Client" + args[2];
-            //cpcc = new CallingPartyCallController(args[3]);
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }
