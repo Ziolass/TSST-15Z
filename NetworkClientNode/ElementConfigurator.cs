@@ -111,7 +111,24 @@ namespace NetworkClientNode
             }).Start();
             return node;
         }
+        public string GetNodeName(){
+            string nodeName = null;
+            while (configReader.Read())
+            {
+                if (configReader.IsStartElement())
+                {
+                    if (configReader.NodeType == XmlNodeType.Element)
+                    {
+                        if (configReader.Name == "node" && configReader.IsStartElement())
+                        {
+                            nodeName = configReader.GetAttribute("name");
+                        }
+                    }
 
+                }
+            }
+            return nodeName;
+        }
         private List<string> CreateDomainsHierarchy(XmlReader reader, int domiansNumber)
         {
             string[] domians = new string[domiansNumber];

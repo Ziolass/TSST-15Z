@@ -33,6 +33,12 @@ namespace NetworkClientNode
         {
             this.ConfigurationFilePath = configurationFilePath;
         }
+        public string GetNodeName()
+        {
+            this.ElementConfigurator = new ElementConfigurator(this.ConfigurationFilePath);
+            return ElementConfigurator.GetNodeName();
+        }
+
         /// <summary>
         /// Starts the client process.
         /// </summary>
@@ -45,7 +51,6 @@ namespace NetworkClientNode
             }
             this.ElementConfigurator = new ElementConfigurator(this.ConfigurationFilePath);
             this.ClientNode = ElementConfigurator.ConfigureNode();
-
             this.ClientName = this.ClientNode.Id;
             if (this.ClientNode.GetStreamData() != null && this.ClientNode.GetStreamData().Count != 0)
             {

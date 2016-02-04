@@ -2,7 +2,7 @@
 <directory-config>
 <network-info>
 <autonomous-system-name name="AS1"/>
-<client-name name="JAN1"/>
+<client-name name="JAN2"/>
 <localport value="50008"/>
 <ncc-port value="50001"/>
 </network-info>
