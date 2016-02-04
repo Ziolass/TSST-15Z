@@ -7,7 +7,7 @@ using System.Xml;
 using Cc;
 using Cc.Communication;
 
-namespace NetworkNode
+namespace CcConfig
 {
     public class ElementConfigurator
     {
@@ -22,48 +22,89 @@ namespace NetworkNode
         {
             int rcPort = -1;
             int nccPort = -1;
-            Dictionary<string, int> lrmPorts = new Dictionary<string,int>();
-            Dictionary<string, string> gateways = new Dictionary<string, string>();
+            int peerCoordinationPort = -1;
+            int? notifierPort = null;
+            List<string> domians;
+
+            Dictionary<string, int> subnetworksCc = new Dictionary<string,int>();
+            Dictionary<string, int> peers = new Dictionary<string,int>();
+
+            string domian = null; 
+
             while (configReader.Read())
             {
                 if (configReader.IsStartElement())
                 {
                     if (configReader.NodeType == XmlNodeType.Element)
                     {
-                        if (configReader.Name == "gateway")
+                         if (configReader.Name == "cc")
                         {
-                            string domian = configReader.GetAttribute("domian");
-                            string gate = configReader.GetAttribute("gate");
-                            gateways.Add(domian, gate);
+                            peerCoordinationPort = int.Parse(configReader.GetAttribute("peer-coordination"));
+                             nccPort = int.Parse(configReader.GetAttribute("ncc-tcp"));
+                             rcPort = int.Parse(configReader.GetAttribute("rc-tcp"));
+                             string notifier = configReader.GetAttribute("notifier");  
+                             notifierPort = notifier == "" ? null : (int?)int.Parse(notifier);
                         }
-                        else if (configReader.Name == "ncc")
+                        else if (configReader.Name == "domians")
                         {
-                            nccPort = int.Parse(configReader.GetAttribute("tcp"));
-                        }
-                        else if (configReader.Name == "rc")
-                        {
-                            rcPort = int.Parse(configReader.GetAttribute("tcp"));
-                        }
-                        else if (configReader.Name == "lrm")
-                        {
-                            string nodeName = configReader.GetAttribute("node");
-                            int tcp = int.Parse(configReader.GetAttribute("tcp"));
-                            lrmPorts.Add(nodeName, tcp);
+                            int domiansNumber = int.Parse(configReader.GetAttribute("number"));
+                            domians = CreateDomainsHierarchy(configReader.ReadSubtree(), domiansNumber);
                             
+                        }     
+                        else if (configReader.Name == "sub-networks")
+                        {
+                            subnetworksCc = CreateSubnetworkCc(configReader.ReadSubtree(), "sub-network"); 
+                        }
+                        else if (configReader.Name == "peers")
+                        {
+                            peers = CreateSubnetworkCc(configReader.ReadSubtree(), "peer"); 
                         }
                     }
 
                 }
             }
 
-            ConnectionController cc = new ConnectionController(rcPort,lrmPorts,gateways);
-            NccServer nccServ = new NccServer(nccPort);
-            nccServ.ConnectionCtlr = cc;
-            nccServ.SetUpServer(10000, 10);
-            nccServ.StartListening();
+            ConnectionController cc = new ConnectionController(domian,
+                rcPort,
+                subnetworksCc,
+                peers,
+                peerCoordinationPort,
+                nccPort,
+                notifierPort);
+            
+            cc.Start();
 
             return cc;
         }
 
+        private List<string> CreateDomainsHierarchy(XmlReader reader, int domiansNumber)
+        {
+            string[] domians = new string[domiansNumber];
+            while (reader.Read())
+            {
+                if (reader.Name == "domian")
+                {
+                    int index = int.Parse(reader.GetAttribute("index"));
+                    string domian = reader.GetAttribute("name");
+                    domians[index] = domian;
+                }
+            }
+            return new List<string>(domians);
+        }
+
+        private Dictionary<string, int> CreateSubnetworkCc(XmlReader reader, string tag)
+        {
+            Dictionary<string, int> subnetworkCc = new Dictionary<string, int>();
+            while (reader.Read())
+            {
+                if (reader.Name.Equals(tag))
+                {
+                    string domian = reader.GetAttribute("domian");
+                    int port = int.Parse(reader.GetAttribute("tcp"));
+                    subnetworkCc.Add(domian, port);
+                }
+            }
+            return subnetworkCc;
+        }
     }
 }

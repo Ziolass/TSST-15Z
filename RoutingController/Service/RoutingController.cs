@@ -218,7 +218,7 @@ namespace RoutingController.Service
         /// <param name="domainLevel">The domain level.</param>
         private void UpdateGraph(string domainName, TopologyNode topologyNode, int domainLevel)
         {
-            //Node nale¿y do tej domeny ale nie jest to domena najni¿sza (podstawowa)
+            //Node naleï¿½y do tej domeny ale nie jest to domena najniï¿½sza (podstawowa)
             if (topologyNode.Domains.Count > 1 && topologyNode.Domains[0] == domainName)
             {
                 this.AddTopologyNodeToGraph(topologyNode, domainName);
@@ -259,7 +259,7 @@ namespace RoutingController.Service
                  */
 
             }
-            //Node nale¿y do tej domeny i jest to jego domena najni¿sza (podstawowa)
+            //Node naleï¿½y do tej domeny i jest to jego domena najniï¿½sza (podstawowa)
             else if (GetLastDomain(topologyNode.Domains) == domainName && topologyNode.Domains.Count == 1)
             {
                 this.AddTopologyNodeToGraph(topologyNode, domainName);
@@ -494,7 +494,7 @@ namespace RoutingController.Service
             return networkRequest;
         }
 
-        //DODAJEMY sobie dictionary domena -> list clientów
+        //DODAJEMY sobie dictionary domena -> list clientï¿½w
         /// <summary>
         /// Updates the network topology.
         /// </summary>

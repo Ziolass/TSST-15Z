@@ -53,6 +53,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConectionController\ConectionController.csproj">
+      <Project>{97cacfce-7a59-49ab-8fda-d155fef16080}</Project>
+      <Name>ConectionController</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LRM\LRM.csproj">
       <Project>{222b3684-f432-4eb5-b140-261bbde1f2fb}</Project>
       <Name>LRM</Name>

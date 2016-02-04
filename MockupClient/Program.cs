@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MockupClient
 {
+    using ConectionController.Communication.ReqResp;
     using LRM.Communication;
     using NetworkNode.LRM.Communication;
     using Newtonsoft.Json;
@@ -70,7 +71,23 @@ namespace MockupClient
                         Type = ReqType.CONNECTION_REQUEST.ToString()
                         
                     });
-                    byte[] msg = Encoding.ASCII.GetBytes(File.ReadAllText(data));
+
+                    HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
+                    {
+                        Dst = new LrmSnp {
+                            Node = "node2",
+                            Port="1"
+                        },
+                        Src = new LrmSnp { 
+                            Node="client1",
+                            Port="1"
+                        },
+                        Type = "connection-request"
+                        
+                    };
+
+
+                    byte[] msg = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(request));
                     int bytesSent = sender.Send(msg);
 
                     int bytesRec = sender.Receive(bytes);
@@ -102,7 +119,7 @@ namespace MockupClient
 
         public static void Main(String[] args)
         {
-            StartClient("../../../Configs/RoutingController/testHierchy" + args[1] + ".json", int.Parse(args[0]));
+            StartClient("C:\\Users\\Michał\\Desktop\\CC_ARGS.json", int.Parse("40000"));
             //StartClient("../../../Configs/RoutingController/testHierchy.json", 8100);
             //StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");

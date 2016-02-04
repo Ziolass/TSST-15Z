@@ -1,23 +1,16 @@
 ﻿using LRM;
-using NetworkNode.LRM.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using ConectionController.Communication;
-using Newtonsoft.Json;
 
-namespace Cc.Communication
+namespace ConectionController
 {
-    class NccServer : LocalPort
+    public class CcServer : LocalPort
     {
         private Action<string, AsyncCommunication> DataRedCallback;
         private AsyncCommunication NccCommunication;
-        public NccServer(int port, Action<string, AsyncCommunication> dataRedCallback)
+        public CcServer(int port, Action<string, AsyncCommunication> dataRedCallback)
             : base(port)
         {
             DataRedCallback = dataRedCallback;
@@ -57,6 +50,5 @@ namespace Cc.Communication
         {
             NccCommunication.Send(data);
         }
-
     }
 }

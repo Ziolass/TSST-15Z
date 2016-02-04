@@ -87,8 +87,8 @@ namespace RoutingController.Service
         /// <returns></returns>
         private string PerformAction(string request)
         {
-            //try
-            //{
+            try
+            {
                 ActionType actionType = OperationType(request);
                 if (actionType == ActionType.LocalTopology)
                 {
@@ -103,7 +103,7 @@ namespace RoutingController.Service
                 {
                     request = request.Replace("Protocol: \"query\",", "");
                     QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
-                    Console.WriteLine("RouteTableQuery request from {0}", queryRequest.Id);
+                    Console.WriteLine("RouteTableQuery request from {0}", queryRequest.Domain);
                     RouteResponse routeResponse = this.RoutingController.RouteTableResponse(queryRequest);
                     routeResponse.Id = queryRequest.Id;
                     return JsonConvert.SerializeObject(routeResponse);
@@ -127,12 +127,12 @@ namespace RoutingController.Service
                     return "OK";
                 }
                 else return "ERROR";
-            //}
-            //catch (Exception exp)
-            //{
-            //    Console.WriteLine(exp.Message);
-            //    return "ERROR";
-            //}
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine(exp.Message);
+                return "ERROR";
+            }
         }
 
         /// <summary>

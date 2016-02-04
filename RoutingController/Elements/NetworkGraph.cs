@@ -127,7 +127,7 @@ namespace RoutingController.Elements
 
                             //Dodaj linki od node (domena tego graphu) do metro Node
 
-                            //Numeracja wejœæ do metroNode
+                            //Numeracja wejï¿½ï¿½ do metroNode
                             int newMetroPort = 1 + this.GetVertexes(otherGraph.DomainName).Count;
 
                             destination = new Destination(otherItem.Key.GetNodeId(), thisItem.Key.Node, thisItem.Key.Port, DestinationType.DOMAIN);
@@ -231,7 +231,7 @@ namespace RoutingController.Elements
         }
 
         /// <summary>
-        /// Complete the graph. Graf zupe³ny
+        /// Complete the graph. Graf zupeï¿½ny
         /// </summary>
         /// <param name="graph">The graph.</param>
         /// <param name="networkName">The network identifier.</param>

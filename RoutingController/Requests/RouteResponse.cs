@@ -23,8 +23,8 @@ namespace RoutingController.Requests
     }
     public class RouteResponse
     {
-        public string Protocol { get; private set; }
         public string Id { get; set; }
+        public string Protocol { get; private set; }
         public List<Ends> Ends { get; set; }
         public List<SNP> Steps { get; set; }
 

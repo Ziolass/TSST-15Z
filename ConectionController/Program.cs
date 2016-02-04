@@ -1,4 +1,4 @@
-﻿using NetworkNode;
+﻿using CcConfig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace Cc
             ElementConfigurator configurator = new ElementConfigurator("..\\..\\..\\Configs\\CC\\ccConfig" + id + ".xml");
             ConnectionController cc = configurator.configureController();
             Console.ReadLine();
-            cc.HandleNccData("connection-request|node1:2|node3:2");
+            
             Console.ReadLine();
         }
     }
