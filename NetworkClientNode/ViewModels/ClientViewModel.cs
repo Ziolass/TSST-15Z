@@ -86,7 +86,7 @@ namespace NetworkClientNode.ViewModels
             }
             catch (Exception e)
             {
-                this.messageRecivedText += DateTime.Now + "\n" + e.Message;
+                this.messageConsoleText += DateTime.Now + "\n" + e.Message;
             }
         }
 
@@ -151,7 +151,7 @@ namespace NetworkClientNode.ViewModels
         private void ConnectNew()
         {
             var test = cpcc.callRequest(this.ClientToConnect);
-            this.messageRecivedText += DateTime.Now + ": " + test + "\n";
+            this.messageConsoleText += DateTime.Now + ": " + test + "\n";
             RisePropertyChange(this, "MessageRecivedText");
         }
         public void RisePropertyChange(object sender, String property)
