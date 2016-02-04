@@ -81,6 +81,9 @@ namespace NetworkClientNode.ViewModels
                 this.ClientSetUpProccess.ClientNode.StreamAdded += new StreamChangedHandler(OnStreamAdded);
                 this.ClientSetUpProccess.ClientNode.StreamRemoved += new StreamChangedHandler(OnStreamRemoved);
                 this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
+
+                this.ClientSetUpProccess.ClientNode.Adaptation.AllocationClientStream += new AllocationClientStream(OnClientStreamAdd);
+
                 this.SendMessage = new ExternalCommand(SendNewMessage, true);
                 this.Connect = new ExternalCommand(ConnectNew, true);
             }
@@ -117,6 +120,17 @@ namespace NetworkClientNode.ViewModels
         private void OnStreamAdded(StreamChangedArgs args)
         {
             foreach (StreamData stream in args.Streams)
+            {
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    this.Streams.Add(new StreamDataViewModel(stream));
+                });
+            }
+        }
+
+        private void OnClientStreamAdd(List<StreamData> args)
+        {
+            foreach (StreamData stream in args)
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {

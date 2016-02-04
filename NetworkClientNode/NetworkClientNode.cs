@@ -22,7 +22,7 @@ namespace NetworkClientNode
     }
     public class NetworkClNode
     {
-        private AdaptationFunction Adaptation;
+        public AdaptationFunction Adaptation;
         public int SelectedStream { get; private set; }
         public string Id { get; set; }
         public event StreamChangedHandler StreamAdded;

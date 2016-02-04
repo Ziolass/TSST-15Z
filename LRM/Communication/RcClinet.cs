@@ -55,10 +55,7 @@ namespace LRM.Communication
 
         public void SendToRc(string msg)
         {
-            lock (ConnectLock)
-            {
-                Async.Send(msg);
-            }
+            Async.Send(msg);
         }
     }
 }

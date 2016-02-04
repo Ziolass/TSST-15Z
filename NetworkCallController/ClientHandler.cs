@@ -83,7 +83,8 @@ namespace NetworkCallController
                 case "call-malfunction":
 
                     return callMalfunction(temp[1], temp[2]);
-
+                case "OK":
+                    return "Połaczenie zestawione";
                 default:
                     return "coś sie zj. zepsulo.";
             }

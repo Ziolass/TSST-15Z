@@ -79,6 +79,7 @@ namespace LRM
 
 
             HandleTokenData(data, LrmRegister.FindNodeByConnection(async));
+
         }
 
         private void HandleLrmNegotiationResp(string data)
@@ -386,7 +387,7 @@ namespace LRM
 
         private void SendLocalTopology()
         {
-            Thread.Sleep(10000);
+            Thread.Sleep(15000);
             LocalTopology();
             InitPahse = false;
         }
