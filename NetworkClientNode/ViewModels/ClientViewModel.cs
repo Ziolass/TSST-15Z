@@ -21,6 +21,7 @@ namespace NetworkClientNode.ViewModels
         public string ClientToConnect { get; set; }
         public ExternalCommand SendMessage { get; set; }
         public ExternalCommand Connect { get; set; }
+        public ExternalCommand Teardown { get; set; }
         private StreamDataViewModel selectedStream;
         public StreamDataViewModel SelectedStream
         {
@@ -64,8 +65,8 @@ namespace NetworkClientNode.ViewModels
         {
             try
             {
-                //var args = Environment.GetCommandLineArgs();
-                string[] args = { "0", "0", "0", "0" };
+                var args = Environment.GetCommandLineArgs();
+                //string[] args = { "0", "0", "0", "0" };
                 int i = 0; //This is dumy variable for TryParse
                 if (args.Length < 2)
                     throw new Exception("Wrong application start argument");
@@ -82,6 +83,7 @@ namespace NetworkClientNode.ViewModels
                 this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
                 this.SendMessage = new ExternalCommand(SendNewMessage, true);
                 this.Connect = new ExternalCommand(ConnectNew, true);
+                this.Teardown = new ExternalCommand(CallTeardown, true);
             }
             catch (Exception e)
             {
@@ -150,8 +152,13 @@ namespace NetworkClientNode.ViewModels
         private void ConnectNew()
         {
             
-            this.messageRecivedText += DateTime.Now + ": " + cpcc.callRequest(this.ClientToConnect)+"\n";
-            RisePropertyChange(this, "MessageRecivedText");
+            this.MessageConsoleText += DateTime.Now + ": " + cpcc.callRequest(this.ClientToConnect)+"\n";
+            RisePropertyChange(this, "MessageConsoleText");
+        }
+        private void CallTeardown()
+        {
+            this.MessageConsoleText += DateTime.Now + ": " + cpcc.callTeardown(this.ClientToConnect) + "\n";
+            RisePropertyChange(this, "MessageConsoleText");
         }
         public void RisePropertyChange(object sender, String property)
         {

@@ -7,7 +7,7 @@ cd ..
 cd Policy
 start cmd /c startPolicy0.bat
 cd ..
-cd CPCC
-start cmd /c startCPCC0.bat
-start cmd /c startCPCC1.bat
+cd NetworkClient
+start cmd /c startClient0-A_tmp.bat
+start cmd /c startClient0-B_tmp.bat
 exit

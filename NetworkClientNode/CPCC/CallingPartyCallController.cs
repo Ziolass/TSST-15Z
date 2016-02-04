@@ -27,8 +27,8 @@ namespace NetworkClientNode.CPCC
         }
         public void updateConsole(string s)
         {
-            ClientView.messageRecivedText += DateTime.Now + ": " + s.ToString()+"\n";
-            ClientView.RisePropertyChange(ClientView, "MessageRecivedText");
+            ClientView.MessageConsoleText += DateTime.Now + ": " + s.ToString()+"\n";
+            ClientView.RisePropertyChange(ClientView, "MessageConsoleText");
         }
         public void addToConnectedClients(string called)
         {
