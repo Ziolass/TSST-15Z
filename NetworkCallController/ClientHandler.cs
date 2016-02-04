@@ -260,7 +260,8 @@ namespace NetworkCallController
             // string response = sendCommand("connection-request|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "connection-request");
             string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
-            string translate = JsonConvert.DeserializeObject<CcResponse>(response).Response;
+
+            string translate = HandleJsonInput(response);
             if (translate.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
@@ -288,7 +289,7 @@ namespace NetworkCallController
             // string response = sendCommand("call-teardown|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "call-teardown");
             string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
-            string translate = JsonConvert.DeserializeObject<CcResponse>(response).Response;
+            string translate =  HandleJsonInput(response);
             if (translate.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
