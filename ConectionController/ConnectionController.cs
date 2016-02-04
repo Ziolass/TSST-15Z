@@ -122,6 +122,9 @@ namespace Cc
             Console.WriteLine("PEER COORDINATION IN - RUNNING");
             RcSender.ConnectToRc();
             Console.WriteLine("ROUTE TABLE QUERY OUT - RUNNING");
+            LrmClient.ConnectToLrm();
+            Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
+            Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
             
         }
         public void HandleNccData(string data, AsyncCommunication async)
@@ -376,7 +379,18 @@ namespace Cc
             {
                 SNP previous = i == 0 ? null : snpp.Steps[i - 1];
                 SNP actual = snpp.Steps[i];
-                
+
+                if (actual.Ports[0] == null)
+                {
+                    actual.Ports.RemoveAt(0);
+                }
+
+                if (actual.Ports[1] == null)
+                {
+                    actual.Ports.RemoveAt(1);
+                }
+
+
                 List<LrmPort> lrmPorts = new List<LrmPort>();
 
                 foreach (string port in actual.Ports)

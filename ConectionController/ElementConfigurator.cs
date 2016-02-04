@@ -22,9 +22,10 @@ namespace CcConfig
         {
             int rcPort = -1;
             int nccPort = -1;
+            int lrmPort = -1;
             int peerCoordinationPort = -1;
             int? notifierPort = null;
-            List<string> domians;
+            List<string> domians = null;
 
             Dictionary<string, int> subnetworksCc = new Dictionary<string,int>();
             Dictionary<string, int> peers = new Dictionary<string,int>();
@@ -42,6 +43,7 @@ namespace CcConfig
                             peerCoordinationPort = int.Parse(configReader.GetAttribute("peer-coordination"));
                              nccPort = int.Parse(configReader.GetAttribute("ncc-tcp"));
                              rcPort = int.Parse(configReader.GetAttribute("rc-tcp"));
+                             lrmPort = int.Parse(configReader.GetAttribute("lrm-tcp"));
                              string notifier = configReader.GetAttribute("notifier");  
                              notifierPort = notifier == "" ? null : (int?)int.Parse(notifier);
                         }
@@ -70,7 +72,9 @@ namespace CcConfig
                 peers,
                 peerCoordinationPort,
                 nccPort,
-                notifierPort);
+                lrmPort,
+                notifierPort,
+                domians);
             
             cc.Start();
 
