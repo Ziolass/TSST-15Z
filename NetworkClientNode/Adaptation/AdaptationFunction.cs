@@ -348,7 +348,7 @@ namespace NetworkClientNode.Adaptation
         {
             LrmToken token = JsonConvert.DeserializeObject<LrmToken>(args.Data);
             token.Reciver = new LrmDestination();
-            token.Reciver.Node = routerId;
+            token.Reciver.Name = routerId;
             token.Reciver.Port = args.PortNumber.ToString();
             LrmClient.SendLrmMessage(token);
         }

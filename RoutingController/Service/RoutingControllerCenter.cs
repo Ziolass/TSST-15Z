@@ -126,7 +126,7 @@ namespace RoutingController.Service
                     }
                     return "OK";
                 }
-                else return "ERROR";
+                else return "ERROR! \n " + request;
             }
             catch (Exception exp)
             {

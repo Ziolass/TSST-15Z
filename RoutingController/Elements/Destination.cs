@@ -13,7 +13,7 @@ namespace RoutingController.Elements
     {
         public string Scope { get; private set; }
 
-        public string Node { get; private set; }
+        public string Name { get; private set; }
 
         public string Port { get; private set; }
 
@@ -22,22 +22,22 @@ namespace RoutingController.Elements
         public Destination()
         {
             this.Scope = null;
-            this.Node = null;
+            this.Name = null;
             this.Port = null;
         }
 
         [JsonConstructor]
-        public Destination(string scope, string node, string port)
+        public Destination(string scope, string name, string port)
         {
             this.Scope = scope;
-            this.Node = node;
+            this.Name = name;
             this.Port = port;
             this.Type = DestinationType.LOCAL;
         }
         public Destination(string scope, string name, string port, DestinationType type)
         {
             this.Scope = scope;
-            this.Node = name;
+            this.Name = name;
             this.Port = port;
             this.Type = type;
         }
@@ -49,7 +49,7 @@ namespace RoutingController.Elements
         /// <exception cref="System.NotImplementedException"></exception>
         public string NodeId()
         {
-            return Node + ":" + Port.ToString();
+            return Name + ":" + Port.ToString();
         }
     }
 }

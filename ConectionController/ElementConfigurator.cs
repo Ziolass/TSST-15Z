@@ -42,7 +42,7 @@ namespace CcConfig
                             string notifier = configReader.GetAttribute("notifier");
                             notifierPort = notifier == "" ? null : (int?)int.Parse(notifier);
                         }
-                        else if (configReader.Name == "domians")
+                        else if (configReader.Name == "domains")
                         {
                             int domiansNumber = int.Parse(configReader.GetAttribute("number"));
                             domians = CreateDomainsHierarchy(configReader.ReadSubtree(), domiansNumber);
@@ -57,6 +57,11 @@ namespace CcConfig
                         }
                     }
                 }
+            }
+            if (domians.Count >= 1)
+            {
+                
+            domian = domians[0];
             }
 
             ConnectionController cc = new ConnectionController(domian,
@@ -79,7 +84,7 @@ namespace CcConfig
             string[] domians = new string[domiansNumber];
             while (reader.Read())
             {
-                if (reader.Name == "domian")
+                if (reader.Name == "domain")
                 {
                     int index = int.Parse(reader.GetAttribute("index"));
                     string domian = reader.GetAttribute("name");

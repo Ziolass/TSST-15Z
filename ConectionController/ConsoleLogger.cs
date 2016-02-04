@@ -21,17 +21,17 @@ namespace ConectionController
         {
             Log(ConnectionRequest);
             Log(TextUtils.Dash);
-            Log("src: " + request.Src.Node + " at port " + request.Src.Port);
-            Log("dst: " + request.Dst.Node + " at port " + request.Dst.Port);
+            Log("src: " + request.Src.Name + " at port " + request.Src.Port);
+            Log("dst: " + request.Dst.Name + " at port " + request.Dst.Port);
         }
 
         public static void PrintRouteTableQuery(SimpleConnection request)
         {
             Log(RouteQry);
-            Log("@ " + request.Domian);
+            Log("@ " + request.Domain);
             Log(TextUtils.Dash);
-            Log("src: " + request.Ends[0].Node + " at port " + request.Ends[0].Port);
-            Log("dst: " + request.Ends[1].Node + " at port " + request.Ends[1].Port);
+            Log("src: " + request.Ends[0].Name + " at port " + request.Ends[0].Port);
+            Log("dst: " + request.Ends[1].Name + " at port " + request.Ends[1].Port);
         }
 
         public static void PrintConnection(ConnectionRequest connection, bool details)

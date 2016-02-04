@@ -75,11 +75,11 @@ namespace MockupClient
                     HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
                     {
                         Dst = new LrmSnp {
-                            Node = "node2",
+                            Name = "node2",
                             Port="1"
                         },
                         Src = new LrmSnp { 
-                            Node="client1",
+                            Name="client1",
                             Port="1"
                         },
                         Type = "connection-request"

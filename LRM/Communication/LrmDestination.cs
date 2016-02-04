@@ -8,7 +8,7 @@ namespace NetworkNode.LRM.Communication
 {
     public class LrmDestination
     {
-        public string Node { get; set; }
+        public string Name { get; set; }
         public string Port { get; set; }
     }
 

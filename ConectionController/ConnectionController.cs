@@ -76,7 +76,7 @@ namespace Cc
 
         private NetworkConnection Actual;
 
-        public ConnectionController(string Domian,
+        public ConnectionController(string domain,
             int rcPort,
             Dictionary<string, int> ccPorts,
             Dictionary<string, int> peers,
@@ -86,6 +86,7 @@ namespace Cc
             int? notifier,
             List<string> domains)
         {
+            this.Domain = domain;
             NccServer = new NccServer(nccPort, HandleNccData);
             RcSender = new RcClinet(rcPort, HandleRoutingData);
             LrmClient = new LrmClient(lrmPort, HandleLrmData);
@@ -246,13 +247,13 @@ namespace Cc
             LrmSnp beginning = new LrmSnp
             {
                 Index = lastIndex,
-                Node = peerGateway.Node,
+                Name = peerGateway.Node,
                 Port = peerGateway.Port
             };
 
             LrmSnp end = new LrmSnp
             {
-                Node = nc.End2.Node,
+                Name = nc.End2.Node,
                 Port = nc.End2.Port
             };
 
@@ -272,12 +273,12 @@ namespace Cc
             {
                 End1 = new Termination
                 {
-                    Node = request.Src.Node,
+                    Node = request.Src.Name,
                     Port = request.Src.Port
                 },
                 End2 = new Termination
                 {
-                    Node = request.Dst.Node,
+                    Node = request.Dst.Name,
                     Port = request.Dst.Port
                 },
                 AllSteps = new List<ConnectionStep>()
@@ -305,13 +306,13 @@ namespace Cc
 
             ends.Add(new LrmDestination
             {
-                Node = request.Src.Node,
+                Name = request.Src.Name,
                 Port = request.Src.Port
             });
 
             ends.Add(new LrmDestination
             {
-                Node = request.Dst.Node,
+                Name = request.Dst.Name,
                 Port = request.Dst.Port
             });
 
@@ -320,7 +321,7 @@ namespace Cc
                 Id = actual.Id,
                 Protocol = "route",
                 Ends = ends,
-                Domian = Domain
+                Domain = this.Domain
             };
             ConsoleLogger.PrintRouteTableQuery(sc);
             RcSender.SendToRc(JsonConvert.SerializeObject(sc));
@@ -328,7 +329,7 @@ namespace Cc
 
         private string GenerateConnectionId(HigherLevelConnectionRequest request)
         {
-            return request.Src.Node + request.Src.Port + request.Dst.Node + request.Dst.Port;
+            return request.Src.Name + request.Src.Port + request.Dst.Name + request.Dst.Port;
         }
 
         private void CallTeardown(HigherLevelConnectionRequest request)
@@ -350,13 +351,20 @@ namespace Cc
 
         private void HandleRoutingData(string data, AsyncCommunication async)
         {
-            RouteResponse snpp = JsonConvert.DeserializeObject<RouteResponse>(data);
-            NetworkConnection actualNetworkConn = Connections[snpp.Id];
+            if (data != "ERROR")
+            {
+                RouteResponse snpp = JsonConvert.DeserializeObject<RouteResponse>(data);
+                NetworkConnection actualNetworkConn = Connections[snpp.Id];
 
-            ConnectionRequest conn = GetMyConnection(snpp, actualNetworkConn);
-            actualNetworkConn.ActualLevelConnection = conn;
+                ConnectionRequest conn = GetMyConnection(snpp, actualNetworkConn);
+                actualNetworkConn.ActualLevelConnection = conn;
 
-            SendConnectionReq(conn, ReqType.CONNECTION_REQUEST);
+                SendConnectionReq(conn, ReqType.CONNECTION_REQUEST);
+            }
+            else
+            {
+                Console.WriteLine(data);
+            }
         }
 
         private void SendConnectionReq(ConnectionRequest request, ReqType type)
@@ -426,12 +434,12 @@ namespace Cc
 
                         actualConn.AddSubconnection(id, new LrmSnp
                         {
-                            Node = previous.Node,
+                            Name = previous.Node,
                             Port = previous.Ports[0]
                         },
                         new LrmSnp
                         {
-                            Node = actual.Node,
+                            Name = actual.Node,
                             Port = actual.Ports[0]
                         }, previous.Domain);
                     }
@@ -582,7 +590,7 @@ namespace Cc
             foreach (ConnectionStep snp in allSteps)
             {
                 //Edge has only one value as port
-                if (snp.Node == lrmSnp.Node && snp.Ports[0].Number == lrmSnp.Port)
+                if (snp.Node == lrmSnp.Name && snp.Ports[0].Number == lrmSnp.Port)
                 {
                     return index;
                 }

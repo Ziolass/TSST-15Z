@@ -351,13 +351,13 @@ namespace LRM
             return new LrmToken
             {
 
-                Tag = token.Reciver.Node,
+                Tag = token.Reciver.Name,
                 SenderPort = token.Reciver.Port,
                 StmMaxIndex = token.StmMaxIndex,
                 Reciver = new LrmDestination
                 {
 
-                    Node = token.Tag,
+                    Name = token.Tag,
                     Port = token.SenderPort
                 }
             };

@@ -8,6 +8,6 @@ namespace ConectionController.Communication.ReqResp
         public string Id { get; set; }
         public string Protocol { get; set; }
         public List<LrmDestination> Ends { get; set; }
-        public string Domian { get; set; }
+        public string Domain { get; set; }
     }
 }
