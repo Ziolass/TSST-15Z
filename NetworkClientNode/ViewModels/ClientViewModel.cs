@@ -18,6 +18,7 @@ namespace NetworkClientNode.ViewModels
         public ObservableCollection<StreamDataViewModel> Streams { get; set; }
         public string MessageSendText { get; set; }
         public ExternalCommand SendMessage { get; set; }
+        public ExternalCommand Connect { get; set; }
         private StreamDataViewModel selectedStream;
         public StreamDataViewModel SelectedStream
         {
@@ -78,6 +79,7 @@ namespace NetworkClientNode.ViewModels
                 this.ClientSetUpProccess.ClientNode.StreamRemoved += new StreamChangedHandler(OnStreamRemoved);
                 this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
                 this.SendMessage = new ExternalCommand(SendNewMessage, true);
+                this.Connect = new ExternalCommand(ConnectNew, true);
             }
             catch (Exception e)
             {
@@ -142,6 +144,10 @@ namespace NetworkClientNode.ViewModels
         {
             this.ClientSetUpProccess.ClientNode.SelectStream(this.selectedStream.StreamData);
             this.ClientSetUpProccess.ClientNode.SendData(this.MessageSendText);
+        }
+        private void ConnectNew()
+        {
+
         }
         private void RisePropertyChange(object sender, String property)
         {
