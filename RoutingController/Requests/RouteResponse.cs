@@ -25,7 +25,6 @@ namespace RoutingController.Requests
     {
         public string Id { get; set; }
         public string Protocol { get; private set; }
-        public string Id { get; set; }
         public List<Ends> Ends { get; set; }
         public List<SNP> Steps { get; set; }
 

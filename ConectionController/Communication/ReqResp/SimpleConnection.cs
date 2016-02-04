@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetworkNode.LRM.Communication;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace ConectionController.Communication.ReqResp
     {
         public string Id { get; set; }
         public string Protocol { get; set; }
-        public string Source { get; set; }
-        public string Destination { get; set; }
+        public List<LrmDestination> Ends { get; set; }
+        public string Domian { get; set; }
     }
 }

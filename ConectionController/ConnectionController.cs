@@ -116,6 +116,8 @@ namespace Cc
             Console.WriteLine("CONNECTION REQUEST IN - RUNNING");
             PeerCoordinationServer.Start();
             Console.WriteLine("PEER COORDINATION IN - RUNNING");
+            RcSender.ConnectToRc();
+            Console.WriteLine("ROUTE TABLE QUERY OUT - RUNNING");
             
         }
         public void HandleNccData(string data, AsyncCommunication async)
@@ -241,13 +243,13 @@ namespace Cc
             LrmSnp beginning = new LrmSnp
             {
                 Index = lastIndex,
-                 Name = peerGateway.Node,
+                 Node = peerGateway.Node,
                  Port = peerGateway.Port
             };
 
             LrmSnp end = new LrmSnp
             {
-                Name = nc.End2.Node,
+                Node = nc.End2.Node,
                 Port = nc.End2.Port
             };
 
@@ -266,12 +268,12 @@ namespace Cc
             {
                 End1 = new Termination
                 {
-                    Node = request.Src.Name,
+                    Node = request.Src.Node,
                     Port = request.Src.Port
                 },
                 End2 = new Termination
                 {
-                    Node = request.Dst.Name,
+                    Node = request.Dst.Node,
                     Port = request.Dst.Port
                 },
                 AllSteps = new List<ConnectionStep>()
@@ -294,13 +296,26 @@ namespace Cc
             {
                 actual.PeerCoordination = async;
             }
+            
+            List<LrmDestination> ends = new List<LrmDestination>();
+            
+            ends.Add(new LrmDestination{
+                Node = request.Src.Node, 
+                Port = request.Src.Port
+            });
+            
+            ends.Add(new LrmDestination
+            {
+                Node = request.Dst.Node,
+                Port = request.Dst.Port
+            });
 
             SimpleConnection sc = new SimpleConnection
             {
                 Id = actual.Id,
-                Protocol = "query",
-                Source = request.Src.Name + ":" + request.Src.Port,
-                Destination = request.Dst.Name + ":" + request.Dst.Port
+                Protocol = "route",
+                Ends = ends,
+                Domian = Domain
             };
 
             RcSender.SendToRc(JsonConvert.SerializeObject(sc));
@@ -309,7 +324,7 @@ namespace Cc
 
         private string GenerateConnectionId(HigherLevelConnectionRequest request)
         {
-            return request.Src.Name + request.Src.Port + request.Dst.Name + request.Dst.Port;
+            return request.Src.Node + request.Src.Port + request.Dst.Node + request.Dst.Port;
         }
 
 
@@ -393,12 +408,12 @@ namespace Cc
 
                         actualConn.AddSubconnection(id, new LrmSnp
                         {
-                            Name = previous.Node,
+                            Node = previous.Node,
                             Port = previous.Ports[0]
                         },
                         new LrmSnp
                         {
-                            Name = actual.Node,
+                            Node = actual.Node,
                             Port = actual.Ports[0]
                         }, previous.Domain);
                     }
@@ -539,7 +554,7 @@ namespace Cc
             foreach (ConnectionStep snp in allSteps)
             {
                 //Edge has only one value as port
-                if (snp.Node == lrmSnp.Name && snp.Ports[0].Number == lrmSnp.Port)
+                if (snp.Node == lrmSnp.Node && snp.Ports[0].Number == lrmSnp.Port)
                 {
                     return index;
                 }
