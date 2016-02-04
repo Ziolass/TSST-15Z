@@ -2,7 +2,9 @@
 <cc peer-coordination="50000" 
 ncc-tcp="40000" 
 rc-tcp="8100"
-notifier="">
+notifier=""
+lrm-tcp="22000"
+domain="domainA">
 	<domians number="2">
 		<domian index="0" name="domianB"/>
 		<domian index="1" name="domianA"/>
