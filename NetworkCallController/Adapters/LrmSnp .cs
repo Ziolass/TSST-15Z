@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace NetworkCallController.Adapters
 {
-    class LrmSnp
+    class LrmSnp: LrmDestination
     {
+        public string Index { get; set; }
+
     }
 }

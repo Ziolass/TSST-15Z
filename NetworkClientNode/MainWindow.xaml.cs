@@ -36,7 +36,6 @@ namespace NetworkClientNode
             
             DataContext = this;
             MyTitle = "Client" + args[2];
-            cpcc = new CallingPartyCallController(args[3]);
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

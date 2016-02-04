@@ -5,7 +5,7 @@
         Closing="Window_Closing"
         Title="{Binding MyTitle}" 
         Height="511" 
-        Width="550">
+        Width="722.5">
     <Window.Resources>
         <local:ClientViewModel x:Key="ClientViewModel"/>
     </Window.Resources>
@@ -16,7 +16,7 @@
                  SelectedItem="{Binding SelectedStream, UpdateSourceTrigger=PropertyChanged, Source={StaticResource ClientViewModel}}"/>
         <TextBox HorizontalAlignment="Left" Height="91" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="374" RenderTransformOrigin="1.258,1" Margin="158,41,0,0"
                  Text="{Binding MessageSendText, Source={StaticResource ClientViewModel}}"/>
-        <Button Content="Wyślij" HorizontalAlignment="Right" Margin="0,137,10,0" VerticalAlignment="Top" Width="75" Height="26"
+        <Button Content="Wyślij" HorizontalAlignment="Right" Margin="0,137,184,0" VerticalAlignment="Top" Width="75" Height="26"
                  Command="{Binding SendMessage, Source={StaticResource ClientViewModel}}"
                 IsEnabled="{Binding SelectedItems.Count, ElementName=streamsList}"
                 />
@@ -26,7 +26,7 @@
         <TextBox HorizontalAlignment="Left" Height="116" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="522" RenderTransformOrigin="1.258,1" Margin="10,354,0,0"
                  Text="{Binding MessageConsoleText, UpdateSourceTrigger=PropertyChanged, Source={StaticResource ClientViewModel}}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"/>
-        <Label Content="Wiadomości odebrane" HorizontalAlignment="Right" Margin="0,137,90,0" VerticalAlignment="Top" Width="294"/>
+        <Label Content="Wiadomości odebrane" HorizontalAlignment="Right" Margin="0,137,260,0" VerticalAlignment="Top" Width="294"/>
         <Label Content="Wiadomości" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="374"/>
         <Label Content="Zasoby" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="143"/>
         <Label Content="Konsola" HorizontalAlignment="Left" Margin="10,323,0,0" VerticalAlignment="Top" Width="143"/>

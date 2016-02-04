@@ -18,7 +18,7 @@ namespace NetworkClientNode.CPCC
         public CallingPartyCallController(string id)
         {
             connectedClientsList = new List<string>();
-            ConsoleManager.Show();
+           // ConsoleManager.Show();
             readConfig(id);
             chandler = new ConnectionHandler(localPort, this);
         }

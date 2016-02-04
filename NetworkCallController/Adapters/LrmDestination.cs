@@ -8,5 +8,7 @@ namespace NetworkCallController.Adapters
 {
     class LrmDestination
     {
+        public string Name { get; set; }
+        public string Port { get; set; }
     }
 }
