@@ -86,7 +86,7 @@ namespace NetworkClientNode.ViewModels
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                this.messageRecivedText += DateTime.Now + "\n" + e.Message;
             }
         }
 
