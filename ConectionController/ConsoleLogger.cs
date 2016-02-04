@@ -1,6 +1,7 @@
 ﻿using ConectionController.Communication.ReqResp;
 using LRM.Communication;
 using NetworkNode.LRM.Communication;
+using RoutingController.Elements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +53,20 @@ namespace ConectionController
             }
         }
 
+        public static void PrintSNPP(List<SNP> snpp)
+        {
+            foreach (SNP snp in snpp)
+            {
+                foreach (string port in snp.Ports)
+                {
+                    if (port != null)
+                    {
+                        Log("Snpp : " + snp.Node + " at port " + port + " at domain " + snp.Domain);
+                    }
+                }
+                Log("");
+            }
+        }
 
     }
 }

@@ -87,7 +87,7 @@ namespace Cc
 
             NccServer = new NccServer(nccPort, HandleNccData);
             RcSender = new RcClinet(rcPort, HandleRoutingData);
-            LrmClient = new LrmClient(lrmPort, HandleConnectionAns);
+            LrmClient = new LrmClient(lrmPort, HandleLrmData);
             Connections = new Dictionary<string, NetworkConnection>();
             SubnetworkCc = new Dictionary<string, CcClient>();
             PeerCoordinationServer = new CcServer(peerCoordinationServer, HandlePeerData);
@@ -108,7 +108,7 @@ namespace Cc
 
             foreach (string ccDomain in peers.Keys)
             {
-                PeerCoordinators.Add(ccDomain, new CcClient(ccPorts[ccDomain], HandlePeerData));
+                PeerCoordinators.Add(ccDomain, new CcClient(ccPorts[ccDomain], HandlePeerAns));
             }
         }
 
@@ -272,6 +272,7 @@ namespace Cc
 
         private void ConnectionRequest(HigherLevelConnectionRequest request, AsyncCommunication async)
         {
+            ConsoleLogger.PrintConnectionRequest(request);
             NetworkConnection actual = new NetworkConnection
             {
                 End1 = new Termination
@@ -325,9 +326,8 @@ namespace Cc
                 Ends = ends,
                 Domian = Domain
             };
-
+            ConsoleLogger.PrintRouteTableQuery(sc);
             RcSender.SendToRc(JsonConvert.SerializeObject(sc));
-
         }
 
         private string GenerateConnectionId(HigherLevelConnectionRequest request)
@@ -368,12 +368,18 @@ namespace Cc
         private void SendConnectionReq(ConnectionRequest request, ReqType type)
         {
             request.Type = type.ToString();
+            Console.WriteLine();
+            Console.WriteLine("Link Connection Request");
             LrmClient.SendToLrm(JsonConvert.SerializeObject(request));
         }
 
         private ConnectionRequest GetMyConnection(RouteResponse snpp, NetworkConnection actualConn)
         {
             List<ConnectionStep> steps = new List<ConnectionStep>();
+            Console.WriteLine();
+            Console.WriteLine("SNPP :");
+            Console.WriteLine(TextUtils.Dash);
+            ConsoleLogger.PrintSNPP(snpp.Steps);
 
             for (int i = 0; i < snpp.Steps.Count; i++)
             {
@@ -444,12 +450,17 @@ namespace Cc
             }
 
             actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
-
-            return new ConnectionRequest
+            ConnectionRequest req = new ConnectionRequest
             {
                 Steps = steps,
                 Id = actualConn.Id
             };
+            Console.WriteLine();
+            Console.WriteLine("My domain snpp : ");
+            Console.WriteLine(TextUtils.Dash);
+
+            ConsoleLogger.PrintConnection(req, false);
+            return req;
 
         }
 
@@ -466,19 +477,16 @@ namespace Cc
 
         private void HandleLrmData(string data, AsyncCommunication async)
         {
-
-            if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
-            {
-                HandleConnectionAns(data, async);
-            }
-        }
-
-        private void HandleConnectionAns(string data, AsyncCommunication async)
-        {
             ConnectionRequest reqResp = JsonConvert.DeserializeObject<ConnectionRequest>(data);
             string connectionId = reqResp.Id;
             NetworkConnection actual = Connections[connectionId];
             actual.ActualLevelConnection = reqResp;
+            
+            Console.WriteLine();
+            Console.WriteLine("Allocated snp");
+            Console.WriteLine(TextUtils.Dash);
+            ConsoleLogger.PrintConnection(reqResp, true);
+
 
             if (actual.SubConnections.Count == 0 && actual.DstGateway == null)
             {
@@ -522,6 +530,10 @@ namespace Cc
                     };
 
                     SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
+                    Console.WriteLine();
+                    Console.WriteLine("Connection Request to CC at " + domian);
+                    Console.WriteLine(TextUtils.Dash);
+                    ConsoleLogger.PrintConnectionRequest(request);
                 }
             }
             else
