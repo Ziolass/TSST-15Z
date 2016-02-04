@@ -29,7 +29,6 @@
                  Text="{Binding MessageConsoleText, UpdateSourceTrigger=PropertyChanged, Source={StaticResource ClientViewModel}}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"/>
         <Label Content="Wiadomości odebrane"  HorizontalAlignment="Left" Margin="158,168,0,0" VerticalAlignment="Top" Width="160"/>
-        <Label Content="Wiadomości" HorizontalAlignment="Left" Margin="158,10,0,0" VerticalAlignment="Top" Width="407" />
         <Label Content="Zasoby" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="143"/>
         <Label Content="Konsola" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Width="143"/>
         <Button Content="Połącz" 
@@ -45,6 +44,7 @@
                  Margin="218,41,90,0" 
                  TextWrapping="Wrap"
                  VerticalAlignment="Top"
+                Padding="5"
                  Text="{Binding ClientToConnect, Source={StaticResource ClientViewModel}}"
                  />
     </Grid>
