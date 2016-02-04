@@ -1,4 +1,4 @@
-﻿using LRM.Communication;
+using LRM.Communication;
 using NetworkNode.LRM;
 using NetworkNode.LRM.Communication;
 using Newtonsoft.Json;
@@ -146,8 +146,8 @@ namespace LRM
 
         public void RunServer()
         {
-            LrmServer.Start();
             RcClinet.ConnectToRc();
+            LrmServer.Start();
         }
 
         private string WrapWithHeader(LrmCommunicationType comm, LrmHeader header, string data)
@@ -350,11 +350,13 @@ namespace LRM
         {
             return new LrmToken
             {
+
                 Tag = token.Reciver.Node,
                 SenderPort = token.Reciver.Port,
                 StmMaxIndex = token.StmMaxIndex,
                 Reciver = new LrmDestination
                 {
+
                     Node = token.Tag,
                     Port = token.SenderPort
                 }

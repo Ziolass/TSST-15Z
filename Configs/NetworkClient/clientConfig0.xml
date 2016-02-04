@@ -2,13 +2,12 @@
 <client>
   <network level="VC32" />
   <port local="1" tcp="3000" stm="STM1"/>
-  <node name="clientA"/>
+  <node name="client1"/>
   <managment-port number ="9900"/>
   <cloud-server tcp="6000"/>
   <lrm-client tcp="22000"/>
-	<domians number="2">
+	<domians number="1">
 		<domian index="0" name="domianA"/>
-		<domian index="1" name="domianB"/>
 	</domians>
 </client>
 

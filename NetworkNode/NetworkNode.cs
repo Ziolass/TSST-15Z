@@ -1,4 +1,4 @@
-﻿using NetworkNode.HPC;
+using NetworkNode.HPC;
 using NetworkNode.LRM;
 using NetworkNode.LRM.Communication;
 using NetworkNode.MenagmentModule;

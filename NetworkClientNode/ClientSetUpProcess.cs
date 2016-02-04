@@ -27,6 +27,8 @@ namespace NetworkClientNode
         public event StreamsCreatedHandler StreamsCreated;
         public event StreamCreatedHandler StreamCreated;
 
+        public string ClientName { get; set; }
+
         public ClientSetUpProcess(string configurationFilePath)
         {
             this.ConfigurationFilePath = configurationFilePath;
@@ -43,6 +45,8 @@ namespace NetworkClientNode
             }
             this.ElementConfigurator = new ElementConfigurator(this.ConfigurationFilePath);
             this.ClientNode = ElementConfigurator.ConfigureNode();
+
+            this.ClientName = this.ClientNode.Id;
             if (this.ClientNode.GetStreamData() != null && this.ClientNode.GetStreamData().Count != 0)
             {
                 if (StreamsCreated != null)

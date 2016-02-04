@@ -9,6 +9,7 @@ using NetworkClientNode.Adaptation;
 using NetworkClientNode.ViewModelUtils;
 using System.Windows.Input;
 using NetworkClientNode.CPCC;
+using System.Threading;
 
 namespace NetworkClientNode.ViewModels
 {
@@ -44,13 +45,14 @@ namespace NetworkClientNode.ViewModels
             get { return messageConsoleText; }
             set { messageConsoleText = value; }
         }
-        
+
+        private string clientName;
+
         public string ClientName
         {
-            get { return this.ClientSetUpProccess.ClientNode.Id; }
+            get { return clientName; }
+            set { clientName = value; }
         }
-        
-
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -64,16 +66,15 @@ namespace NetworkClientNode.ViewModels
         {
             try
             {
-                //var args = Environment.GetCommandLineArgs();
-                string[] args = { "0", "0", "0", "0" };
+                var args = Environment.GetCommandLineArgs();
                 int i = 0; //This is dumy variable for TryParse
                 if (args.Length < 2)
                     throw new Exception("Wrong application start argument");
-                else if (!int.TryParse(args[1], out i))
-                    throw new Exception("Wrong application start argument");
-                this.cpcc = new CallingPartyCallController(args[3],this);
+
+                this.cpcc = new CallingPartyCallController(args[1], this);
                 this.Streams = new ObservableCollection<StreamDataViewModel>();
                 this.ClientSetUpProccess = new ClientSetUpProcess("..\\..\\..\\Configs\\NetworkClient\\clientConfig" + args[1] + ".xml");
+                this.ClientName = this.ClientSetUpProccess.ClientName;
                 this.ClientSetUpProccess.StreamsCreated += new StreamsCreatedHandler(OnStreamsCreated);
                 this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
                 this.ClientSetUpProccess.StartClientProcess();
@@ -149,8 +150,8 @@ namespace NetworkClientNode.ViewModels
         }
         private void ConnectNew()
         {
-            
-            this.messageRecivedText += DateTime.Now + ": " + cpcc.callRequest(this.ClientToConnect)+"\n";
+            var test = cpcc.callRequest(this.ClientToConnect);
+            this.messageRecivedText += DateTime.Now + ": " + test + "\n";
             RisePropertyChange(this, "MessageRecivedText");
         }
         public void RisePropertyChange(object sender, String property)

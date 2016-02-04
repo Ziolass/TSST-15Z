@@ -19,7 +19,7 @@ namespace RoutingController
 
                 Console.WriteLine("Routing Controller Console");
                 Console.WriteLine("Main domain: {0}", RC.NetworkName);
-                
+
                 new Thread(delegate()
                 {
                     RC.StartListening();
@@ -39,6 +39,10 @@ namespace RoutingController
             catch (Exception exp)
             {
                 Console.WriteLine(exp.ToString());
+            }
+            finally
+            {
+                Console.ReadLine();
             }
         }
         private static void startReadingCommands(RoutingControllerCenter rc)

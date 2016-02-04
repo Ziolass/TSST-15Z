@@ -1,4 +1,4 @@
-﻿using NetworkNode;
+using NetworkNode;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace LRM
     {
         static void Main(string[] args)
         {
-            String id = "0";//args[0];
+            String id = args[0];
             ElementConfigurator configurator = new ElementConfigurator("..\\..\\..\\Configs\\LRM\\lrmConfig" + id + ".xml");
             LinkResourceManager lrm = configurator.configureNode();
             Console.ReadLine();

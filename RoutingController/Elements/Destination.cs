@@ -1,4 +1,4 @@
-﻿
+
 using Newtonsoft.Json;
 using RoutingController.Interfaces;
 using System;
@@ -34,10 +34,10 @@ namespace RoutingController.Elements
             this.Port = port;
             this.Type = DestinationType.LOCAL;
         }
-        public Destination(string scope, string node, string port, DestinationType type)
+        public Destination(string scope, string name, string port, DestinationType type)
         {
             this.Scope = scope;
-            this.Node = node;
+            this.Node = name;
             this.Port = port;
             this.Type = type;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -65,6 +65,7 @@ namespace LRM
 
         private void ReadCallback(IAsyncResult ar)
         {
+
             PacketsReceived.Set();
             String content = String.Empty;
             StateObject state = (StateObject)ar.AsyncState;
