@@ -4,7 +4,7 @@
 	<port local="1" tcp="5030" stm="STM1"/>
 	<port local="2" tcp="5031" stm="STM1"/>
 	<cloud-server tcp="6000"/>
-	<managment-port number="7003"/>
+	<managment-port number="7000"/>
 	<lrm-client tcp="22000"/>
 	<domians number="1">
 		<domian index="0" name="domainA"/>

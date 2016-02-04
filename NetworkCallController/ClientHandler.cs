@@ -1,4 +1,4 @@
-﻿using NetworkCallController.Adapters;
+using NetworkCallController.Adapters;
 using NetworkCallController.SocketUtils;
 using Newtonsoft.Json;
 using System;
@@ -33,8 +33,8 @@ namespace NetworkCallController
             Byte[] sendBytes = null;
             string serverResponse = null;
 
-            try
-            {
+            //try
+            //{
 
                 int bytesRec = clientSocket.Client.Receive(bytesFrom);
                 dataFromClient = Encoding.ASCII.GetString(bytesFrom, 0, bytesRec);
@@ -49,11 +49,11 @@ namespace NetworkCallController
                 clientSocket.Client.Send(sendBytes);
 
 
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: " + e.Data);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine("Error: " + e.Data);
+            //}
             clientSocket.Client.Shutdown(SocketShutdown.Both);
             clientSocket.Client.Close();
 

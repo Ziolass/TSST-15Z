@@ -87,8 +87,8 @@ namespace RoutingController.Service
         /// <returns></returns>
         private string PerformAction(string request)
         {
-            //try
-            //{
+            try
+            {
                 ActionType actionType = OperationType(request);
                 if (actionType == ActionType.LocalTopology)
                 {
@@ -127,12 +127,12 @@ namespace RoutingController.Service
                     return "OK";
                 }
                 else return "ERROR";
-            //}
-            //catch (Exception exp)
-            //{
-            //    Console.WriteLine(exp.Message);
-            //    return "ERROR";
-            //}
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine(exp.Message);
+                return "ERROR";
+            }
         }
 
         /// <summary>

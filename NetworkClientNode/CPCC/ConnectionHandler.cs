@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,8 +63,6 @@ namespace NetworkClientNode.CPCC
                 byte[] msg = Encoding.ASCII.GetBytes(command);
                 commandSocket.Connect(endPoint);
                 commandSocket.Send(msg);
-
-
 
                 bytes = new byte[1024];
                 int bytesRec = commandSocket.Receive(bytes);

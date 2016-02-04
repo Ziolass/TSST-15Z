@@ -25,26 +25,10 @@ namespace NetworkClientNode
         public MainWindow()
         {
             InitializeComponent();
-            //var args = Environment.GetCommandLineArgs();
-            string[] args = { "0", "0", "0" };
-            int i = 0; //This is dumy variable for TryParse
-            
-            if (args.Length < 3)
-                throw new Exception("Wrong application start argument");
-            else if (!int.TryParse(args[1], out i))
-                throw new Exception("Wrong application start argument");
-            
-            DataContext = this;
-            MyTitle = "Client" + args[2];
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Environment.Exit(0);
-        }
-
-        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
     }
 }
