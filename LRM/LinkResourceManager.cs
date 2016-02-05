@@ -22,6 +22,7 @@ namespace LRM
         private bool InitPahse;
         private AllocationRegister AllocationRegister;
         private AsyncCommunication HighestCc;
+        private object GetLocalTopologyLock = new object();
 
 
         public LinkResourceManager(int serverPort, int rcPort, int ccPort, string domianScope)
@@ -117,10 +118,13 @@ namespace LRM
 
         public void HandleNodeConnection(string NodeName)
         {
-            if (LocalTopologyRaport == null)
+            lock (GetLocalTopologyLock)
             {
-                LocalTopologyRaport = new Thread(new ThreadStart(SendLocalTopology));
-                LocalTopologyRaport.Start();
+                if (LocalTopologyRaport == null)
+                {
+                    LocalTopologyRaport = new Thread(new ThreadStart(SendLocalTopology));
+                    LocalTopologyRaport.Start();
+                }
             }
 
             AsyncCommunication async = LrmRegister.ConnectedNodes[NodeName].Async;
