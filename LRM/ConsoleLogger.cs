@@ -19,7 +19,7 @@ namespace LRM
 
             foreach (VirtualNode node in register.Values)
             {
-                string domain = node.DomiansHierarchy[0];
+                string domain = node.DomiansHierarchy[0] != null ? node.DomiansHierarchy[0] : "??";
                 if (!nodesForDomain.ContainsKey(domain))
                 {
                     nodesForDomain.Add(domain, new List<VirtualNode>());

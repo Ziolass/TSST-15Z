@@ -19,7 +19,7 @@ namespace LRM
         {
             foreach (VirtualNode node in ConnectedNodes.Values)
             {
-                if (node.Async.Equals(ac))
+                if (node.Async != null && node.Async.Equals(ac))
                 {
                     return node;
                 }

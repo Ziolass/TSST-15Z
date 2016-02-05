@@ -182,7 +182,7 @@ namespace Cc
         public void HandleCcData(string data, AsyncCommunication async)
         {
             CcResponse response = JsonConvert.DeserializeObject<CcResponse>(data);
-
+            Console.WriteLine(response.Type +" " + response.Response);
             if (response.Response.Contains("call-mallfunction") || response.Response.Equals("ERROR"))
             {
                 if (SecretNccNotifier != null)

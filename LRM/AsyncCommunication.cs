@@ -99,24 +99,31 @@ namespace LRM
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("ReadCallback");
+                Console.WriteLine(e);
             }
         }
-
+        object sendingLock = new object();
         public void Send(String data)
         {
-            try
+            Console.WriteLine("Entering send");
+            lock (sendingLock)
             {
-                byte[] byteData = Encoding.ASCII.GetBytes(data);
-                PacketsSend.Reset();
-                StateObject state = new StateObject();
-                AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
-                    new AsyncCallback(SendCallback), null);
-                PacketsSend.WaitOne();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
+                
+                try
+                {
+                    byte[] byteData = Encoding.ASCII.GetBytes(data);
+                    PacketsSend.Reset();
+                    StateObject state = new StateObject();
+                    AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
+                        new AsyncCallback(SendCallback), null);
+                    PacketsSend.WaitOne();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Send:");
+                    Console.WriteLine(e);
+                }
             }
         }
 
@@ -125,6 +132,7 @@ namespace LRM
             try
             {
                 int bytesSent = AsyncSocket.EndSend(ar);
+                Console.WriteLine("Data Send");
                 PacketsSend.Set();
             }
             catch (Exception e)
