@@ -16,7 +16,7 @@ namespace NetworkClientNode.ViewModels
     public class ClientViewModel : INotifyPropertyChanged
     {
         private ClientSetUpProcess ClientSetUpProccess;
-        private CallingPartyCallController cpcc;
+        private CallingPartyCallController Cpcc;
         public ObservableCollection<StreamDataViewModel> Streams { get; set; }
         public string MessageSendText { get; set; }
         public string ClientToConnect { get; set; }
@@ -56,6 +56,8 @@ namespace NetworkClientNode.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public string NextConnectionClient { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientViewModel" /> class.
         /// </summary>
@@ -71,38 +73,40 @@ namespace NetworkClientNode.ViewModels
                 if (args.Length < 2)
                     throw new Exception("Wrong application start argument");
 
-                this.cpcc = new CallingPartyCallController(args[2], this);
+                this.Cpcc = new CallingPartyCallController(args[2], this);
                 this.Streams = new ObservableCollection<StreamDataViewModel>();
                 this.ClientSetUpProccess = new ClientSetUpProcess("..\\..\\..\\Configs\\NetworkClient\\clientConfig" + args[1] + ".xml");
                 this.ClientName = this.ClientSetUpProccess.ClientName;
-                this.ClientSetUpProccess.StreamsCreated += new StreamsCreatedHandler(OnStreamsCreated);
-                this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
+                //this.ClientSetUpProccess.StreamsCreated += new StreamsCreatedHandler(OnStreamsCreated);
+                //this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
                 this.ClientSetUpProccess.StartClientProcess();
-                this.ClientSetUpProccess.ClientNode.StreamAdded += new StreamChangedHandler(OnStreamAdded);
-                this.ClientSetUpProccess.ClientNode.StreamRemoved += new StreamChangedHandler(OnStreamRemove);
+                //this.ClientSetUpProccess.ClientNode.StreamAdded += new StreamChangedHandler(OnStreamAdded);
+                //this.ClientSetUpProccess.ClientNode.StreamRemoved += new StreamChangedHandler(OnStreamRemove);
                 this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
 
                 this.ClientSetUpProccess.ClientNode.Adaptation.AllocationClientStream += new AllocationClientStream(OnClientStreamAdd);
                 this.ClientSetUpProccess.ClientNode.Adaptation.DeallocationClientStream += new DeallocationClientStream(OnClientStreamRemove);
+
+                this.Cpcc.ConnectionEstablished += new ConnectionEstablished(OnConnectionEstablished);
+                this.Cpcc.ConnectionRemoved += new ConnectionRemoved(OnConnectionRemoved);
 
                 this.SendMessage = new ExternalCommand(SendNewMessage, true);
                 this.Connect = new ExternalCommand(ConnectNew, true);
             }
             catch (Exception e)
             {
-                this.messageConsoleText += DateTime.Now + "\n" + e.Message;
+                this.messageConsoleText += DateTime.Now + e.Message + "\n";
             }
         }
 
-        private void OnStreamRemove(StreamChangedArgs args)
+        private void OnConnectionRemoved(string connectionName)
         {
-            foreach (StreamData stream in args.Streams)
-            {
-                App.Current.Dispatcher.Invoke((Action)delegate
-                {
-                    this.Streams.Remove(new StreamDataViewModel(stream));
-                });
-            }
+
+        }
+
+        private void OnConnectionEstablished(string connectionName)
+        {
+            this.NextConnectionClient = connectionName;
         }
         private void OnClientStreamRemove(List<StreamData> args)
         {
@@ -110,7 +114,7 @@ namespace NetworkClientNode.ViewModels
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    this.Streams.Remove(new StreamDataViewModel(stream));
+                    this.Streams.Remove(new StreamDataViewModel(this.NextConnectionClient, stream));
                 });
             }
         }
@@ -125,48 +129,15 @@ namespace NetworkClientNode.ViewModels
             this.messageRecivedText += DateTime.Now + "\n" + data.ToString();
             RisePropertyChange(this, "MessageRecivedText");
         }
-
-
-
-        private void OnStreamAdded(StreamChangedArgs args)
-        {
-            foreach (StreamData stream in args.Streams)
-            {
-                App.Current.Dispatcher.Invoke((Action)delegate
-                {
-                    this.Streams.Add(new StreamDataViewModel(stream));
-                });
-            }
-        }
-
         private void OnClientStreamAdd(List<StreamData> args)
         {
             foreach (StreamData stream in args)
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    this.Streams.Add(new StreamDataViewModel(stream));
+                    this.Streams.Add(new StreamDataViewModel(this.NextConnectionClient, stream));
                 });
             }
-        }
-
-        /// <summary>
-        /// Called when streams created.
-        /// </summary>
-        private void OnStreamsCreated()
-        {
-            foreach (StreamData streamData in this.ClientSetUpProccess.ClientNode.GetStreamData())
-            {
-                this.Streams.Add(new StreamDataViewModel(streamData));
-            }
-        }
-        /// <summary>
-        /// Called when stream created.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        private void OnStreamCreated(StreamCreatedArgs args)
-        {
-            this.Streams.Add(new StreamDataViewModel(args.StreamData));
         }
         private void SendNewMessage()
         {
@@ -175,7 +146,7 @@ namespace NetworkClientNode.ViewModels
         }
         private void ConnectNew()
         {
-            var test = cpcc.callRequest(this.ClientToConnect);
+            var test = Cpcc.callRequest(this.ClientToConnect);
             this.messageConsoleText += DateTime.Now + ": " + test + "\n";
             RisePropertyChange(this, "MessageRecivedText");
         }
