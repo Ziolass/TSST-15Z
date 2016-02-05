@@ -133,7 +133,7 @@ namespace Cc
                 cc.ConnectToCc();
             }
             Console.WriteLine("CONNECTION REQUEST OUT - RUNNING");
-            Thread.Sleep(5000);
+            Thread.Sleep(10000);
 
             foreach (CcClient peer in PeerCoordinators.Values)
             {
