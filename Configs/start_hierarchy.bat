@@ -1,9 +1,12 @@
 cd WireCloud
 start cmd /c cloudStart.bat
 
+
 cd ..
 cd RoutingController
 start cmd /c routingControllerStart.bat
+
+
 cd ..
 cd Directory
 start cmd /c startDirectory0.bat
