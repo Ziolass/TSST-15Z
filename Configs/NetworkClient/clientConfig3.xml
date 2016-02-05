@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <client>
+  <network level="VC32" />
   <port local="1" tcp="3030" stm="STM1"/>
-  <node name="clientD"/>
+  <node name="client4"/>
   <managment-port number ="9903"/>
   <cloud-server tcp="6000"/>
+  <lrm-client tcp="22001"/>
+	<domians number="1">
+		<domian index="0" name="domainC"/>
+	</domians>
 </client>
 

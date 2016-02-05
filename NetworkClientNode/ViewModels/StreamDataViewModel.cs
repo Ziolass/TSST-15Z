@@ -12,9 +12,11 @@ namespace NetworkClientNode.ViewModels
     {
         public StreamData StreamData { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
+        public string ClientName { get; set; }
 
-        public StreamDataViewModel(StreamData streamData)
+        public StreamDataViewModel(string clientName, StreamData streamData)
         {
+            this.ClientName = clientName;
             this.StreamData = streamData;
         }
 
@@ -22,7 +24,8 @@ namespace NetworkClientNode.ViewModels
         {
             get
             {
-                return StreamData.Port + " " + StreamData.VcLevel + " " + StreamData.Stm + " [" + StreamData.HigherPath + "," + StreamData.LowerPath + "]";
+                return ClientName + "(" + StreamData.Port + " " + StreamData.VcLevel + " " + StreamData.Stm + " [" + StreamData.HigherPath + "," + StreamData.LowerPath + "])";
+                //return StreamData.Port + " " + StreamData.VcLevel + " " + StreamData.Stm + " [" + StreamData.HigherPath + "," + StreamData.LowerPath + "]";
             }
         }
         public void riseChangesToView()

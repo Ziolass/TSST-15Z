@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -101,7 +99,7 @@ namespace NetworkClientNode.CPCC
             {
                 cpcc.updateConsole("Zaakceptowano zestawienie polaczenia z " + foreignName);
                 cpcc.addToConnectedClients(foreignName.ToUpper());
-                return "call-accepted|";
+                return "call-accepted|" + foreignName.ToUpper();
             }
             
         }
