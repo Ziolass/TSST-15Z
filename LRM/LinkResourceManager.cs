@@ -106,6 +106,8 @@ namespace LRM
         {
             LrmResp response = JsonConvert.DeserializeObject<LrmResp>(data);
 
+
+
             if (AllocationRegister.ConfirmStep(response.ConnectionId, response.Id))
             {
                 AsyncCommunication async = AllocationRegister.GetComm(response.ConnectionId);
@@ -163,13 +165,13 @@ namespace LRM
             StringBuilder builder = new StringBuilder();
             builder.Append(comm);
             builder.Append("|");
-            
+
             if (!header.Equals(LrmHeader.NONE))
             {
                 builder.Append(header);
                 builder.Append("#");
             }
-            
+
             builder.Append(data);
             return builder.ToString();
         }
@@ -254,6 +256,9 @@ namespace LRM
                         }
                         port.Index = index.Value.ToString();
                     }
+                    string actualDomain = LrmRegister.ConnectedNodes[step.Node].DomiansHierarchy[0];
+                    Console.WriteLine("LRM at " + actualDomain + "allocated vc on " + port.Index + "index, on port " + step.Node);
+                    Console.WriteLine();
                 }
                 string stepId = connection.Id + step.Node + step.Ports.GetHashCode() as string;
 
@@ -274,17 +279,6 @@ namespace LRM
                 stepIndex++;
             }
         }
-        /*
-        private void CheckForwardAllocation(ConnectionStep actual, ConnectionStep next)
-        {
-
-        }
-
-        private void CheckBackwardAllocation(ConnectionStep actual, ConnectionStep previous)
-        {
-            VirtualNode actNode = LrmRegister.ConnectedNodes[actual.Node];
-
-        }*/
 
         private int? AllocNextEmpty(string node, int port)
         {
@@ -304,10 +298,6 @@ namespace LRM
             return index < 0 ? (int?)null : index;
         }
 
-        private void LocalTopology(List<int> changedPorts)
-        {
-
-        }
         private void LocalTopology()
         {
             List<TopologyData> nodes = new List<TopologyData>();
@@ -341,7 +331,7 @@ namespace LRM
                 Nodes = nodes
             };
 
-            Console.WriteLine(JsonConvert.SerializeObject(LocalTopology));
+            ConsoleLogg.PrintLocaLTopology(LrmRegister.ConnectedNodes);
             RcClinet.SendToRc(JsonConvert.SerializeObject(LocalTopology));
 
         }
@@ -352,6 +342,10 @@ namespace LRM
             LrmToken invertedToken = InvertToken(token);
             AssignToken(token);
             AssignToken(invertedToken);
+            if (!InitPahse)
+            {
+                LocalTopology();
+            }
         }
 
         private LrmToken InvertToken(LrmToken token)
