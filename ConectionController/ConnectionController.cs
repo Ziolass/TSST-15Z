@@ -127,6 +127,10 @@ namespace Cc
             LrmClient.ConnectToLrm();
             Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
             Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
+            foreach (CcClient cc in SubnetworkCc.Values)
+            {
+                cc.ConnectToCc();
+            }
         }
 
         public void HandleNccData(string data, AsyncCommunication async)
