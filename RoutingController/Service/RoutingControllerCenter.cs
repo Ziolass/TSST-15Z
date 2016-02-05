@@ -20,7 +20,7 @@ namespace RoutingController.Service
         public Socket WorkSocket = null;
 
         // Size of receive Buffer.
-        public const int BufferSize = 10000;
+        public const int BufferSize = 500000;
 
         // Receive Buffer.
         public byte[] Buffer = new byte[BufferSize];
@@ -229,7 +229,7 @@ namespace RoutingController.Service
         public void StartListening()
         {
             // Data Buffer for incoming data.
-            byte[] bytes = new Byte[10000];
+            byte[] bytes = new Byte[500000];
 
             // Establish the local endpoint for the socket.
             // The DNS name of the computer

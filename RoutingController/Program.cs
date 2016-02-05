@@ -26,11 +26,7 @@ namespace RoutingController
                 }).Start();
 
 
-
-                new Thread(delegate()
-                {
-                    startReadingCommands(RC);
-                }).Start();
+                startReadingCommands(RC);
 
 
 
