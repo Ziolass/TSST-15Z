@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MockupClient
 {
+    using ConectionController.Communication.ReqResp;
     using LRM.Communication;
     using NetworkNode.LRM.Communication;
     using Newtonsoft.Json;
@@ -55,7 +56,7 @@ namespace MockupClient
                     List<ConnectionStep> steps = new List<ConnectionStep>();
                     steps.Add(new ConnectionStep
                     {
-                        Node = "clientA",
+                        Node = "client1",
                         Ports = portsClientA
                     });
                     steps.Add(new ConnectionStep
@@ -70,10 +71,39 @@ namespace MockupClient
                         Type = ReqType.CONNECTION_REQUEST.ToString()
                         
                     });
-                    byte[] msg = Encoding.ASCII.GetBytes(File.ReadAllText(data));
+
+                    HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
+                    {
+                        Dst = new LrmSnp {
+                            Name = "node2",
+                            Port="1"
+                        },
+                        Src = new LrmSnp { 
+                            Name="client1",
+                            Port="1"
+                        },
+                        Type = "connection-request"
+                        
+                    };
+
+
+                    byte[] msg = Encoding.ASCII.GetBytes(textData);
                     int bytesSent = sender.Send(msg);
 
                     int bytesRec = sender.Receive(bytes);
+                    Console.ReadLine();
+                    steps[0].Ports[0].Index = "0";
+                    steps[1].Ports[0].Index = "0";
+                    steps[1].Ports[1].Index = "0";
+
+                    textData = JsonConvert.SerializeObject(new ConnectionRequest
+                    {
+                        Id = "TROLOLO",
+                        Steps = steps,
+                        Type = ReqType.DISCONNECTION_REQUEST.ToString()
+
+                    });
+
                     Console.WriteLine("Response:\n{0}\n",
                     Encoding.ASCII.GetString(bytes, 0, bytesRec));
                     sender.Shutdown(SocketShutdown.Both);
@@ -102,7 +132,7 @@ namespace MockupClient
 
         public static void Main(String[] args)
         {
-            StartClient("../../../Configs/RoutingController/testHierchy" + args[1] + ".json", int.Parse(args[0]));
+            StartClient("C:\\Users\\Michał\\Desktop\\CC_ARGS.json", int.Parse("22000"));
             //StartClient("../../../Configs/RoutingController/testHierchy.json", 8100);
             //StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");

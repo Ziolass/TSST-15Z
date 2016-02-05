@@ -4,35 +4,48 @@
         xmlns:local="clr-namespace:NetworkClientNode.ViewModels"   
         Closing="Window_Closing"
         Height="511" 
-        Width="722.5">
+        Width="583.167">
     <Window.Resources>
         <local:ClientViewModel x:Key="ClientViewModel"/>
     </Window.Resources>
     <Grid>
-        <ListBox HorizontalAlignment="Left" Height="277" Margin="10,41,0,0" VerticalAlignment="Top" Width="143" Name="streamsList"                 
+
+        <Label HorizontalAlignment="Left" VerticalAlignment="Top"  Content="Połącz z:" Margin="158,41,0,0"/>
+
+        <ListBox Width="143" Height="273" Margin="10,41,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Name="streamsList"                 
                  ItemsSource="{Binding Streams, Source={StaticResource ClientViewModel}}" 
                  DisplayMemberPath="Id"   
                  SelectedItem="{Binding SelectedStream, UpdateSourceTrigger=PropertyChanged, Source={StaticResource ClientViewModel}}"/>
-        <TextBox HorizontalAlignment="Left" Height="91" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="374" RenderTransformOrigin="1.258,1" Margin="158,41,0,0"
+        <TextBox  Height="91" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="1.258,1" Margin="158,72,10,0"
                  Text="{Binding MessageSendText, Source={StaticResource ClientViewModel}}"/>
-        <Button Content="Wyślij" HorizontalAlignment="Right" Margin="0,137,184,0" VerticalAlignment="Top" Width="75" Height="26"
+        <Button Content="Wyślij" HorizontalAlignment="Right" Margin="0,168,10,0" VerticalAlignment="Top" Width="75" Height="26"
                  Command="{Binding SendMessage, Source={StaticResource ClientViewModel}}"
                 IsEnabled="{Binding SelectedItems.Count, ElementName=streamsList}"
                 />
-        <TextBox HorizontalAlignment="Left" Height="150" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="374" RenderTransformOrigin="1.258,1" Margin="158,168,0,0"
+        <TextBox  Height="115" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="1.258,1" Margin="158,199,10,0"
                  Text="{Binding MessageRecivedText, UpdateSourceTrigger=PropertyChanged, Source={StaticResource ClientViewModel}}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"/>
-        <TextBox HorizontalAlignment="Left" Height="116" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="522" RenderTransformOrigin="1.258,1" Margin="10,354,0,0"
+        <TextBox IsReadOnly="True" TextWrapping="Wrap" RenderTransformOrigin="1.258,1" Margin="10,350,10,14"
                  Text="{Binding MessageConsoleText, UpdateSourceTrigger=PropertyChanged, Source={StaticResource ClientViewModel}}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"/>
-        <Label Content="Wiadomości odebrane" HorizontalAlignment="Right" Margin="0,137,260,0" VerticalAlignment="Top" Width="294"/>
-        <Label Content="Wiadomości" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="374"/>
+        <Label Content="Wiadomości odebrane"  HorizontalAlignment="Left" Margin="158,168,0,0" VerticalAlignment="Top" Width="160"/>
         <Label Content="Zasoby" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="143"/>
-        <Label Content="Konsola" HorizontalAlignment="Left" Margin="10,323,0,0" VerticalAlignment="Top" Width="143"/>
-        <Canvas HorizontalAlignment="Left" Height="429" Margin="537,41,0,0" VerticalAlignment="Top" Width="167" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-            <TextBox x:Name="textBox" Height="22" Canvas.Left="27" TextWrapping="Wrap" Canvas.Top="41" Width="120" Text="{Binding ClientToConnect, Source={StaticResource ClientViewModel}}"/>
-            <Label x:Name="label" Content="Połącz z:" Canvas.Left="58" Canvas.Top="10"/>
-            <Button x:Name="button" Content="Połącz" Canvas.Left="49" Canvas.Top="71" Width="75" Command="{Binding Connect, Source={StaticResource ClientViewModel}}"/>
-        </Canvas>
+        <Label Content="Konsola" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Width="143"/>
+        <Button Content="Połącz" 
+                HorizontalAlignment="Right" 
+                Margin="0,41,10,0" 
+                VerticalAlignment="Top" 
+                Width="75" 
+                Height="26"
+                 Command="{Binding Connect, Source={StaticResource ClientViewModel}}"
+                />
+        <TextBox 
+                 Height="26" 
+                 Margin="218,41,90,0" 
+                 TextWrapping="Wrap"
+                 VerticalAlignment="Top"
+                Padding="5"
+                 Text="{Binding ClientToConnect, Source={StaticResource ClientViewModel}}"
+                 />
     </Grid>
 </Window>

@@ -6,9 +6,9 @@
 </network-info>
 
 	<entries>
-		<entry username="JAN2" address ="50000"/>
-		<entry username="JAN1" address ="50008"/>  
-		<entry username="MICHAU" address ="50008"/>
+		<entry username="JAN2" address ="50000" physical-address="client1:1"/>
+		<entry username="JAN1" address ="50008" physical-address="client2:1"/>  
+		<entry username="MONIKA" address ="50010" physical-address="client3:1"/>
 	</entries>
 	
 </directory-config>

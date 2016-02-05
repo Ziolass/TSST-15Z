@@ -6,9 +6,7 @@
 </network-info>
 
 	<entries>
-		<entry username="ADAM" address ="60009"/>
-		<entry username="MONIKA" address ="60010"/>  
-		<entry username="KOMANDO" address ="60011"/>
+		<entry username="ADAM" address ="60009" physical-address="client4:1"/>
 	</entries>
 	
 </directory-config>

@@ -9,9 +9,6 @@ using RoutingController.Elements;
 using RoutingController.Requests;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cc
 {
@@ -19,6 +16,7 @@ namespace Cc
     {
         CLIENT, GATEWAY
     }
+
     public class Termination
     {
         public string Node { get; set; }
@@ -27,283 +25,443 @@ namespace Cc
         public string Type { get; set; }
         public string Domian { get; set; }
     }
- 
+
     public class NetworkConnection
     {
         public Termination End1 { get; set; }
         public Termination End2 { get; set; }
         public string Id { get; set; }
-        public List<SNP> AllSteps { get; set; }
+        public string MySubconnectionId { get; set; }
+        public AsyncCommunication PeerCoordination { get; set; }
+        public List<ConnectionStep> AllSteps { get; set; }
         public ConnectionRequest ActualLevelConnection { get; set; }
-        public Dictionary<SNP, SNP> ConnectionRequests { get; set; }
+        public Dictionary<string, Tuple<LrmSnp, LrmSnp>> SubConnections { get; set; }
+        public Dictionary<string, string> SubConnectionsDomians { get; set; }
+        public Dictionary<string, bool> SubConnectionsAvability { get; set; }
         public Termination DstGateway { get; set; }
         public Termination SrcGateway { get; set; }
+
+        public NetworkConnection()
+        {
+            SubConnections = new Dictionary<string, Tuple<LrmSnp, LrmSnp>>();
+            SubConnectionsDomians = new Dictionary<string, string>();
+            SubConnectionsAvability = new Dictionary<string, bool>();
+            PeerCoordination = null;
+        }
+
+        public void AddSubconnection(string id, LrmSnp src, LrmSnp dst, string domian)
+        {
+            SubConnections.Add(id, new Tuple<LrmSnp, LrmSnp>(src, dst));
+            SubConnectionsAvability.Add(id, false);
+            SubConnectionsDomians.Add(id, domian);
+        }
     }
+
     public class ConnectionController
     {
-        private Dictionary<string,NetworkConnection> Connections;
+        private Dictionary<string, NetworkConnection> Connections;
         private List<string> Domains;
         private string Domain;
-        //private CcClient parentCc;
-        private Dictionary<string, CcClient> LowerClients;
 
-        private NetworkNodeSender RcSender;
+        private Dictionary<string, CcClient> SubnetworkCc;
+
+        private Dictionary<string, CcClient> PeerCoordinators;
+
+        private RcClinet RcSender;
+        private NccServer NccServer;
+        private CcServer PeerCoordinationServer;
+
         private LrmClient LrmClient;
+        private LrmClient SecretNccNotifier;
 
         private NetworkConnection Actual;
-        public ConnectionController(int rcPort, Dictionary<string, int> lrmPorts, Dictionary<string, string> gateways)
+
+        public ConnectionController(string domain,
+            int rcPort,
+            Dictionary<string, int> ccPorts,
+            Dictionary<string, int> peers,
+            int peerCoordinationServer,
+            int nccPort,
+            int lrmPort,
+            int? notifier,
+            List<string> domains)
         {
-            int bufferSize = 6000;
-            RcSender = new NetworkNodeSender(rcPort, bufferSize);
+            this.Domain = domain;
+            NccServer = new NccServer(nccPort, HandleNccData);
+            RcSender = new RcClinet(rcPort, HandleRoutingData);
+            LrmClient = new LrmClient(lrmPort, HandleLrmData);
             Connections = new Dictionary<string, NetworkConnection>();
-        }
-        public string HandleNccData(string data)
-        {
-            string[] protocolDetails = data.Split('|');
-            List<string> arguments = new List<string>();
-            for (int i = 1; i < protocolDetails.Length; i++)
+            SubnetworkCc = new Dictionary<string, CcClient>();
+            PeerCoordinationServer = new CcServer(peerCoordinationServer, HandlePeerData);
+            PeerCoordinators = new Dictionary<string, CcClient>();
+
+            if (notifier != null)
             {
-                arguments.Add(protocolDetails[i]);
+                SecretNccNotifier = new LrmClient(notifier.Value, (string data, AsyncCommunication async) =>
+                {
+                    Console.WriteLine(data);
+                });
             }
+
+            foreach (string ccDomain in ccPorts.Keys)
+            {
+                SubnetworkCc.Add(ccDomain, new CcClient(ccPorts[ccDomain], HandleCcData));
+            }
+
+            foreach (string ccDomain in peers.Keys)
+            {
+                PeerCoordinators.Add(ccDomain, new CcClient(ccPorts[ccDomain], HandlePeerAns));
+            }
+        }
+
+        public void Start()
+        {
+            Console.WriteLine("INITIALIZATION");
+            Console.WriteLine(TextUtils.Dash);
+            NccServer.Start();
+            Console.WriteLine("CONNECTION REQUEST IN - RUNNING");
+            PeerCoordinationServer.Start();
+            Console.WriteLine("PEER COORDINATION IN - RUNNING");
+            RcSender.ConnectToRc();
+            Console.WriteLine("ROUTE TABLE QUERY OUT - RUNNING");
+            LrmClient.ConnectToLrm();
+            Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
+            Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
+        }
+
+        public void HandleNccData(string data, AsyncCommunication async)
+        {
+            HigherLevelConnectionRequest request = JsonConvert.DeserializeObject<HigherLevelConnectionRequest>(data);
+
             try
             {
-                switch (protocolDetails[0])
+                switch (request.Type)
                 {
                     case "connection-request":
                         {
-                            ConnectionRequest(arguments);
-                            return "OK|";
-                        }
-                    case "inter-connection-request":
-                        {
-                            InterConnectionRequest(arguments);
-                            return "OK|";
+                            ConnectionRequest(request, null);
+                            return;
                         }
                     case "call-teardown":
                         {
-                            CallTeardown(arguments);
-                            return "OK|";
-                        }
-                    case "inter-call-teardown":
-                        {
-                            InterCallTeardown(arguments);
-                            return "OK|";
+                            CallTeardown(request);
+                            return;
                         }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-
             }
-            return "ERROR|";
         }
 
-        private void ConnectionRequest(List<string> arguments)
+        public void HandlePeerData(string data, AsyncCommunication async)
         {
-            NetworkConnection  actual = new NetworkConnection
+            HigherLevelConnectionRequest request = JsonConvert.DeserializeObject<HigherLevelConnectionRequest>(data);
+            ConnectionRequest(request, async);
+        }
+
+        public void HandlePeerAns(string data, AsyncCommunication async)
+        {
+            NccServer.Send(data);
+        }
+
+        public void HandleCcData(string data, AsyncCommunication async)
+        {
+            CcResponse response = JsonConvert.DeserializeObject<CcResponse>(data);
+
+            if (response.Response.Contains("call-mallfunction") || response.Response.Equals("ERROR"))
             {
-                End1 = new Termination {
-                    Node = arguments[0].Split(':')[0],
-                    Port = arguments[0].Split(':')[1]
+                if (SecretNccNotifier != null)
+                {
+                    SecretNccNotifier.SendToLrm(data);
+                }
+
+                return;
+            }
+
+            string[] splitedResponseTag = response.Response.Split('|');
+            string ConnectionId = splitedResponseTag[1];
+            string SubconnectionId = splitedResponseTag[2];
+
+            ReqType type = (ReqType)Enum.Parse(typeof(ReqType), splitedResponseTag[3]);
+
+            Connections[ConnectionId]
+                .SubConnectionsAvability[SubconnectionId] = type == ReqType.CONNECTION_REQUEST;
+
+            bool allDone = true;
+
+            foreach (bool subConnectionDone in Connections[ConnectionId].SubConnectionsAvability.Values)
+            {
+                if (type == ReqType.CONNECTION_REQUEST && !subConnectionDone)
+                {
+                    allDone = false;
+                }
+
+                if (type == ReqType.DISCONNECTION_REQUEST && subConnectionDone)
+                {
+                    allDone = false;
+                }
+            }
+
+            if (allDone)
+            {
+                CcResponse resp = new CcResponse
+                {
+                    Response = "OK|" + ConnectionId + "|" + Connections[ConnectionId].MySubconnectionId + "|" + type.ToString()
+                };
+                if (Connections[ConnectionId].PeerCoordination != null)
+                {
+                    Connections[ConnectionId].PeerCoordination.Send(JsonConvert.SerializeObject(resp));
+                }
+                else
+                {
+                    if (Connections[ConnectionId].DstGateway == null)
+                    {
+                        NccServer.Send(JsonConvert.SerializeObject(resp));
+                    }
+                    else
+                    {
+                        HigherLevelConnectionRequest request = PreparePeerRequest(Connections[ConnectionId]);
+                        string domain = Connections[ConnectionId].DstGateway.Domian;
+                        PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
+                    }
+                }
+            }
+        }
+
+        private HigherLevelConnectionRequest PreparePeerRequest(NetworkConnection nc)
+        {
+            Termination peerGateway = nc.DstGateway;
+            List<LrmPort> ports = nc.AllSteps[nc.AllSteps.Count - 2].Ports;
+            string lastIndex = null;
+            if (ports.Count == 1)
+            {
+                lastIndex = ports[0].Index;
+            }
+            else
+            {
+                lastIndex = ports[1].Index;
+            }
+
+            LrmSnp beginning = new LrmSnp
+            {
+                Index = lastIndex,
+                Name = peerGateway.Node,
+                Port = peerGateway.Port
+            };
+
+            LrmSnp end = new LrmSnp
+            {
+                Name = nc.End2.Node,
+                Port = nc.End2.Port
+            };
+
+            return new HigherLevelConnectionRequest
+            {
+                Dst = end,
+                Src = beginning,
+                Id = nc.Id,
+                Type = nc.ActualLevelConnection.Type
+            };
+        }
+
+        private void ConnectionRequest(HigherLevelConnectionRequest request, AsyncCommunication async)
+        {
+            ConsoleLogger.PrintConnectionRequest(request);
+            NetworkConnection actual = new NetworkConnection
+            {
+                End1 = new Termination
+                {
+                    Node = request.Src.Name,
+                    Port = request.Src.Port
                 },
                 End2 = new Termination
                 {
-                    Node = arguments[1].Split(':')[0],
-                    Port = arguments[1].Split(':')[1]
+                    Node = request.Dst.Name,
+                    Port = request.Dst.Port
                 },
-                AllSteps = new List<SNP>(),
-                ConnectionRequests = new Dictionary<SNP,SNP>()
+                AllSteps = new List<ConnectionStep>()
             };
 
-            string id = actual.End1.Node + actual.End1.Port + actual.End2.Node + actual.End2.Port;
-            Connections.Add(id, actual);
+            if (request.Id != null)
+            {
+                string[] reqParts = request.Id.Split('|');
+                actual.Id = reqParts[0];
+                actual.MySubconnectionId = reqParts[1];
+            }
+            else
+            {
+                actual.Id = GenerateConnectionId(request);
+            }
+
+            Connections.Add(actual.Id, actual);
+
+            if (async != null)
+            {
+                actual.PeerCoordination = async;
+            }
+
+            List<LrmDestination> ends = new List<LrmDestination>();
+
+            ends.Add(new LrmDestination
+            {
+                Name = request.Src.Name,
+                Port = request.Src.Port
+            });
+
+            ends.Add(new LrmDestination
+            {
+                Name = request.Dst.Name,
+                Port = request.Dst.Port
+            });
 
             SimpleConnection sc = new SimpleConnection
             {
-                Protocol = "query",
-                Source = arguments[0],
-                Destination = arguments[1]
+                Id = actual.Id,
+                Protocol = "route",
+                Ends = ends,
+                Domain = this.Domain
             };
-
-            RcSender.SendContent(JsonConvert.SerializeObject(sc), HandleRoutingData);
-
+            ConsoleLogger.PrintRouteTableQuery(sc);
+            RcSender.SendToRc(JsonConvert.SerializeObject(sc));
         }
 
-        private ConnectionRequest GetMyConnection(NetworkConnection Actual)
+        private string GenerateConnectionId(HigherLevelConnectionRequest request)
         {
-            throw new NotImplementedException();
+            return request.Src.Name + request.Src.Port + request.Dst.Name + request.Dst.Port;
         }
 
-        private void InterConnectionRequest(List<string> arguments)
+        private void CallTeardown(HigherLevelConnectionRequest request)
         {
-            string domian = arguments[0];
-            string gateway = Gateways[domian];
-            List<string> localArguments = new List<string>();
-            localArguments.Add(arguments[1]);
-            localArguments.Add(gateway);
+            string id = request.Id == null ? GenerateConnectionId(request) : request.Id.Split('|')[0];
 
-            ConnectionRequest(localArguments);
-        }
-
-        private void CallTeardown(List<string> arguments)
-        {
-            NetworkConnection connection = null;
-            foreach (NetworkConnection conn in Connections)
+            if (!Connections.ContainsKey(id))
             {
-                if ((conn.End1.Equals(arguments[0]) && conn.End2.Equals(arguments[1])) ||
-                   (conn.End1.Equals(arguments[1]) && conn.End2.Equals(arguments[0])))
-                {
-                    connection = conn;
-                    break;
-                }
+                LrmSnp tmp = request.Src;
+                request.Src = request.Dst;
+                request.Dst = tmp;
+
+                id = GenerateConnectionId(request);
             }
 
-            TearDownConnection(connection);
-
+            NetworkConnection actual = Connections[id];
+            SendConnectionReq(actual.ActualLevelConnection, ReqType.DISCONNECTION_REQUEST);
         }
 
-        private void TearDownConnection(NetworkConnection conn)
+        private void HandleRoutingData(string data, AsyncCommunication async)
         {
-            try
+            if (data != "ERROR")
             {
-                foreach (NodeStep step in conn.Steps)
-                {
-                    NetworkNodeSender sender = LrmSenders[step.NodeName];
-                    StringBuilder builder = new StringBuilder();
-                    builder.Append("REMOVE|");
-                    builder.Append(step.Port1);
-                    builder.Append(":");
-                    builder.Append(step.Index1);
-                    builder.Append("|");
-                    builder.Append(step.Port2);
-                    builder.Append(":");
-                    builder.Append(step.Index2);
-                    sender.SendContent(builder.ToString(), CheckTearDown);
-                }
-                Connections.Remove(conn);
+                RouteResponse snpp = JsonConvert.DeserializeObject<RouteResponse>(data);
+                NetworkConnection actualNetworkConn = Connections[snpp.Id];
+
+                ConnectionRequest conn = GetMyConnection(snpp, actualNetworkConn);
+                actualNetworkConn.ActualLevelConnection = conn;
+
+                SendConnectionReq(conn, ReqType.CONNECTION_REQUEST);
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine("Cannot remove Connection");
+                Console.WriteLine(data);
             }
         }
 
-        private void CheckTearDown(string data)
+        private void SendConnectionReq(ConnectionRequest request, ReqType type)
         {
-            if (data.Equals("ERROR"))
-            {
-                throw new Exception("Cannot remove connection");
-            }
-        }
-
-        private void InterCallTeardown(List<string> arguments)
-        {
-            string domian = arguments[0];
-            string gateway = Gateways[domian];
-            List<string> localArguments = new List<string>();
-            localArguments.Add(arguments[1]);
-            localArguments.Add(gateway);
-
-            CallTeardown(localArguments);
-        }
-
-        private NetworkConnection GetActualConnection(RouteResponse snpp)
-        {
-            
-            foreach (NetworkConnection conn in Connections)
-            {
-                bool first = false;
-                bool second = false;
-
-                first = (snpp.Ends[0].Node == conn.End1.Node && snpp.Ends[0].Port == conn.End1.Port)
-                    || (snpp.Ends[0].Node == conn.End2.Node && snpp.Ends[0].Port == conn.End2.Port);
-
-                second = (snpp.Ends[1].Node == conn.End1.Node && snpp.Ends[1].Port == conn.End1.Port)
-                    || (snpp.Ends[1].Node == conn.End2.Node && snpp.Ends[1].Port == conn.End2.Port);
-
-                if (first && second)
-                {
-                    return conn;
-                }
-            }
-
-            return null;
-
-        }
-
-        private void HandleRoutingData(string data)
-        {
-
-            RouteResponse snpp = JsonConvert.DeserializeObject<RouteResponse>(data);
-            NetworkConnection actualNetworkConn = GetActualConnection(snpp);
-
-            ConnectionRequest conn = GetMyConnection(snpp, actualNetworkConn);
-            actualNetworkConn.ActualLevelConnection = conn;
-
-            SendConnectionReq(conn);
-        }
-
-        private void SendConnectionReq(ConnectionRequest request)
-        {
+            request.Type = type.ToString();
+            Console.WriteLine();
+            Console.WriteLine("Link Connection Request");
             LrmClient.SendToLrm(JsonConvert.SerializeObject(request));
         }
-
-        
 
         private ConnectionRequest GetMyConnection(RouteResponse snpp, NetworkConnection actualConn)
         {
             List<ConnectionStep> steps = new List<ConnectionStep>();
+            Console.WriteLine();
+            Console.WriteLine("SNPP :");
+            Console.WriteLine(TextUtils.Dash);
+            ConsoleLogger.PrintSNPP(snpp.Steps);
 
-            for (int i = 0 ; i < snpp.Steps.Count; i++)
+            for (int i = 0; i < snpp.Steps.Count; i++)
             {
-                SNP previous = i ==0? null:snpp.Steps[i-1];
-                 SNP actual = snpp.Steps[i];
-                
-                if(actual.Domain != null){
-                    //Przypadek gdy ostatni punkt jest gatewayem
-                    if(!Domains.Contains(actual.Domain)) {
-                        actualConn.DstGateway = PrepareGateWay(actual);
-                        if(previous.Domain == null) {
-                            actualConn.DstGateway = PrepareGateWay(previous);
-                        }
-                    }
-                    //Wejścia do niższych domen
-                    if(i != 0 && previous.Domain != null && previous.Domain.Equals(actual.Domain)){  
-                        actualConn.ConnectionRequests[previous] = actual;
-                    } 
-                    else 
-                    {
-                        actualConn.ConnectionRequests.Add(actual, null);
-                    }
+                SNP previous = i == 0 ? null : snpp.Steps[i - 1];
+                SNP actual = snpp.Steps[i];
 
-                    continue;
+                if (actual.Ports[0] == null)
+                {
+                    actual.Ports.RemoveAt(0);
                 }
+
+                if (actual.Ports[1] == null)
+                {
+                    actual.Ports.RemoveAt(1);
+                }
+
                 List<LrmPort> lrmPorts = new List<LrmPort>();
-                foreach(string port in actual.Ports) {
-                    lrmPorts.Add(new LrmPort {
+
+                foreach (string port in actual.Ports)
+                {
+                    lrmPorts.Add(new LrmPort
+                    {
                         Number = port
                     });
                 }
-
 
                 ConnectionStep step = new ConnectionStep
                 {
                     Node = actual.Node,
                     Ports = lrmPorts
                 };
+
+                actualConn.AllSteps.Add(step);
+
+                if (actual.Domain != null)
+                {
+                    //Przypadek gdy ostatni punkt jest gatewayem
+                    if (!Domains.Contains(actual.Domain))
+                    {
+                        actualConn.DstGateway = PrepareGateWay(actual);
+                        if (previous.Domain == null)
+                        {
+                            actualConn.DstGateway = PrepareGateWay(previous);
+                        }
+                    }
+                    //Wejścia do niższych domen
+                    if (!(i != 0 && previous.Domain != null && previous.Domain.Equals(actual.Domain)))
+                    {
+                        string id = previous.Node + previous.Ports[0] + actual.Node + actual.Ports[0];
+
+                        actualConn.AddSubconnection(id, new LrmSnp
+                        {
+                            Name = previous.Node,
+                            Port = previous.Ports[0]
+                        },
+                        new LrmSnp
+                        {
+                            Name = actual.Node,
+                            Port = actual.Ports[0]
+                        }, previous.Domain);
+                    }
+
+                    continue;
+                }
+
                 steps.Add(step);
             }
 
             actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
-
-            return new ConnectionRequest
+            ConnectionRequest req = new ConnectionRequest
             {
-                Steps=steps,
-                Type = ReqType.CONNECTION_REQUEST.ToString(),
-                Id = actualConn.Id 
+                Steps = steps,
+                Id = actualConn.Id
             };
-            
+            Console.WriteLine();
+            Console.WriteLine("My domain snpp : ");
+            Console.WriteLine(TextUtils.Dash);
+
+            ConsoleLogger.PrintConnection(req, false);
+            return req;
         }
 
         private Termination PrepareGateWay(SNP gatewaySnp)
@@ -317,55 +475,129 @@ namespace Cc
             };
         }
 
-        private void HandleLrmData(string data)
-        {
-            string[] allocationDetails = data.Split('|');
-            string networkNode = allocationDetails[0];
-
-            string[] port1Details = allocationDetails[1].Split('#');
-            string[] port2Details = allocationDetails[2].Split('#');
-
-            NodeStep ns = new NodeStep
-            {
-                NodeName = networkNode,
-                Port1 = port1Details[0].Split(':')[0],
-                Index1 = port1Details[0].Split(':')[1],
-                Dest1 = port1Details[1],
-                DestPort1 = port1Details[2],
-                Port2 = port2Details[0].Split(':')[0],
-                Index2 = port2Details[0].Split(':')[1],
-                Dest2 = port2Details[1],
-                DestPort2 = port2Details[2]
-            };
-
-            Actual.Steps.Add(ns);
-        }
-
-        private void ReportStep(NodeStep ns)
-        {
-            Console.WriteLine("Node: " + ns.NodeName + " Port: [" + ns.Port1 + " " + ns.Index1 + "]");
-        }
-
-
-        private void HandleLrmData(string data, AsyncCommunication async) {
-            
-            if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
-            {
-                HandleConnectionAns(data, async);
-            }
-        }
-
-        private void HandleConnectionAns(string data, AsyncCommunication async)
+        private void HandleLrmData(string data, AsyncCommunication async)
         {
             ConnectionRequest reqResp = JsonConvert.DeserializeObject<ConnectionRequest>(data);
             string connectionId = reqResp.Id;
             NetworkConnection actual = Connections[connectionId];
             actual.ActualLevelConnection = reqResp;
-            if (actual.ConnectionRequests.Count > 0)
+
+            Console.WriteLine();
+            Console.WriteLine("Allocated snp");
+            Console.WriteLine(TextUtils.Dash);
+            ConsoleLogger.PrintConnection(reqResp, true);
+
+            if (actual.SubConnections.Count == 0 && actual.DstGateway == null)
             {
-                foreach(SNP snp in snp.Keys)
+                CcResponse resp = new CcResponse
+                {
+                    Response = "OK|" + actual.Id + "|" + actual.MySubconnectionId + "|" + reqResp.Type
+                };
+
+                if (actual.PeerCoordination != null)
+                {
+                    actual.PeerCoordination.Send(JsonConvert.SerializeObject(resp));
+                }
+                else
+                {
+                    NccServer.Send(JsonConvert.SerializeObject(resp));
+                }
+
+                return;
+            }
+
+            if (actual.SubConnections.Count > 0)
+            {
+                foreach (string subconnectionId in actual.SubConnections.Keys)
+                {
+                    Tuple<LrmSnp, LrmSnp> edges = actual.SubConnections[subconnectionId];
+
+                    if (reqResp.Type.Equals(ReqType.CONNECTION_REQUEST.ToString()))
+                    {
+                        UpdateEdgeSnp(actual, edges);
+                    }
+
+                    string domian = actual.SubConnectionsDomians[subconnectionId];
+                    //Sprawdzać kolejność
+                    HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
+                    {
+                        Src = edges.Item1,
+                        Dst = edges.Item2,
+                        Id = connectionId + "|" + subconnectionId,
+                        Type = reqResp.Type
+                    };
+
+                    SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
+                    Console.WriteLine();
+                    Console.WriteLine("Connection Request to CC at " + domian);
+                    Console.WriteLine(TextUtils.Dash);
+                    ConsoleLogger.PrintConnectionRequest(request);
+                }
+            }
+            else
+            {
+                HigherLevelConnectionRequest request = PreparePeerRequest(actual);
+                string domain = actual.DstGateway.Domian;
+                PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
             }
         }
 
+        private void UpdateEdgeSnp(NetworkConnection conn, Tuple<LrmSnp, LrmSnp> edges)
+        {
+            LrmSnp first = null;
+            LrmSnp second = null;
+            List<ConnectionStep> allSteps = conn.AllSteps;
+            ConnectionRequest actual = conn.ActualLevelConnection;
+
+            //TODO indexof może nie działać
+            int firstIndex = FindEdgeSnpIndex(allSteps, edges.Item1);
+            int secondIndex = FindEdgeSnpIndex(allSteps, edges.Item2);
+            if (firstIndex < secondIndex)
+            {
+                first = edges.Item1;
+                second = edges.Item2;
+            }
+            else
+            {
+                first = edges.Item2;
+                second = edges.Item1;
+                int tmpIndex = firstIndex;
+                firstIndex = secondIndex;
+                secondIndex = tmpIndex;
+            }
+
+            ConnectionStep backward = firstIndex - 1 > 0 ? allSteps[firstIndex - 1] : null;
+            ConnectionStep forward = secondIndex + 1 < allSteps.Count ? allSteps[secondIndex + 1] : null;
+
+            List<ConnectionStep> steps = actual.Steps;
+
+            if (backward != null)
+            {
+                first.Index = backward.Ports[1].Index;
+                allSteps[firstIndex].Ports[0].Index = backward.Ports[1].Index;
+            }
+
+            if (forward != null)
+            {
+                second.Index = forward.Ports[0].Index;
+                allSteps[secondIndex].Ports[0].Index = forward.Ports[0].Index;
+            }
+        }
+
+        private int FindEdgeSnpIndex(List<ConnectionStep> allSteps, LrmSnp lrmSnp)
+        {
+            int index = 0;
+            foreach (ConnectionStep snp in allSteps)
+            {
+                //Edge has only one value as port
+                if (snp.Node == lrmSnp.Name && snp.Ports[0].Number == lrmSnp.Port)
+                {
+                    return index;
+                }
+                index++;
+            }
+
+            return -1;
+        }
     }
 }

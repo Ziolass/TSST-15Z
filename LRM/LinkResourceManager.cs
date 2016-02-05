@@ -22,6 +22,7 @@ namespace LRM
         private bool InitPahse;
         private AllocationRegister AllocationRegister;
         private AsyncCommunication HighestCc;
+        private object GetLocalTopologyLock = new object();
 
 
         public LinkResourceManager(int serverPort, int rcPort, int ccPort, string domianScope)
@@ -79,6 +80,7 @@ namespace LRM
 
 
             HandleTokenData(data, LrmRegister.FindNodeByConnection(async));
+
         }
 
         private void HandleLrmNegotiationResp(string data)
@@ -104,6 +106,8 @@ namespace LRM
         {
             LrmResp response = JsonConvert.DeserializeObject<LrmResp>(data);
 
+
+
             if (AllocationRegister.ConfirmStep(response.ConnectionId, response.Id))
             {
                 AsyncCommunication async = AllocationRegister.GetComm(response.ConnectionId);
@@ -116,10 +120,13 @@ namespace LRM
 
         public void HandleNodeConnection(string NodeName)
         {
-            if (LocalTopologyRaport == null)
+            lock (GetLocalTopologyLock)
             {
-                LocalTopologyRaport = new Thread(new ThreadStart(SendLocalTopology));
-                LocalTopologyRaport.Start();
+                if (LocalTopologyRaport == null)
+                {
+                    LocalTopologyRaport = new Thread(new ThreadStart(SendLocalTopology));
+                    LocalTopologyRaport.Start();
+                }
             }
 
             AsyncCommunication async = LrmRegister.ConnectedNodes[NodeName].Async;
@@ -140,8 +147,11 @@ namespace LRM
                 Header = PresenceType.DISCONNECTED.ToString(),
                 Node = NodeName
             });
+            if (HighestCc != null)
+            {
 
-            HighestCc.Send(data);
+                HighestCc.Send(data);
+            }
         }
 
         public void RunServer()
@@ -155,13 +165,13 @@ namespace LRM
             StringBuilder builder = new StringBuilder();
             builder.Append(comm);
             builder.Append("|");
-            
+
             if (!header.Equals(LrmHeader.NONE))
             {
                 builder.Append(header);
                 builder.Append("#");
             }
-            
+
             builder.Append(data);
             return builder.ToString();
         }
@@ -246,6 +256,9 @@ namespace LRM
                         }
                         port.Index = index.Value.ToString();
                     }
+                    string actualDomain = LrmRegister.ConnectedNodes[step.Node].DomiansHierarchy[0];
+                    Console.WriteLine("LRM at " + actualDomain + "allocated vc on " + port.Index + "index, on port " + step.Node);
+                    Console.WriteLine();
                 }
                 string stepId = connection.Id + step.Node + step.Ports.GetHashCode() as string;
 
@@ -266,17 +279,6 @@ namespace LRM
                 stepIndex++;
             }
         }
-        /*
-        private void CheckForwardAllocation(ConnectionStep actual, ConnectionStep next)
-        {
-
-        }
-
-        private void CheckBackwardAllocation(ConnectionStep actual, ConnectionStep previous)
-        {
-            VirtualNode actNode = LrmRegister.ConnectedNodes[actual.Node];
-
-        }*/
 
         private int? AllocNextEmpty(string node, int port)
         {
@@ -296,10 +298,6 @@ namespace LRM
             return index < 0 ? (int?)null : index;
         }
 
-        private void LocalTopology(List<int> changedPorts)
-        {
-
-        }
         private void LocalTopology()
         {
             List<TopologyData> nodes = new List<TopologyData>();
@@ -333,7 +331,7 @@ namespace LRM
                 Nodes = nodes
             };
 
-            Console.WriteLine(JsonConvert.SerializeObject(LocalTopology));
+            ConsoleLogg.PrintLocaLTopology(LrmRegister.ConnectedNodes);
             RcClinet.SendToRc(JsonConvert.SerializeObject(LocalTopology));
 
         }
@@ -344,18 +342,24 @@ namespace LRM
             LrmToken invertedToken = InvertToken(token);
             AssignToken(token);
             AssignToken(invertedToken);
+            if (!InitPahse)
+            {
+                LocalTopology();
+            }
         }
 
         private LrmToken InvertToken(LrmToken token)
         {
             return new LrmToken
             {
-                Tag = token.Reciver.Node,
+
+                Tag = token.Reciver.Name,
                 SenderPort = token.Reciver.Port,
                 StmMaxIndex = token.StmMaxIndex,
                 Reciver = new LrmDestination
                 {
-                    Node = token.Tag,
+
+                    Name = token.Tag,
                     Port = token.SenderPort
                 }
             };
@@ -384,7 +388,7 @@ namespace LRM
 
         private void SendLocalTopology()
         {
-            Thread.Sleep(10000);
+            Thread.Sleep(15000);
             LocalTopology();
             InitPahse = false;
         }

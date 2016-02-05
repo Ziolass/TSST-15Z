@@ -52,13 +52,13 @@ namespace RoutingController.Service
             string destinationDomainName = SearchDomainName(destination.GetNodeId());
             string sourceDomainName = SearchDomainName(source.GetNodeId());
 
-            Ends sourceEnd = new Ends(null, source.Node, source.Port);
+            Ends sourceEnd = new Ends(null, source.Name, source.Port);
             Ends destinationEnd;
             List<Ends> endsList = new List<Ends>();
 
             if (destinationDomainName == sourceDomainName)
             {
-                destinationEnd = new Ends(null, destination.Node, destination.Port);
+                destinationEnd = new Ends(null, destination.Name, destination.Port);
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(destinationDomainName);
                 if (tempNetworkGraph != null)
                 {
@@ -85,12 +85,12 @@ namespace RoutingController.Service
             {
                 foreach (var item in this.ExternalClients)
                 {
-                    if (item.Value.Contains(destination.Node))
+                    if (item.Value.Contains(destination.Name))
                     {
                         destinationDomainName = item.Key;
                         break;
                     }
-                    else if (item.Value.Contains(source.Node))
+                    else if (item.Value.Contains(source.Name))
                     {
                         sourceDomainName = item.Key;
                     }
@@ -104,7 +104,7 @@ namespace RoutingController.Service
                     }
                 }
 
-                destinationEnd = new Ends(destinationDomainName, destination.Node, destination.Port);
+                destinationEnd = new Ends(destinationDomainName, destination.Name, destination.Port);
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
                 if (tempNetworkGraph != null)
                 {
@@ -372,7 +372,7 @@ namespace RoutingController.Service
             {
                 foreach (var itemRoutes in item.Value)
                 {
-                    if (itemRoutes.Key.Destination.Node == ourGatewayNode.Node && itemRoutes.Key.Destination.Port == ourGatewayNode.Port)
+                    if (itemRoutes.Key.Destination.Name == ourGatewayNode.Name && itemRoutes.Key.Destination.Port == ourGatewayNode.Port)
                     {
                         returnNode = item.Key;
                     }
@@ -474,10 +474,10 @@ namespace RoutingController.Service
                         {
                             foreach (NetworkGraph networkGraphSearch in this.NetworkGraphs)
                             {
-                                if (networkGraph != networkGraphSearch && !itemDestination.Key.Destination.Node.Contains("client"))
+                                if (networkGraph != networkGraphSearch && !itemDestination.Key.Destination.Name.Contains("client"))
                                 {
-                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOther = networkGraphSearch.GetNearVertexes(itemDestination.Key.Destination.Node);
-                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOur = networkGraph.GetNearVertexes(itemDestination.Key.Destination.Node);
+                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOther = networkGraphSearch.GetNearVertexes(itemDestination.Key.Destination.Name);
+                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOur = networkGraph.GetNearVertexes(itemDestination.Key.Destination.Name);
 
                                     if (vertexesOther.Count == 1 && vertexesOur.Count == 0)
                                     {
@@ -515,7 +515,7 @@ namespace RoutingController.Service
             {
                 foreach (var externalClient in queryRequest.Clients)
                 {
-                    clientsList.Add(externalClient.Node);
+                    clientsList.Add(externalClient.Name);
                 }
                 this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
             }

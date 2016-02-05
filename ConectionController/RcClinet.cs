@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace LRM.Communication
 {
-    class RcClinet : LocalPort
+    internal class RcClinet : LocalPort
     {
         private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
         private AsyncCommunication Async;

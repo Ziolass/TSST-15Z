@@ -15,7 +15,8 @@ namespace NetworkNode.LRM.Communication
         CONNECTION_REQUEST, 
         DISCONNECTION_REQUEST, 
         LRM_NEGOTIATION,
-        LRM_NEGOTIATION_RESP
+        LRM_NEGOTIATION_RESP,
+        PEER_COORDINATION
     }
 
     public class LrmPort

@@ -10,7 +10,7 @@ namespace RoutingController.Interfaces
     public interface IDestination
     {
         string Scope { get; } //Name of other subnetwork
-        string Node { get; } //Node ID
+        string Name { get; } //Node ID
         string Port { get; } //Node Port
         DestinationType Type { get; }
 

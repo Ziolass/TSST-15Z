@@ -1,15 +1,13 @@
-﻿using System;
+﻿using NetworkNode.LRM.Communication;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConectionController.Communication.ReqResp
 {
-    class SimpleConnection
+    public class SimpleConnection
     {
+        public string Id { get; set; }
         public string Protocol { get; set; }
-        public string Source { get; set; }
-        public string Destination { get; set; }
+        public List<LrmDestination> Ends { get; set; }
+        public string Domain { get; set; }
     }
 }

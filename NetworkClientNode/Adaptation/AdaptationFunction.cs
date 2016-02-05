@@ -30,6 +30,8 @@ namespace NetworkClientNode.Adaptation
         }
     }
     public delegate void HandleClientData(ClientData data);
+    public delegate void AllocationClientStream(List<StreamData> streams);
+    public delegate void DeallocationClientStream(List<StreamData> streams);
     public class AdaptationFunction
     {
         private TransportTerminalFunction Ttf;
@@ -42,6 +44,8 @@ namespace NetworkClientNode.Adaptation
         private VirtualContainerLevel NetworkDefaultLevel;
 
         public event HandleClientData HandleClientData;
+        public event AllocationClientStream AllocationClientStream;
+        public event DeallocationClientStream DeallocationClientStream;
         public AdaptationFunction(TransportTerminalFunction ttf, 
             LrmIntroduce lrmIntroduce, 
             int lrmPort,
@@ -227,6 +231,11 @@ namespace NetworkClientNode.Adaptation
                 ConnectionId = request.ConnectionId
             };
             LrmClient.SendLrmMessage(resp);
+
+            if (AllocationClientStream != null)
+            {
+                AllocationClientStream(new List<StreamData>(streamsToAdd));
+            }
         }
 
         private void Delloc(LrmReq request)
@@ -249,6 +258,11 @@ namespace NetworkClientNode.Adaptation
                 ConnectionId = request.ConnectionId
             };
             LrmClient.SendLrmMessage(resp);
+
+            if (DeallocationClientStream != null)
+            {
+                DeallocationClientStream(new List<StreamData>(streamsToRemove));
+            }
         }
 
         private StreamData TransformLrmPort(LrmPort port)
@@ -348,7 +362,7 @@ namespace NetworkClientNode.Adaptation
         {
             LrmToken token = JsonConvert.DeserializeObject<LrmToken>(args.Data);
             token.Reciver = new LrmDestination();
-            token.Reciver.Node = routerId;
+            token.Reciver.Name = routerId;
             token.Reciver.Port = args.PortNumber.ToString();
             LrmClient.SendLrmMessage(token);
         }

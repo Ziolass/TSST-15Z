@@ -1,31 +1,30 @@
 using NetworkCallController.Adapters;
-using NetworkCallController.SocketUtils;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace NetworkCallController
 {
-    class ClientHandler
+    internal class ClientHandler
     {
-        TcpClient clientSocket;
-        NetworkCallController ncc;
+        private TcpClient clientSocket;
+        private NetworkCallController ncc;
+
         public ClientHandler(ConnectionHandler chandler)
         {
             this.ncc = chandler.getNcc();
         }
+
         public void startClient(TcpClient inClientSocket)
         {
             clientSocket = inClientSocket;
             Thread ctThread = new Thread(Chat);
             ctThread.Start();
         }
+
         private void Chat()
         {
             byte[] bytesFrom = new byte[1024];
@@ -35,19 +34,17 @@ namespace NetworkCallController
 
             //try
             //{
+            int bytesRec = clientSocket.Client.Receive(bytesFrom);
+            dataFromClient = Encoding.ASCII.GetString(bytesFrom, 0, bytesRec);
+            Console.WriteLine(dataFromClient);
+            //TODO
 
-                int bytesRec = clientSocket.Client.Receive(bytesFrom);
-                dataFromClient = Encoding.ASCII.GetString(bytesFrom, 0, bytesRec);
-                Console.WriteLine(dataFromClient);
-                //TODO
+            serverResponse = HandleJsonInput(dataFromClient);
 
-                serverResponse = HandleJsonInput(dataFromClient);
-
-                sendBytes = Encoding.ASCII.GetBytes(serverResponse);
-                // TODO
-                // Console.ReadKey();
-                clientSocket.Client.Send(sendBytes);
-
+            sendBytes = Encoding.ASCII.GetBytes(serverResponse);
+            // TODO
+            // Console.ReadKey();
+            clientSocket.Client.Send(sendBytes);
 
             //}
             //catch (Exception e)
@@ -56,8 +53,8 @@ namespace NetworkCallController
             //}
             clientSocket.Client.Shutdown(SocketShutdown.Both);
             clientSocket.Client.Close();
-
         }
+
         private string HandleJsonInput(string data)
         {
             if (data.Contains(CommunicationType.CC_COMMUNICATION.ToString()))
@@ -66,11 +63,10 @@ namespace NetworkCallController
                 data = resp.Response;
             }
             return responseHandler(data);
-
         }
+
         private string responseHandler(string query)
         {
-
             string[] temp = query.Split('|');
 
             switch (temp[0])
@@ -80,12 +76,15 @@ namespace NetworkCallController
 
                 case "get-address":
                     return checkDictionaryForEntry(temp[1]);
+
                 case "call-teardown":
                     return callTeardown(temp[1], temp[2]);
 
                 case "call-malfunction":
 
                     return callMalfunction(temp[1], temp[2]);
+                case "OK":
+                    return "Połaczenie zestawione";
                 default:
                     return "coś sie zj. zepsulo.";
             }
@@ -109,6 +108,7 @@ namespace NetworkCallController
             }
             return "OK|";
         }
+
         private bool callAccept(string callingPartyName, int calledPartyPort, string calledPartyName)
         {
             string response = sendCommand("call-accept|" + callingPartyName, calledPartyPort);
@@ -121,6 +121,7 @@ namespace NetworkCallController
             }
             return false;
         }
+
         private string callTeardown(string callingPartyName, string calledPartyName)
         {
             int callingSignalingPort;
@@ -143,7 +144,6 @@ namespace NetworkCallController
             // sprawdzenie rekordu osoby zadanej
             string[] calledPartyPorts = checkDictionaryForEntry(calledPartyName).Split('|');
 
-
             // jak nie ma rekordu to chill, sprawdzamy u ziomeczka
             if (!int.TryParse(calledPartyPorts[0], out calledSignalingPort))
             {
@@ -160,17 +160,14 @@ namespace NetworkCallController
                     calledSignalingPort = int.Parse(calledPartyPorts[0]);
                     calledAddress = calledPartyPorts[1];
 
-
                     string[] returnable = connectionTeardown(callingAddress, calledAddress, callingSignalingPort, calledSignalingPort).Split('|');
                     if (returnable[0].Equals("OK"))
                     {
                         informOtherParty(calledSignalingPort, callingPartyName);
                     }
                     return string.Join("|", returnable);
-
                 }
             }
-
             else
             {
                 calledAddress = calledPartyPorts[1];
@@ -182,6 +179,7 @@ namespace NetworkCallController
             }
             return string.Join("|", tmp);
         }
+
         private string callRequest(string callingPartyName, string calledPartyName)
         {
             int callingSignalingPort;
@@ -208,10 +206,8 @@ namespace NetworkCallController
                 return "error|Policy nie wyrazilo zgody";
             }
 
-
             // sprawdzenie rekordu osoby zadanej
             string[] calledPartyPorts = checkDictionaryForEntry(calledPartyName).Split('|');
-
 
             // jak nie ma rekordu to chill, sprawdzamy u ziomeczka
             if (!int.TryParse(calledPartyPorts[0], out calledSignalingPort))
@@ -223,6 +219,10 @@ namespace NetworkCallController
                 {
                     return "error|Zadne Directory nie posiada takiego wpisu";
                 }
+                else if (calledPartyPorts[0].Equals("Blad polaczenia z obcym Directory"))
+                {
+                    return "error|Blad polaczenia z obcym Directory";
+                }
                 else
                 {
                     Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
@@ -233,12 +233,9 @@ namespace NetworkCallController
                     {
                         return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
                     }
-
                     return connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName);
-
                 }
             }
-
             else
             {
                 calledAddress = calledPartyPorts[1];
@@ -252,17 +249,20 @@ namespace NetworkCallController
 
             return connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName);
         }
+
         private void informOtherParty(int signallingPort, string teardownName)
         {
             string response = sendCommand("call-teardown|" + teardownName, signallingPort);
         }
+
         private string connectionRequst(string initAddress, string foreignAddress, int initSignalPort, string initName, int foreignSignalPort, string foreignName)
         {
             int ccPort = ncc.getCCPort();
             // string response = sendCommand("connection-request|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "connection-request");
-            string response = sendCommand(JsonConvert.SerializeObject(toSend),ccPort);
-            string translate = JsonConvert.DeserializeObject<CcResponse>(response).Response;
+            string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
+
+            string translate = HandleJsonInput(response);
             if (translate.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
@@ -270,6 +270,7 @@ namespace NetworkCallController
             ncc.getConnections().Add(initAddress + "|" + foreignAddress, Tuple.Create(initSignalPort, initName, foreignSignalPort, foreignName));
             return translate;
         }
+
         private HigherLevelConnectionRequest prepareToSend(string initAddress, string destinationAddress, string type)
         {
             HigherLevelConnectionRequest toSend = new HigherLevelConnectionRequest();
@@ -281,27 +282,28 @@ namespace NetworkCallController
             toSend.Src = init;
             toSend.Dst = dest;
             return toSend;
-
-
         }
+
         private string connectionTeardown(string initAddress, string foreignAddress, int initSignalPort, int foreignSignalPort)
         {
             int ccPort = ncc.getCCPort();
             // string response = sendCommand("call-teardown|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "call-teardown");
             string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
-            string translate = JsonConvert.DeserializeObject<CcResponse>(response).Response;
+            string translate =  HandleJsonInput(response);
             if (translate.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
             }
             return translate;
         }
+
         private void informTeardownSides(int initSignalPort, string initName, int foreignSignalPort, string foreignName)
         {
             string initResponse = sendCommand("call-malfunction|" + foreignName, initSignalPort);
             string foreignResposne = sendCommand("call-malfunction|" + initName, foreignSignalPort);
         }
+
         private string checkForeignNCCForEntry(string entry)
         {
             int foreignPort = ncc.getForeingPort();
@@ -312,6 +314,7 @@ namespace NetworkCallController
             }
             return response;
         }
+
         private string checkDictionaryForEntry(string entry)
         {
             int dictPort = ncc.getDirectoryPort();
@@ -322,6 +325,7 @@ namespace NetworkCallController
             }
             return response;
         }
+
         private bool askPolicy(string entry)
         {
             int policyPort = ncc.getPolicyPort();
@@ -333,8 +337,8 @@ namespace NetworkCallController
             }
             Console.WriteLine(temp[1]);
             return false;
-
         }
+
         private string sendCommand(string command, int port)
         {
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
@@ -345,14 +349,11 @@ namespace NetworkCallController
             byte[] bytes = new byte[100000];
             string response = null;
 
-
             try
             {
                 byte[] msg = Encoding.ASCII.GetBytes(command);
                 commandSocket.Connect(endPoint);
                 commandSocket.Send(msg);
-
-
 
                 bytes = new byte[1024];
                 int bytesRec = commandSocket.Receive(bytes);
@@ -360,7 +361,6 @@ namespace NetworkCallController
 
                 commandSocket.Shutdown(SocketShutdown.Both);
                 commandSocket.Close();
-
             }
             catch (Exception e)
             {

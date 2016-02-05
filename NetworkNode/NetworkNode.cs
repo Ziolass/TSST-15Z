@@ -116,7 +116,7 @@ namespace NetworkNode
         {
             LrmToken token = JsonConvert.DeserializeObject<LrmToken>(args.Data);
             token.Reciver = new LrmDestination();
-            token.Reciver.Node = Id;
+            token.Reciver.Name = Id;
             token.Reciver.Port = args.PortNumber.ToString();
             LrmClient.SendLrmMessage(token);
         }

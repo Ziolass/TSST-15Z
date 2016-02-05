@@ -65,46 +65,59 @@ namespace LRM
 
         private void ReadCallback(IAsyncResult ar)
         {
-
-            PacketsReceived.Set();
-            String content = String.Empty;
-            StateObject state = (StateObject)ar.AsyncState;
-            int bytesRead = AsyncSocket.EndReceive(ar);
-
-            if (bytesRead > 0)
+            try
             {
-                string data = Encoding.ASCII.GetString(state.Buffer, 0, bytesRead);                
-                state.ResponseBuilder.Append(data);
+                PacketsReceived.Set();
+                String content = String.Empty;
+                StateObject state = (StateObject)ar.AsyncState;
+                int bytesRead = AsyncSocket.EndReceive(ar);
 
-                if (bytesRead != StateObject.BufferSize)
+                if (bytesRead > 0)
                 {
-                    string allData = state.ResponseBuilder.ToString();
+                    string data = Encoding.ASCII.GetString(state.Buffer, 0, bytesRead);
+                    state.ResponseBuilder.Append(data);
 
-                    if (SubscribeCallback != null && IdleState && allData.Contains("INTRODUCE"))
+                    if (bytesRead != StateObject.BufferSize)
                     {
-                        SubscribeCallback(allData, this);
-                        IdleState = false;
-                        return;
+                        string allData = state.ResponseBuilder.ToString();
+
+                        if (SubscribeCallback != null && IdleState && allData.Contains("INTRODUCE"))
+                        {
+                            SubscribeCallback(allData, this);
+                            IdleState = false;
+                            return;
+                        }
+
+                        DataRedCallback(allData, this);
                     }
-                    
-                    DataRedCallback(allData,this);
+                    else
+                    {
+                        AsyncSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
+                        new AsyncCallback(ReadCallback), state);
+                    }
                 }
-                else
-                {
-                    AsyncSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 
         public void Send(String data)
         {
-            byte[] byteData = Encoding.ASCII.GetBytes(data);
-            PacketsSend.Reset();
-            StateObject state = new StateObject();
-            AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), null);
-            PacketsSend.WaitOne();
+            try
+            {
+                byte[] byteData = Encoding.ASCII.GetBytes(data);
+                PacketsSend.Reset();
+                StateObject state = new StateObject();
+                AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
+                    new AsyncCallback(SendCallback), null);
+                PacketsSend.WaitOne();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         private void SendCallback(IAsyncResult ar)

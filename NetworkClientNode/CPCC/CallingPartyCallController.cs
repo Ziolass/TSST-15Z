@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace NetworkClientNode.CPCC
 {
+    public delegate void ConnectionEstablished(string connectionName);
+    public delegate void ConnectionRemoved(string connectionName);
     class CallingPartyCallController
     {
         private int localPort;
@@ -17,18 +19,21 @@ namespace NetworkClientNode.CPCC
         private string ASname;
         private List<string> connectedClientsList;
 
-        public CallingPartyCallController(string id,ClientViewModel cview)
+        public event ConnectionEstablished ConnectionEstablished;
+        public event ConnectionRemoved ConnectionRemoved;
+
+        public CallingPartyCallController(string id, ClientViewModel cview)
         {
             connectedClientsList = new List<string>();
             this.ClientView = cview;
-           // ConsoleManager.Show();
+            // ConsoleManager.Show();
             readConfig(id);
             chandler = new ConnectionHandler(localPort, this);
         }
         public void updateConsole(string s)
         {
-            ClientView.messageRecivedText += DateTime.Now + ": " + s.ToString()+"\n";
-            ClientView.RisePropertyChange(ClientView, "MessageRecivedText");
+            ClientView.MessageConsoleText += DateTime.Now + ": " + s.ToString() + "\n";
+            ClientView.RisePropertyChange(ClientView, "MessageConsoleText");
         }
         public void addToConnectedClients(string called)
         {
@@ -37,6 +42,12 @@ namespace NetworkClientNode.CPCC
                 return;
             }
             connectedClientsList.Add(called);
+
+            if (ConnectionEstablished != null)
+            {
+                ConnectionEstablished(called);
+            }
+
         }
         public bool checkIfConnectionExist(string called)
         {
@@ -50,6 +61,11 @@ namespace NetworkClientNode.CPCC
         internal void deleteRecord(string v)
         {
             connectedClientsList.Remove(v);
+
+            if (ConnectionRemoved != null)
+            {
+                ConnectionRemoved(v);
+            }
         }
         public string callRequest(string calledName)
         {

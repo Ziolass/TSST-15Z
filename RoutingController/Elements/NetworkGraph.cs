@@ -50,7 +50,7 @@ namespace RoutingController.Elements
                     NodeElement newNode = new NodeElement(topology.Node, link.Port, link.Destination.Scope);
                     AddVertex(newGraph, newNode, link); //Add exp Node1:1 (id node : port of this node)
                 }
-                else Log += topology.Node + ":" + link.Port + " -> " + link.Destination.Node + ":" + link.Destination.Port + "\n"; ;
+                else Log += topology.Node + ":" + link.Port + " -> " + link.Destination.Name + ":" + link.Destination.Port + "\n"; ;
             }
 
             //Complete graph
@@ -85,7 +85,7 @@ namespace RoutingController.Elements
             bool add = true;
             foreach (var item in Graph[node])
             {
-                if (item.Key.Destination.Node == link.Destination.Node && item.Key.Destination.Port == link.Destination.Port)
+                if (item.Key.Destination.Name == link.Destination.Name && item.Key.Destination.Port == link.Destination.Port)
                 {
                     add = false;
                 }
@@ -104,13 +104,13 @@ namespace RoutingController.Elements
                 {
                     foreach (var otherItemConnections in otherItem.Value)
                     {
-                        if (thisItem.Key.Node == otherItemConnections.Key.Destination.Node && thisItem.Key.Port == otherItemConnections.Key.Destination.Port)
+                        if (thisItem.Key.Name == otherItemConnections.Key.Destination.Name && thisItem.Key.Port == otherItemConnections.Key.Destination.Port)
                         {
                             //Remove connection from my domain to other domenain node
                             Dictionary<NodeElement,Link> linkToRemove = new Dictionary<NodeElement,Link>();
                             foreach (var itemValue in thisItem.Value)
                             {
-                                if (itemValue.Key.Destination.Node == otherItem.Key.Node && itemValue.Key.Destination.Port == otherItem.Key.Port)
+                                if (itemValue.Key.Destination.Name == otherItem.Key.Name && itemValue.Key.Destination.Port == otherItem.Key.Port)
                                 {
                                     linkToRemove.Add(thisItem.Key, (Link)itemValue.Key);
                                 }
@@ -130,7 +130,7 @@ namespace RoutingController.Elements
                             //Numeracja wej�� do metroNode
                             int newMetroPort = 1 + this.GetVertexes(otherGraph.DomainName).Count;
 
-                            destination = new Destination(otherItem.Key.GetNodeId(), thisItem.Key.Node, thisItem.Key.Port, DestinationType.DOMAIN);
+                            destination = new Destination(otherItem.Key.GetNodeId(), thisItem.Key.Name, thisItem.Key.Port, DestinationType.DOMAIN);
 
                             linkData.Add(new Link(newMetroPort.ToString(), domains, destination, otherItemConnections.Key.Status));
 
@@ -167,7 +167,7 @@ namespace RoutingController.Elements
                 {
                     foreach (var secondItemConnections in secondItem.Value)
                     {
-                        if (fristItem.Key.Node == secondItemConnections.Key.Destination.Node && fristItem.Key.Port == secondItemConnections.Key.Destination.Port)
+                        if (fristItem.Key.Name == secondItemConnections.Key.Destination.Name && fristItem.Key.Port == secondItemConnections.Key.Destination.Port)
                         {
                            //does metro node exists in thid higher domain for lower domains
                             if (this.GetVertexes(firstGraph.DomainName).Count >= 1 && this.GetVertexes(secondGraph.DomainName).Count >= 1)
@@ -243,7 +243,7 @@ namespace RoutingController.Elements
                 {
                     if (currentVertex.Key != otherVertex.Key)
                     {
-                        Destination destination = new Destination(null, otherVertex.Key.Node, otherVertex.Key.Port);
+                        Destination destination = new Destination(null, otherVertex.Key.Name, otherVertex.Key.Port);
                         List<string> domains = new List<string>();
                         domains.Add(networkName);
                         Link newLink = new Link(currentVertex.Key.Port, domains, destination, NodeStatus.FREE); //WERYFIKACJA !!!
@@ -272,7 +272,7 @@ namespace RoutingController.Elements
                 Dictionary<ILink, int> routes = null;
                 foreach (var newVertex in newGraph)
                 {
-                    if (oldVertex.Key.Node != newVertex.Key.Node)
+                    if (oldVertex.Key.Name != newVertex.Key.Name)
                     {
                         remove = false;
                         break;
@@ -411,7 +411,7 @@ namespace RoutingController.Elements
         {
             foreach (var vertex in Graph)
             {
-                if (vertex.Key.Node == nodeName || vertex.Key.GetNodeId() == nodeName)
+                if (vertex.Key.Name == nodeName || vertex.Key.GetNodeId() == nodeName)
                 {
                     return vertex;
                 }
@@ -423,7 +423,7 @@ namespace RoutingController.Elements
             Dictionary<NodeElement, Dictionary<ILink, int>> returnDictionary = new Dictionary<NodeElement, Dictionary<ILink, int>>();
             foreach (var vertex in Graph)
             {
-                if (vertex.Key.Node == nodeName || vertex.Key.GetNodeId() == nodeName)
+                if (vertex.Key.Name == nodeName || vertex.Key.GetNodeId() == nodeName)
                 {
                     returnDictionary.Add(vertex.Key, vertex.Value);
                 }
@@ -435,7 +435,7 @@ namespace RoutingController.Elements
             Dictionary<NodeElement, Dictionary<ILink, int>> returnDictionary = new Dictionary<NodeElement, Dictionary<ILink, int>>();
             foreach (var vertex in Graph)
             {
-                if (vertex.Key.Node.Contains(nodeName))
+                if (vertex.Key.Name.Contains(nodeName))
                 {
                     returnDictionary.Add(vertex.Key, vertex.Value);
                 }
@@ -472,9 +472,9 @@ namespace RoutingController.Elements
             {
                 foreach (var item in vertex.Value)
                 {
-                    if (item.Key.Destination.Node != vertex.Key.Node)
+                    if (item.Key.Destination.Name != vertex.Key.Name)
                     {
-                        returnDictionary.Add(new NodeElement(vertex.Key.Node, vertex.Key.Port), new NodeElement(item.Key.Destination.Node, item.Key.Destination.Port));
+                        returnDictionary.Add(new NodeElement(vertex.Key.Name, vertex.Key.Port), new NodeElement(item.Key.Destination.Name, item.Key.Destination.Port));
                     }
                 }
             }

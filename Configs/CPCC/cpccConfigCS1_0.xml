@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<directory-config>
+<network-info>
+<autonomous-system-name name="CS1"/>
+<client-name name="ADAM"/>
+<localport value="60009"/>
+<ncc-port value="60001"/>
+</network-info>
+
+	
+</directory-config>

@@ -1,33 +1,44 @@
 {
-    "Protocol": "route",
-    "Ends": [
+    "Protocol": "resources",
+    "Nodes": [
+        { "Node": "client1", "Domains": [ "domainA" ], "Data": [ { "Port": "1", "Destination": { "Name": "node1", "Port": "1" }, "Status": "FREE" } ] },
+        { "Node": "client2", "Domains": [ "domainA" ], "Data": [ { "Port": "1", "Destination": { "Name": "node2", "Port": "2" }, "Status": "FREE" } ] },
+        { "Node": "node4", "Domains": [ "domainA" ], "Data": [ { "Port": "2", "Destination": { "Name": "node3", "Port": "3" }, "Status": "FREE" }, { "Port": "1", "Destination": { "Name": "node1", "Port": "3" }, "Status": "FREE" } ] },
+        { "Node": "client3", "Domains": [ "domainA" ], "Data": [ { "Port": "1", "Destination": { "Name": "node6", "Port": "2" }, "Status": "FREE" } ] },
         {
-            "OuterDomain": null,
-            "Node": "client1",
-            "Port": "1"
-        },
-        { "OuterDomain": "domenaB", "Node": "node4", "Port": "2" }
-    ],
-    "Steps": [
-        {
-            "Domain": null,
-            "Node": "client1",
-            "Ports": [ "1", "3" ]
-        },
-        {
-            "Domain": null,
-            "Node": "node1",
-            "Ports": [ "2", "3" ]
-        },
-        {
-            "Domain": null,
-            "Node": "node4",
-            "Ports": [ "2", "1" ]
+            "Node": "node3",
+            "Domains": [ "domainA" ],
+            "Data": [
+                {
+                    "Port": "3",
+                    "Destination": { "Name": "node4", "Port": "2" },
+                    "Status": "FREE"
+                },
+                { "Port": "1", "Destination": { "Name": "node2", "Port": "3" }, "Status": "FREE" },
+                { "Port": "2", "Destination": { "Name": "node5", "Port": "1" }, "Status": "FREE" }
+            ]
         },
         {
-            "Domain": null,
-            "Node": "node5",
-            "Ports": [ "1", null ]
+            "Node": "node7",
+            "Domains": [ null, "domainB" ],
+            "Data": [ { "Port": "1", "Destination": { "Name": "node6", "Port": "3" }, "Status": "FREE" }, { "Port": "3", "Destination": { "Name": "node8", "Port": "2" }, "Status": "FREE" } ]
+        },
+        { "Node": "node8", "Domains": [ null, "domainB" ], "Data": [ { "Port": "2", "Destination": { "Name": "node7", "Port": "3" }, "Status": "FREE" }, { "Port": "1", "Destination": { "Name": "node5", "Port": "3" }, "Status": "FREE" } ] },
+        { "Node": "node2", "Domains": [ "domainA" ], "Data": [ { "Port": "1", "Destination": { "Name": "node1", "Port": "2" }, "Status": "FREE" }, { "Port": "2", "Destination": { "Name": "client2", "Port": "1" }, "Status": "FREE" } ] },
+        { "Node": "node5", "Domains": [ null, "domainB" ], "Data": [ { "Port": "1", "Destination": { "Name": "node3", "Port": "2" }, "Status": "FREE" }, { "Port": "3", "Destination": { "Name": "node8", "Port": "1" }, "Status": "FREE" }, { "Port": "2", "Destination": { "Name": "node6", "Port": "1" }, "Status": "FREE" } ] },
+        { "Node": "node1", "Domains": [ "domainA" ], "Data": [ { "Port": "1", "Destination": { "Name": "client1", "Port": "1" }, "Status": "FREE" }, { "Port": "3", "Destination": { "Name": "node4", "Port": "1" }, "Status": "FREE" }, { "Port": "2", "Destination": { "Name": "node2", "Port": "1" }, "Status": "FREE" } ] },
+        {
+            "Node": "node6",
+            "Domains": [ null, "domainB" ],
+            "Data": [
+                { "Port": "2", "Destination": { "Name": "client3", "Port": "1" }, "Status": "FREE" },
+                {
+                    "Port": "3",
+                    "Destination": { "Name": "node7", "Port": "1" },
+                    "Status": "FREE"
+                },
+                { "Port": "1", "Destination": { "Name": "node5", "Port": "2" }, "Status": "FREE" }
+            ]
         }
     ]
 }

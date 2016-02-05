@@ -23,8 +23,8 @@ namespace RoutingController.Requests
     }
     public class RouteResponse
     {
-        public string Protocol { get; private set; }
         public string Id { get; set; }
+        public string Protocol { get; private set; }
         public List<Ends> Ends { get; set; }
         public List<SNP> Steps { get; set; }
 
@@ -55,28 +55,28 @@ namespace RoutingController.Requests
 
                     SNP newSNP = null;
 
-                    if (firstNode.Node == secondNode.Node)
+                    if (firstNode.Name == secondNode.Name)
                     {
                         if (firstNode.Scope != null)
                         {
                             firstNode = new NodeElement(firstNode.Scope);
                             portList.Add(firstNode.Port);
                             portList.Add(null);
-                            newSNP = new SNP(firstNode.Node, nodes[i].Node, portList);
+                            newSNP = new SNP(firstNode.Name, nodes[i].Name, portList);
                             this.Steps.Add(newSNP);
 
                             portList = new List<string>();
                             secondNode = new NodeElement(secondNode.Scope);
                             portList.Add(secondNode.Port);
                             portList.Add(null);
-                            newSNP = new SNP(secondNode.Node, nodes[i].Node, portList);
+                            newSNP = new SNP(secondNode.Name, nodes[i].Name, portList);
                             this.Steps.Add(newSNP);
                         }
                         else
                         {
                             portList.Add(firstNode.Port);
                             portList.Add(secondNode.Port);
-                            newSNP = new SNP(firstNode.Node, null, portList);
+                            newSNP = new SNP(firstNode.Name, null, portList);
                             this.Steps.Add(newSNP);
                         }
                         if (i + 2 < nodes.Count)
@@ -90,7 +90,7 @@ namespace RoutingController.Requests
                         portList = new List<string>();
                         portList.Add(firstNode.Port);
                         portList.Add(null);
-                        this.Steps.Add(new SNP(firstNode.Node, null, portList));
+                        this.Steps.Add(new SNP(firstNode.Name, null, portList));
                         i++;
                     }
                 }
@@ -100,7 +100,7 @@ namespace RoutingController.Requests
                     List<string> portList = new List<string>();
                     portList.Add(firstNode.Port);
                     portList.Add(null);
-                    this.Steps.Add(new SNP(firstNode.Node, null, portList));
+                    this.Steps.Add(new SNP(firstNode.Name, null, portList));
                     i++;
                 }
             }

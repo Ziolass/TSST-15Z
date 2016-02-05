@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ncc-config>
 <network-info>
-<autonomous-system-name name="AS2"/>
+<autonomous-system-name name="CS1"/>
 <localport value="60001"/>
 <dictionary value="60002"/>
 <policy value = "60003"/>

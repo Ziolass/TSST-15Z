@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<cc type="mux" number="1" name="node2">
-	<gateway domian="myDomian2" gate="node5:1"/>
-	<gateway domian="myDomian3" gate="node9:2"/>
-	<gateway domian="myDomian4" gate="node6:1"/>
-	<ncc tcp="10003"/>
-	<rc tcp="8100"/>
-	<lrm node="node1" tcp="8011"/>
-	<lrm node="node2" tcp="8012"/>
-	<lrm node="node3" tcp="8013"/>
-	<lrm node="node4" tcp="8014"/>
+<cc peer-coordination="60000" 
+ncc-tcp="10003" 
+rc-tcp="8100"
+notifier=""
+lrm-tcp="22000"
+domain="domainA">
+	<domains number="1">
+		<domain index="0" name="domainA"/>
+	</domains>
+	<sub-networks>
+	</sub-networks>
+	<peers>
+	</peers>
 </cc>

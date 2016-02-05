@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace NetworkClientNode.CPCC
 {
@@ -92,10 +91,17 @@ namespace NetworkClientNode.CPCC
 
         private string acceptCall(string foreignName)
         {
-            // TODO
-            cpcc.updateConsole("Zaakceptowano zestawienie polaczenia z " + foreignName);
-            cpcc.addToConnectedClients(foreignName.ToUpper());
-            return "call-accepted|";
+            if (MessageBox.Show("Zgadzasz się na połączenie z "+foreignName+"?", "Nowe polaczenie", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+            {
+                return "call-declined|"; 
+            }
+            else
+            {
+                cpcc.updateConsole("Zaakceptowano zestawienie polaczenia z " + foreignName);
+                cpcc.addToConnectedClients(foreignName.ToUpper());
+                return "call-accepted|" + foreignName.ToUpper();
+            }
+            
         }
 
 
