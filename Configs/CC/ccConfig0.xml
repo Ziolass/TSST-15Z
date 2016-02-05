@@ -5,10 +5,12 @@ rc-tcp="8100"
 notifier=""
 lrm-tcp="22000"
 domain="domainA">
-	<domains number="1">
-		<domain index="0" name="domainA"/>
+	<domains number="2">
+		<domain index="0" name="domainB"/>
+		<domain index="1" name="domainA"/>
 	</domains>
 	<sub-networks>
+		<sub-network domian="domainB" tcp="10033" />
 	</sub-networks>
 	<peers>
 	</peers>
