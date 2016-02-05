@@ -20,7 +20,7 @@ namespace RoutingController.Service
         public Socket WorkSocket = null;
 
         // Size of receive Buffer.
-        public const int BufferSize = 1024;
+        public const int BufferSize = 10000;
 
         // Receive Buffer.
         public byte[] Buffer = new byte[BufferSize];
@@ -155,7 +155,7 @@ namespace RoutingController.Service
                 }
                 networkRequest.OtherDomains = new List<string>(otherDomains);
 
-                byte[] bytes = new byte[5000];
+                byte[] bytes = new byte[10000];
                 try
                 {
                     IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
@@ -229,7 +229,7 @@ namespace RoutingController.Service
         public void StartListening()
         {
             // Data Buffer for incoming data.
-            byte[] bytes = new Byte[1024];
+            byte[] bytes = new Byte[10000];
 
             // Establish the local endpoint for the socket.
             // The DNS name of the computer
@@ -316,6 +316,8 @@ namespace RoutingController.Service
                     //Read message
                     content = state.StringBuilder.ToString();
 
+
+                    Console.WriteLine(content);
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                     {
                         string response = string.Empty;

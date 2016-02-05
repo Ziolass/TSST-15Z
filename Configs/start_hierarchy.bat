@@ -23,7 +23,6 @@ start cmd /c startLRM0.bat
 cd ..
 cd CC
 start cmd /c startConnectionController0.bat
-start cmd /c startConnectionController1.bat
 
 cd ..
 cd NetworkNode
