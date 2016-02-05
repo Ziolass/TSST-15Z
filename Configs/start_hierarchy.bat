@@ -10,14 +10,17 @@ start cmd /c routingControllerStart.bat
 cd ..
 cd Directory
 start cmd /c startDirectory0.bat
+start cmd /c startDirectory1.bat
 
 cd ..
 cd Policy
 start cmd /c startPolicy0.bat
+start cmd /c startPolicy1.bat
 
 cd ..
 cd NCC
 start cmd /c startNCC0.bat
+start cmd /c startNCC1.bat
 
 cd ..
 cd LRM

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ncc-config>
 <network-info>
-<autonomous-system-name name="CS1"/>
+<autonomous-system-name name="BS1"/>
 <localport value="60001"/>
 <dictionary value="60002"/>
 <policy value = "60003"/>
-<cc value="20004"/>
-<other-ncc name="AS2" value = "50001"/>
+<cc value="10033"/>
+<other-ncc name="AS1" value = "50001"/>
 </network-info>
 </ncc-config>

@@ -2,9 +2,9 @@
 <directory-config>
 <network-info>
 <autonomous-system-name name="BS1"/>
-<client-name name="MONIKA"/>
-<localport value="50010"/>
-<ncc-port value="50001"/>
+<client-name name="ADAM"/>
+<localport value="60009"/>
+<ncc-port value="60001"/>
 </network-info>
 
 	

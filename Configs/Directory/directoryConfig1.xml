@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <directory-config>
 <network-info>
-<autonomous-system-name name="AS2"/>
+<autonomous-system-name name="BS1"/>
 <port value="60002"/>
 </network-info>
 
 	<entries>
-		<entry username="ADAM" address ="60009" physical-address="client4:1"/>
+		<entry username="ADAM" address ="60009" physical-address="client3:1"/>
 	</entries>
 	
 </directory-config>
