@@ -26,7 +26,54 @@
 		<port tcp="5040" local="1" node="node5" />
 	</link>
 	<link>
-		<port tcp="5041" local="3" node="node3" />
+		<port tcp="5022" local="3" node="node3" />
 		<port tcp="5031" local="1" node="node4" />
 	</link>
+	
+	<link>
+		<port tcp="5041" local="2" node="node5" />
+		<port tcp="5050" local="1" node="node6" />
+	</link>
+	<link>
+		<port tcp="5042" local="3" node="node5" />
+		<port tcp="5070" local="1" node="node8" />
+	</link>
+	<link>
+		<port tcp="5051" local="2" node="node6" />
+		<port tcp="5020" local="1" node="client3" />
+	</link>
+	<link>
+		<port tcp="5052" local="3" node="node6" />
+		<port tcp="5060" local="1" node="node7" />
+	</link>
+	<link>
+		<port tcp="5061" local="2" node="node7" />
+		<port tcp="5080" local="1" node="node9" />
+	</link>
+	<link>
+		<port tcp="5062" local="3" node="node7" />
+		<port tcp="5071" local="2" node="node8" />
+	</link>
+	
+	<link>
+		<port tcp="5081" local="2" node="node9" />
+		<port tcp="5090" local="1" node="node10" />
+	</link>
+	<link>
+		<port tcp="5082" local="3" node="node9" />
+		<port tcp="5110" local="1" node="node12" />
+	</link>
+	<link>
+		<port tcp="5091" local="2" node="node10" />
+		<port tcp="5100" local="1" node="node11" />
+	</link>
+	<link>
+		<port tcp="5101" local="2" node="node11" />
+		<port tcp="3030" local="1" node="client4" />
+	</link>
+	<link>
+		<port tcp="5102" local="3" node="node11" />
+		<port tcp="5111" local="2" node="node12" />
+	</link>
+	
 </links>

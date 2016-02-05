@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<node type="mux" number="1" name="node7">
+	<network level="VC32" />
+	<port local="1" tcp="5060" stm="STM1"/>
+	<port local="2" tcp="5061" stm="STM1"/>
+	<port local="3" tcp="5062" stm="STM1"/>
+	<cloud-server tcp="6000"/>
+	<managment-port number="7006"/>
+	<lrm-client tcp="22000"/>
+	<domians number="2">	
+		<domain index="0" name="domainA"/>
+		<domian index="1" name="domainB"/>
+	</domians>
+</node>

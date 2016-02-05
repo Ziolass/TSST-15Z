@@ -6,6 +6,6 @@
 <dictionary value="50002"/>
 <policy value = "50003"/>
 <cc value="10003"/>
-<other-ncc name="AS2" value = "60001"/>
+<other-ncc name="CS1" value = "60001"/>
 </network-info>
 </ncc-config>

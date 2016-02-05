@@ -7,8 +7,6 @@
 
 	<entries>
 		<entry username="ADAM" address ="60009" physical-address="client4:1"/>
-		<entry username="MONIKA" address ="60010" physical-address="client5:1"/>  
-		<entry username="KOMANDO" address ="60011" physical-address="client6:2"/>
 	</entries>
 	
 </directory-config>

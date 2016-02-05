@@ -1,1 +1,1 @@
-cd ..\..\CallingPartyCallController\bin\Debug\ & start CallingPartyCallController.exe AS2_0
+cd ..\..\CallingPartyCallController\bin\Debug\ & start CallingPartyCallController.exe BS1_0
