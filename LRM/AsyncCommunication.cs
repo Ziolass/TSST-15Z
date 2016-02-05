@@ -105,12 +105,19 @@ namespace LRM
 
         public void Send(String data)
         {
-            byte[] byteData = Encoding.ASCII.GetBytes(data);
-            PacketsSend.Reset();
-            StateObject state = new StateObject();
-            AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), null);
-            PacketsSend.WaitOne();
+            try
+            {
+                byte[] byteData = Encoding.ASCII.GetBytes(data);
+                PacketsSend.Reset();
+                StateObject state = new StateObject();
+                AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
+                    new AsyncCallback(SendCallback), null);
+                PacketsSend.WaitOne();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         private void SendCallback(IAsyncResult ar)

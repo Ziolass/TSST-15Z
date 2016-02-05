@@ -295,63 +295,70 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void ReadCallback(IAsyncResult ar)
         {
-            String content = String.Empty;
-
-            // Retrieve the state object and the handler socket
-            // from the asynchronous state object.
-            StateObject state = (StateObject)ar.AsyncState;
-            Socket handler = state.WorkSocket;
-
-            // Read data from the client socket.
-            int bytesRead = handler.EndReceive(ar);
-
-            if (bytesRead > 0)
+            try
             {
-                // There  might be more data, so store the data received so far.
-                state.StringBuilder.Append(Encoding.ASCII.GetString(
-                    state.Buffer, 0, bytesRead));
+                String content = String.Empty;
 
-                //Read message
-                content = state.StringBuilder.ToString();
+                // Retrieve the state object and the handler socket
+                // from the asynchronous state object.
+                StateObject state = (StateObject)ar.AsyncState;
+                Socket handler = state.WorkSocket;
 
-                if (!String.IsNullOrEmpty(content) && IsValidJson(content))
+                // Read data from the client socket.
+                int bytesRead = handler.EndReceive(ar);
+
+                if (bytesRead > 0)
                 {
-                    string response = string.Empty;
-                    if (this.OperationType(content) == ActionType.LocalTopology)
+                    // There  might be more data, so store the data received so far.
+                    state.StringBuilder.Append(Encoding.ASCII.GetString(
+                        state.Buffer, 0, bytesRead));
+
+                    //Read message
+                    content = state.StringBuilder.ToString();
+
+                    if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                     {
-                        response = this.PerformAction(content);
-                        // Signal the main thread to continue.
-                        allDone.Set();
-                        new Thread(delegate()
+                        string response = string.Empty;
+                        if (this.OperationType(content) == ActionType.LocalTopology)
                         {
-                            SendNetworkTopology(); //My topology is new  send it
-                        }).Start();
-                    }
-                    else if (this.OperationType(content) == ActionType.RouteTableQuery)
-                    {
-                        // Signal the main thread to continue.
-                        allDone.Set();
-                        response = this.PerformAction(content);
-                        Console.WriteLine("Route table query sent");
-                    }
-                    else if (this.OperationType(content) == ActionType.NetworkTopology)
-                    {
-                        this.PerformAction(content);
-                        allDone.Set();
+                            response = this.PerformAction(content);
+                            // Signal the main thread to continue.
+                            allDone.Set();
+                            new Thread(delegate()
+                            {
+                                SendNetworkTopology(); //My topology is new  send it
+                            }).Start();
+                        }
+                        else if (this.OperationType(content) == ActionType.RouteTableQuery)
+                        {
+                            // Signal the main thread to continue.
+                            allDone.Set();
+                            response = this.PerformAction(content);
+                            Console.WriteLine("Route table query sent");
+                        }
+                        else if (this.OperationType(content) == ActionType.NetworkTopology)
+                        {
+                            this.PerformAction(content);
+                            allDone.Set();
+                        }
+                        else
+                        {
+                            allDone.Set();
+                            Console.WriteLine("Wrong request!");
+                        }
+                        Send(handler, response);
                     }
                     else
                     {
-                        allDone.Set();
-                        Console.WriteLine("Wrong request!");
+                        // Not all data received. Get more.
+                        handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
+                        new AsyncCallback(ReadCallback), state);
                     }
-                    Send(handler, response);
                 }
-                else
-                {
-                    // Not all data received. Get more.
-                    handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 

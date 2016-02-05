@@ -79,10 +79,11 @@ namespace NetworkClientNode.ViewModels
                 this.ClientSetUpProccess.StreamCreated += new StreamCreatedHandler(OnStreamCreated);
                 this.ClientSetUpProccess.StartClientProcess();
                 this.ClientSetUpProccess.ClientNode.StreamAdded += new StreamChangedHandler(OnStreamAdded);
-                this.ClientSetUpProccess.ClientNode.StreamRemoved += new StreamChangedHandler(OnStreamRemoved);
+                this.ClientSetUpProccess.ClientNode.StreamRemoved += new StreamChangedHandler(OnStreamRemove);
                 this.ClientSetUpProccess.ClientNode.RegisterDataListener(new HandleClientData(OnHandleClientData));
 
                 this.ClientSetUpProccess.ClientNode.Adaptation.AllocationClientStream += new AllocationClientStream(OnClientStreamAdd);
+                this.ClientSetUpProccess.ClientNode.Adaptation.DeallocationClientStream += new DeallocationClientStream(OnClientStreamRemove);
 
                 this.SendMessage = new ExternalCommand(SendNewMessage, true);
                 this.Connect = new ExternalCommand(ConnectNew, true);
@@ -93,9 +94,19 @@ namespace NetworkClientNode.ViewModels
             }
         }
 
-        private void OnStreamRemoved(StreamChangedArgs args)
+        private void OnStreamRemove(StreamChangedArgs args)
         {
             foreach (StreamData stream in args.Streams)
+            {
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    this.Streams.Remove(new StreamDataViewModel(stream));
+                });
+            }
+        }
+        private void OnClientStreamRemove(List<StreamData> args)
+        {
+            foreach (StreamData stream in args)
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {

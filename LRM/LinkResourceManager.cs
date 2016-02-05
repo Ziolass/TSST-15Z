@@ -141,8 +141,11 @@ namespace LRM
                 Header = PresenceType.DISCONNECTED.ToString(),
                 Node = NodeName
             });
+            if (HighestCc != null)
+            {
 
-            HighestCc.Send(data);
+                HighestCc.Send(data);
+            }
         }
 
         public void RunServer()
