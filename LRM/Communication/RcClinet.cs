@@ -10,12 +10,12 @@ namespace LRM.Communication
     class RcClinet : LocalPort
     {
         private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
-        private AsyncCommunication Async;
-        private Action<string, AsyncCommunication> DataRedCallback;
+        private RcAsyncComm Async;
+        private Action<string, RcAsyncComm> DataRedCallback;
         private Thread ReciverThread;
         private object ConnectLock = new object();
 
-        public RcClinet(int port, Action<string, AsyncCommunication> callback)
+        public RcClinet(int port, Action<string, RcAsyncComm> callback)
             : base(port)
         {
             DataRedCallback = callback;
@@ -31,8 +31,10 @@ namespace LRM.Communication
                 }
                 ConnectDone.Reset();
                 StateObject state = new StateObject();
+                Console.WriteLine("--------------------------------------RC CLIENT BEGIN CONNECT");
                 ActionSocket.BeginConnect(Endpoint, new AsyncCallback(ConnectCallback), null);
                 ConnectDone.WaitOne();
+                
             }
         }
 
@@ -40,9 +42,11 @@ namespace LRM.Communication
         {
             try
             {
+                Console.WriteLine("--------------------------------------RC START END CONNECT");
                 ActionSocket.EndConnect(ar);
+                Console.WriteLine("--------------------------------------RC END END CONNECT");
                 ConnectDone.Set();
-                Async = new AsyncCommunication(ActionSocket, null, DataRedCallback, null);
+                Async = new RcAsyncComm(ActionSocket, null, DataRedCallback, null);
 
                 ReciverThread = new Thread(new ThreadStart(Async.StartReciving));
                 ReciverThread.Start();

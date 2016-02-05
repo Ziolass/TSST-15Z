@@ -126,22 +126,25 @@ namespace LRM
                 }
             }
         }
-
+        object finishingSending = new object();
         private void SendCallback(IAsyncResult ar)
         {
-            try
+            lock (finishingSending)
             {
-                int bytesSent = AsyncSocket.EndSend(ar);
-                Console.WriteLine("Data Send");
-                PacketsSend.Set();
-            }
-            catch (Exception e)
-            {
-                AsyncSocket = null;
-                Console.WriteLine(e.ToString());
-                if (ConnectionLostCallback != null)
+                try
                 {
-                    ConnectionLostCallback(this);
+                    int bytesSent = AsyncSocket.EndSend(ar);
+                    Console.WriteLine("Data Send");
+                    PacketsSend.Set();
+                }
+                catch (Exception e)
+                {
+                    AsyncSocket = null;
+                    Console.WriteLine(e.ToString());
+                    if (ConnectionLostCallback != null)
+                    {
+                        ConnectionLostCallback(this);
+                    }
                 }
             }
         }

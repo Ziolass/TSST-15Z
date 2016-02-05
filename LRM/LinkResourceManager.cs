@@ -37,7 +37,7 @@ namespace LRM
             AllocationRegister = new AllocationRegister();
         }
 
-        public void HandleRcData(string data, AsyncCommunication async)
+        public void HandleRcData(string data, RcAsyncComm async)
         {
             Console.WriteLine("RC: " + data);
         }
@@ -161,8 +161,13 @@ namespace LRM
 
         public void RunServer()
         {
+            Console.WriteLine("####################################################################");
+            
             RcClinet.ConnectToRc();
+            Console.WriteLine("RC - start connecting");
             LrmServer.Start();
+            Console.WriteLine("Lrm - start listening");
+            Console.WriteLine("####################################################################");
         }
 
         private string WrapWithHeader(LrmCommunicationType comm, LrmHeader header, string data)

@@ -68,6 +68,7 @@
     <Compile Include="LrmServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RcAsyncComm.cs" />
     <Compile Include="TextUtils.cs" />
     <Compile Include="VirtualNode.cs" />
   </ItemGroup>

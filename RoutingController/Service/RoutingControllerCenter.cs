@@ -252,14 +252,14 @@ namespace RoutingController.Service
                 while (true)
                 {
                     // Set the event to nonsignaled state.
-                    //allDone.Reset();
+                    allDone.Reset();
                     // Start an asynchronous socket to listen for connections.
-                    
+                    Console.WriteLine("BeginAccept");
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
                         listener);
                     // Wait until a connection is made before continuing.
-                    //allDone.WaitOne();
+                    allDone.WaitOne();
                 }
             }
             catch (Exception e)
@@ -329,7 +329,7 @@ namespace RoutingController.Service
                         {
                             response = this.PerformAction(content);
                             // Signal the main thread to continue.
-                            //allDone.Set();
+                            allDone.Set();
 
                             /*new Thread(delegate()
                             //{
@@ -340,18 +340,18 @@ namespace RoutingController.Service
                         else if (this.OperationType(content) == ActionType.RouteTableQuery)
                         {
                             // Signal the main thread to continue.
-                            //allDone.Set();
+                            allDone.Set();
                             response = this.PerformAction(content);
                             Console.WriteLine("Route table query sent");
                         }
                         else if (this.OperationType(content) == ActionType.NetworkTopology)
                         {
                             this.PerformAction(content);
-                           // allDone.Set();
+                            allDone.Set();
                         }
                         else
                         {
-                           // allDone.Set();
+                            allDone.Set();
                             Console.WriteLine("Wrong request!");
                         }
                         Send(handler, response);
