@@ -7,7 +7,7 @@
 	<managment-port number="7007"/>
 	<lrm-client tcp="22000"/>
 	<domians number="2">		
-		<domain index="0" name="domainA"/>
-		<domian index="1" name="domainB"/>
+		<domian index="0" name="domainB"/>		
+		<domain index="1" name="domainA"/>
 	</domians>
 </node>
