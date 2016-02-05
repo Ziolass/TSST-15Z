@@ -1,4 +1,4 @@
-﻿using CcConfig;
+using CcConfig;
 using System;
 
 namespace Cc
@@ -7,7 +7,7 @@ namespace Cc
     {
         private static void Main(string[] args)
         {
-            String id = "0";//args[0];
+            String id = args[0];
             ElementConfigurator configurator = new ElementConfigurator("..\\..\\..\\Configs\\CC\\ccConfig" + id + ".xml");
             ConnectionController cc = configurator.configureController();
             Console.ReadLine();

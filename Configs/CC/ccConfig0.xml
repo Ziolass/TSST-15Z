@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<cc peer-coordination="60000" 
+<cc peer-coordination="45000" 
 ncc-tcp="10003" 
 rc-tcp="8100"
 notifier=""
