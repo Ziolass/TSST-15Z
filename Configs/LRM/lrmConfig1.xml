@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<lrm rc-tcp="8101" cc-tcp="18000" server-tcp="22001" domian-scope="domainC">
+	
+</lrm>

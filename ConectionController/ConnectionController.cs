@@ -9,6 +9,7 @@ using RoutingController.Elements;
 using RoutingController.Requests;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Cc
 {
@@ -110,7 +111,7 @@ namespace Cc
 
             foreach (string ccDomain in peers.Keys)
             {
-                PeerCoordinators.Add(ccDomain, new CcClient(ccPorts[ccDomain], HandlePeerAns));
+                PeerCoordinators.Add(ccDomain, new CcClient(peers[ccDomain], HandlePeerAns));
             }
         }
 
@@ -131,6 +132,14 @@ namespace Cc
             {
                 cc.ConnectToCc();
             }
+            Console.WriteLine("CONNECTION REQUEST OUT - RUNNING");
+            Thread.Sleep(5000);
+
+            foreach (CcClient peer in PeerCoordinators.Values)
+            {
+                peer.ConnectToCc();
+            }
+            Console.WriteLine("PEER COORDINATION OUT - RUNNING");
         }
 
         public void HandleNccData(string data, AsyncCommunication async)

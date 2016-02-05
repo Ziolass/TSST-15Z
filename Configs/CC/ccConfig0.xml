@@ -13,5 +13,6 @@ domain="domainA">
 		<sub-network domian="domainB" tcp="10033" />
 	</sub-networks>
 	<peers>
+		<peer domian="domainC" tcp="45001"/>
 	</peers>
 </cc>

@@ -1,0 +1,1 @@
+cd ..\..\LRM\bin\Debug\ & LRM.exe 1

@@ -5,7 +5,7 @@
 <localport value="60001"/>
 <dictionary value="60002"/>
 <policy value = "60003"/>
-<cc value="10033"/>
+<cc value="10034"/>
 <other-ncc name="AS1" value = "50001"/>
 </network-info>
 </ncc-config>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<cc peer-coordination="45001" 
+ncc-tcp="10034" 
+rc-tcp="8101"
+notifier=""
+lrm-tcp="22001"
+domain="domainC">
+	<domains number="1">
+		<domain index="0" name="domainC"/>
+	</domains>
+	<sub-networks>
+	</sub-networks>
+	<peers>
+		<peer domian="domainA" tcp="45000"/>
+	</peers>
+</cc>
