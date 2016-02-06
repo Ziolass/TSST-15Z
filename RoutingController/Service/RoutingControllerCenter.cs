@@ -95,7 +95,8 @@ namespace RoutingController.Service
                     request = request.Replace("Protocol: \"resources\",", "");
                     LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
                     this.RoutingController.UpdateNetworkGraph(topologyRequest);
-                    Console.WriteLine("Update from local topology");
+                    Console.WriteLine("Updated local topology!");
+                    Console.WriteLine(this.ShowRoutes());
                     return "OK";
                 }
                 //RouteTableQuery
@@ -255,7 +256,6 @@ namespace RoutingController.Service
                     // Set the event to nonsignaled state.
                     allDone.Reset();
                     // Start an asynchronous socket to listen for connections.
-                    Console.WriteLine("BeginAccept");
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
                         listener);
@@ -279,18 +279,17 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void AcceptCallback(IAsyncResult ar)
         {
-            Console.WriteLine("->AcceptCallback");
+            allDone.Set();
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
-            Console.WriteLine("AcceptCallback : EndAccept ");
             // Create the state object.
             StateObject state = new StateObject();
             state.WorkSocket = handler;
-            Console.WriteLine("AcceptCallback -> BeginReceive" + handler.RemoteEndPoint);
+            Console.WriteLine("New connection from: " + handler.RemoteEndPoint);
             handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
-            allDone.Set();
+            
         }
 
         /// <summary>
@@ -302,7 +301,6 @@ namespace RoutingController.Service
         {
             try
             {
-                Console.WriteLine("ReadCallback");
                 String content = String.Empty;
 
                 // Retrieve the state object and the handler socket
@@ -312,7 +310,6 @@ namespace RoutingController.Service
 
                 // Read data from the client socket.
                 int bytesRead = handler.EndReceive(ar);
-                Console.WriteLine("ReadCallback : red bytes = " + bytesRead);
                 if (bytesRead > 0)
                 {
                     // There  might be more data, so store the data received so far.
@@ -322,8 +319,6 @@ namespace RoutingController.Service
                     //Read message
                     content = state.StringBuilder.ToString();
 
-
-                    Console.WriteLine(content);
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                     {
                         Console.WriteLine("Message OK!");
@@ -404,8 +399,8 @@ namespace RoutingController.Service
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
 
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                //handler.Shutdown(SocketShutdown.Both);
+                //handler.Close();
             }
             catch (Exception e)
             {

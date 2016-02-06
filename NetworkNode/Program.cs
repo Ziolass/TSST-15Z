@@ -1,5 +1,6 @@
 using NetworkNode.SDHFrame;
 using System;
+using System.Threading;
 
 namespace NetworkNode
 {
@@ -9,9 +10,10 @@ namespace NetworkNode
         {
             String id = args[0];
             NetworkNodeSetupProcess setUpProcess = new NetworkNodeSetupProcess("..\\..\\..\\Configs\\NetworkNode\\nodeConfig" + id + ".xml");
-            NetworkNode node = setUpProcess.startNodeProcess();
+
             Console.WriteLine("Start emulation");
-            startReadingCommands(node);
+            NetworkNode node = setUpProcess.startNodeProcess();
+            new Thread(delegate() { startReadingCommands(node); });
         }
 
         private static void startReadingCommands(NetworkNode node)

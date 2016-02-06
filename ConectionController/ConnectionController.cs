@@ -113,6 +113,10 @@ namespace Cc
             {
                 PeerCoordinators.Add(ccDomain, new CcClient(peers[ccDomain], HandlePeerAns));
             }
+
+            if (domains == null)
+                this.Domains = new List<string>();
+            else this.Domains = domains;
         }
 
         public void Start()
