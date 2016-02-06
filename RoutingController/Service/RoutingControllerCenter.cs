@@ -95,7 +95,8 @@ namespace RoutingController.Service
                     request = request.Replace("Protocol: \"resources\",", "");
                     LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
                     this.RoutingController.UpdateNetworkGraph(topologyRequest);
-                    Console.WriteLine("Update from local topology");
+                    Console.WriteLine("Updated local topology!");
+                    Console.WriteLine(this.ShowRoutes());
                     return "OK";
                 }
                 //RouteTableQuery
@@ -255,7 +256,6 @@ namespace RoutingController.Service
                     // Set the event to nonsignaled state.
                     allDone.Reset();
                     // Start an asynchronous socket to listen for connections.
-                    Console.WriteLine("BeginAccept");
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
                         listener);
@@ -319,8 +319,6 @@ namespace RoutingController.Service
                     //Read message
                     content = state.StringBuilder.ToString();
 
-
-                    Console.WriteLine(content);
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                     {
                         Console.WriteLine("Message OK!");

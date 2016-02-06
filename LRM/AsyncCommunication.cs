@@ -70,6 +70,7 @@ namespace LRM
                 String content = String.Empty;
                 StateObject state = (StateObject)ar.AsyncState;
                 int bytesRead = AsyncSocket.EndReceive(ar);
+
                 if (bytesRead > 0)
                 {
                     string data = Encoding.ASCII.GetString(state.Buffer, 0, bytesRead);
@@ -106,22 +107,20 @@ namespace LRM
         public void Send(String data)
         {
             Console.WriteLine("Entering send");
-            lock (this)
+
+            try
             {
-                try
-                {
-                    byte[] byteData = Encoding.ASCII.GetBytes(data);
-                    PacketsSend.Reset();
-                    StateObject state = new StateObject();
-                    AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
-                        new AsyncCallback(SendCallback), null);
-                    PacketsSend.WaitOne();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Send:");
-                    Console.WriteLine(e);
-                }
+                byte[] byteData = Encoding.ASCII.GetBytes(data);
+                PacketsSend.Reset();
+                StateObject state = new StateObject();
+                AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
+                    new AsyncCallback(SendCallback), null);
+                PacketsSend.WaitOne();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Send:");
+                Console.WriteLine(e);
             }
         }
         object finishingSending = new object();
