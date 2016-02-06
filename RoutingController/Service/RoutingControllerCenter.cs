@@ -280,15 +280,13 @@ namespace RoutingController.Service
         public void AcceptCallback(IAsyncResult ar)
         {
             allDone.Set();
-            Console.WriteLine("->AcceptCallback");
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
-            Console.WriteLine("AcceptCallback : EndAccept ");
             // Create the state object.
             StateObject state = new StateObject();
             state.WorkSocket = handler;
-            Console.WriteLine("AcceptCallback -> BeginReceive" + handler.RemoteEndPoint);
+            Console.WriteLine("New connection from: " + handler.RemoteEndPoint);
             handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
             
@@ -303,7 +301,6 @@ namespace RoutingController.Service
         {
             try
             {
-                Console.WriteLine("ReadCallback");
                 String content = String.Empty;
 
                 // Retrieve the state object and the handler socket
@@ -313,7 +310,6 @@ namespace RoutingController.Service
 
                 // Read data from the client socket.
                 int bytesRead = handler.EndReceive(ar);
-                Console.WriteLine("ReadCallback : red bytes = " + bytesRead);
                 if (bytesRead > 0)
                 {
                     // There  might be more data, so store the data received so far.
