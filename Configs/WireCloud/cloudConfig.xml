@@ -40,7 +40,7 @@
 	</link>
 	<link>
 		<port tcp="5051" local="2" node="node6" />
-		<port tcp="5020" local="1" node="client3" />
+		<port tcp="3020" local="1" node="client3" />
 	</link>
 	<link>
 		<port tcp="5052" local="3" node="node6" />

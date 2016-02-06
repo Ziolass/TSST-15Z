@@ -11,13 +11,12 @@ start cmd /c startNCC0.bat
 start cmd /c startNCC1.bat
 cd ..
 cd CC
-start cmd /c startConnectionController0.bat
+::start cmd /c startConnectionController0.bat
 start cmd /c startConnectionController1.bat
 
 cd ..
 cd LRM
 ::start cmd /c startLRM0.bat
-start cmd /c startLRM1.bat
 
 cd ..
 cd Directory

@@ -116,7 +116,8 @@ namespace NetworkNode
             {
                 node.IntroduceToLrm();
             }
-            /*new Thread(delegate()
+            /*
+            new Thread(delegate()
             {
                 try
                 {

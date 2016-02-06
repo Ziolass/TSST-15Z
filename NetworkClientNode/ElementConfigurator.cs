@@ -105,6 +105,7 @@ namespace NetworkClientNode
                 input.StartListening();
             }
 
+
             Thread.Sleep(2000);
             lock (adpt)
             {
@@ -120,6 +121,7 @@ namespace NetworkClientNode
             {
                 try
                 {
+
                     adpt.ConnectClient();
                     new Thread(delegate()
                     {

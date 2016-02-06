@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +13,7 @@ namespace LRM
     public class AsyncCommunication
     {
         public Socket AsyncSocket { get; private set; }
-        public bool LastOne { get; private set; }
-        
+
         private ManualResetEvent PacketsReceived = new ManualResetEvent(false);
         private ManualResetEvent PacketsSend = new ManualResetEvent(false);
         private Action<AsyncCommunication> ConnectionLostCallback;
@@ -20,14 +21,13 @@ namespace LRM
         private Action<string, AsyncCommunication> SubscribeCallback;
         private Thread ReciveThread;
         private bool IdleState;
-        
+
         public AsyncCommunication(Socket asyncSocket,
             Action<AsyncCommunication> connectionLostCallback,
             Action<string, AsyncCommunication> dataRedCallback,
             Action<string, AsyncCommunication> subscribeCallback)
         {
             AsyncSocket = asyncSocket;
-            LastOne = true;
             DataRedCallback = dataRedCallback;
             SubscribeCallback = subscribeCallback;
             IdleState = true;
@@ -44,7 +44,7 @@ namespace LRM
         {
             try
             {
-                while (LastOne)
+                while (true)
                 {
                     PacketsReceived.Reset();
                     StateObject state = new StateObject();
@@ -67,15 +67,15 @@ namespace LRM
         {
             try
             {
-                PacketsReceived.Set();
                 String content = String.Empty;
                 StateObject state = (StateObject)ar.AsyncState;
                 int bytesRead = AsyncSocket.EndReceive(ar);
-
                 if (bytesRead > 0)
                 {
                     string data = Encoding.ASCII.GetString(state.Buffer, 0, bytesRead);
                     state.ResponseBuilder.Append(data);
+
+                    PacketsReceived.Set();
 
                     if (bytesRead != StateObject.BufferSize)
                     {
@@ -87,7 +87,6 @@ namespace LRM
                             IdleState = false;
                             return;
                         }
-
                         DataRedCallback(allData, this);
                     }
                     else
@@ -109,7 +108,6 @@ namespace LRM
             Console.WriteLine("Entering send");
             lock (this)
             {
-                
                 try
                 {
                     byte[] byteData = Encoding.ASCII.GetBytes(data);
@@ -129,7 +127,7 @@ namespace LRM
         object finishingSending = new object();
         private void SendCallback(IAsyncResult ar)
         {
-            lock (finishingSending)
+            lock (AsyncSocket)
             {
                 try
                 {

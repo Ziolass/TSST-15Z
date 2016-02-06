@@ -25,10 +25,7 @@ namespace RoutingController
                     RC.StartListening();
                 }).Start();
 
-
                 startReadingCommands(RC);
-
-
 
                 Console.ReadLine();
             }

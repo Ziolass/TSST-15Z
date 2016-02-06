@@ -279,6 +279,7 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void AcceptCallback(IAsyncResult ar)
         {
+            allDone.Set();
             Console.WriteLine("->AcceptCallback");
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
@@ -290,7 +291,7 @@ namespace RoutingController.Service
             Console.WriteLine("AcceptCallback -> BeginReceive" + handler.RemoteEndPoint);
             handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
-            allDone.Set();
+            
         }
 
         /// <summary>
@@ -404,8 +405,8 @@ namespace RoutingController.Service
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
 
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                //handler.Shutdown(SocketShutdown.Both);
+                //handler.Close();
             }
             catch (Exception e)
             {

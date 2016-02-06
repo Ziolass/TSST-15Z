@@ -69,21 +69,23 @@ namespace MockupClient
                         Id = "TROLOLO",
                         Steps = steps,
                         Type = ReqType.CONNECTION_REQUEST.ToString()
-                        
+
                     });
 
                     HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
                     {
-                        Dst = new LrmSnp {
+                        Dst = new LrmSnp
+                        {
                             Name = "node2",
-                            Port="1"
+                            Port = "1"
                         },
-                        Src = new LrmSnp { 
-                            Name="client1",
-                            Port="1"
+                        Src = new LrmSnp
+                        {
+                            Name = "client1",
+                            Port = "1"
                         },
                         Type = "connection-request"
-                        
+
                     };
 
 
@@ -129,11 +131,47 @@ namespace MockupClient
                 Console.WriteLine(e.ToString());
             }
         }
+        public static void StartClientFile(string data, int port)
+        {
+            byte[] bytes = new byte[5000];
+
+            data = File.ReadAllText(data);
+            Console.WriteLine("Press any key");
+            Console.ReadLine();
+            try
+            {
+                IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
+                IPAddress ipAddress = ipHostInfo.AddressList[0];
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
+
+                Socket sender = new Socket(AddressFamily.InterNetwork,
+                    SocketType.Stream, ProtocolType.Tcp);
+
+                try
+                {
+                    sender.Connect(remoteEP);
+                    byte[] msg = Encoding.ASCII.GetBytes(data);
+                    int bytesSent = sender.Send(msg);
+
+                    int bytesRec = sender.Receive(bytes);
+                    Console.ReadLine();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
 
         public static void Main(String[] args)
         {
-            StartClient("C:\\Users\\Michał\\Desktop\\CC_ARGS.json", int.Parse("22000"));
-            //StartClient("../../../Configs/RoutingController/testHierchy.json", 8100);
+            //StartClient("C:\\Users\\Michał\\Desktop\\CC_ARGS.json", int.Parse("22000"));
+            StartClientFile("../../../Configs/RoutingController/testHierachy10.json", 8000);
             //StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
