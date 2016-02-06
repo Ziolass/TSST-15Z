@@ -19,6 +19,8 @@ namespace NetworkClientNode
     {
         private XmlReader configReader;
 
+        private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
+
         public ElementConfigurator(string cofigFilePath)
         {
             configReader = XmlReader.Create(cofigFilePath);
@@ -105,52 +107,17 @@ namespace NetworkClientNode
                 input.StartListening();
             }
 
-
-            Thread.Sleep(2000);
-            lock (adpt)
-            {
-                adpt.ConnectClient();
-            }
             Thread.Sleep(100);
-            lock (adpt)
-            {
-                adpt.IntroduceToLrm();
-            }
-            /*
             new Thread(delegate()
-            {
-                try
-                {
-
-                    adpt.ConnectClient();
-                    new Thread(delegate()
-                    {
-                        try
-                        {
-                            adpt.IntroduceToLrm();
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("Indroduce " + e.Message);
-                        }
-                    }).Start();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Client " + e.Message);
-                }
-
-            }).Start();*/
-
-            /*new Thread(delegate()
             {
                 adpt.ConnectClient();
                 adpt.IntroduceToLrm();
             }).Start();
-            */
+            
             return node;
         }
-        public string GetNodeName(){
+        public string GetNodeName()
+        {
             string nodeName = null;
             while (configReader.Read())
             {
@@ -183,6 +150,6 @@ namespace NetworkClientNode
             return new List<string>(domians);
         }
 
-        
+
     }
 }

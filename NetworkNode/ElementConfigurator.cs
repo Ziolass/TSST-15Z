@@ -104,45 +104,14 @@ namespace NetworkNode
                 input.SetUpServer(10000, 10);
                 input.StartListening();
             }
-
-            Thread.Sleep(2000);
-            lock (node)
-            {
-                node.StartLrmClient();
-            }
+            
 
             Thread.Sleep(100);
-            lock (node)
-            {
-                node.IntroduceToLrm();
-            }
-            /*
             new Thread(delegate()
             {
-                try
-                {
-                    node.StartLrmClient();
-                    new Thread(delegate()
-                    {
-                        try
-                        {
-                            node.IntroduceToLrm();
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("Indroduce " + e.Message);
-                        }
-                    }).Start();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Client " + e.Message);
-                }
-
+                node.StartLrmClient();
+                node.IntroduceToLrm();
             }).Start();
-            */
-            //node.StartLrmClient();
-            //node.IntroduceToLrm();
 
             return node;
         }

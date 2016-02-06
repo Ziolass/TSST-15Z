@@ -52,7 +52,7 @@ namespace ConectionController
 
         public void SendToCc(string msg)
         {
-            lock (ConnectLock)
+            lock (Async)
             {
                 Async.Send(msg);
             }
