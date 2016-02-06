@@ -109,14 +109,13 @@ namespace LRM
             Console.WriteLine("--------------------------------RC Entering send");
             lock (sendingLock)
             {
-
                 try
                 {
                     byte[] byteData = Encoding.ASCII.GetBytes(data);
                     PacketsSend.Reset();
                     StateObject state = new StateObject();
                     AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
-                        new AsyncCallback(SendCallback), null);
+                        new AsyncCallback(SendCallback), state);
                     PacketsSend.WaitOne();
                 }
                 catch (Exception e)
@@ -133,7 +132,9 @@ namespace LRM
             {
                 try
                 {
-                    int bytesSent = AsyncSocket.EndSend(ar);
+                    SocketError socketError;
+                    int bytesSent = AsyncSocket.EndSend(ar, out socketError);
+                    Console.WriteLine(socketError.ToString());
                     Console.WriteLine("--------------------------------RC Data Send");
                     PacketsSend.Set();
                 }

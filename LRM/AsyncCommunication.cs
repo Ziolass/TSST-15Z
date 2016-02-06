@@ -107,7 +107,7 @@ namespace LRM
         public void Send(String data)
         {
             Console.WriteLine("Entering send");
-            lock (sendingLock)
+            lock (this)
             {
                 
                 try

@@ -283,13 +283,14 @@ namespace RoutingController.Service
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
-            Console.WriteLine("AcceptCallback : EndAccept");
+            Console.WriteLine("AcceptCallback : EndAccept ");
             // Create the state object.
             StateObject state = new StateObject();
             state.WorkSocket = handler;
-            Console.WriteLine("AcceptCallback -> BeginReceive");
+            Console.WriteLine("AcceptCallback -> BeginReceive" + handler.RemoteEndPoint);
             handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
+            allDone.Set();
         }
 
         /// <summary>
@@ -335,8 +336,8 @@ namespace RoutingController.Service
 
                             new Thread(delegate()
                             {
-                               SendNetworkTopology(); //My topology is new  send it
-                            }).Start();                            
+                                SendNetworkTopology(); //My topology is new  send it
+                            }).Start();
                         }
                         else if (this.OperationType(content) == ActionType.RouteTableQuery)
                         {

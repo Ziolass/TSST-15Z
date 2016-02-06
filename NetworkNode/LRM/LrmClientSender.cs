@@ -23,7 +23,7 @@ public class LrmClientSender : LocalPort
 
     public void ConnectToLrm()
     {
-        lock (ConnectLock)
+        lock (this)
         {
             if (Async != null)
             {
@@ -55,9 +55,12 @@ public class LrmClientSender : LocalPort
 
     public void SendToLrm(string msg)
     {
-        lock (ConnectLock)
+        if (Async != null)
         {
-            Async.Send(msg);
+            lock (Async)
+            {
+                Async.Send(msg);
+            }
         }
     }
 

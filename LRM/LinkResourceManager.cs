@@ -165,9 +165,9 @@ namespace LRM
         public void RunServer()
         {
             Console.WriteLine("####################################################################");
-            
-            RcClinet.ConnectToRc();
+
             Console.WriteLine("RC - start connecting");
+            RcClinet.ConnectToRc();
             LrmServer.Start();
             Console.WriteLine("Lrm - start listening");
             Console.WriteLine("####################################################################");
@@ -345,7 +345,11 @@ namespace LRM
             };
 
             ConsoleLogg.PrintLocaLTopology(LrmRegister.ConnectedNodes);
-            RcClinet.SendToRc(JsonConvert.SerializeObject(LocalTopology));
+
+            lock (RcClinet)
+            {
+                RcClinet.SendToRc(JsonConvert.SerializeObject(LocalTopology));
+            }
 
         }
         
@@ -431,7 +435,7 @@ namespace LRM
 
         private void SendLocalTopology()
         {
-            Thread.Sleep(15000);
+            Thread.Sleep(10000);
             LocalTopology();
             InitPahse = false;
         }

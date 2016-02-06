@@ -106,8 +106,17 @@ namespace NetworkNode
             }
 
             Thread.Sleep(2000);
+            lock (node)
+            {
+                node.StartLrmClient();
+            }
 
-            new Thread(delegate()
+            Thread.Sleep(100);
+            lock (node)
+            {
+                node.IntroduceToLrm();
+            }
+            /*new Thread(delegate()
             {
                 try
                 {
@@ -130,7 +139,7 @@ namespace NetworkNode
                 }
 
             }).Start();
-            
+            */
             //node.StartLrmClient();
             //node.IntroduceToLrm();
 

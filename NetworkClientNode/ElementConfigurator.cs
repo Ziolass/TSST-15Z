@@ -106,7 +106,16 @@ namespace NetworkClientNode
             }
 
             Thread.Sleep(2000);
-
+            lock (adpt)
+            {
+                adpt.ConnectClient();
+            }
+            Thread.Sleep(100);
+            lock (adpt)
+            {
+                adpt.IntroduceToLrm();
+            }
+            /*
             new Thread(delegate()
             {
                 try
@@ -129,7 +138,7 @@ namespace NetworkClientNode
                     Console.WriteLine("Client " + e.Message);
                 }
 
-            }).Start();
+            }).Start();*/
 
             /*new Thread(delegate()
             {
