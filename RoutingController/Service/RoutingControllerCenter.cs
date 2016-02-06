@@ -106,6 +106,7 @@ namespace RoutingController.Service
                     Console.WriteLine("RouteTableQuery request from {0}", queryRequest.Domain);
                     RouteResponse routeResponse = this.RoutingController.RouteTableResponse(queryRequest);
                     routeResponse.Id = queryRequest.Id;
+                    Console.WriteLine(routeResponse.ToString());
                     return JsonConvert.SerializeObject(routeResponse);
                 }
                 else if (actionType == ActionType.NetworkTopology)
@@ -324,6 +325,7 @@ namespace RoutingController.Service
                     Console.WriteLine(content);
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                     {
+                        Console.WriteLine("Message OK!");
                         string response = string.Empty;
                         if (this.OperationType(content) == ActionType.LocalTopology)
                         {
@@ -331,11 +333,10 @@ namespace RoutingController.Service
                             // Signal the main thread to continue.
                             allDone.Set();
 
-                            /*new Thread(delegate()
-                            //{
-                            //    SendNetworkTopology(); //My topology is new  send it
-                            //}).Start();
-                             */
+                            new Thread(delegate()
+                            {
+                               SendNetworkTopology(); //My topology is new  send it
+                            }).Start();                            
                         }
                         else if (this.OperationType(content) == ActionType.RouteTableQuery)
                         {
@@ -358,6 +359,7 @@ namespace RoutingController.Service
                     }
                     else
                     {
+                        Console.WriteLine("Message not ready ...");
                         // Not all data received. Get more.
                         handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReadCallback), state);

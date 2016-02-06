@@ -104,11 +104,39 @@ namespace NetworkClientNode
                 input.SetUpServer(10000, 10);
                 input.StartListening();
             }
+
+            Thread.Sleep(2000);
+
             new Thread(delegate()
+            {
+                try
+                {
+                    adpt.ConnectClient();
+                    new Thread(delegate()
+                    {
+                        try
+                        {
+                            adpt.IntroduceToLrm();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Indroduce " + e.Message);
+                        }
+                    }).Start();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Client " + e.Message);
+                }
+
+            }).Start();
+
+            /*new Thread(delegate()
             {
                 adpt.ConnectClient();
                 adpt.IntroduceToLrm();
             }).Start();
+            */
             return node;
         }
         public string GetNodeName(){

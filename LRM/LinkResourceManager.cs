@@ -46,44 +46,47 @@ namespace LRM
         {
             lock (inputLock)
             {
-                Console.WriteLine(">");
-                Console.WriteLine(data);
-                Console.WriteLine(">");
-                if (data.Contains(ReqType.ALLOC_RESP.ToString())
-                     || data.Contains(ReqType.DELLOC_RESP.ToString()))
+                if (!String.IsNullOrEmpty(data))
                 {
-                    HandleLocationResp(data);
-                    return;
-                }
-                else if (data.Contains(ReqType.ALLOC.ToString())
-                     || data.Contains(ReqType.DELLOC.ToString()))
-                {
-                    HandleResourceLocationData(data, LrmRegister.FindNodeByConnection(async));
-                    return;
-                }
-                else if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
-                {
-                    HandleConnectionRequest(data, async, ReqType.ALLOC);
-                    return;
-                }
-                else if (data.Contains(ReqType.DISCONNECTION_REQUEST.ToString()))
-                {
-                    HandleConnectionRequest(data, async, ReqType.DELLOC);
-                    return;
-                }
-                else if (data.Contains(ReqType.LRM_NEGOTIATION.ToString()))
-                {
-                    HandleLrmNegotiation(data, async);
-                    return;
-                }
-                else if (data.Contains(ReqType.LRM_NEGOTIATION_RESP.ToString()))
-                {
-                    HandleLrmNegotiationResp(data);
-                    return;
-                }
 
-
-                HandleTokenData(data, LrmRegister.FindNodeByConnection(async));
+                    Console.WriteLine(">");
+                    Console.WriteLine(data);
+                    Console.WriteLine(">");
+                    if (data.Contains(ReqType.ALLOC_RESP.ToString())
+                         || data.Contains(ReqType.DELLOC_RESP.ToString()))
+                    {
+                        HandleLocationResp(data);
+                        return;
+                    }
+                    else if (data.Contains(ReqType.ALLOC.ToString())
+                         || data.Contains(ReqType.DELLOC.ToString()))
+                    {
+                        HandleResourceLocationData(data, LrmRegister.FindNodeByConnection(async));
+                        return;
+                    }
+                    else if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
+                    {
+                        HandleConnectionRequest(data, async, ReqType.ALLOC);
+                        return;
+                    }
+                    else if (data.Contains(ReqType.DISCONNECTION_REQUEST.ToString()))
+                    {
+                        HandleConnectionRequest(data, async, ReqType.DELLOC);
+                        return;
+                    }
+                    else if (data.Contains(ReqType.LRM_NEGOTIATION.ToString()))
+                    {
+                        HandleLrmNegotiation(data, async);
+                        return;
+                    }
+                    else if (data.Contains(ReqType.LRM_NEGOTIATION_RESP.ToString()))
+                    {
+                        HandleLrmNegotiationResp(data);
+                        return;
+                    }
+                    HandleTokenData(data, LrmRegister.FindNodeByConnection(async));
+                }
+                else Console.WriteLine("Tag was empty!");
             }
         }
 
@@ -350,18 +353,25 @@ namespace LRM
         {
             lock (assigementLock)
             {
-                LrmToken token = JsonConvert.DeserializeObject<LrmToken>(data);
-                LrmToken invertedToken = InvertToken(token);
-                Console.WriteLine("Trey serialize");
-                Console.WriteLine("--------------------------------------------------------------");
-                Console.WriteLine(JsonConvert.SerializeObject(token) + " <> " + JsonConvert.SerializeObject(invertedToken));
-                Console.WriteLine("--------------------------------------------------------------");
-                AssignToken(token);
-                AssignToken(invertedToken);
-
-                if (!InitPahse)
+                try
                 {
-                    LocalTopology();
+                    LrmToken token = JsonConvert.DeserializeObject<LrmToken>(data);
+                    LrmToken invertedToken = InvertToken(token);
+                    Console.WriteLine("Trey serialize");
+                    Console.WriteLine("--------------------------------------------------------------");
+                    Console.WriteLine(JsonConvert.SerializeObject(token) + " <> " + JsonConvert.SerializeObject(invertedToken));
+                    Console.WriteLine("--------------------------------------------------------------");
+                    AssignToken(token);
+                    AssignToken(invertedToken);
+
+                    if (!InitPahse)
+                    {
+                        LocalTopology();
+                    }
+                }
+                catch (JsonReaderException exp)
+                {
+                    Console.WriteLine(exp.Message + "\n" + data  + "\n\n");
                 }
             }
         }

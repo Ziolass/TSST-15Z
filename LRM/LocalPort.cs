@@ -10,7 +10,7 @@ namespace LRM
 {
     public class StateObject
     {
-        public const int BufferSize = 3600;
+        public const int BufferSize = 10000;
         public byte[] Buffer = new byte[BufferSize];
         public StringBuilder ResponseBuilder = new StringBuilder();
     }

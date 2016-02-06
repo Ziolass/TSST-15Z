@@ -83,36 +83,48 @@ namespace LRM
         {
             lock (LrmRegister)
             {
-                LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
-
-                if (node.Node == null)
+                try
                 {
-                    return;
-                }
+                    LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
 
-                if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
-                {
-                    if (LrmRegister.ConnectedNodes[node.Node].Async != null)
+                    if (node.Node == null)
                     {
-                        throw new DeviceAllreadyConnected();
+                        return;
                     }
-                    LrmRegister.ConnectedNodes[node.Node].Async = ac;
-                    LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
-                }
-                else
-                {
-                    LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+
+                    if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
                     {
-                        Name = node.Node,
-                        Async = ac,
-                        DomiansHierarchy = node.Domians
-                    });
+                        if (LrmRegister.ConnectedNodes[node.Node].Async != null)
+                        {
+                            throw new DeviceAllreadyConnected();
+                        }
+                        LrmRegister.ConnectedNodes[node.Node].Async = ac;
+                        LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
+                    }
+                    else
+                    {
+                        LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+                        {
+                            Name = node.Node,
+                            Async = ac,
+                            DomiansHierarchy = node.Domians
+                        });
+                    }
+
+                    if (NodeConnected != null)
+                    {
+                        NodeConnected(node.Node);
+                    }
+                }
+                catch (JsonReaderException exp)
+                {
+                    Console.WriteLine(exp.Message + "\n" + data);
+                }
+                catch (Exception exp)
+                {
+                    Console.WriteLine(exp.Message);
                 }
 
-                if (NodeConnected != null)
-                {
-                    NodeConnected(node.Node);
-                }
             }
         }
 
