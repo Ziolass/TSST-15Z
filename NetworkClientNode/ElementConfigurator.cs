@@ -107,7 +107,7 @@ namespace NetworkClientNode
                 input.StartListening();
             }
 
-            Thread.Sleep(100);
+//Thread.Sleep(100);
             new Thread(delegate()
             {
                 adpt.ConnectClient();

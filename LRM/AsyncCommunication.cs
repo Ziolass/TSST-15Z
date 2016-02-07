@@ -107,15 +107,16 @@ namespace LRM
         public void Send(String data)
         {
             Console.WriteLine("Entering send");
-
             try
             {
+                
                 byte[] byteData = Encoding.ASCII.GetBytes(data);
                 PacketsSend.Reset();
                 StateObject state = new StateObject();
                 AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
                     new AsyncCallback(SendCallback), null);
                 PacketsSend.WaitOne();
+
             }
             catch (Exception e)
             {
@@ -130,6 +131,7 @@ namespace LRM
             {
                 try
                 {
+                    PacketsReceived.Reset();
                     int bytesSent = AsyncSocket.EndSend(ar);
                     Console.WriteLine("Data Send");
                     PacketsSend.Set();

@@ -352,7 +352,7 @@ namespace LRM
             }
 
         }
-        
+
         private void HandleTokenData(string data, VirtualNode node)
         {
             lock (assigementLock)
@@ -375,7 +375,7 @@ namespace LRM
                 }
                 catch (JsonReaderException exp)
                 {
-                    Console.WriteLine(exp.Message + "\n" + data  + "\n\n");
+                    Console.WriteLine(exp.Message + "\n" + data + "\n\n");
                 }
             }
         }
@@ -408,7 +408,7 @@ namespace LRM
                         Name = token.Tag
                     });
                 }
-                
+
                 //TODO tu stworzyć nowe nody
                 VirtualNode node = LrmRegister.ConnectedNodes[token.Tag];
 
@@ -430,7 +430,7 @@ namespace LRM
                 Console.WriteLine("Klucz " + token.Tag);
                 Console.WriteLine(e);
             }
-            
+
         }
 
         private void SendLocalTopology()

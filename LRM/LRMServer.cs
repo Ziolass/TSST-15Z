@@ -74,7 +74,8 @@ namespace LRM
                     DataRedCallback,
                     SubscribeCallback);
 
-                async.StartReciving();
+                
+                    async.StartReciving();
             }
         }
 
@@ -83,8 +84,8 @@ namespace LRM
         {
             lock (LrmRegister)
             {
-                try
-                {
+                //try
+               // {
                     LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
 
                     if (node.Node == null)
@@ -115,15 +116,15 @@ namespace LRM
                     {
                         NodeConnected(node.Node);
                     }
-                }
-                catch (JsonReaderException exp)
-                {
-                    Console.WriteLine(exp.Message + "\n" + data);
-                }
-                catch (Exception exp)
-                {
-                    Console.WriteLine(exp.Message);
-                }
+                //}
+               // catch (JsonReaderException exp)
+                //{
+               //     Console.WriteLine("SubscribeCallback" + exp.Message + "\n" + data);
+               // }
+               // catch (Exception exp)
+               // {
+               //     Console.WriteLine(exp.Message);
+                //}
 
             }
         }

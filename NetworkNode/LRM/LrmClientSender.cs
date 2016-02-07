@@ -23,7 +23,7 @@ public class LrmClientSender : LocalPort
 
     public void ConnectToLrm()
     {
-        lock (this)
+        lock (ActionSocket)
         {
             if (Async != null)
             {
@@ -43,9 +43,8 @@ public class LrmClientSender : LocalPort
             ActionSocket.EndConnect(ar);
             ConnectDone.Set();
             Async = new AsyncCommunication(ActionSocket, null, DataRedCallback, null);
-            
-            ReciverThread = new Thread(new ThreadStart(Async.StartReciving));
-            ReciverThread.Start();
+
+            Async.StartReciving();
         }
         catch (Exception e)
         {
