@@ -1,0 +1,1 @@
+cd ..\..\NetworkNode\bin\Debug\  & start NetworkNode.exe 8
