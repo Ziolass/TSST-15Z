@@ -228,14 +228,30 @@ namespace NetworkCallController
                     Console.WriteLine("Rekord " + calledPartyName + " zidentyfikowany w sasiednim AS.");
                     calledSignalingPort = int.Parse(calledPartyPorts[0]);
                     calledAddress = calledPartyPorts[1];
+
+
+                    if(connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
+                    {
+                        if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
+                        {
+                            connectionTeardown(callingAddress, calledAddress, callingSignalingPort, calledSignalingPort);
+                            return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
+                        }
+                        return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
+                    }
+
+
+                    // zamiana kolejności coby Komando nie zabił
+                    /*
                     // no to w sumie by wypadalo spytac ziomeczka czy chce wgl z nami gadac zeby nie bylo przykro
                     if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
                     {
                         return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
                     }
-                    return connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName);
+                    return connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName);*/
                 }
             }
+
             else
             {
                 calledAddress = calledPartyPorts[1];
