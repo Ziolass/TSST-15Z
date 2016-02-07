@@ -1,0 +1,1 @@
+cd ..\..\NetworkCallController\bin\Debug\ & start NetworkCallController.exe 2
