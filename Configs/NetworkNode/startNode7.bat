@@ -1,1 +1,1 @@
-cd ..\..\NetworkNode\bin\Debug\  & NetworkNode.exe 7
+cd ..\..\NetworkNode\bin\Debug\  & start NetworkNode.exe 7

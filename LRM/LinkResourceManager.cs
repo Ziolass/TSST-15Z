@@ -37,50 +37,57 @@ namespace LRM
             AllocationRegister = new AllocationRegister();
         }
 
-        public void HandleRcData(string data, AsyncCommunication async)
+        public void HandleRcData(string data, RcAsyncComm async)
         {
             Console.WriteLine("RC: " + data);
         }
-
+        object inputLock = new object();
         public void HandleNodeData(string data, AsyncCommunication async)
         {
-            Console.WriteLine(data);
-            if (data.Contains(ReqType.ALLOC_RESP.ToString())
-                 || data.Contains(ReqType.DELLOC_RESP.ToString()))
+            lock (inputLock)
             {
-                HandleLocationResp(data);
-                return;
-            }
-            else if (data.Contains(ReqType.ALLOC.ToString())
-                 || data.Contains(ReqType.DELLOC.ToString()))
-            {
-                HandleResourceLocationData(data, LrmRegister.FindNodeByConnection(async));
-                return;
-            }
-            else if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
-            {
-                HandleConnectionRequest(data, async, ReqType.ALLOC);
-                return;
-            }
-            else if (data.Contains(ReqType.DISCONNECTION_REQUEST.ToString()))
-            {
-                HandleConnectionRequest(data, async, ReqType.DELLOC);
-                return;
-            }
-            else if (data.Contains(ReqType.LRM_NEGOTIATION.ToString()))
-            {
-                HandleLrmNegotiation(data, async);
-                return;
-            }
-            else if (data.Contains(ReqType.LRM_NEGOTIATION_RESP.ToString()))
-            {
-                HandleLrmNegotiationResp(data);
-                return;
-            }
+                if (!String.IsNullOrEmpty(data))
+                {
 
-
-            HandleTokenData(data, LrmRegister.FindNodeByConnection(async));
-
+                    Console.WriteLine(">");
+                    Console.WriteLine(data);
+                    Console.WriteLine(">");
+                    if (data.Contains(ReqType.ALLOC_RESP.ToString())
+                         || data.Contains(ReqType.DELLOC_RESP.ToString()))
+                    {
+                        HandleLocationResp(data);
+                        return;
+                    }
+                    else if (data.Contains(ReqType.ALLOC.ToString())
+                         || data.Contains(ReqType.DELLOC.ToString()))
+                    {
+                        HandleResourceLocationData(data, LrmRegister.FindNodeByConnection(async));
+                        return;
+                    }
+                    else if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
+                    {
+                        HandleConnectionRequest(data, async, ReqType.ALLOC);
+                        return;
+                    }
+                    else if (data.Contains(ReqType.DISCONNECTION_REQUEST.ToString()))
+                    {
+                        HandleConnectionRequest(data, async, ReqType.DELLOC);
+                        return;
+                    }
+                    else if (data.Contains(ReqType.LRM_NEGOTIATION.ToString()))
+                    {
+                        HandleLrmNegotiation(data, async);
+                        return;
+                    }
+                    else if (data.Contains(ReqType.LRM_NEGOTIATION_RESP.ToString()))
+                    {
+                        HandleLrmNegotiationResp(data);
+                        return;
+                    }
+                    HandleTokenData(data, LrmRegister.FindNodeByConnection(async));
+                }
+                else Console.WriteLine("Tag was empty!");
+            }
         }
 
         private void HandleLrmNegotiationResp(string data)
@@ -120,24 +127,25 @@ namespace LRM
 
         public void HandleNodeConnection(string NodeName)
         {
-            lock (GetLocalTopologyLock)
+            lock (LrmRegister)
             {
                 if (LocalTopologyRaport == null)
                 {
                     LocalTopologyRaport = new Thread(new ThreadStart(SendLocalTopology));
                     LocalTopologyRaport.Start();
                 }
+
+
+                AsyncCommunication async = LrmRegister.ConnectedNodes[NodeName].Async;
+                LrmToken token = new LrmToken
+                {
+                    Tag = NodeName
+                };
+                string data = JsonConvert.SerializeObject(token);
+                data = WrapWithHeader(LrmCommunicationType.SIGNALLING, LrmHeader.BROADCAST, data);
+
+                async.Send(data);
             }
-
-            AsyncCommunication async = LrmRegister.ConnectedNodes[NodeName].Async;
-            LrmToken token = new LrmToken
-            {
-                Tag = NodeName
-            };
-            string data = JsonConvert.SerializeObject(token);
-            data = WrapWithHeader(LrmCommunicationType.SIGNALLING, LrmHeader.BROADCAST, data);
-
-            async.Send(data);
         }
 
         public void HandleNodeDisconnection(string NodeName)
@@ -156,8 +164,13 @@ namespace LRM
 
         public void RunServer()
         {
+            Console.WriteLine("####################################################################");
+
+            Console.WriteLine("RC - start connecting");
             RcClinet.ConnectToRc();
             LrmServer.Start();
+            Console.WriteLine("Lrm - start listening");
+            Console.WriteLine("####################################################################");
         }
 
         private string WrapWithHeader(LrmCommunicationType comm, LrmHeader header, string data)
@@ -332,19 +345,38 @@ namespace LRM
             };
 
             ConsoleLogg.PrintLocaLTopology(LrmRegister.ConnectedNodes);
-            RcClinet.SendToRc(JsonConvert.SerializeObject(LocalTopology));
+
+            lock (RcClinet)
+            {
+                RcClinet.SendToRc(JsonConvert.SerializeObject(LocalTopology));
+            }
 
         }
 
         private void HandleTokenData(string data, VirtualNode node)
         {
-            LrmToken token = JsonConvert.DeserializeObject<LrmToken>(data);
-            LrmToken invertedToken = InvertToken(token);
-            AssignToken(token);
-            AssignToken(invertedToken);
-            if (!InitPahse)
+            lock (assigementLock)
             {
-                LocalTopology();
+                try
+                {
+                    LrmToken token = JsonConvert.DeserializeObject<LrmToken>(data);
+                    LrmToken invertedToken = InvertToken(token);
+                    Console.WriteLine("Trey serialize");
+                    Console.WriteLine("--------------------------------------------------------------");
+                    Console.WriteLine(JsonConvert.SerializeObject(token) + " <> " + JsonConvert.SerializeObject(invertedToken));
+                    Console.WriteLine("--------------------------------------------------------------");
+                    AssignToken(token);
+                    AssignToken(invertedToken);
+
+                    if (!InitPahse)
+                    {
+                        LocalTopology();
+                    }
+                }
+                catch (JsonReaderException exp)
+                {
+                    Console.WriteLine(exp.Message + "\n" + data + "\n\n");
+                }
             }
         }
 
@@ -367,8 +399,17 @@ namespace LRM
         object assigementLock = new object();
         private void AssignToken(LrmToken token)
         {
-            lock (assigementLock)
+            try
             {
+                if (!LrmRegister.ConnectedNodes.ContainsKey(token.Tag))
+                {
+                    LrmRegister.ConnectedNodes.Add(token.Tag, new VirtualNode
+                    {
+                        Name = token.Tag
+                    });
+                }
+
+                //TODO tu stworzyć nowe nody
                 VirtualNode node = LrmRegister.ConnectedNodes[token.Tag];
 
                 int senderPort = int.Parse(token.SenderPort);
@@ -384,11 +425,17 @@ namespace LRM
                     node.Destinations.Add(senderPort, new Tuple<LrmDestination, bool>(token.Reciver, true));
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("Klucz " + token.Tag);
+                Console.WriteLine(e);
+            }
+
         }
 
         private void SendLocalTopology()
         {
-            Thread.Sleep(15000);
+            Thread.Sleep(10000);
             LocalTopology();
             InitPahse = false;
         }

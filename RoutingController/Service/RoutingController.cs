@@ -81,7 +81,7 @@ namespace RoutingController.Service
                 }
                 else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
             }
-            else
+            else if (!String.IsNullOrEmpty(sourceDomainName) && !String.IsNullOrEmpty(destinationDomainName))
             {
                 foreach (var item in this.ExternalClients)
                 {
@@ -116,7 +116,7 @@ namespace RoutingController.Service
                         returnList.AddRange(tempList);
 
                         //Add external gateway
-                        NodeElement externalGateway = GetExternalGateway(returnList[returnList.Count - 1],sourceDomainName, destinationDomainName);
+                        NodeElement externalGateway = GetExternalGateway(returnList[returnList.Count - 1], sourceDomainName, destinationDomainName);
                         returnList.Add(externalGateway);
                         RouteResponse returnResponse = new RouteResponse();
                         returnResponse.AddNodes(returnList);
@@ -130,6 +130,7 @@ namespace RoutingController.Service
                 }
                 else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
             }
+            else throw new Exception("Error RoutTableResponse: Node not found!");
         }
 
         /// <summary>

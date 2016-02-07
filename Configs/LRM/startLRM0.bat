@@ -1,1 +1,1 @@
-cd ..\..\LRM\bin\Debug\ & LRM.exe 0
+cd ..\..\LRM\bin\Debug\ & start LRM.exe 0

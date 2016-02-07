@@ -134,7 +134,7 @@ namespace RoutingController.Elements
 
                             linkData.Add(new Link(newMetroPort.ToString(), domains, destination, otherItemConnections.Key.Status));
 
-                            if (this.GetVertex(otherGraph.DomainName + ":" + newMetroPort.ToString()).Key != null) //Czy metroNode istnieje?
+                            if (this.GetVertex(otherGraph.DomainName).Key != null) //Czy metroNode istnieje?
                             {
                                 foreach (var existingLinks in this.GetVertex(otherGraph.DomainName).Value)
                                 {

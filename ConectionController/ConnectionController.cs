@@ -113,6 +113,10 @@ namespace Cc
             {
                 PeerCoordinators.Add(ccDomain, new CcClient(peers[ccDomain], HandlePeerAns));
             }
+
+            if (domains == null)
+                this.Domains = new List<string>();
+            else this.Domains = domains;
         }
 
         public void Start()
@@ -182,7 +186,7 @@ namespace Cc
         public void HandleCcData(string data, AsyncCommunication async)
         {
             CcResponse response = JsonConvert.DeserializeObject<CcResponse>(data);
-
+            Console.WriteLine(response.Type +" " + response.Response);
             if (response.Response.Contains("call-mallfunction") || response.Response.Equals("ERROR"))
             {
                 if (SecretNccNotifier != null)

@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +13,7 @@ namespace LRM
     public class AsyncCommunication
     {
         public Socket AsyncSocket { get; private set; }
-        public bool LastOne { get; private set; }
-        
+
         private ManualResetEvent PacketsReceived = new ManualResetEvent(false);
         private ManualResetEvent PacketsSend = new ManualResetEvent(false);
         private Action<AsyncCommunication> ConnectionLostCallback;
@@ -20,14 +21,13 @@ namespace LRM
         private Action<string, AsyncCommunication> SubscribeCallback;
         private Thread ReciveThread;
         private bool IdleState;
-        
+
         public AsyncCommunication(Socket asyncSocket,
             Action<AsyncCommunication> connectionLostCallback,
             Action<string, AsyncCommunication> dataRedCallback,
             Action<string, AsyncCommunication> subscribeCallback)
         {
             AsyncSocket = asyncSocket;
-            LastOne = true;
             DataRedCallback = dataRedCallback;
             SubscribeCallback = subscribeCallback;
             IdleState = true;
@@ -44,7 +44,7 @@ namespace LRM
         {
             try
             {
-                while (LastOne)
+                while (true)
                 {
                     PacketsReceived.Reset();
                     StateObject state = new StateObject();
@@ -67,7 +67,6 @@ namespace LRM
         {
             try
             {
-                PacketsReceived.Set();
                 String content = String.Empty;
                 StateObject state = (StateObject)ar.AsyncState;
                 int bytesRead = AsyncSocket.EndReceive(ar);
@@ -76,6 +75,8 @@ namespace LRM
                 {
                     string data = Encoding.ASCII.GetString(state.Buffer, 0, bytesRead);
                     state.ResponseBuilder.Append(data);
+
+                    PacketsReceived.Set();
 
                     if (bytesRead != StateObject.BufferSize)
                     {
@@ -87,7 +88,6 @@ namespace LRM
                             IdleState = false;
                             return;
                         }
-
                         DataRedCallback(allData, this);
                     }
                     else
@@ -99,41 +99,51 @@ namespace LRM
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("ReadCallback");
+                Console.WriteLine(e);
             }
         }
-
+        object sendingLock = new object();
         public void Send(String data)
         {
+            Console.WriteLine("Entering send");
             try
             {
+                
                 byte[] byteData = Encoding.ASCII.GetBytes(data);
                 PacketsSend.Reset();
                 StateObject state = new StateObject();
                 AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
                     new AsyncCallback(SendCallback), null);
                 PacketsSend.WaitOne();
+
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("Send:");
+                Console.WriteLine(e);
             }
         }
-
+        object finishingSending = new object();
         private void SendCallback(IAsyncResult ar)
         {
-            try
+            lock (AsyncSocket)
             {
-                int bytesSent = AsyncSocket.EndSend(ar);
-                PacketsSend.Set();
-            }
-            catch (Exception e)
-            {
-                AsyncSocket = null;
-                Console.WriteLine(e.ToString());
-                if (ConnectionLostCallback != null)
+                try
                 {
-                    ConnectionLostCallback(this);
+                    PacketsReceived.Reset();
+                    int bytesSent = AsyncSocket.EndSend(ar);
+                    Console.WriteLine("Data Send");
+                    PacketsSend.Set();
+                }
+                catch (Exception e)
+                {
+                    AsyncSocket = null;
+                    Console.WriteLine(e.ToString());
+                    if (ConnectionLostCallback != null)
+                    {
+                        ConnectionLostCallback(this);
+                    }
                 }
             }
         }

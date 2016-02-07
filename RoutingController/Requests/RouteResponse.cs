@@ -105,5 +105,27 @@ namespace RoutingController.Requests
                 }
             }
         }
+        public override string ToString()
+        {
+            string returnString = string.Empty;
+            returnString += "-------------------\n";
+            returnString += "Ends\n";
+            foreach (var item in this.Ends)
+            {
+                returnString += item.Node + " : " + item.Port + " domain: " + item.OuterDomain + "\n";
+            }
+            returnString += "-------------------\n";
+            returnString += "Steps\n";
+            foreach (var item in this.Steps)
+            {
+                returnString += item.Node + " domain:" + item.Domain + "\n";
+                returnString += "ports:\n";
+                foreach (var itemPorts in item.Ports)
+                {
+                    returnString += itemPorts + "\n";
+                }
+            }
+            return returnString;
+        }
     }
 }

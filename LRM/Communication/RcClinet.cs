@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,20 +12,24 @@ namespace LRM.Communication
     class RcClinet : LocalPort
     {
         private static ManualResetEvent ConnectDone = new ManualResetEvent(false);
-        private AsyncCommunication Async;
-        private Action<string, AsyncCommunication> DataRedCallback;
+        private RcAsyncComm Async;
+        private Action<string, RcAsyncComm> DataRedCallback;
+        private EventWaitHandle WaitHandler = new AutoResetEvent(false);
         private Thread ReciverThread;
         private object ConnectLock = new object();
+        private int Port;
 
-        public RcClinet(int port, Action<string, AsyncCommunication> callback)
+
+        public RcClinet(int port, Action<string, RcAsyncComm> callback)
             : base(port)
         {
+            this.Port = port;
             DataRedCallback = callback;
         }
 
         public void ConnectToRc()
         {
-            lock (ConnectLock)
+            lock (this)
             {
                 if (Async != null)
                 {
@@ -31,8 +37,10 @@ namespace LRM.Communication
                 }
                 ConnectDone.Reset();
                 StateObject state = new StateObject();
+                Console.WriteLine("--------------------------------------RC CLIENT BEGIN CONNECT");
                 ActionSocket.BeginConnect(Endpoint, new AsyncCallback(ConnectCallback), null);
                 ConnectDone.WaitOne();
+
             }
         }
 
@@ -40,12 +48,14 @@ namespace LRM.Communication
         {
             try
             {
+                Console.WriteLine("--------------------------------------RC START END CONNECT");
                 ActionSocket.EndConnect(ar);
+                Console.WriteLine("--------------------------------------RC END END CONNECT");
                 ConnectDone.Set();
-                Async = new AsyncCommunication(ActionSocket, null, DataRedCallback, null);
+                Async = new RcAsyncComm(ActionSocket, null, DataRedCallback, null);
 
-                ReciverThread = new Thread(new ThreadStart(Async.StartReciving));
-                ReciverThread.Start();
+
+                Async.StartReciving();
             }
             catch (Exception e)
             {
@@ -55,7 +65,10 @@ namespace LRM.Communication
 
         public void SendToRc(string msg)
         {
-            Async.Send(msg);
+            lock (Async)
+            {
+                Async.Send(msg);
+            }
         }
     }
 }

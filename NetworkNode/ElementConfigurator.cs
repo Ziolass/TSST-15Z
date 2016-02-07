@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using WireCloud;
@@ -46,7 +47,7 @@ namespace NetworkNode
                             int tcp = int.Parse(configReader.GetAttribute("tcp"));
                             string stm = configReader.GetAttribute("stm");
 
-                            ports.Add(new NodeInput(tcp, portNumber, StmLevelExt.GetContainer(stm))); 
+                            ports.Add(new NodeInput(tcp, portNumber, StmLevelExt.GetContainer(stm)));
                         }
                         else if (configReader.Name == "cloud-server")
                         {
@@ -66,7 +67,7 @@ namespace NetworkNode
                         {
                             int domiansNumber = int.Parse(configReader.GetAttribute("number"));
                             domians = CreateDomainsHierarchy(configReader.ReadSubtree(), domiansNumber);
-                            
+
                         }
                         else if (configReader.Name == "network")
                         {
@@ -86,27 +87,32 @@ namespace NetworkNode
 
             SynchronousPhysicalInterface spi = new SynchronousPhysicalInterface(ports, sender, nodeName);
             TransportTerminalFunction ttf = new TransportTerminalFunction(spi, getMode(nodeType));
-            HigherOrderPathConnection hpc = new HigherOrderPathConnection(ttf,networkDefaultLevel);
+            HigherOrderPathConnection hpc = new HigherOrderPathConnection(ttf, networkDefaultLevel);
             LrmIntroduce lrmIntroduce = new LrmIntroduce
             {
                 Domians = domians,
                 Node = nodeName
             };
-            NetworkNode node = new NetworkNode(hpc, ttf,lrmIntroduce, lrmPort);
-            
-            ManagementCenter managementCenter = new ManagementCenter(managementPort,node);
+            NetworkNode node = new NetworkNode(hpc, ttf, lrmIntroduce, lrmPort);
+
+            ManagementCenter managementCenter = new ManagementCenter(managementPort, node);
             managementPort.SetManagementCenter(managementCenter);
             managementPort.StartListening();
-            
+
             foreach (NodeInput input in ports)
             {
                 input.SetUpServer(10000, 10);
                 input.StartListening();
             }
-
-            node.StartLrmClient();
-            node.IntroduceToLrm();
             
+
+            //Thread.Sleep(100);
+            new Thread(delegate()
+            {
+                node.StartLrmClient();
+                node.IntroduceToLrm();
+            }).Start();
+
             return node;
         }
 
@@ -131,20 +137,20 @@ namespace NetworkNode
             switch (mode)
             {
                 case "mux":
-                {
-                    result = NodeMode.MULTIPLEXER;
-                    break;
-                }
+                    {
+                        result = NodeMode.MULTIPLEXER;
+                        break;
+                    }
                 case "reg":
-                {
-                    result = NodeMode.REGENERATOR;
-                    break;
-                }
+                    {
+                        result = NodeMode.REGENERATOR;
+                        break;
+                    }
                 default:
-                {
-                    result = NodeMode.MULTIPLEXER;
-                    break;
-                }
+                    {
+                        result = NodeMode.MULTIPLEXER;
+                        break;
+                    }
             }
 
             return result;

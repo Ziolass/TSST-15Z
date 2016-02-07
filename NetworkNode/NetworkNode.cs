@@ -75,21 +75,23 @@ namespace NetworkNode
         {
             return Hpc.RemoveTwWayRecord(record, false);
         }
-
+        object sendTokenLock = new object();
         public void SendLrmToken(string lrmToken)
         {
-
-            foreach (KeyValuePair<int, StmLevel> port in Ttf.GetPorts())
+            lock (sendTokenLock)
             {
-                LrmToken token = JsonConvert.DeserializeObject<LrmToken>(lrmToken);
-                int hPathNo = StmLevelExt.GetHigherPathsNumber(port.Value);
-                int containers = VirtualContainerLevelExt.GetContainersNumber(Hpc.NetworkDefaultLevel);
+                foreach (KeyValuePair<int, StmLevel> port in Ttf.GetPorts())
+                {
+                    LrmToken token = JsonConvert.DeserializeObject<LrmToken>(lrmToken);
+                    int hPathNo = StmLevelExt.GetHigherPathsNumber(port.Value);
+                    int containers = VirtualContainerLevelExt.GetContainersNumber(Hpc.NetworkDefaultLevel);
 
-                token.SenderPort = port.Key.ToString();
-                token.StmMaxIndex = ((hPathNo * containers) - 1).ToString();
+                    token.SenderPort = port.Key.ToString();
+                    token.StmMaxIndex = ((hPathNo * containers) - 1).ToString();
 
 
-                Ttf.SendLrmData(port.Key, JsonConvert.SerializeObject(token));
+                    Ttf.SendLrmData(port.Key, JsonConvert.SerializeObject(token));
+                }
             }
         }
 
@@ -118,6 +120,7 @@ namespace NetworkNode
             token.Reciver = new LrmDestination();
             token.Reciver.Name = Id;
             token.Reciver.Port = args.PortNumber.ToString();
+            
             LrmClient.SendLrmMessage(token);
         }
 

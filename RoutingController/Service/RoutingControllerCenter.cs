@@ -95,7 +95,8 @@ namespace RoutingController.Service
                     request = request.Replace("Protocol: \"resources\",", "");
                     LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
                     this.RoutingController.UpdateNetworkGraph(topologyRequest);
-                    Console.WriteLine("Update from local topology");
+                    Console.WriteLine("Updated local topology!");
+                    Console.WriteLine(this.ShowRoutes());
                     return "OK";
                 }
                 //RouteTableQuery
@@ -106,6 +107,7 @@ namespace RoutingController.Service
                     Console.WriteLine("RouteTableQuery request from {0}", queryRequest.Domain);
                     RouteResponse routeResponse = this.RoutingController.RouteTableResponse(queryRequest);
                     routeResponse.Id = queryRequest.Id;
+                    Console.WriteLine(routeResponse.ToString());
                     return JsonConvert.SerializeObject(routeResponse);
                 }
                 else if (actionType == ActionType.NetworkTopology)
@@ -277,15 +279,17 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void AcceptCallback(IAsyncResult ar)
         {
+            allDone.Set();
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
-
             // Create the state object.
             StateObject state = new StateObject();
             state.WorkSocket = handler;
+            Console.WriteLine("New connection from: " + handler.RemoteEndPoint);
             handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
+            
         }
 
         /// <summary>
@@ -306,7 +310,6 @@ namespace RoutingController.Service
 
                 // Read data from the client socket.
                 int bytesRead = handler.EndReceive(ar);
-
                 if (bytesRead > 0)
                 {
                     // There  might be more data, so store the data received so far.
@@ -316,10 +319,9 @@ namespace RoutingController.Service
                     //Read message
                     content = state.StringBuilder.ToString();
 
-
-                    Console.WriteLine(content);
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                     {
+                        Console.WriteLine("Message OK!");
                         string response = string.Empty;
                         if (this.OperationType(content) == ActionType.LocalTopology)
                         {
@@ -327,11 +329,10 @@ namespace RoutingController.Service
                             // Signal the main thread to continue.
                             allDone.Set();
 
-                            /*new Thread(delegate()
-                            //{
-                            //    SendNetworkTopology(); //My topology is new  send it
-                            //}).Start();
-                             */
+                            new Thread(delegate()
+                            {
+                                SendNetworkTopology(); //My topology is new  send it
+                            }).Start();
                         }
                         else if (this.OperationType(content) == ActionType.RouteTableQuery)
                         {
@@ -354,6 +355,7 @@ namespace RoutingController.Service
                     }
                     else
                     {
+                        Console.WriteLine("Message not ready ...");
                         // Not all data received. Get more.
                         handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReadCallback), state);
@@ -397,8 +399,8 @@ namespace RoutingController.Service
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
 
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                //handler.Shutdown(SocketShutdown.Both);
+                //handler.Close();
             }
             catch (Exception e)
             {

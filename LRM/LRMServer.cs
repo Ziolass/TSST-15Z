@@ -29,7 +29,7 @@ namespace LRM
                 dataRedCallback(data, LrmRegister.FindNodeByConnection(async));
             };*/
         }
-
+        private object listeningLock = new object();
         public void Start()
         {
             try
@@ -39,14 +39,17 @@ namespace LRM
 
                 while (true)
                 {
-                    ConnectNew.Reset();
+                    lock (listeningLock)
+                    {
+                        ConnectNew.Reset();
 
-                    Console.WriteLine("Waiting for a connection...");
-                    ActionSocket.BeginAccept(
-                        new AsyncCallback(AcceptCallback),
-                        null);
+                        
+                        ActionSocket.BeginAccept(
+                            new AsyncCallback(AcceptCallback),
+                            null);
 
-                    ConnectNew.WaitOne();
+                        ConnectNew.WaitOne();
+                    }
                 }
 
             }
@@ -59,53 +62,70 @@ namespace LRM
             Console.Read();
 
         }
-
+        object lockAccept = new object();
         public void AcceptCallback(IAsyncResult ar)
         {
-            ConnectNew.Set();
+            lock (lockAccept)
+            {
+                ConnectNew.Set();
 
-            AsyncCommunication async = new AsyncCommunication(ActionSocket.EndAccept(ar),
-                ConnectionLostCallback,
-                DataRedCallback,
-                SubscribeCallback);
+                AsyncCommunication async = new AsyncCommunication(ActionSocket.EndAccept(ar),
+                    ConnectionLostCallback,
+                    DataRedCallback,
+                    SubscribeCallback);
 
-            async.StartReciving();
+                
+                    async.StartReciving();
+            }
         }
 
+        object subscribeLock = new object();
         private void SubscribeCallback(string data, AsyncCommunication ac)
         {
-            LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
-            
-            if (node.Node == null)
+            lock (LrmRegister)
             {
-                return;
-            }
+                //try
+               // {
+                    LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
 
-            if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
-            {
-                if (LrmRegister.ConnectedNodes[node.Node].Async != null)
-                {
-                    throw new DeviceAllreadyConnected();
-                }
-                LrmRegister.ConnectedNodes[node.Node].Async = ac;
-                LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
-            }
-            else
-            {
-                lock (LrmRegister)
-                {
-                    LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+                    if (node.Node == null)
                     {
-                        Name = node.Node,
-                        Async = ac,
-                        DomiansHierarchy = node.Domians
-                    });
-                }
-            }
+                        return;
+                    }
 
-            if (NodeConnected != null)
-            {
-                NodeConnected(node.Node);
+                    if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
+                    {
+                        if (LrmRegister.ConnectedNodes[node.Node].Async != null)
+                        {
+                            throw new DeviceAllreadyConnected();
+                        }
+                        LrmRegister.ConnectedNodes[node.Node].Async = ac;
+                        LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
+                    }
+                    else
+                    {
+                        LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+                        {
+                            Name = node.Node,
+                            Async = ac,
+                            DomiansHierarchy = node.Domians
+                        });
+                    }
+
+                    if (NodeConnected != null)
+                    {
+                        NodeConnected(node.Node);
+                    }
+                //}
+               // catch (JsonReaderException exp)
+                //{
+               //     Console.WriteLine("SubscribeCallback" + exp.Message + "\n" + data);
+               // }
+               // catch (Exception exp)
+               // {
+               //     Console.WriteLine(exp.Message);
+                //}
+
             }
         }
 

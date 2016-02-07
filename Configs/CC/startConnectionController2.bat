@@ -1,1 +1,1 @@
-cd ..\..\ConectionController\bin\Debug\ & ConectionController.exe 2
+cd ..\..\ConectionController\bin\Debug\ & start ConectionController.exe 2
