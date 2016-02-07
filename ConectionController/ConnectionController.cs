@@ -132,6 +132,7 @@ namespace Cc
             LrmClient.ConnectToLrm();
             Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
             Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
+            Thread.Sleep(10000);
             foreach (CcClient cc in SubnetworkCc.Values)
             {
                 cc.ConnectToCc();
@@ -148,6 +149,7 @@ namespace Cc
 
         public void HandleNccData(string data, AsyncCommunication async)
         {
+            Console.WriteLine(data);
             HigherLevelConnectionRequest request = JsonConvert.DeserializeObject<HigherLevelConnectionRequest>(data);
 
             try
@@ -186,7 +188,7 @@ namespace Cc
         public void HandleCcData(string data, AsyncCommunication async)
         {
             CcResponse response = JsonConvert.DeserializeObject<CcResponse>(data);
-            Console.WriteLine(response.Type +" " + response.Response);
+            Console.WriteLine(response.Type + " " + response.Response);
             if (response.Response.Contains("call-mallfunction") || response.Response.Equals("ERROR"))
             {
                 if (SecretNccNotifier != null)
@@ -445,7 +447,7 @@ namespace Cc
                         }
                     }
                     //Wejścia do niższych domen
-                    if (!(i != 0 && previous.Domain != null && previous.Domain.Equals(actual.Domain)))
+                    if (i != 0 && previous.Domain != null && previous.Domain.Equals(actual.Domain))
                     {
                         string id = previous.Node + previous.Ports[0] + actual.Node + actual.Ports[0];
 
@@ -584,7 +586,10 @@ namespace Cc
             }
 
             ConnectionStep backward = firstIndex - 1 > 0 ? allSteps[firstIndex - 1] : null;
+            backward = FindActualStep(backward, actual);
+
             ConnectionStep forward = secondIndex + 1 < allSteps.Count ? allSteps[secondIndex + 1] : null;
+            forward = FindActualStep(forward, actual);
 
             List<ConnectionStep> steps = actual.Steps;
 
@@ -599,6 +604,29 @@ namespace Cc
                 second.Index = forward.Ports[0].Index;
                 allSteps[secondIndex].Ports[0].Index = forward.Ports[0].Index;
             }
+        }
+
+        private ConnectionStep FindActualStep(ConnectionStep step, ConnectionRequest actual)
+        {
+            foreach (ConnectionStep actualStep in actual.Steps)
+            {
+                if (step.Node.Equals(actualStep.Node) && step.Ports[0].Number.Equals(actualStep.Ports[0].Number))
+                {
+                    if (step.Ports.Count > 1)
+                    {
+                        if (actualStep.Ports.Count > 1 && actualStep.Ports[1].Number.Equals(step.Ports[1].Number))
+                        {
+                            return actualStep;
+                        }
+                    }
+                    else
+                    {
+                        return actualStep;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private int FindEdgeSnpIndex(List<ConnectionStep> allSteps, LrmSnp lrmSnp)
