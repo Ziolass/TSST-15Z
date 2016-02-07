@@ -43,7 +43,7 @@ namespace LRM
                     {
                         ConnectNew.Reset();
 
-                        
+
                         ActionSocket.BeginAccept(
                             new AsyncCallback(AcceptCallback),
                             null);
@@ -65,17 +65,17 @@ namespace LRM
         object lockAccept = new object();
         public void AcceptCallback(IAsyncResult ar)
         {
-            lock (lockAccept)
+            lock (ActionSocket)
             {
-                ConnectNew.Set();
 
                 AsyncCommunication async = new AsyncCommunication(ActionSocket.EndAccept(ar),
                     ConnectionLostCallback,
                     DataRedCallback,
                     SubscribeCallback);
 
-                
-                    async.StartReciving();
+                async.StartReciving();
+
+                ConnectNew.Set();
             }
         }
 
@@ -84,47 +84,47 @@ namespace LRM
         {
             lock (LrmRegister)
             {
-                //try
-               // {
-                    LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
+                try
+                 {
+                LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
+                
+                if (node.Node == null)
+                {
+                    return;
+                }
 
-                    if (node.Node == null)
+                if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
+                {
+                    if (LrmRegister.ConnectedNodes[node.Node].Async != null)
                     {
-                        return;
+                        throw new DeviceAllreadyConnected();
                     }
+                    LrmRegister.ConnectedNodes[node.Node].Async = ac;
+                    LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
+                }
+                else
+                {
+                    LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+                    {
+                        Name = node.Node,
+                        Async = ac,
+                        DomiansHierarchy = node.Domians
+                    });
+                }
 
-                    if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
-                    {
-                        if (LrmRegister.ConnectedNodes[node.Node].Async != null)
-                        {
-                            throw new DeviceAllreadyConnected();
-                        }
-                        LrmRegister.ConnectedNodes[node.Node].Async = ac;
-                        LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
-                    }
-                    else
-                    {
-                        LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
-                        {
-                            Name = node.Node,
-                            Async = ac,
-                            DomiansHierarchy = node.Domians
-                        });
-                    }
-
-                    if (NodeConnected != null)
-                    {
-                        NodeConnected(node.Node);
-                    }
-                //}
-               // catch (JsonReaderException exp)
-                //{
-               //     Console.WriteLine("SubscribeCallback" + exp.Message + "\n" + data);
-               // }
-               // catch (Exception exp)
-               // {
-               //     Console.WriteLine(exp.Message);
-                //}
+                if (NodeConnected != null)
+                {
+                    NodeConnected(node.Node);
+                }
+                }
+                 catch (JsonReaderException exp)
+                {
+                     Console.WriteLine("SubscribeCallback" + exp.Message + "\n" + data);
+                 }
+                 catch (Exception exp)
+                 {
+                     Console.WriteLine(exp.Message);
+                }
 
             }
         }

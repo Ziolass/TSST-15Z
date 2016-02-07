@@ -69,6 +69,8 @@ namespace LRM
             {
                 String content = String.Empty;
                 StateObject state = (StateObject)ar.AsyncState;
+
+                PacketsReceived.Set();
                 int bytesRead = AsyncSocket.EndReceive(ar);
 
                 if (bytesRead > 0)
@@ -76,7 +78,6 @@ namespace LRM
                     string data = Encoding.ASCII.GetString(state.Buffer, 0, bytesRead);
                     state.ResponseBuilder.Append(data);
 
-                    PacketsReceived.Set();
 
                     if (bytesRead != StateObject.BufferSize)
                     {
@@ -85,6 +86,7 @@ namespace LRM
                         if (SubscribeCallback != null && IdleState && allData.Contains("INTRODUCE"))
                         {
                             SubscribeCallback(allData, this);
+
                             IdleState = false;
                             return;
                         }
@@ -135,6 +137,7 @@ namespace LRM
                     int bytesSent = AsyncSocket.EndSend(ar);
                     Console.WriteLine("Data Send");
                     PacketsSend.Set();
+                    PacketsReceived.Set();
                 }
                 catch (Exception e)
                 {
