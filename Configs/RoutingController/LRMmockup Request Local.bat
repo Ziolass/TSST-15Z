@@ -1,1 +1,0 @@
-cd ..\..\MockupClient\bin\Debug\ & start MockupClient.exe 8100 5

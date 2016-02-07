@@ -3,7 +3,7 @@ start cmd /c cloudStart.bat
 
 cd ..
 cd RoutingController
-start cmd /c routingControllerStart.bat
+start cmd /c routingControllerStart1.bat
 
 cd ..
 cd NCC
