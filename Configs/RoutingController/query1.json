@@ -1,0 +1,9 @@
+{
+    "Id": "client11client31",
+    "Protocol": "route",
+    "Ends": [
+        { "Name": "client1", "Port": "1" },
+        { "Name": "node2", "Port": "1" }
+    ],
+    "Domain": "domainA"
+}
