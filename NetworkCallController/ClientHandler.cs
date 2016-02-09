@@ -84,7 +84,7 @@ namespace NetworkCallController
 
                     return callMalfunction(temp[1], temp[2]);
                 case "OK":
-                    return "Połaczenie zestawione";
+                    return "OK";
                 default:
                     return "coś sie zj. zepsulo.";
             }
@@ -189,10 +189,12 @@ namespace NetworkCallController
 
             // sprawdzenie portu osoby zadajacej
             string[] callingPartyPorts = checkDictionaryForEntry(callingPartyName).Split('|');
+
             if (callingPartyPorts[0].Equals("brak_wpisu"))
             {
                 return "Lokalny Directory nie posiada wpisu " + callingPartyName;
             }
+
             if (!int.TryParse(callingPartyPorts[0], out callingSignalingPort))
             {
                 return "error|Directory nie dziala";
@@ -229,9 +231,13 @@ namespace NetworkCallController
                     calledSignalingPort = int.Parse(calledPartyPorts[0]);
                     calledAddress = calledPartyPorts[1];
 
-
-                    if(connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
+                    //var test2 = test.Length == 21;
+                    //Console.WriteLine("kljklgjklfjkldfg: " + test);
+                   
+                    //if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
+                    if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
                     {
+                        Console.Out.WriteLine("jestem w petli");
                         if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
                         {
                             connectionTeardown(callingAddress, calledAddress, callingSignalingPort, calledSignalingPort);
@@ -239,7 +245,7 @@ namespace NetworkCallController
                         }
                         return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
                     }
-
+                    return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
 
                     // zamiana kolejności coby Komando nie zabił
                     /*
@@ -288,6 +294,7 @@ namespace NetworkCallController
                 return "NCC nie moglo nawiazac polaczenia z CC";
             }
             ncc.getConnections().Add(initAddress + "|" + foreignAddress, Tuple.Create(initSignalPort, initName, foreignSignalPort, foreignName));
+            Console.WriteLine("translate" + translate);
             return translate;
         }
 
@@ -311,6 +318,7 @@ namespace NetworkCallController
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "call-teardown");
             string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
             string translate =  HandleJsonInput(response);
+
             if (translate.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
@@ -361,6 +369,7 @@ namespace NetworkCallController
 
         private string sendCommand(string command, int port)
         {
+            Console.WriteLine("Debug:" + command);
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddress, port);
@@ -371,21 +380,19 @@ namespace NetworkCallController
 
             try
             {
-                Console.WriteLine("dzialam se tu");
                 byte[] msg = Encoding.ASCII.GetBytes(command);
                 commandSocket.Connect(endPoint);
-                Console.WriteLine("nawet sie polaczylem a co");
                 commandSocket.Send(msg);
-                Console.WriteLine("wyslalem!");
                 bytes = new byte[1024];
+                Console.WriteLine("Czekam na odpowiedz");
                 int bytesRec = commandSocket.Receive(bytes);
-                Console.WriteLine("kurwo");
                 response += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                Console.WriteLine("Dostłem " + response);
 
                 commandSocket.Shutdown(SocketShutdown.Both);
                 commandSocket.Close();
             }
-            catch (Exception e)
+                catch (Exception e)
             {
                 return "error|Brak odpowiedzi";
             }
