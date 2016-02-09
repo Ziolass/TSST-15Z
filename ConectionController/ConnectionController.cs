@@ -543,8 +543,10 @@ namespace Cc
                         Src = edges.Item1,
                         Dst = edges.Item2,
                         Id = connectionId + "|" + subconnectionId,
-                        Type = reqResp.Type
+                        Type = TransformRequestType(reqResp.Type)
                     };
+
+                    
 
                     SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
                     Console.WriteLine();
@@ -559,6 +561,20 @@ namespace Cc
                 string domain = actual.DstGateway.Domian;
                 PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
             }
+        }
+
+        private string TransformRequestType(string type)
+        {
+            string reqType = null;
+            
+            if(type.Equals(ReqType.DISCONNECTION_REQUEST.ToString()))
+            {
+                reqType = "call-teardown"; 
+            } else if(type.Equals(ReqType.CONNECTION_REQUEST.ToString())) {
+                reqType = "connection-request";
+            }
+
+            return reqType;
         }
 
         private void UpdateEdgeSnp(NetworkConnection conn, Tuple<LrmSnp, LrmSnp> edges)
