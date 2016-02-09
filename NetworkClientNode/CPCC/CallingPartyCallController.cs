@@ -69,10 +69,12 @@ namespace NetworkClientNode.CPCC
         }
         public string callRequest(string calledName)
         {
+            
             if (checkIfConnectionExist(calledName))
             {
                 return "error|Takie polaczenie juz istnieje";
             }
+            
             if (calledName.ToLower().Equals(clientName.ToLower()))
             {
                 return "error|nie mozesz sam sie do siebie polaczyc";

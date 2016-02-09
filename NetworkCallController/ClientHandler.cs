@@ -276,9 +276,13 @@ namespace NetworkCallController
             int ccPort = ncc.getCCPort();
             // string response = sendCommand("connection-request|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "connection-request");
+            Console.WriteLine("dzialam dotad!");
             string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
 
             string translate = HandleJsonInput(response);
+          
+
+
             if (translate.Split('|')[0].Equals("error"))
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
@@ -367,12 +371,15 @@ namespace NetworkCallController
 
             try
             {
+                Console.WriteLine("dzialam se tu");
                 byte[] msg = Encoding.ASCII.GetBytes(command);
                 commandSocket.Connect(endPoint);
+                Console.WriteLine("nawet sie polaczylem a co");
                 commandSocket.Send(msg);
-
+                Console.WriteLine("wyslalem!");
                 bytes = new byte[1024];
                 int bytesRec = commandSocket.Receive(bytes);
+                Console.WriteLine("kurwo");
                 response += Encoding.ASCII.GetString(bytes, 0, bytesRec);
 
                 commandSocket.Shutdown(SocketShutdown.Both);
