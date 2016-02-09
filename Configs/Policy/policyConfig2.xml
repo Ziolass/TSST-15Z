@@ -2,10 +2,7 @@
 <directory-config>
 <network-info>
 <autonomous-system-name name="CS1"/>
-<client-name name="MONIKA"/>
-<localport value="40005"/>
-<ncc-port value="40001"/>
+<port value="40003"/>
 </network-info>
 
-	
 </directory-config>

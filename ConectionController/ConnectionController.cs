@@ -132,6 +132,7 @@ namespace Cc
             LrmClient.ConnectToLrm();
             Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
             Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
+            Thread.Sleep(10000);
             foreach (CcClient cc in SubnetworkCc.Values)
             {
                 cc.ConnectToCc();
@@ -148,6 +149,7 @@ namespace Cc
 
         public void HandleNccData(string data, AsyncCommunication async)
         {
+            Console.WriteLine(data);
             HigherLevelConnectionRequest request = JsonConvert.DeserializeObject<HigherLevelConnectionRequest>(data);
 
             try
@@ -186,7 +188,7 @@ namespace Cc
         public void HandleCcData(string data, AsyncCommunication async)
         {
             CcResponse response = JsonConvert.DeserializeObject<CcResponse>(data);
-            Console.WriteLine(response.Type +" " + response.Response);
+            Console.WriteLine(response.Type + " " + response.Response);
             if (response.Response.Contains("call-mallfunction") || response.Response.Equals("ERROR"))
             {
                 if (SecretNccNotifier != null)
@@ -202,7 +204,11 @@ namespace Cc
             string SubconnectionId = splitedResponseTag[2];
 
             ReqType type = (ReqType)Enum.Parse(typeof(ReqType), splitedResponseTag[3]);
+            /*NetworkConnection nc = null;
+            if (Connections.ContainsKey(Conn))
+            {
 
+            }*/
             Connections[ConnectionId]
                 .SubConnectionsAvability[SubconnectionId] = type == ReqType.CONNECTION_REQUEST;
 
@@ -445,7 +451,7 @@ namespace Cc
                         }
                     }
                     //Wejścia do niższych domen
-                    if (!(i != 0 && previous.Domain != null && previous.Domain.Equals(actual.Domain)))
+                    if (i != 0 && previous.Domain != null && previous.Domain.Equals(actual.Domain))
                     {
                         string id = previous.Node + previous.Ports[0] + actual.Node + actual.Ports[0];
 
@@ -466,8 +472,12 @@ namespace Cc
 
                 steps.Add(step);
             }
-
-            actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
+            
+            if (actualConn.Id == null)
+            {
+                actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
+            }
+            
             ConnectionRequest req = new ConnectionRequest
             {
                 Steps = steps,
@@ -496,7 +506,22 @@ namespace Cc
         {
             ConnectionRequest reqResp = JsonConvert.DeserializeObject<ConnectionRequest>(data);
             string connectionId = reqResp.Id;
-            NetworkConnection actual = Connections[connectionId];
+            NetworkConnection actual = null;
+            if (Connections.ContainsKey(connectionId))
+            {
+                actual = Connections[connectionId];
+
+            }
+            else
+            {
+                foreach (NetworkConnection conn in Connections.Values)
+                {
+                    if (conn.MySubconnectionId.Equals(connectionId))
+                    {
+                        actual = conn;
+                    }
+                }
+            }
             actual.ActualLevelConnection = reqResp;
 
             Console.WriteLine();
@@ -541,8 +566,10 @@ namespace Cc
                         Src = edges.Item1,
                         Dst = edges.Item2,
                         Id = connectionId + "|" + subconnectionId,
-                        Type = reqResp.Type
+                        Type = TransformRequestType(reqResp.Type)
                     };
+
+
 
                     SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
                     Console.WriteLine();
@@ -557,6 +584,22 @@ namespace Cc
                 string domain = actual.DstGateway.Domian;
                 PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
             }
+        }
+
+        private string TransformRequestType(string type)
+        {
+            string reqType = null;
+
+            if (type.Equals(ReqType.DISCONNECTION_REQUEST.ToString()))
+            {
+                reqType = "call-teardown";
+            }
+            else if (type.Equals(ReqType.CONNECTION_REQUEST.ToString()))
+            {
+                reqType = "connection-request";
+            }
+
+            return reqType;
         }
 
         private void UpdateEdgeSnp(NetworkConnection conn, Tuple<LrmSnp, LrmSnp> edges)
@@ -584,7 +627,10 @@ namespace Cc
             }
 
             ConnectionStep backward = firstIndex - 1 > 0 ? allSteps[firstIndex - 1] : null;
+            backward = FindActualStep(backward, actual);
+
             ConnectionStep forward = secondIndex + 1 < allSteps.Count ? allSteps[secondIndex + 1] : null;
+            forward = FindActualStep(forward, actual);
 
             List<ConnectionStep> steps = actual.Steps;
 
@@ -599,6 +645,29 @@ namespace Cc
                 second.Index = forward.Ports[0].Index;
                 allSteps[secondIndex].Ports[0].Index = forward.Ports[0].Index;
             }
+        }
+
+        private ConnectionStep FindActualStep(ConnectionStep step, ConnectionRequest actual)
+        {
+            foreach (ConnectionStep actualStep in actual.Steps)
+            {
+                if (step.Node.Equals(actualStep.Node) && step.Ports[0].Number.Equals(actualStep.Ports[0].Number))
+                {
+                    if (step.Ports.Count > 1)
+                    {
+                        if (actualStep.Ports.Count > 1 && actualStep.Ports[1].Number.Equals(step.Ports[1].Number))
+                        {
+                            return actualStep;
+                        }
+                    }
+                    else
+                    {
+                        return actualStep;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private int FindEdgeSnpIndex(List<ConnectionStep> allSteps, LrmSnp lrmSnp)

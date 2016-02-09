@@ -180,6 +180,7 @@ namespace NetworkNode.HPC
                 int index = int.Parse(lrmPort.Index);
                 int number = int.Parse(lrmPort.Number);
                 resources.Add(number,index);
+                Console.WriteLine("Transformation port " + number + " index " + index);
             }
 
             return TranslateToRecords(resources, NetworkDefaultLevel);
