@@ -44,9 +44,8 @@ namespace RoutingController.Requests
         public void AddNodes(List<NodeElement> nodes)
         {
             this.Steps = new List<SNP>();
-            for (int i = 0; i < nodes.Count; )
+            for (int i = 0; i < nodes.Count; i++)
             {
-
                 if (i + 1 < nodes.Count)
                 {
                     NodeElement firstNode = nodes[i];
@@ -79,11 +78,7 @@ namespace RoutingController.Requests
                             newSNP = new SNP(firstNode.Name, null, portList);
                             this.Steps.Add(newSNP);
                         }
-                        if (i + 2 < nodes.Count)
-                        {
-                            i += 2;
-                        }
-                        else i++;
+                        i++;
                     }
                     else
                     {
@@ -91,7 +86,6 @@ namespace RoutingController.Requests
                         portList.Add(firstNode.Port);
                         portList.Add(null);
                         this.Steps.Add(new SNP(firstNode.Name, null, portList));
-                        i++;
                     }
                 }
                 else
@@ -101,30 +95,41 @@ namespace RoutingController.Requests
                     portList.Add(firstNode.Port);
                     portList.Add(null);
                     this.Steps.Add(new SNP(firstNode.Name, null, portList));
-                    i++;
                 }
             }
         }
         public override string ToString()
         {
             string returnString = string.Empty;
-            returnString += "-------------------\n";
+            returnString += "------------------- \n";
             returnString += "Ends\n";
+            returnString += "------------------- \n";
             foreach (var item in this.Ends)
             {
-                returnString += item.Node + " : " + item.Port + " domain: " + item.OuterDomain + "\n";
+                if (String.IsNullOrEmpty(item.OuterDomain))
+                {
+                    returnString += "Node: " + item.Node + " : " + item.Port + "\n";
+                }
+                else returnString += "Node: " + item.Node + " : " + item.Port + " domain: " + item.OuterDomain + "\n";
             }
-            returnString += "-------------------\n";
-            returnString += "Steps\n";
+            returnString += "------------------- \n";
+            returnString += "Steps \n";
+            returnString += "------------------- \n";
             foreach (var item in this.Steps)
             {
-                returnString += item.Node + " domain:" + item.Domain + "\n";
-                returnString += "ports:\n";
+                if (String.IsNullOrEmpty(item.Domain))
+                {
+                    returnString += "Node: " + item.Node + "\n";
+                }
+                else returnString += "Node: " + item.Node + " domain: " + item.Domain + "\n";
+                returnString += "Ports: ";
                 foreach (var itemPorts in item.Ports)
                 {
-                    returnString += itemPorts + "\n";
+                    returnString += itemPorts + " ";
                 }
+                returnString += "\n";
             }
+            returnString += "------------------- \n";
             return returnString;
         }
     }
