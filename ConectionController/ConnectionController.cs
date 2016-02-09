@@ -204,7 +204,11 @@ namespace Cc
             string SubconnectionId = splitedResponseTag[2];
 
             ReqType type = (ReqType)Enum.Parse(typeof(ReqType), splitedResponseTag[3]);
+            /*NetworkConnection nc = null;
+            if (Connections.ContainsKey(Conn))
+            {
 
+            }*/
             Connections[ConnectionId]
                 .SubConnectionsAvability[SubconnectionId] = type == ReqType.CONNECTION_REQUEST;
 
@@ -468,8 +472,12 @@ namespace Cc
 
                 steps.Add(step);
             }
-
-            actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
+            
+            if (actualConn.Id == null)
+            {
+                actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
+            }
+            
             ConnectionRequest req = new ConnectionRequest
             {
                 Steps = steps,
@@ -498,7 +506,22 @@ namespace Cc
         {
             ConnectionRequest reqResp = JsonConvert.DeserializeObject<ConnectionRequest>(data);
             string connectionId = reqResp.Id;
-            NetworkConnection actual = Connections[connectionId];
+            NetworkConnection actual = null;
+            if (Connections.ContainsKey(connectionId))
+            {
+                actual = Connections[connectionId];
+
+            }
+            else
+            {
+                foreach (NetworkConnection conn in Connections.Values)
+                {
+                    if (conn.MySubconnectionId.Equals(connectionId))
+                    {
+                        actual = conn;
+                    }
+                }
+            }
             actual.ActualLevelConnection = reqResp;
 
             Console.WriteLine();
@@ -546,7 +569,7 @@ namespace Cc
                         Type = TransformRequestType(reqResp.Type)
                     };
 
-                    
+
 
                     SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
                     Console.WriteLine();
@@ -566,11 +589,13 @@ namespace Cc
         private string TransformRequestType(string type)
         {
             string reqType = null;
-            
-            if(type.Equals(ReqType.DISCONNECTION_REQUEST.ToString()))
+
+            if (type.Equals(ReqType.DISCONNECTION_REQUEST.ToString()))
             {
-                reqType = "call-teardown"; 
-            } else if(type.Equals(ReqType.CONNECTION_REQUEST.ToString())) {
+                reqType = "call-teardown";
+            }
+            else if (type.Equals(ReqType.CONNECTION_REQUEST.ToString()))
+            {
                 reqType = "connection-request";
             }
 
