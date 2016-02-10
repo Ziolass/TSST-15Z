@@ -83,7 +83,8 @@ namespace NetworkClientNode.CPCC
             response = chandler.sendCommand("call-request|" + clientName.ToUpper() + "|" + calledName.ToUpper(), nccPort);
             if (!response.Split('|')[0].Equals("error"))
             {
-                connectedClientsList.Add(calledName);
+                addToConnectedClients(calledName.ToUpper());
+                //connectedClientsList.Add(calledName);
             }
             else
             {

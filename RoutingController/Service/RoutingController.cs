@@ -482,7 +482,11 @@ namespace RoutingController.Service
 
                                     if (vertexesOther.Count == 1 && vertexesOur.Count == 0)
                                     {
-                                        this.Gateways.Add(item.Key, networkGraphSearch.DomainName);
+                                        if (this.Gateways.ContainsKey(item.Key))
+                                        {
+                                            this.Gateways[item.Key] = networkGraphSearch.DomainName;
+                                        }
+                                        else this.Gateways.Add(item.Key, networkGraphSearch.DomainName);
                                     }
                                 }
                             }
@@ -504,21 +508,31 @@ namespace RoutingController.Service
         public void UpdateNetworkTopology(NetworkRequest queryRequest)
         {
             List<string> clientsList = new List<string>();
+
             if (queryRequest.OtherDomains != null)
             {
                 foreach (var externalClient in queryRequest.OtherDomains)
                 {
                     clientsList.Add(externalClient);
                 }
-                this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
+                if (this.ExternalClients.ContainsKey(queryRequest.NetworkName))
+                {
+                    this.ExternalClients[queryRequest.NetworkName] = clientsList;
+                }
+                else this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
             }
+
             if (queryRequest.Clients != null)
             {
                 foreach (var externalClient in queryRequest.Clients)
                 {
                     clientsList.Add(externalClient.Name);
                 }
-                this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
+                if (this.ExternalClients.ContainsKey(queryRequest.NetworkName))
+                {
+                    this.ExternalClients[queryRequest.NetworkName] = clientsList;
+                }
+                else this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
             }
 
         }

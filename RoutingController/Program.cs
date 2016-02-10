@@ -19,6 +19,7 @@ namespace RoutingController
 
                 Console.WriteLine("Routing Controller Console");
                 Console.WriteLine("Main domain: {0}", RC.NetworkName);
+                Console.WriteLine("==========================\n");
 
                 new Thread(delegate()
                 {

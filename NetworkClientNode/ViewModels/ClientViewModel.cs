@@ -107,6 +107,14 @@ namespace NetworkClientNode.ViewModels
         private void OnConnectionEstablished(string connectionName)
         {
             this.NextConnectionClient = connectionName;
+            App.Current.Dispatcher.Invoke((Action)delegate
+            {
+                if (Streams.Count > 0)
+                {                    
+                    this.Streams[Streams.Count - 1].ClientName = connectionName;
+                    this.Streams[Streams.Count - 1].riseChangesToView();
+                }
+            });
         }
         private void OnClientStreamRemove(List<StreamData> args)
         {
@@ -138,6 +146,7 @@ namespace NetworkClientNode.ViewModels
                     this.Streams.Add(new StreamDataViewModel(this.NextConnectionClient, stream));
                 });
             }
+
         }
         private void SendNewMessage()
         {

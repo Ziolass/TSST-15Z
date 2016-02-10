@@ -5,6 +5,7 @@ using RoutingController.Requests;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -90,13 +91,13 @@ namespace RoutingController.Service
             try
             {
                 ActionType actionType = OperationType(request);
+                //Update local topology
                 if (actionType == ActionType.LocalTopology)
                 {
                     request = request.Replace("Protocol: \"resources\",", "");
-                    Console.WriteLine(request);
                     LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
                     this.RoutingController.UpdateNetworkGraph(topologyRequest);
-                    Console.WriteLine("Updated local topology!");
+                    Console.WriteLine("[RC] Updated local topology!");
                     Console.WriteLine(this.ShowRoutes());
                     return "OK";
                 }
@@ -105,18 +106,19 @@ namespace RoutingController.Service
                 {
                     request = request.Replace("Protocol: \"query\",", "");
                     QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
-                    Console.WriteLine("RouteTableQuery request from {0}", queryRequest.Domain);
+                    Console.WriteLine("[RC] RouteTableQuery request from {0}", queryRequest.Domain);
                     RouteResponse routeResponse = this.RoutingController.RouteTableResponse(queryRequest);
                     routeResponse.Id = queryRequest.Id;
                     Console.WriteLine(routeResponse.ToString());
                     return JsonConvert.SerializeObject(routeResponse);
                 }
+                //NetworkTopology
                 else if (actionType == ActionType.NetworkTopology)
                 {
                     NetworkRequest queryRequest = JsonConvert.DeserializeObject<NetworkRequest>(request);
                     this.RoutingController.UpdateNetworkTopology(queryRequest);
 
-                    Console.WriteLine("Network topology updated from {0}", queryRequest.NetworkName);
+                    Console.WriteLine("[RC] Network topology updated from {0}", queryRequest.NetworkName);
                     if (this.NeighbourList.Count > 1)
                     {
                         foreach (var item in this.NeighbourList)
@@ -129,17 +131,22 @@ namespace RoutingController.Service
                     }
                     return "OK";
                 }
-                else return "ERROR! \n " + request;
-            }
+                else
+                {
+                    Console.WriteLine(request + "\n");
+                    return "ERROR";
+                }
+            } 
             catch (Exception exp)
             {
+                Console.WriteLine(request + "\n");
                 Console.WriteLine(exp.Message);
                 return "ERROR";
             }
         }
 
         /// <summary>
-        /// Sends the network topology.
+        /// Sends the network topology to other RC.
         /// </summary>
         /// <returns></returns>
         private void SendNetworkTopology(NeighbourRoutingController neighbourRC)
@@ -166,12 +173,16 @@ namespace RoutingController.Service
                     IPEndPoint remoteEP = new IPEndPoint(ipAddress, neighbourRC.Port);
                     Socket sender = new Socket(AddressFamily.InterNetwork,
                         SocketType.Stream, ProtocolType.Tcp);
-                    sender.Connect(remoteEP);
-                    byte[] msg = Encoding.ASCII.GetBytes(message);
-                    int bytesSent = sender.Send(msg);
-                    sender.Shutdown(SocketShutdown.Both);
-                    sender.Close();
-                    Console.WriteLine("NetworkTopology sent!");
+                    if (PingHost(ipAddress.ToString(), neighbourRC.Port))
+                    {
+                        sender.Connect(remoteEP);
+                        byte[] msg = Encoding.ASCII.GetBytes(message);
+                        int bytesSent = sender.Send(msg);
+                        sender.Shutdown(SocketShutdown.Both);
+                        sender.Close();
+                        Console.WriteLine("[RC] NetworkTopology sent to RC in " + neighbourRC.NetworkName+ "!");
+                    }
+                    else Console.WriteLine("[RC] RC in " + neighbourRC.NetworkName + " is not reachable!");
                 }
                 catch (Exception e)
                 {
@@ -179,6 +190,8 @@ namespace RoutingController.Service
                 }
             }
         }
+
+
         private void SendNetworkTopology()
         {
             foreach (NeighbourRoutingController neighbourRC in this.NeighbourList)
@@ -186,6 +199,19 @@ namespace RoutingController.Service
                 SendNetworkTopology(neighbourRC);
             }
 
+        }
+
+        public static bool PingHost(string ipAddress, int portNumber)
+        {
+            try
+            {
+                TcpClient client = new TcpClient(ipAddress, portNumber);
+                return true;
+            }
+            catch (Exception ex)
+            {               
+                return false;
+            }
         }
 
         /// <summary>
@@ -245,7 +271,7 @@ namespace RoutingController.Service
             Socket listener = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
 
-            Console.WriteLine("Start successful");
+            Console.WriteLine("[SERVER] Start successful");
             // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
@@ -269,7 +295,7 @@ namespace RoutingController.Service
                 Console.WriteLine(e.ToString());
             }
 
-            Console.WriteLine("\nPress ENTER to continue...");
+            Console.WriteLine("\n[SERVER] End \nPress ENTER to continue...");
             Console.Read();
         }
 
@@ -287,10 +313,10 @@ namespace RoutingController.Service
             // Create the state object.
             StateObject state = new StateObject();
             state.WorkSocket = handler;
-            Console.WriteLine("New connection from: " + handler.RemoteEndPoint);
+            Console.WriteLine("[SERVER] New connection from: " + handler.RemoteEndPoint);
             handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
-            
+
         }
 
         /// <summary>
@@ -321,8 +347,7 @@ namespace RoutingController.Service
                     content = state.StringBuilder.ToString();
 
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
-                    {
-                        Console.WriteLine("Message OK!");
+                    {                        
                         string response = string.Empty;
                         if (this.OperationType(content) == ActionType.LocalTopology)
                         {
@@ -340,7 +365,7 @@ namespace RoutingController.Service
                             // Signal the main thread to continue.
                             allDone.Set();
                             response = this.PerformAction(content);
-                            Console.WriteLine("Route table query sent");
+                            Console.WriteLine("[RC] Route table query sent!");
                         }
                         else if (this.OperationType(content) == ActionType.NetworkTopology)
                         {
@@ -350,13 +375,13 @@ namespace RoutingController.Service
                         else
                         {
                             allDone.Set();
-                            Console.WriteLine("Wrong request!");
+                            Console.WriteLine("[RC] Wrong request!");
                         }
                         Send(handler, response);
                     }
                     else
                     {
-                        Console.WriteLine("Message not ready ...");
+                        Console.WriteLine("[SERVER] Message not ready ...");
                         // Not all data received. Get more.
                         handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReadCallback), state);
@@ -419,11 +444,21 @@ namespace RoutingController.Service
         /// <returns></returns>
         public string ShowRoutes()
         {
-            return this.RoutingController.ShowRoutes();
+            string returnString = this.RoutingController.ShowRoutes();
+            if (string.IsNullOrEmpty(returnString))
+            {
+                return "Routes are empty!";
+            }
+            else return returnString;
         }
         public string ShowExternalClients()
         {
-            return this.RoutingController.ShowExternalClients();
+            string returnString = this.RoutingController.ShowExternalClients();
+            if (string.IsNullOrEmpty(returnString))
+            {
+                return "No external clients!";
+            }
+            else return returnString;
         }
 
         /// <summary>
