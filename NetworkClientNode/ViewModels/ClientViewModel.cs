@@ -128,10 +128,10 @@ namespace NetworkClientNode.ViewModels
         {
             Console.WriteLine(data.ToString());
             string newString = data.ToString().Replace("Error: Container does not transport client data", "");
-            if (!string.IsNullOrEmpty(newString) && newString != " ")
+            if (!string.IsNullOrEmpty(newString) && newString != "\n")
             {
-
-                this.messageRecivedText += DateTime.Now + "\n" + newString.ToString();
+                newString = newString.ToString().Replace("\n", " ");
+                this.messageRecivedText += DateTime.Now + "\n" + newString.ToString() + "\n";
                 RisePropertyChange(this, "MessageRecivedText");
             }
         }
