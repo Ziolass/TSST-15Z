@@ -190,7 +190,7 @@ namespace NetworkCallController
             // sprawdzenie portu osoby zadajacej
             string[] callingPartyPorts = checkDictionaryForEntry(callingPartyName).Split('|');
 
-            if (callingPartyPorts[0].Equals("brak_wpisu"))
+            if (callingPartyPorts[0].Equals("Brak_wpisu"))
             {
                 return "Lokalny Directory nie posiada wpisu " + callingPartyName;
             }
@@ -234,7 +234,7 @@ namespace NetworkCallController
 
                     
                     //if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
-                    if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
+                    /*if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
                     {
                         Console.Out.WriteLine("jestem w petli");
                         if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
@@ -245,15 +245,20 @@ namespace NetworkCallController
                         return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
                     }
                     return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
+                    */
 
                     // zamiana kolejności coby Komando nie zabił
-                    /*
+                    
                     // no to w sumie by wypadalo spytac ziomeczka czy chce wgl z nami gadac zeby nie bylo przykro
                     if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
                     {
                         return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
                     }
-                    return connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName);*/
+                    if(connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
+                    {
+                        return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
+                    }
+                    else return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
                 }
             }
 
@@ -262,18 +267,15 @@ namespace NetworkCallController
                 calledAddress = calledPartyPorts[1];
             }
 
-            // no to w sumie by wypadalo spytac ziomeczka czy chce wgl z nami gadac zeby nie bylo przykro
+            if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
+            {
+                return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
+            }
             if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
             {
-                Console.Out.WriteLine("jestem w petli");
-                if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
-                {
-                    connectionTeardown(callingAddress, calledAddress, callingSignalingPort, calledSignalingPort);
-                    return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
-                }
                 return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
             }
-            return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
+            else return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
         }
 
         private void informOtherParty(int signallingPort, string teardownName)
@@ -317,10 +319,13 @@ namespace NetworkCallController
 
         private string connectionTeardown(string initAddress, string foreignAddress, int initSignalPort, int foreignSignalPort)
         {
+            Console.WriteLine("Wszedłem w connection teardown");
             int ccPort = ncc.getCCPort();
             // string response = sendCommand("call-teardown|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "call-teardown");
+            Console.WriteLine("Chce wysłać przy teardown: " + JsonConvert.SerializeObject(toSend));
             string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
+            Console.WriteLine("teardown_odpowiedz: " + HandleJsonInput(response));
             string translate =  HandleJsonInput(response);
 
             if (translate.Split('|')[0].Equals("error"))
