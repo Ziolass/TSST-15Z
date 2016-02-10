@@ -12,9 +12,14 @@ namespace NetworkCallController
         private int localPort;
         private int foreignPort;
         private Dictionary<string, Tuple<int,string, int,string>> connections;
+        private Dictionary<string, int> count;
         private string ASname;
         private int directoryPort;
         private int ccPort;
+        public Dictionary<string,int> getCount()
+        {
+            return count;
+        }
         public string getASName()
         {
             return ASname;

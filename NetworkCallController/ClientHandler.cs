@@ -300,10 +300,14 @@ namespace NetworkCallController
                 return "NCC nie moglo nawiazac polaczenia z CC";
             }
             ncc.getConnections().Add(initAddress + "|" + foreignAddress, Tuple.Create(initSignalPort, initName, foreignSignalPort, foreignName));
-            Console.WriteLine("translate" + translate);
+            
+            //Console.WriteLine("translate" + translate);
             return translate;
         }
+        private void trackChanges(string initName, string foreignName)
+        {
 
+        }
         private HigherLevelConnectionRequest prepareToSend(string initAddress, string destinationAddress, string type)
         {
             HigherLevelConnectionRequest toSend = new HigherLevelConnectionRequest();
