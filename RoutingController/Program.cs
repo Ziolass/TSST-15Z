@@ -20,7 +20,6 @@ namespace RoutingController
                 Console.WriteLine("Routing Controller Console");
                 Console.WriteLine("Main domain: {0}", RC.NetworkName);
                 Console.WriteLine("==========================\n");
-
                 new Thread(delegate()
                 {
                     RC.StartListening();
@@ -53,6 +52,10 @@ namespace RoutingController
                 else if (command.Equals("show external"))
                 {
                     Console.WriteLine(rc.ShowExternalClients());
+                }
+                else if (command.Equals("show gateways"))
+                {
+                    Console.WriteLine(rc.ShowGateways());
                 }
                 else if (command.Equals("clear"))
                 {

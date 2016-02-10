@@ -18,17 +18,23 @@ namespace NetworkNode
         private HigherOrderPathConnection Hpc;
         private TransportTerminalFunction Ttf;
         private LrmClient LrmClient;
+        private LrmClient LrmGatewayClient;
         private LrmIntroduce LrmIntroduce;
+        private LrmIntroduce LrmGateway;
         public string Id { get; private set; }
 
         public NetworkNode(HigherOrderPathConnection hpc,
             TransportTerminalFunction ttf,
             LrmIntroduce lrmIntroduce,
-            int lrmPort)
+            int lrmPort,
+            LrmIntroduce lrmGateway,
+                int lrmGatewayPort)
         {
             Ttf = ttf;
             LrmIntroduce = lrmIntroduce;
+            LrmGateway = lrmGateway;
             LrmClient = new LrmClient(lrmPort, SendLrmToken, HandleLrmResourceManagement);
+            LrmGatewayClient = new LrmClient(lrmGatewayPort, SendLrmToken, HandleLrmResourceManagement);
             Ttf.HandleLrmData += new HandleLrmData(ReportLrmToken);
             Hpc = hpc;
             Hpc.LinkResourceAlloc += new LinkResourceAlloc(SendLrmResourceAlloc);
@@ -188,6 +194,16 @@ namespace NetworkNode
         public void StartLrmClient()
         {
             LrmClient.Start();
+        }
+
+        public void StartLrmGatewayClient()
+        {
+            LrmGatewayClient.Start();
+        }
+
+        public void IntroduceToLrmGateway()
+        {
+            LrmGatewayClient.SendLrmMessage(LrmIntroduce);
         }
     }
 }

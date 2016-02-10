@@ -35,7 +35,7 @@ namespace RoutingController.Service
     public class RoutingControllerCenter
     {
         public static ManualResetEvent allDone = new ManualResetEvent(false); // Thread signal.
-        public static ManualResetEvent connectDone = new ManualResetEvent(false);
+        public static ManualResetEvent sendDone = new ManualResetEvent(false);
         public static ManualResetEvent receiveDone = new ManualResetEvent(false);
         public int Port { get; private set; }
         private RoutingController RoutingController { get; set; }
@@ -119,14 +119,12 @@ namespace RoutingController.Service
                     this.RoutingController.UpdateNetworkTopology(queryRequest);
 
                     Console.WriteLine("[RC] Network topology updated from {0}", queryRequest.NetworkName);
-                    if (this.NeighbourList.Count > 1)
+
+                    foreach (var item in this.NeighbourList)
                     {
-                        foreach (var item in this.NeighbourList)
+                        if (item.NetworkName != queryRequest.NetworkName)
                         {
-                            if (item.NetworkName != queryRequest.NetworkName)
-                            {
-                                SendNetworkTopology(item);
-                            }
+                            SendNetworkTopology(item);
                         }
                     }
                     return "OK";
@@ -136,7 +134,7 @@ namespace RoutingController.Service
                     Console.WriteLine(request + "\n");
                     return "ERROR";
                 }
-            } 
+            }
             catch (Exception exp)
             {
                 Console.WriteLine(request + "\n");
@@ -173,16 +171,16 @@ namespace RoutingController.Service
                     IPEndPoint remoteEP = new IPEndPoint(ipAddress, neighbourRC.Port);
                     Socket sender = new Socket(AddressFamily.InterNetwork,
                         SocketType.Stream, ProtocolType.Tcp);
-                    if (PingHost(ipAddress.ToString(), neighbourRC.Port))
-                    {
-                        sender.Connect(remoteEP);
-                        byte[] msg = Encoding.ASCII.GetBytes(message);
-                        int bytesSent = sender.Send(msg);
-                        sender.Shutdown(SocketShutdown.Both);
-                        sender.Close();
-                        Console.WriteLine("[RC] NetworkTopology sent to RC in " + neighbourRC.NetworkName+ "!");
-                    }
-                    else Console.WriteLine("[RC] RC in " + neighbourRC.NetworkName + " is not reachable!");
+
+
+                    sender.Connect(remoteEP);
+                    byte[] msg = Encoding.ASCII.GetBytes(message);
+                    int bytesSent = sender.Send(msg);
+                    sender.Shutdown(SocketShutdown.Both);
+                    sender.Close();
+                    Console.WriteLine("[RC] NetworkTopology sent to RC in " + neighbourRC.NetworkName + "!");
+
+
                 }
                 catch (Exception e)
                 {
@@ -206,10 +204,11 @@ namespace RoutingController.Service
             try
             {
                 TcpClient client = new TcpClient(ipAddress, portNumber);
+                client.Close();
                 return true;
             }
             catch (Exception ex)
-            {               
+            {
                 return false;
             }
         }
@@ -308,21 +307,29 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void AcceptCallback(IAsyncResult ar)
         {
-            allDone.Set();
-            // Get the socket that handles the client request.
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
-            // Create the state object.
-            StateObject state = new StateObject();
-            state.WorkSocket = handler;
-            Console.WriteLine("[SERVER] New connection from: " + handler.RemoteEndPoint);
-            while (true)
+            try
             {
-                receiveDone.Reset();
-                handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
+                allDone.Set();
+                // Get the socket that handles the client request.
+                Socket listener = (Socket)ar.AsyncState;
+                Socket handler = listener.EndAccept(ar);
+                // Create the state object.
+                StateObject state = new StateObject();
+                state.WorkSocket = handler;
+                Console.WriteLine("[SERVER] New connection from: " + handler.RemoteEndPoint);
 
-                receiveDone.WaitOne();
+                while (true)
+                {
+                    receiveDone.Reset();
+                    handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
+                        new AsyncCallback(ReadCallback), state);
+
+                    receiveDone.WaitOne();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
 
         }
@@ -380,8 +387,12 @@ namespace RoutingController.Service
                         }
                         else if (this.OperationType(content) == ActionType.NetworkTopology)
                         {
-                            this.PerformAction(content);
+
                             receiveDone.Set();
+                            new Thread(delegate()
+                                {
+                                    response = this.PerformAction(content);
+                                }).Start();
                         }
                         else
                         {
@@ -400,6 +411,7 @@ namespace RoutingController.Service
 
                 }
             }
+
             catch (Exception e)
             {
                 Console.WriteLine(e.Message + "\n" + content + "\n");
@@ -416,11 +428,11 @@ namespace RoutingController.Service
         {
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);
-            Console.WriteLine("BeginSend");
-
+            sendDone.Reset();
             // Begin sending the data to the remote device.
             handler.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), handler);
+            sendDone.WaitOne();
         }
 
         /// <summary>
@@ -437,8 +449,7 @@ namespace RoutingController.Service
 
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
-                Console.WriteLine("Send");
-
+                sendDone.Set();
                 //handler.Shutdown(SocketShutdown.Both);
                 //handler.Close();
             }
@@ -471,6 +482,15 @@ namespace RoutingController.Service
             if (string.IsNullOrEmpty(returnString))
             {
                 return "No external clients!";
+            }
+            else return returnString;
+        }
+        public string ShowGateways()
+        {
+            string returnString = this.RoutingController.ShowGateways();
+            if (string.IsNullOrEmpty(returnString))
+            {
+                return "No gateways!";
             }
             else return returnString;
         }

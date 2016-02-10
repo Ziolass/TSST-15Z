@@ -1,15 +1,1 @@
-{
-    "Protocol": "resources",
-    "Nodes": [
-        {
-            "Node": "client4",
-            "Domains": [ "domainC" ],
-            "Data": [ { "Port": "1", "Destination": { "Name": "node11", "Port": "2" }, "Status": "FREE" } ]
-        },
-        { "Node": "node9", "Domains": [ "domainC" ], "Data": [ { "Port": "2", "Destination": { "Name": "node10", "Port": "1" }, "Status": "FREE" }, { "Port": "1", "Destination": { "Name": "node7", "Port": "2" }, "Status": "FREE" } ] },
-        { "Node": "node10", "Domains": [ "domainC" ], "Data": [ { "Port": "1", "Destination": { "Name": "node9", "Port": "2" }, "Status": "FREE" }, { "Port": "2", "Destination": { "Name": "node11", "Port": "1" }, "Status": "FREE" } ] },
-        { "Node": "node11", "Domains": [ "domainC" ], "Data": [ { "Port": "2", "Destination": { "Name": "client4", "Port": "1" }, "Status": "FREE" }, { "Port": "1", "Destination": { "Name": "node10", "Port": "2" }, "Status": "FREE" }, { "Port": "3", "Destination": { "Name": "node12", "Port": "2" }, "Status": "FREE" } ] },
-        { "Node": "node12", "Domains": [ "domainC" ], "Data": [ { "Port": "2", "Destination": { "Name": "node11", "Port": "3" }, "Status": "FREE" } ] },
-        { "Node": "node7", "Domains": null, "Data": [ { "Port": "2", "Destination": { "Name": "node9", "Port": "1" }, "Status": "FREE" } ] }
-    ]
-}
+{"Protocol":"resources","Nodes":[{"Node":"node11","Domains":["domainC"],"Data":[{"Port":"2","Destination":{"Name":"client4","Port":"1"},"Status":"FREE"},{"Port":"3","Destination":{"Name":"node12","Port":"2"},"Status":"FREE"},{"Port":"1","Destination":{"Name":"node10","Port":"2"},"Status":"FREE"}]},{"Node":"client4","Domains":["domainC"],"Data":[{"Port":"1","Destination":{"Name":"node11","Port":"2"},"Status":"FREE"}]},{"Node":"node4","Domains":["domainA"],"Data":[{"Port":"3","Destination":{"Name":"node9","Port":"1"},"Status":"FREE"}]},{"Node":"node9","Domains":["domainC"],"Data":[{"Port":"1","Destination":{"Name":"node4","Port":"3"},"Status":"FREE"},{"Port":"2","Destination":{"Name":"node10","Port":"1"},"Status":"FREE"}]},{"Node":"node12","Domains":["domainC"],"Data":[{"Port":"2","Destination":{"Name":"node11","Port":"3"},"Status":"FREE"}]},{"Node":"node10","Domains":["domainC"],"Data":[{"Port":"2","Destination":{"Name":"node11","Port":"1"},"Status":"FREE"},{"Port":"1","Destination":{"Name":"node9","Port":"2"},"Status":"FREE"}]}]}

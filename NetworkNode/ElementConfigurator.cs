@@ -31,6 +31,7 @@ namespace NetworkNode
             VirtualContainerLevel networkDefaultLevel = 0;
             List<string> domians = null;
             int lrmPort = 0;
+            int lrmPort2 = 0;
             string nodeName = null;
             string nodeType = null;
             ManagementPort managementPort = null;
@@ -63,6 +64,10 @@ namespace NetworkNode
                         {
                             lrmPort = int.Parse(configReader.GetAttribute("tcp"));
                         }
+                        else if (configReader.Name == "lrm-client2")
+                        {
+                            lrmPort2 = int.Parse(configReader.GetAttribute("tcp"));
+                        }
                         else if (configReader.Name == "domians")
                         {
                             int domiansNumber = int.Parse(configReader.GetAttribute("number"));
@@ -93,7 +98,18 @@ namespace NetworkNode
                 Domians = domians,
                 Node = nodeName
             };
-            NetworkNode node = new NetworkNode(hpc, ttf, lrmIntroduce, lrmPort);
+            LrmIntroduce lrmIntroduceGateway = null;
+            if (lrmPort2 != 0)
+            {
+
+                lrmIntroduceGateway = new LrmIntroduce
+                {
+                    Domians = domians,
+                    Node = nodeName
+                };
+            }
+
+            NetworkNode node = new NetworkNode(hpc, ttf, lrmIntroduce, lrmPort, lrmIntroduceGateway, lrmPort2);
 
             ManagementCenter managementCenter = new ManagementCenter(managementPort, node);
             managementPort.SetManagementCenter(managementCenter);
@@ -112,6 +128,15 @@ namespace NetworkNode
                 node.StartLrmClient();
                 node.IntroduceToLrm();
             }).Start();
+
+            if (lrmPort2 != 0)
+            {
+                new Thread(delegate()
+                {
+                    node.StartLrmGatewayClient();
+                    node.IntroduceToLrmGateway();
+                }).Start();
+            }
 
             return node;
         }
