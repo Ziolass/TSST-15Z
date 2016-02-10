@@ -93,6 +93,7 @@ namespace RoutingController.Service
                 if (actionType == ActionType.LocalTopology)
                 {
                     request = request.Replace("Protocol: \"resources\",", "");
+                    Console.WriteLine(request);
                     LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
                     this.RoutingController.UpdateNetworkGraph(topologyRequest);
                     Console.WriteLine("Updated local topology!");

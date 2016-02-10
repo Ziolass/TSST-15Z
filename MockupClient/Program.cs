@@ -171,8 +171,8 @@ namespace MockupClient
         public static void Main(String[] args)
         {
             //StartClient("C:\\Users\\Michał\\Desktop\\CC_ARGS.json", int.Parse("22000"));
-            StartClientFile("../../../Configs/RoutingController/hierarchy.json", 8000);
-            StartClientFile("../../../Configs/RoutingController/query1.json", 8000);
+            StartClientFile("../../../Configs/RoutingController/hierarchy.json", 8002);
+            StartClientFile("../../../Configs/RoutingController/query1.json", 8002);
             //StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");
