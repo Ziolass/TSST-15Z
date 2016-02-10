@@ -123,13 +123,14 @@ namespace Cc
         {
             Console.WriteLine("INITIALIZATION");
             Console.WriteLine(TextUtils.Dash);
-            NccServer.Start();
+            new Thread(delegate() { NccServer.Start(); }).Start();
             Console.WriteLine("CONNECTION REQUEST IN - RUNNING");
-            PeerCoordinationServer.Start();
+            new Thread(delegate() { PeerCoordinationServer.Start(); }).Start();
             Console.WriteLine("PEER COORDINATION IN - RUNNING");
             RcSender.ConnectToRc();
             Console.WriteLine("ROUTE TABLE QUERY OUT - RUNNING");
-            LrmClient.ConnectToLrm();
+           LrmClient.ConnectToLrm();
+
             Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
             Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
             Thread.Sleep(10000);

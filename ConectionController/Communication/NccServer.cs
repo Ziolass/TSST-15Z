@@ -1,5 +1,6 @@
 ﻿using LRM;
 using System;
+using System.Threading;
 
 namespace Cc.Communication
 {
@@ -7,6 +8,7 @@ namespace Cc.Communication
     {
         private Action<string, AsyncCommunication> DataRedCallback;
         private AsyncCommunication NccCommunication;
+        private ManualResetEvent PacketsReceived = new ManualResetEvent(false);
 
         public NccServer(int port, Action<string, AsyncCommunication> dataRedCallback)
             : base(port)
@@ -21,10 +23,15 @@ namespace Cc.Communication
                 ActionSocket.Bind(Endpoint);
                 ActionSocket.Listen(100);
 
-                Console.WriteLine("Waiting for a connection...");
-                ActionSocket.BeginAccept(
-                       new AsyncCallback(AcceptCallback),
-                       null);
+                while (true)
+                {
+                    Console.WriteLine("Waiting for a connection...");
+                    PacketsReceived.Reset();
+                    ActionSocket.BeginAccept(
+                           new AsyncCallback(AcceptCallback),
+                           null);
+                    PacketsReceived.WaitOne();
+                }
             }
             catch (Exception e)
             {
@@ -34,11 +41,11 @@ namespace Cc.Communication
 
         public void AcceptCallback(IAsyncResult ar)
         {
+            PacketsReceived.Set();
             NccCommunication = new AsyncCommunication(ActionSocket.EndAccept(ar),
                 null,
                 DataRedCallback,
                 null);
-
             NccCommunication.StartReciving();
         }
 

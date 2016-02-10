@@ -76,7 +76,7 @@ namespace RoutingController.Service
             }
             catch (Exception exp)
             {
-                Console.WriteLine("Error! OperationType: " + exp.Message);
+                Console.WriteLine("Error! OperationType: " + exp.Message + "\n" + request + "\n");
                 return ActionType.Undef;
             }
         }
@@ -226,6 +226,7 @@ namespace RoutingController.Service
             if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
                 (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array
             {
+
                 try
                 {
                     var obj = JToken.Parse(strInput);
@@ -234,12 +235,12 @@ namespace RoutingController.Service
                 catch (JsonReaderException jex)
                 {
                     //Exception in parsing json
-                    Console.WriteLine(jex.Message);
+                    Console.WriteLine(jex.Message + "\n" + strInput);
                     return false;
                 }
                 catch (Exception ex) //some other exception
                 {
-                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine(ex.ToString() + "\n" + strInput);
                     return false;
                 }
             }
@@ -282,6 +283,7 @@ namespace RoutingController.Service
                 {
                     // Set the event to nonsignaled state.
                     allDone.Reset();
+                    Console.WriteLine("[SERVER] Waiting for connections...");
                     // Start an asynchronous socket to listen for connections.
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
@@ -314,8 +316,14 @@ namespace RoutingController.Service
             StateObject state = new StateObject();
             state.WorkSocket = handler;
             Console.WriteLine("[SERVER] New connection from: " + handler.RemoteEndPoint);
-            handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReadCallback), state);
+            while (true)
+            {
+                receiveDone.Reset();
+                handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReadCallback), state);
+
+                receiveDone.WaitOne();
+            }
 
         }
 
@@ -326,14 +334,15 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void ReadCallback(IAsyncResult ar)
         {
+            String content = String.Empty;
             try
             {
-                String content = String.Empty;
-
                 // Retrieve the state object and the handler socket
                 // from the asynchronous state object.
                 StateObject state = (StateObject)ar.AsyncState;
                 Socket handler = state.WorkSocket;
+
+                Console.WriteLine("[SERVER] Recive from: " + handler.RemoteEndPoint);
 
                 // Read data from the client socket.
                 int bytesRead = handler.EndReceive(ar);
@@ -345,15 +354,17 @@ namespace RoutingController.Service
 
                     //Read message
                     content = state.StringBuilder.ToString();
+                    Console.WriteLine("[SERVER] " + content);
 
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
-                    {                        
+                    {
+                        state.StringBuilder.Clear();
                         string response = string.Empty;
                         if (this.OperationType(content) == ActionType.LocalTopology)
                         {
                             response = this.PerformAction(content);
                             // Signal the main thread to continue.
-                            allDone.Set();
+                            receiveDone.Set();
 
                             new Thread(delegate()
                             {
@@ -363,18 +374,18 @@ namespace RoutingController.Service
                         else if (this.OperationType(content) == ActionType.RouteTableQuery)
                         {
                             // Signal the main thread to continue.
-                            allDone.Set();
+                            receiveDone.Set();
                             response = this.PerformAction(content);
                             Console.WriteLine("[RC] Route table query sent!");
                         }
                         else if (this.OperationType(content) == ActionType.NetworkTopology)
                         {
                             this.PerformAction(content);
-                            allDone.Set();
+                            receiveDone.Set();
                         }
                         else
                         {
-                            allDone.Set();
+                            receiveDone.Set();
                             Console.WriteLine("[RC] Wrong request!");
                         }
                         Send(handler, response);
@@ -386,11 +397,12 @@ namespace RoutingController.Service
                         handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReadCallback), state);
                     }
+
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + "\n" + content + "\n");
             }
         }
 
@@ -404,6 +416,7 @@ namespace RoutingController.Service
         {
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);
+            Console.WriteLine("BeginSend");
 
             // Begin sending the data to the remote device.
             handler.BeginSend(byteData, 0, byteData.Length, 0,
@@ -424,6 +437,7 @@ namespace RoutingController.Service
 
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
+                Console.WriteLine("Send");
 
                 //handler.Shutdown(SocketShutdown.Both);
                 //handler.Close();
