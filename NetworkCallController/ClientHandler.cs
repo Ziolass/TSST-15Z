@@ -214,10 +214,11 @@ namespace NetworkCallController
             // jak nie ma rekordu to chill, sprawdzamy u ziomeczka
             if (!int.TryParse(calledPartyPorts[0], out calledSignalingPort))
             {
+ 
                 Console.WriteLine("Brak rekordu " + calledPartyName + ". Sprawdzam w sasiednim AS");
 
                 calledPartyPorts = checkForeignNCCForEntry(calledPartyName).Split('|');
-                if (calledPartyPorts[0].Equals("brak_wpisu"))
+                if (calledPartyPorts[0].Equals("Brak_wpisu"))
                 {
                     return "error|Zadne Directory nie posiada takiego wpisu";
                 }
@@ -231,9 +232,7 @@ namespace NetworkCallController
                     calledSignalingPort = int.Parse(calledPartyPorts[0]);
                     calledAddress = calledPartyPorts[1];
 
-                    //var test2 = test.Length == 21;
-                    //Console.WriteLine("kljklgjklfjkldfg: " + test);
-                   
+                    
                     //if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
                     if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
                     {
@@ -264,12 +263,17 @@ namespace NetworkCallController
             }
 
             // no to w sumie by wypadalo spytac ziomeczka czy chce wgl z nami gadac zeby nie bylo przykro
-            if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
+            if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
             {
-                return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
+                Console.Out.WriteLine("jestem w petli");
+                if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
+                {
+                    connectionTeardown(callingAddress, calledAddress, callingSignalingPort, calledSignalingPort);
+                    return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
+                }
+                return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
             }
-
-            return connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName);
+            return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
         }
 
         private void informOtherParty(int signallingPort, string teardownName)
@@ -340,6 +344,7 @@ namespace NetworkCallController
             {
                 return "Blad polaczenia z obcym Directory";
             }
+
             return response;
         }
 
