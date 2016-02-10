@@ -3,7 +3,6 @@
 	<network level="VC32" />
 	<port local="1" tcp="5060" stm="STM1"/>
 	<port local="2" tcp="5061" stm="STM1"/>
-	<port local="3" tcp="5062" stm="STM1"/>
 	<cloud-server tcp="6000"/>
 	<managment-port number="7006"/>
 	<lrm-client tcp="22000"/>

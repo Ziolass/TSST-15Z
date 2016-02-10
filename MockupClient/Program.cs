@@ -136,8 +136,6 @@ namespace MockupClient
             byte[] bytes = new byte[5000];
 
             data = File.ReadAllText(data);
-            Console.WriteLine("Press any key");
-            Console.ReadLine();
             try
             {
                 IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
@@ -153,8 +151,10 @@ namespace MockupClient
                     byte[] msg = Encoding.ASCII.GetBytes(data);
                     int bytesSent = sender.Send(msg);
 
-                    int bytesRec = sender.Receive(bytes);
-                    Console.ReadLine();
+                    //int bytesRec = sender.Receive(bytes);
+                    sender.Shutdown(SocketShutdown.Both);
+                    sender.Close();
+
                 }
                 catch (Exception e)
                 {
@@ -171,8 +171,10 @@ namespace MockupClient
         public static void Main(String[] args)
         {
             //StartClient("C:\\Users\\Michał\\Desktop\\CC_ARGS.json", int.Parse("22000"));
-            StartClientFile("../../../Configs/RoutingController/hierarchy.json", 8000);
-            StartClientFile("../../../Configs/RoutingController/query1.json", 8000);
+            //StartClientFile("../../../Configs/RoutingController/hierarchy.json", 8001);
+            //StartClientFile("../../../Configs/RoutingController/hierarchy2.json", 8002);
+            //Console.ReadLine();
+            StartClientFile("../../../Configs/RoutingController/"+args[0]+ ".json", int.Parse(args[1]));
             //StartClient("../../../Configs/RoutingController/test" + args[1] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[2] + ".json");
             //StartClient("../../../Configs/RoutingController/test" + args[3] + ".json");

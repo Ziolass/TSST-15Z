@@ -47,11 +47,11 @@
 		<port tcp="5060" local="1" node="node7" />
 	</link>
 	<link>
-		<port tcp="5061" local="2" node="node7" />
+		<port tcp="5032" local="3" node="node4" />
 		<port tcp="5080" local="1" node="node9" />
 	</link>
 	<link>
-		<port tcp="5062" local="3" node="node7" />
+		<port tcp="5061" local="2" node="node7" />
 		<port tcp="5071" local="2" node="node8" />
 	</link>
 	

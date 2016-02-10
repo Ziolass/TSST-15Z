@@ -1,1 +1,6 @@
-{"Id":"client11client31","Protocol":"route","Ends":[{"Name":"node5","Port":"1"},{"Name":"node6","Port":"2"}],"Domain":"domainB"}
+{
+    "Id": "client11client31",
+    "Protocol": "route",
+    "Ends": [ { "Name": "client4", "Port": "1" }, { "Name": "client1", "Port": "2" } ],
+    "Domain": "domainB"
+}

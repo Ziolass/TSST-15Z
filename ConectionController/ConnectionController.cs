@@ -123,13 +123,14 @@ namespace Cc
         {
             Console.WriteLine("INITIALIZATION");
             Console.WriteLine(TextUtils.Dash);
-            NccServer.Start();
+            new Thread(delegate() { NccServer.Start(); }).Start();
             Console.WriteLine("CONNECTION REQUEST IN - RUNNING");
-            PeerCoordinationServer.Start();
+            new Thread(delegate() { PeerCoordinationServer.Start(); }).Start();
             Console.WriteLine("PEER COORDINATION IN - RUNNING");
             RcSender.ConnectToRc();
             Console.WriteLine("ROUTE TABLE QUERY OUT - RUNNING");
-            LrmClient.ConnectToLrm();
+           LrmClient.ConnectToLrm();
+
             Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
             Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
             Thread.Sleep(10000);
@@ -204,7 +205,11 @@ namespace Cc
             string SubconnectionId = splitedResponseTag[2];
 
             ReqType type = (ReqType)Enum.Parse(typeof(ReqType), splitedResponseTag[3]);
+            /*NetworkConnection nc = null;
+            if (Connections.ContainsKey(Conn))
+            {
 
+            }*/
             Connections[ConnectionId]
                 .SubConnectionsAvability[SubconnectionId] = type == ReqType.CONNECTION_REQUEST;
 
@@ -468,8 +473,12 @@ namespace Cc
 
                 steps.Add(step);
             }
-
-            actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
+            
+            if (actualConn.Id == null)
+            {
+                actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
+            }
+            
             ConnectionRequest req = new ConnectionRequest
             {
                 Steps = steps,
@@ -498,7 +507,22 @@ namespace Cc
         {
             ConnectionRequest reqResp = JsonConvert.DeserializeObject<ConnectionRequest>(data);
             string connectionId = reqResp.Id;
-            NetworkConnection actual = Connections[connectionId];
+            NetworkConnection actual = null;
+            if (Connections.ContainsKey(connectionId))
+            {
+                actual = Connections[connectionId];
+
+            }
+            else
+            {
+                foreach (NetworkConnection conn in Connections.Values)
+                {
+                    if (conn.MySubconnectionId.Equals(connectionId))
+                    {
+                        actual = conn;
+                    }
+                }
+            }
             actual.ActualLevelConnection = reqResp;
 
             Console.WriteLine();
@@ -543,8 +567,10 @@ namespace Cc
                         Src = edges.Item1,
                         Dst = edges.Item2,
                         Id = connectionId + "|" + subconnectionId,
-                        Type = reqResp.Type
+                        Type = TransformRequestType(reqResp.Type)
                     };
+
+
 
                     SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
                     Console.WriteLine();
@@ -559,6 +585,22 @@ namespace Cc
                 string domain = actual.DstGateway.Domian;
                 PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
             }
+        }
+
+        private string TransformRequestType(string type)
+        {
+            string reqType = null;
+
+            if (type.Equals(ReqType.DISCONNECTION_REQUEST.ToString()))
+            {
+                reqType = "call-teardown";
+            }
+            else if (type.Equals(ReqType.CONNECTION_REQUEST.ToString()))
+            {
+                reqType = "connection-request";
+            }
+
+            return reqType;
         }
 
         private void UpdateEdgeSnp(NetworkConnection conn, Tuple<LrmSnp, LrmSnp> edges)

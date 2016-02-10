@@ -11,8 +11,7 @@ namespace Cc
             ElementConfigurator configurator = new ElementConfigurator("..\\..\\..\\Configs\\CC\\ccConfig" + id + ".xml");
             ConnectionController cc = configurator.configureController();
             Console.ReadLine();
-
-            Console.ReadLine();
+            
         }
     }
 }

@@ -4,7 +4,7 @@ start cmd /c cloudStart.bat
 
 cd ..
 cd RoutingController
-::start cmd /c routingControllerStart.bat
+start cmd /c routingControllerStart1.bat
 
 cd ..
 cd Directory
@@ -20,7 +20,7 @@ start cmd /c startNCC0.bat
 
 cd ..
 cd LRM
-::start cmd /c startLRM0.bat
+start cmd /c startLRM0.bat
 
 cd ..
 cd CC
@@ -30,14 +30,14 @@ cd ..
 cd NetworkNode
 start cmd /c startNode0.bat
 
-::start cmd /c startNode1.bat
+start cmd /c startNode1.bat
 
-::start cmd /c startNode2.bat
+start cmd /c startNode2.bat
 
-::start cmd /c startNode3.bat
+start cmd /c startNode3.bat
 
 cd ..
 cd NetworkClient
-start cmd /c startClient1.bat
+::start cmd /c startClient1.bat
 start cmd /c startClient2.bat
 exit

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <cc peer-coordination="45000" 
 ncc-tcp="10003" 
-rc-tcp="8000"
+rc-tcp="8001"
 notifier=""
 lrm-tcp="22000"
 domain="domainA">

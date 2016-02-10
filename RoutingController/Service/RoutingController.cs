@@ -81,7 +81,7 @@ namespace RoutingController.Service
                 }
                 else throw new Exception("Error RouteTableResponse: NetworkGraph not found! ");
             }
-            else if (!String.IsNullOrEmpty(sourceDomainName) && !String.IsNullOrEmpty(destinationDomainName))
+            else if (!String.IsNullOrEmpty(sourceDomainName) || !String.IsNullOrEmpty(destinationDomainName))
             {
                 foreach (var item in this.ExternalClients)
                 {
@@ -181,7 +181,10 @@ namespace RoutingController.Service
                         {
                             //Add metroNode aka metroVertex
                             NetworkGraph tempNetworkGraph = GetNetworkGraph(item.Key);
-                            tempNetworkGraph.MakeMetroVertex(GetNetworkGraph(lowerDomain.Key));
+                            if (tempNetworkGraph != null)
+                            {
+                                tempNetworkGraph.MakeMetroVertex(GetNetworkGraph(lowerDomain.Key));
+                            }
                         }
                     }
                     //Add connections between lowerDomains in higherDomain
@@ -482,7 +485,11 @@ namespace RoutingController.Service
 
                                     if (vertexesOther.Count == 1 && vertexesOur.Count == 0)
                                     {
-                                        this.Gateways.Add(item.Key, networkGraphSearch.DomainName);
+                                        if (this.Gateways.ContainsKey(item.Key))
+                                        {
+                                            this.Gateways[item.Key] = networkGraphSearch.DomainName;
+                                        }
+                                        else this.Gateways.Add(item.Key, networkGraphSearch.DomainName);
                                     }
                                 }
                             }
@@ -504,23 +511,47 @@ namespace RoutingController.Service
         public void UpdateNetworkTopology(NetworkRequest queryRequest)
         {
             List<string> clientsList = new List<string>();
+
             if (queryRequest.OtherDomains != null)
             {
                 foreach (var externalClient in queryRequest.OtherDomains)
                 {
                     clientsList.Add(externalClient);
                 }
-                this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
+                if (this.ExternalClients.ContainsKey(queryRequest.NetworkName))
+                {
+                    this.ExternalClients[queryRequest.NetworkName] = clientsList;
+                }
+                else this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
             }
+
             if (queryRequest.Clients != null)
             {
                 foreach (var externalClient in queryRequest.Clients)
                 {
                     clientsList.Add(externalClient.Name);
                 }
-                this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
+                if (this.ExternalClients.ContainsKey(queryRequest.NetworkName))
+                {
+                    this.ExternalClients[queryRequest.NetworkName] = clientsList;
+                }
+                else this.ExternalClients.Add(queryRequest.NetworkName, clientsList);
             }
 
+        }
+
+        public string ShowGateways()
+        {
+            string returnString = string.Empty;
+
+            foreach (var item in this.Gateways)
+            {
+                returnString += item.Value + "\n";
+                returnString += "---------------------------\n";
+                returnString += item.Key.GetNodeId() + " <-> " + item.Key.Scope + "\n";
+                returnString += "\n";
+            }
+            return returnString;
         }
     }
 }

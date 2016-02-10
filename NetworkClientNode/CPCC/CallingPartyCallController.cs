@@ -69,10 +69,12 @@ namespace NetworkClientNode.CPCC
         }
         public string callRequest(string calledName)
         {
+            
             if (checkIfConnectionExist(calledName))
             {
                 return "error|Takie polaczenie juz istnieje";
             }
+            
             if (calledName.ToLower().Equals(clientName.ToLower()))
             {
                 return "error|nie mozesz sam sie do siebie polaczyc";
@@ -81,7 +83,8 @@ namespace NetworkClientNode.CPCC
             response = chandler.sendCommand("call-request|" + clientName.ToUpper() + "|" + calledName.ToUpper(), nccPort);
             if (!response.Split('|')[0].Equals("error"))
             {
-                connectedClientsList.Add(calledName);
+                addToConnectedClients(calledName.ToUpper());
+                //connectedClientsList.Add(calledName);
             }
             else
             {
