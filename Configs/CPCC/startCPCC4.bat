@@ -1,0 +1,1 @@
+cd ..\..\CallingPartyCallController\bin\Debug\ & start CallingPartyCallController.exe CS1_0
