@@ -126,8 +126,14 @@ namespace NetworkClientNode.ViewModels
         /// <exception cref="System.NotImplementedException"></exception>
         private void OnHandleClientData(ClientData data)
         {
-            this.messageRecivedText += DateTime.Now + "\n" + data.ToString();
-            RisePropertyChange(this, "MessageRecivedText");
+            Console.WriteLine(data.ToString());
+            string newString = data.ToString().Replace("Error: Container does not transport client data", "");
+            if (!string.IsNullOrEmpty(newString) && newString != "\n")
+            {
+                newString = newString.ToString().Replace("\n", " ");
+                this.messageRecivedText += DateTime.Now + "\n" + newString.ToString() + "\n";
+                RisePropertyChange(this, "MessageRecivedText");
+            }
         }
         private void OnClientStreamAdd(List<StreamData> args)
         {
@@ -138,9 +144,11 @@ namespace NetworkClientNode.ViewModels
                     this.Streams.Add(new StreamDataViewModel(this.NextConnectionClient, stream));
                 });
             }
+
         }
         private void SendNewMessage()
         {
+            this.messageConsoleText += DateTime.Now + ": " + this.selectedStream.StreamData.ToString() + "\n";
             this.ClientSetUpProccess.ClientNode.SelectStream(this.selectedStream.StreamData);
             this.ClientSetUpProccess.ClientNode.SendData(this.MessageSendText);
         }

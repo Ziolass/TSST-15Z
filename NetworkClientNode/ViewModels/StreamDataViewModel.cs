@@ -44,5 +44,10 @@ namespace NetworkClientNode.ViewModels
             }
             else return false;
         }
+        public override string ToString()
+        {
+            return ClientName + "(" + StreamData.Port + " " + StreamData.VcLevel + " " + StreamData.Stm + " [" + StreamData.HigherPath + "," + StreamData.LowerPath + "])";
+
+        }
     }
 }

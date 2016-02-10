@@ -11,7 +11,7 @@ start cmd /c startNCC0.bat
 start cmd /c startNCC1.bat
 cd ..
 cd CC
-::start cmd /c startConnectionController0.bat
+start cmd /c startConnectionController0.bat
 start cmd /c startConnectionController1.bat
 
 cd ..
@@ -35,7 +35,7 @@ start cmd /c startNodes_domainB.bat
 cd ..
 cd NetworkClient
 start cmd /c startClient1.bat
-start cmd /c startClient2.bat
+::start cmd /c startClient2.bat
 start cmd /c startClient3.bat
 
 exit

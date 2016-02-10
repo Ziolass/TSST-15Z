@@ -5,6 +5,7 @@ using RoutingController.Requests;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -34,7 +35,7 @@ namespace RoutingController.Service
     public class RoutingControllerCenter
     {
         public static ManualResetEvent allDone = new ManualResetEvent(false); // Thread signal.
-        public static ManualResetEvent connectDone = new ManualResetEvent(false);
+        public static ManualResetEvent sendDone = new ManualResetEvent(false);
         public static ManualResetEvent receiveDone = new ManualResetEvent(false);
         public int Port { get; private set; }
         private RoutingController RoutingController { get; set; }
@@ -75,7 +76,7 @@ namespace RoutingController.Service
             }
             catch (Exception exp)
             {
-                Console.WriteLine("Error! OperationType: " + exp.Message);
+                Console.WriteLine("Error! OperationType: " + exp.Message + "\n" + request + "\n");
                 return ActionType.Undef;
             }
         }
@@ -90,13 +91,13 @@ namespace RoutingController.Service
             try
             {
                 ActionType actionType = OperationType(request);
+                //Update local topology
                 if (actionType == ActionType.LocalTopology)
                 {
                     request = request.Replace("Protocol: \"resources\",", "");
-                    Console.WriteLine(request);
                     LocalTopologyRequest topologyRequest = JsonConvert.DeserializeObject<LocalTopologyRequest>(request);
                     this.RoutingController.UpdateNetworkGraph(topologyRequest);
-                    Console.WriteLine("Updated local topology!");
+                    Console.WriteLine("[RC] Updated local topology!");
                     Console.WriteLine(this.ShowRoutes());
                     return "OK";
                 }
@@ -105,41 +106,45 @@ namespace RoutingController.Service
                 {
                     request = request.Replace("Protocol: \"query\",", "");
                     QueryRequest queryRequest = JsonConvert.DeserializeObject<QueryRequest>(request);
-                    Console.WriteLine("RouteTableQuery request from {0}", queryRequest.Domain);
+                    Console.WriteLine("[RC] RouteTableQuery request from {0}", queryRequest.Domain);
                     RouteResponse routeResponse = this.RoutingController.RouteTableResponse(queryRequest);
                     routeResponse.Id = queryRequest.Id;
                     Console.WriteLine(routeResponse.ToString());
                     return JsonConvert.SerializeObject(routeResponse);
                 }
+                //NetworkTopology
                 else if (actionType == ActionType.NetworkTopology)
                 {
                     NetworkRequest queryRequest = JsonConvert.DeserializeObject<NetworkRequest>(request);
                     this.RoutingController.UpdateNetworkTopology(queryRequest);
 
-                    Console.WriteLine("Network topology updated from {0}", queryRequest.NetworkName);
-                    if (this.NeighbourList.Count > 1)
+                    Console.WriteLine("[RC] Network topology updated from {0}", queryRequest.NetworkName);
+
+                    foreach (var item in this.NeighbourList)
                     {
-                        foreach (var item in this.NeighbourList)
+                        if (item.NetworkName != queryRequest.NetworkName)
                         {
-                            if (item.NetworkName != queryRequest.NetworkName)
-                            {
-                                SendNetworkTopology(item);
-                            }
+                            SendNetworkTopology(item);
                         }
                     }
                     return "OK";
                 }
-                else return "ERROR! \n " + request;
+                else
+                {
+                    Console.WriteLine(request + "\n");
+                    return "ERROR";
+                }
             }
             catch (Exception exp)
             {
+                Console.WriteLine(request + "\n");
                 Console.WriteLine(exp.Message);
                 return "ERROR";
             }
         }
 
         /// <summary>
-        /// Sends the network topology.
+        /// Sends the network topology to other RC.
         /// </summary>
         /// <returns></returns>
         private void SendNetworkTopology(NeighbourRoutingController neighbourRC)
@@ -166,12 +171,16 @@ namespace RoutingController.Service
                     IPEndPoint remoteEP = new IPEndPoint(ipAddress, neighbourRC.Port);
                     Socket sender = new Socket(AddressFamily.InterNetwork,
                         SocketType.Stream, ProtocolType.Tcp);
+
+
                     sender.Connect(remoteEP);
                     byte[] msg = Encoding.ASCII.GetBytes(message);
                     int bytesSent = sender.Send(msg);
                     sender.Shutdown(SocketShutdown.Both);
                     sender.Close();
-                    Console.WriteLine("NetworkTopology sent!");
+                    Console.WriteLine("[RC] NetworkTopology sent to RC in " + neighbourRC.NetworkName + "!");
+
+
                 }
                 catch (Exception e)
                 {
@@ -179,6 +188,8 @@ namespace RoutingController.Service
                 }
             }
         }
+
+
         private void SendNetworkTopology()
         {
             foreach (NeighbourRoutingController neighbourRC in this.NeighbourList)
@@ -186,6 +197,20 @@ namespace RoutingController.Service
                 SendNetworkTopology(neighbourRC);
             }
 
+        }
+
+        public static bool PingHost(string ipAddress, int portNumber)
+        {
+            try
+            {
+                TcpClient client = new TcpClient(ipAddress, portNumber);
+                client.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -200,6 +225,7 @@ namespace RoutingController.Service
             if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
                 (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array
             {
+
                 try
                 {
                     var obj = JToken.Parse(strInput);
@@ -208,12 +234,12 @@ namespace RoutingController.Service
                 catch (JsonReaderException jex)
                 {
                     //Exception in parsing json
-                    Console.WriteLine(jex.Message);
+                    Console.WriteLine(jex.Message + "\n" + strInput);
                     return false;
                 }
                 catch (Exception ex) //some other exception
                 {
-                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine(ex.ToString() + "\n" + strInput);
                     return false;
                 }
             }
@@ -245,7 +271,7 @@ namespace RoutingController.Service
             Socket listener = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
 
-            Console.WriteLine("Start successful");
+            Console.WriteLine("[SERVER] Start successful");
             // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
@@ -256,6 +282,7 @@ namespace RoutingController.Service
                 {
                     // Set the event to nonsignaled state.
                     allDone.Reset();
+                    Console.WriteLine("[SERVER] Waiting for connections...");
                     // Start an asynchronous socket to listen for connections.
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
@@ -269,7 +296,7 @@ namespace RoutingController.Service
                 Console.WriteLine(e.ToString());
             }
 
-            Console.WriteLine("\nPress ENTER to continue...");
+            Console.WriteLine("\n[SERVER] End \nPress ENTER to continue...");
             Console.Read();
         }
 
@@ -280,17 +307,31 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void AcceptCallback(IAsyncResult ar)
         {
-            allDone.Set();
-            // Get the socket that handles the client request.
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
-            // Create the state object.
-            StateObject state = new StateObject();
-            state.WorkSocket = handler;
-            Console.WriteLine("New connection from: " + handler.RemoteEndPoint);
-            handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReadCallback), state);
-            
+            try
+            {
+                allDone.Set();
+                // Get the socket that handles the client request.
+                Socket listener = (Socket)ar.AsyncState;
+                Socket handler = listener.EndAccept(ar);
+                // Create the state object.
+                StateObject state = new StateObject();
+                state.WorkSocket = handler;
+                Console.WriteLine("[SERVER] New connection from: " + handler.RemoteEndPoint);
+
+                while (true)
+                {
+                    receiveDone.Reset();
+                    handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
+                        new AsyncCallback(ReadCallback), state);
+
+                    receiveDone.WaitOne();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
         }
 
         /// <summary>
@@ -300,14 +341,15 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void ReadCallback(IAsyncResult ar)
         {
+            String content = String.Empty;
             try
             {
-                String content = String.Empty;
-
                 // Retrieve the state object and the handler socket
                 // from the asynchronous state object.
                 StateObject state = (StateObject)ar.AsyncState;
                 Socket handler = state.WorkSocket;
+
+                Console.WriteLine("[SERVER] Recive from: " + handler.RemoteEndPoint);
 
                 // Read data from the client socket.
                 int bytesRead = handler.EndReceive(ar);
@@ -319,16 +361,17 @@ namespace RoutingController.Service
 
                     //Read message
                     content = state.StringBuilder.ToString();
+                    Console.WriteLine("[SERVER] " + content);
 
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                     {
-                        Console.WriteLine("Message OK!");
+                        state.StringBuilder.Clear();
                         string response = string.Empty;
                         if (this.OperationType(content) == ActionType.LocalTopology)
                         {
                             response = this.PerformAction(content);
                             // Signal the main thread to continue.
-                            allDone.Set();
+                            receiveDone.Set();
 
                             new Thread(delegate()
                             {
@@ -338,34 +381,40 @@ namespace RoutingController.Service
                         else if (this.OperationType(content) == ActionType.RouteTableQuery)
                         {
                             // Signal the main thread to continue.
-                            allDone.Set();
+                            receiveDone.Set();
                             response = this.PerformAction(content);
-                            Console.WriteLine("Route table query sent");
+                            Console.WriteLine("[RC] Route table query sent!");
                         }
                         else if (this.OperationType(content) == ActionType.NetworkTopology)
                         {
-                            this.PerformAction(content);
-                            allDone.Set();
+
+                            receiveDone.Set();
+                            new Thread(delegate()
+                                {
+                                    response = this.PerformAction(content);
+                                }).Start();
                         }
                         else
                         {
-                            allDone.Set();
-                            Console.WriteLine("Wrong request!");
+                            receiveDone.Set();
+                            Console.WriteLine("[RC] Wrong request!");
                         }
                         Send(handler, response);
                     }
                     else
                     {
-                        Console.WriteLine("Message not ready ...");
+                        Console.WriteLine("[SERVER] Message not ready ...");
                         // Not all data received. Get more.
                         handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReadCallback), state);
                     }
+
                 }
             }
+
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + "\n" + content + "\n");
             }
         }
 
@@ -379,10 +428,11 @@ namespace RoutingController.Service
         {
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);
-
+            sendDone.Reset();
             // Begin sending the data to the remote device.
             handler.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), handler);
+            sendDone.WaitOne();
         }
 
         /// <summary>
@@ -399,7 +449,7 @@ namespace RoutingController.Service
 
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
-
+                sendDone.Set();
                 //handler.Shutdown(SocketShutdown.Both);
                 //handler.Close();
             }
@@ -419,11 +469,30 @@ namespace RoutingController.Service
         /// <returns></returns>
         public string ShowRoutes()
         {
-            return this.RoutingController.ShowRoutes();
+            string returnString = this.RoutingController.ShowRoutes();
+            if (string.IsNullOrEmpty(returnString))
+            {
+                return "Routes are empty!";
+            }
+            else return returnString;
         }
         public string ShowExternalClients()
         {
-            return this.RoutingController.ShowExternalClients();
+            string returnString = this.RoutingController.ShowExternalClients();
+            if (string.IsNullOrEmpty(returnString))
+            {
+                return "No external clients!";
+            }
+            else return returnString;
+        }
+        public string ShowGateways()
+        {
+            string returnString = this.RoutingController.ShowGateways();
+            if (string.IsNullOrEmpty(returnString))
+            {
+                return "No gateways!";
+            }
+            else return returnString;
         }
 
         /// <summary>

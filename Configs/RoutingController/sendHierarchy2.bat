@@ -1,0 +1,1 @@
+cd ..\..\MockupClient\bin\Debug\ & start MockupClient.exe hierarchy2 8002
