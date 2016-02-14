@@ -6,7 +6,7 @@
 	<port local="3" tcp="5012" stm="STM1"/>
 	<cloud-server tcp="6000"/>
 	<managment-port number="7001"/>
-	<lrm-client tcp="22000"/>
+	<lrm-client tcp="22001"/>
 	<domians number="2">
 		<domian index="0" name="domainA"/>
 		<domian index="1" name="AS1"/>

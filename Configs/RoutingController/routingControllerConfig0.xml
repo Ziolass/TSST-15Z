@@ -2,6 +2,4 @@
 <routing-controller>
 		<network-name value="AS1"/>
 		<port value="8001"/>
-		<neighbour-rc port="8002" domain-name="AS2"/>
-	
 </routing-controller>

@@ -36,7 +36,10 @@ namespace CcConfig
                         if (configReader.Name == "cc")
                         {
                             peerCoordinationPort = int.Parse(configReader.GetAttribute("peer-coordination"));
-                            nccPort = int.Parse(configReader.GetAttribute("ncc-tcp"));
+                            if (configReader.GetAttribute("ncc-tcp") != null)
+                            {
+                                nccPort = int.Parse(configReader.GetAttribute("ncc-tcp"));
+                            }
                             rcPort = int.Parse(configReader.GetAttribute("rc-tcp"));
                             lrmPort = int.Parse(configReader.GetAttribute("lrm-tcp"));
                             string notifier = configReader.GetAttribute("notifier");

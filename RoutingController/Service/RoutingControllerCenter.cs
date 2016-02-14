@@ -88,8 +88,8 @@ namespace RoutingController.Service
         /// <returns></returns>
         private string PerformAction(string request)
         {
-            //try
-            //{
+            try
+            {
                 ActionType actionType = OperationType(request);
                 //Update local topology
                 if (actionType == ActionType.LocalTopology)
@@ -134,13 +134,13 @@ namespace RoutingController.Service
                     Console.WriteLine(request + "\n");
                     return "ERROR";
                 }
-            //}
-            //catch (Exception exp)
-            //{
-            //    Console.WriteLine(request + "\n");
-            //    Console.WriteLine(exp.Message);
-            //    return "ERROR";
-            //}
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine(request + "\n");
+                Console.WriteLine(exp.Message);
+                return "ERROR";
+            }
         }
 
         /// <summary>
@@ -275,26 +275,26 @@ namespace RoutingController.Service
             // Bind the socket to the local endpoint and listen for incoming connections.
             //try
             //{
-                listener.Bind(localEndPoint);
-                listener.Listen(100);
+            listener.Bind(localEndPoint);
+            listener.Listen(100);
 
-                while (true)
-                {
-                    // Set the event to nonsignaled state.
-                    allDone.Reset();
-                    Console.WriteLine("[SERVER] Waiting for connections...");
-                    // Start an asynchronous socket to listen for connections.
-                    listener.BeginAccept(
-                        new AsyncCallback(AcceptCallback),
-                        listener);
-                    // Wait until a connection is made before continuing.
-                    allDone.WaitOne();
-                }
+            while (true)
+            {
+                // Set the event to nonsignaled state.
+                allDone.Reset();
+                Console.WriteLine("[SERVER] Waiting for connections...");
+                // Start an asynchronous socket to listen for connections.
+                listener.BeginAccept(
+                    new AsyncCallback(AcceptCallback),
+                    listener);
+                // Wait until a connection is made before continuing.
+                allDone.WaitOne();
+            }
             //}
             //catch (Exception e)
-           // {
+            // {
             ////    Console.WriteLine(e.ToString());
-           // }
+            // }
 
             Console.WriteLine("\n[SERVER] End \nPress ENTER to continue...");
             Console.Read();
@@ -309,23 +309,23 @@ namespace RoutingController.Service
         {
             //try
             //{
-                allDone.Set();
-                // Get the socket that handles the client request.
-                Socket listener = (Socket)ar.AsyncState;
-                Socket handler = listener.EndAccept(ar);
-                // Create the state object.
-                StateObject state = new StateObject();
-                state.WorkSocket = handler;
-                Console.WriteLine("[SERVER] New connection from: " + handler.RemoteEndPoint);
+            allDone.Set();
+            // Get the socket that handles the client request.
+            Socket listener = (Socket)ar.AsyncState;
+            Socket handler = listener.EndAccept(ar);
+            // Create the state object.
+            StateObject state = new StateObject();
+            state.WorkSocket = handler;
+            Console.WriteLine("[SERVER] New connection from: " + handler.RemoteEndPoint);
 
-                while (true)
-                {
-                    receiveDone.Reset();
-                    handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReadCallback), state);
+            while (true)
+            {
+                receiveDone.Reset();
+                handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReadCallback), state);
 
-                    receiveDone.WaitOne();
-                }
+                receiveDone.WaitOne();
+            }
             //}
             //catch (Exception e)
             //{
@@ -342,8 +342,8 @@ namespace RoutingController.Service
         public void ReadCallback(IAsyncResult ar)
         {
             String content = String.Empty;
-            //try
-            //{
+            try
+            {
                 // Retrieve the state object and the handler socket
                 // from the asynchronous state object.
                 StateObject state = (StateObject)ar.AsyncState;
@@ -409,13 +409,13 @@ namespace RoutingController.Service
                         new AsyncCallback(ReadCallback), state);
                     }
 
-                }
-            //}
 
-            //catch (Exception e)
-           // {
-           //     Console.WriteLine(e.Message + "\n" + content + "\n");
-            //}
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message + "\n" + content + "\n");
+            }
         }
 
         /// <summary>

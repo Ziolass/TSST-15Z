@@ -88,7 +88,11 @@ namespace Cc
             List<string> domains)
         {
             this.Domain = domain;
-            NccServer = new NccServer(nccPort, HandleNccData);
+            if (nccPort != -1)
+            {
+                NccServer = new NccServer(nccPort, HandleNccData);
+            }
+            else NccServer = null;
             RcSender = new RcClinet(rcPort, HandleRoutingData);
             LrmClient = new LrmClient(lrmPort, HandleLrmData);
             Connections = new Dictionary<string, NetworkConnection>();
@@ -123,13 +127,16 @@ namespace Cc
         {
             Console.WriteLine("INITIALIZATION");
             Console.WriteLine(TextUtils.Dash);
-            new Thread(delegate() { NccServer.Start(); }).Start();
+            if (NccServer != null)
+            {
+                new Thread(delegate() { NccServer.Start(); }).Start();
+            }
             Console.WriteLine("CONNECTION REQUEST IN - RUNNING");
             new Thread(delegate() { PeerCoordinationServer.Start(); }).Start();
             Console.WriteLine("PEER COORDINATION IN - RUNNING");
             RcSender.ConnectToRc();
             Console.WriteLine("ROUTE TABLE QUERY OUT - RUNNING");
-           LrmClient.ConnectToLrm();
+            LrmClient.ConnectToLrm();
 
             Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
             Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
@@ -183,7 +190,10 @@ namespace Cc
 
         public void HandlePeerAns(string data, AsyncCommunication async)
         {
-            NccServer.Send(data);
+            if (NccServer != null)
+            {
+                NccServer.Send(data);
+            }
         }
 
         public void HandleCcData(string data, AsyncCommunication async)
@@ -240,7 +250,7 @@ namespace Cc
                 }
                 else
                 {
-                    if (Connections[ConnectionId].DstGateway == null)
+                    if (Connections[ConnectionId].DstGateway == null && NccServer != null)
                     {
                         NccServer.Send(JsonConvert.SerializeObject(resp));
                     }
@@ -473,12 +483,12 @@ namespace Cc
 
                 steps.Add(step);
             }
-            
+
             if (actualConn.Id == null)
             {
                 actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
             }
-            
+
             ConnectionRequest req = new ConnectionRequest
             {
                 Steps = steps,
@@ -543,7 +553,10 @@ namespace Cc
                 }
                 else
                 {
-                    NccServer.Send(JsonConvert.SerializeObject(resp));
+                    if (NccServer != null)
+                    {
+                        NccServer.Send(JsonConvert.SerializeObject(resp));
+                    }
                 }
 
                 return;

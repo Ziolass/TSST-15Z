@@ -1,1 +1,0 @@
-cd ..\..\RoutingController\bin\Debug\ & start RoutingController.exe 2
