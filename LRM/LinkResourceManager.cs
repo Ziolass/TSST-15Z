@@ -361,10 +361,10 @@ namespace LRM
                 {
                     LrmToken token = JsonConvert.DeserializeObject<LrmToken>(data);
                     LrmToken invertedToken = InvertToken(token);
-                    Console.WriteLine("Trey serialize");
-                    Console.WriteLine("--------------------------------------------------------------");
-                    Console.WriteLine(JsonConvert.SerializeObject(token) + " <> " + JsonConvert.SerializeObject(invertedToken));
-                    Console.WriteLine("--------------------------------------------------------------");
+                    //Console.WriteLine("Trey serialize");
+                    //Console.WriteLine("--------------------------------------------------------------");
+                    //Console.WriteLine(JsonConvert.SerializeObject(token) + " <> " + JsonConvert.SerializeObject(invertedToken));
+                    //Console.WriteLine("--------------------------------------------------------------");
                     AssignToken(token);
                     AssignToken(invertedToken);
 
