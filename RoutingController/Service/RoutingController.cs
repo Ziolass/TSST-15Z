@@ -204,8 +204,12 @@ namespace RoutingController.Service
                                 var yElement = lowerDomainElements.ElementAt(y);
 
                                 NetworkGraph tempNetworkGraph = GetNetworkGraph(item.Key);
-                                tempNetworkGraph.MakeDomainConnection(GetNetworkGraph(xElement.Key), GetNetworkGraph(yElement.Key));
+                                if (tempNetworkGraph != null)
+                                {
+                                    tempNetworkGraph.MakeDomainConnection(GetNetworkGraph(xElement.Key), GetNetworkGraph(yElement.Key));
+                                }
                             }
+
                         }
                     }
                 }

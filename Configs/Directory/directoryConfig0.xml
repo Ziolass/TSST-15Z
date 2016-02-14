@@ -8,6 +8,7 @@
 	<entries>
 		<entry username="JAN1" address ="50000" physical-address="client1:1"/>  
 		<entry username="JAN2" address ="50008" physical-address="client2:1"/>
+		<entry username="ADAM" address ="60009" physical-address="client3:1"/>
 	</entries>
 	
 </directory-config>

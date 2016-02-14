@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<lrm rc-tcp="8001" cc-tcp="18000" server-tcp="22000" domian-scope="domainA">
+<lrm rc-tcp="8001" cc-tcp="18000" server-tcp="22000" domian-scope="AS1">
 	
 </lrm>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<directory-config>
-<network-info>
-<autonomous-system-name name="BS1"/>
-<port value="60003"/>
-</network-info>
-
-</directory-config>

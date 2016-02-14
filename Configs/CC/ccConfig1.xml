@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <cc peer-coordination="46001" 
-ncc-tcp="10033" 
+ncc-tcp="10004" 
 rc-tcp="8001"
 notifier=""
 lrm-tcp="22000"
-domain="domainB">
-	<domains number="2">
+domain="domainA">
+	<domains number="3">		
+		<domain index="0" name="domainA"/>
 		<domain index="0" name="domainB"/>
-		<domain index="1" name="domainA"/>
+		<domain index="1" name="AS1"/>
 	</domains>
 	<peers>
 	</peers>

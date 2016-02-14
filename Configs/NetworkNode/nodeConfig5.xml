@@ -3,12 +3,11 @@
 	<network level="VC32" />
 	<port local="1" tcp="5050" stm="STM1"/>
 	<port local="2" tcp="5051" stm="STM1"/>
-	<port local="3" tcp="5052" stm="STM1"/>
 	<cloud-server tcp="6000"/>
 	<managment-port number="7005"/>
 	<lrm-client tcp="22000"/>
-	<domians number="2">		
-		<domian index="0" name="domainB"/>		
-		<domian index="1" name="domainA"/>
+	<domians number="2">
+		<domian index="0" name="domainB"/>
+		<domian index="1" name="AS1"/>
 	</domians>
 </node>

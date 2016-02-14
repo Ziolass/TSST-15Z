@@ -88,8 +88,8 @@ namespace RoutingController.Service
         /// <returns></returns>
         private string PerformAction(string request)
         {
-            try
-            {
+            //try
+            //{
                 ActionType actionType = OperationType(request);
                 //Update local topology
                 if (actionType == ActionType.LocalTopology)
@@ -134,13 +134,13 @@ namespace RoutingController.Service
                     Console.WriteLine(request + "\n");
                     return "ERROR";
                 }
-            }
-            catch (Exception exp)
-            {
-                Console.WriteLine(request + "\n");
-                Console.WriteLine(exp.Message);
-                return "ERROR";
-            }
+            //}
+            //catch (Exception exp)
+            //{
+            //    Console.WriteLine(request + "\n");
+            //    Console.WriteLine(exp.Message);
+            //    return "ERROR";
+            //}
         }
 
         /// <summary>
@@ -273,8 +273,8 @@ namespace RoutingController.Service
 
             Console.WriteLine("[SERVER] Start successful");
             // Bind the socket to the local endpoint and listen for incoming connections.
-            try
-            {
+            //try
+            //{
                 listener.Bind(localEndPoint);
                 listener.Listen(100);
 
@@ -290,11 +290,11 @@ namespace RoutingController.Service
                     // Wait until a connection is made before continuing.
                     allDone.WaitOne();
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+            //}
+            //catch (Exception e)
+           // {
+            ////    Console.WriteLine(e.ToString());
+           // }
 
             Console.WriteLine("\n[SERVER] End \nPress ENTER to continue...");
             Console.Read();
@@ -307,8 +307,8 @@ namespace RoutingController.Service
         /// <param name="ar">The ar.</param>
         public void AcceptCallback(IAsyncResult ar)
         {
-            try
-            {
+            //try
+            //{
                 allDone.Set();
                 // Get the socket that handles the client request.
                 Socket listener = (Socket)ar.AsyncState;
@@ -326,11 +326,11 @@ namespace RoutingController.Service
 
                     receiveDone.WaitOne();
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e.Message);
+            //}
 
         }
 
@@ -342,8 +342,8 @@ namespace RoutingController.Service
         public void ReadCallback(IAsyncResult ar)
         {
             String content = String.Empty;
-            try
-            {
+            //try
+            //{
                 // Retrieve the state object and the handler socket
                 // from the asynchronous state object.
                 StateObject state = (StateObject)ar.AsyncState;
@@ -410,12 +410,12 @@ namespace RoutingController.Service
                     }
 
                 }
-            }
+            //}
 
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message + "\n" + content + "\n");
-            }
+            //catch (Exception e)
+           // {
+           //     Console.WriteLine(e.Message + "\n" + content + "\n");
+            //}
         }
 
         /// <summary>
