@@ -4,7 +4,6 @@ start cmd /c cloudStart.bat
 cd ..
 cd RoutingController
 ::start cmd /c routingControllerStart1.bat
-start cmd /c routingControllerStart2.bat
 
 cd ..
 cd NCC
@@ -17,7 +16,6 @@ start cmd /c startConnectionController1.bat
 cd ..
 cd LRM
 start cmd /c startLRM0.bat
-start cmd /c startLRM1.bat
 
 cd ..
 cd Directory

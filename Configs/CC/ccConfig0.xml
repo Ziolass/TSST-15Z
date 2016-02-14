@@ -10,7 +10,7 @@ domain="domainA">
 		<domain index="1" name="domainA"/>
 	</domains>
 	<sub-networks>
-		<sub-network domian="domainB" tcp="10004" />
+		<sub-network domian="domainB" tcp="10033" />
 	</sub-networks>
 	<peers>
 		<peer domian="domainC" tcp="45001"/>

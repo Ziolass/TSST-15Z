@@ -76,7 +76,7 @@ namespace LRM
                 if (bytesRead > 0)
                 {
                     string data = Encoding.ASCII.GetString(state.Buffer, 0, bytesRead);
-                    Console.WriteLine(data);
+                   // Console.WriteLine(data);
                     state.ResponseBuilder.Append(data);
 
 
@@ -109,14 +109,14 @@ namespace LRM
         object sendingLock = new object();
         public void Send(String data)
         {
-            Console.WriteLine("Entering send");
+            //Console.WriteLine("Entering send");
             try
             {
                 
                 byte[] byteData = Encoding.ASCII.GetBytes(data);
                 PacketsSend.Reset();
                 StateObject state = new StateObject();
-                Console.WriteLine(data);
+                //Console.WriteLine(data);
                 AsyncSocket.BeginSend(byteData, 0, byteData.Length, 0,
                     new AsyncCallback(SendCallback), null);
                 PacketsSend.WaitOne();
@@ -137,7 +137,7 @@ namespace LRM
                 {
                     PacketsReceived.Reset();
                     int bytesSent = AsyncSocket.EndSend(ar);
-                    Console.WriteLine("Data Send");
+                    //Console.WriteLine("Data Send");
 
                     PacketsSend.Set();
                     PacketsReceived.Set();

@@ -2,6 +2,6 @@
 <routing-controller>
 		<network-name value="domainA"/>
 		<port value="8001"/>
-		<neighbour-rc port="8002" domain-name="domainB"/>
+		<neighbour-rc port="8002" domain-name="domainC"/>
 	
 </routing-controller>

@@ -29,16 +29,16 @@ namespace LRM
 
             foreach (string domian in nodesForDomain.Keys)
             {
-                Log("LRM at " + domian);
+                Log("LRM at " + domian + " ");
                 Log("LOCAL TOPOLOGY ");
                 Log(TextUtils.Dash);
                 foreach (VirtualNode node in nodesForDomain[domian])
                 {
-                    Log("Node: " + node.Name );
+                    Log("Node: " + node.Name + " ");
                     Console.Write("    ports :");
                     foreach (int port in node.Destinations.Keys)
                     {
-                        Console.Write(" " + port);
+                        Console.Write(" " + port + " ");
                     }
                     Log("");
                 }
