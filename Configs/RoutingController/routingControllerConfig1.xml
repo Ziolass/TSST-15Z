@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <routing-controller>
 		<network-name value="domainA"/>
-		<port value="8002"/>
+		<port value="8001"/>
+		<neighbour-rc port="8002" domain-name="domainB"/>
 	
 </routing-controller>

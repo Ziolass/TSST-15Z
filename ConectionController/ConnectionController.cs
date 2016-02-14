@@ -90,6 +90,7 @@ namespace Cc
             this.Domain = domain;
             if (nccPort != -1)
             {
+
                 NccServer = new NccServer(nccPort, HandleNccData);
             }
             else NccServer = null;
@@ -129,14 +130,15 @@ namespace Cc
             Console.WriteLine(TextUtils.Dash);
             if (NccServer != null)
             {
+
                 new Thread(delegate() { NccServer.Start(); }).Start();
+                Console.WriteLine("CONNECTION REQUEST IN - RUNNING");
             }
-            Console.WriteLine("CONNECTION REQUEST IN - RUNNING");
             new Thread(delegate() { PeerCoordinationServer.Start(); }).Start();
             Console.WriteLine("PEER COORDINATION IN - RUNNING");
             RcSender.ConnectToRc();
             Console.WriteLine("ROUTE TABLE QUERY OUT - RUNNING");
-            LrmClient.ConnectToLrm();
+           LrmClient.ConnectToLrm();
 
             Console.WriteLine("LINK CONNECTION REQUEST OUT - RUNNING");
             Console.WriteLine("LINK CONNECTION DEALLOCATION  OUT - RUNNING");
@@ -483,12 +485,12 @@ namespace Cc
 
                 steps.Add(step);
             }
-
+            
             if (actualConn.Id == null)
             {
                 actualConn.Id = actualConn.End1.Node + actualConn.End1.Port + actualConn.End2.Node + actualConn.End2.Port;
             }
-
+            
             ConnectionRequest req = new ConnectionRequest
             {
                 Steps = steps,
@@ -551,12 +553,9 @@ namespace Cc
                 {
                     actual.PeerCoordination.Send(JsonConvert.SerializeObject(resp));
                 }
-                else
+                else if (NccServer != null)
                 {
-                    if (NccServer != null)
-                    {
-                        NccServer.Send(JsonConvert.SerializeObject(resp));
-                    }
+                    NccServer.Send(JsonConvert.SerializeObject(resp));
                 }
 
                 return;

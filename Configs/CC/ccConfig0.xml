@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<cc peer-coordination="46000" 
+<cc peer-coordination="45000" 
 ncc-tcp="10003" 
 rc-tcp="8001"
 notifier=""
 lrm-tcp="22000"
-domain="AS1">
-	<domains number="3">		
-		<domain index="0" name="domainA"/>
+domain="domainA">
+	<domains number="2">
 		<domain index="0" name="domainB"/>
-		<domain index="1" name="AS1"/>
+		<domain index="1" name="domainA"/>
 	</domains>
 	<sub-networks>
-		<sub-network domian="domainA" tcp="10003"/>
-		<sub-network domian="domainB" tcp="10003"/>
+		<sub-network domian="domainB" tcp="45001" />
 	</sub-networks>
+	<peers>
+		<peer domian="domainC" tcp="45001"/>
+	</peers>
 </cc>
