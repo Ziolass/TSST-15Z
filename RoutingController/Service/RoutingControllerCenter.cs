@@ -361,7 +361,7 @@ namespace RoutingController.Service
 
                     //Read message
                     content = state.StringBuilder.ToString();
-                    Console.WriteLine("[SERVER] " + content);
+                    //Console.WriteLine("[SERVER] " + content);
 
                     if (!String.IsNullOrEmpty(content) && IsValidJson(content))
                     {
@@ -371,12 +371,9 @@ namespace RoutingController.Service
                         {
                             response = this.PerformAction(content);
                             // Signal the main thread to continue.
+                            
+                            SendNetworkTopology(); //My topology is new  send it
                             receiveDone.Set();
-
-                            new Thread(delegate()
-                            {
-                                SendNetworkTopology(); //My topology is new  send it
-                            }).Start();
                         }
                         else if (this.OperationType(content) == ActionType.RouteTableQuery)
                         {
@@ -387,12 +384,8 @@ namespace RoutingController.Service
                         }
                         else if (this.OperationType(content) == ActionType.NetworkTopology)
                         {
-
+                            response = this.PerformAction(content);
                             receiveDone.Set();
-                            new Thread(delegate()
-                                {
-                                    response = this.PerformAction(content);
-                                }).Start();
                         }
                         else
                         {

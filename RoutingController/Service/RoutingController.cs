@@ -103,7 +103,6 @@ namespace RoutingController.Service
                         destination = item.Key;
                     }
                 }
-
                 destinationEnd = new Ends(destinationDomainName, destination.Name, destination.Port);
                 NetworkGraph tempNetworkGraph = this.GetNetworkGraph(sourceDomainName);
                 if (tempNetworkGraph != null)
@@ -179,12 +178,18 @@ namespace RoutingController.Service
                     {
                         if (lowerDomain.Value == item.Value + 1)
                         {
-                            //Add metroNode aka metroVertex
+                            //Add metroNode aka metroVertex 
                             NetworkGraph tempNetworkGraph = GetNetworkGraph(item.Key);
                             if (tempNetworkGraph != null)
                             {
                                 tempNetworkGraph.MakeMetroVertex(GetNetworkGraph(lowerDomain.Key));
                             }
+                            //Revers metroNode
+                            //tempNetworkGraph = GetNetworkGraph(lowerDomain.Key);
+                            //if (tempNetworkGraph != null)
+                            //{
+                            //    tempNetworkGraph.MakeMetroVertex(GetNetworkGraph(item.Key));
+                            //}
                         }
                     }
                     //Add connections between lowerDomains in higherDomain
@@ -211,6 +216,9 @@ namespace RoutingController.Service
                 }
                 else continue;
             }
+
+
+
             return true;
 
         }
@@ -481,6 +489,7 @@ namespace RoutingController.Service
                                 if (networkGraph != networkGraphSearch && !itemDestination.Key.Destination.Name.Contains("client"))
                                 {
                                     Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOther = networkGraphSearch.GetNearVertexes(itemDestination.Key.Destination.Name);
+                                    Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOther2 = networkGraphSearch.GetVertexes(itemDestination.Key.Destination.Scope);
                                     Dictionary<NodeElement, Dictionary<ILink, int>> vertexesOur = networkGraph.GetNearVertexes(itemDestination.Key.Destination.Name);
 
                                     if (vertexesOther.Count == 1 && vertexesOur.Count == 0)
@@ -490,6 +499,21 @@ namespace RoutingController.Service
                                             this.Gateways[item.Key] = networkGraphSearch.DomainName;
                                         }
                                         else this.Gateways.Add(item.Key, networkGraphSearch.DomainName);
+                                    }
+                                    else if (vertexesOther2.Count == 1) //Metro node
+                                    {
+
+                                        foreach (var itemReversDestination in vertexes)
+                                        {
+                                            if (itemReversDestination.Key.Name == itemDestination.Key.Destination.Name && itemReversDestination.Key.Port == itemDestination.Key.Destination.Port)
+                                            {
+                                                if (this.Gateways.ContainsKey(itemReversDestination.Key))
+                                                {
+                                                    this.Gateways[itemReversDestination.Key] = networkGraphSearch.DomainName;
+                                                }
+                                                else this.Gateways.Add(itemReversDestination.Key, networkGraphSearch.DomainName);
+                                            }
+                                        }
                                     }
                                 }
                             }

@@ -3,8 +3,8 @@
 <network-info>
 <autonomous-system-name name="BS1"/>
 <client-name name="ADAM"/>
-<localport value="60009"/>
-<ncc-port value="60001"/>
+<localport value="50009"/>
+<ncc-port value="50001"/>
 </network-info>
 
 	

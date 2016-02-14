@@ -4,9 +4,8 @@
 	<port local="1" tcp="5080" stm="STM1"/>
 	<port local="2" tcp="5081" stm="STM1"/>
 	<cloud-server tcp="6000"/>
-	<managment-port number="7008"/>
+	<managment-port number="7008"/>	
 	<lrm-client tcp="22001"/>	
-	<lrm-client2 tcp="22000"/>
 	<domians number="1">		
 		<domian index="0" name="domainC"/>	
 	</domians>

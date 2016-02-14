@@ -145,14 +145,62 @@ namespace RoutingController.Elements
                             TopologyNode newTopologyNode = new TopologyNode(otherGraph.DomainName, domains, linkData);
                             this.UpdateGraph(newTopologyNode);
 
-                            destination = new Destination(otherItem.Key.GetNodeId(), otherGraph.DomainName, newMetroPort.ToString(), DestinationType.DOMAIN);
+
+
+                           destination = new Destination(otherItem.Key.GetNodeId(), otherGraph.DomainName, newMetroPort.ToString(), DestinationType.DOMAIN);
                             Link tempLink = new Link(thisItem.Key.Port, domains, destination, otherItemConnections.Key.Status);
                             this.Graph[thisItem.Key].Add(tempLink, ExternalLinkWeight);
+                        }
+                        else if (thisItem.Key.GetNodeId() == otherItemConnections.Key.Destination.Scope)
+                        {
+                            //Remove connection from my domain to other domenain node
+                            Dictionary<NodeElement,Link> linkToRemove = new Dictionary<NodeElement,Link>();
+                            foreach (var itemValue in thisItem.Value)
+                            {
+                                if (itemValue.Key.Destination.Name == otherItem.Key.Name && itemValue.Key.Destination.Port == otherItem.Key.Port)
+                                {
+                                    linkToRemove.Add(thisItem.Key, (Link)itemValue.Key);
+                                }
+                            }
+                            foreach (var link in linkToRemove)
+                            {                                
+                                    RemoveLink(link.Key, link.Value);
+                            }
 
+                            List<string> domains = new List<string>();
+                            domains.Add(this.DomainName);
+                            Destination destination = new Destination();
+                            List<Link> linkData = new List<Link>();
+
+                            //Dodaj linki od node (domena tego graphu) do metro Node
+
+                            //Numeracja wejść do metroNode
+                            int newMetroPort = 1 + this.GetVertexes(otherGraph.DomainName).Count;
+
+                            destination = new Destination(otherItem.Key.GetNodeId(), thisItem.Key.Name, thisItem.Key.Port, DestinationType.DOMAIN);
+
+                            linkData.Add(new Link(newMetroPort.ToString(), domains, destination, otherItemConnections.Key.Status));
+
+                            if (this.GetVertex(otherGraph.DomainName).Key != null) //Czy metroNode istnieje?
+                            {
+                                foreach (var existingLinks in this.GetVertex(otherGraph.DomainName).Value)
+                                {
+                                    linkData.Add((Link)existingLinks.Key);
+                                }
+                            }
+
+                            TopologyNode newTopologyNode = new TopologyNode(otherGraph.DomainName, domains, linkData);
+                            this.UpdateGraph(newTopologyNode);
+
+
+
+                           destination = new Destination(otherItem.Key.GetNodeId(), otherGraph.DomainName, newMetroPort.ToString(), DestinationType.DOMAIN);
+                            Link tempLink = new Link(thisItem.Key.Port, domains, destination, otherItemConnections.Key.Status);
+                            this.Graph[thisItem.Key].Add(tempLink, ExternalLinkWeight);
                         }
                     }
                 }
-            }
+            }            
         }
         private void RemoveLink(NodeElement item, Link link)
         {

@@ -7,6 +7,7 @@
 	<cloud-server tcp="6000"/>
 	<managment-port number="7002"/>
 	<lrm-client tcp="22000"/>
+	<lrm-client2 tcp="22001"/>
 	<domians number="1">
 		<domian index="0" name="domainA"/>
 	</domians>

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<cc peer-coordination="46001" 
-ncc-tcp="10033" 
+<cc peer-coordination="45001" 
 rc-tcp="8001"
 notifier=""
-lrm-tcp="22000"
+lrm-tcp="22001"
 domain="domainB">
 	<domains number="2">
 		<domain index="0" name="domainB"/>
