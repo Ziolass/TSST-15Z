@@ -70,7 +70,6 @@ namespace LRM
                 String content = String.Empty;
                 StateObject state = (StateObject)ar.AsyncState;
 
-                PacketsReceived.Set();
                 int bytesRead = AsyncSocket.EndReceive(ar);
 
                 if (bytesRead > 0)
@@ -82,6 +81,8 @@ namespace LRM
 
                     if (bytesRead != StateObject.BufferSize)
                     {
+                        PacketsReceived.Set();
+
                         string allData = state.ResponseBuilder.ToString();
 
                         if (SubscribeCallback != null && IdleState && allData.Contains("INTRODUCE"))
