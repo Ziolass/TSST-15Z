@@ -19,6 +19,7 @@ namespace ConectionController
 
         public static void PrintConnectionRequest(HigherLevelConnectionRequest request)
         {
+            Log(TextUtils.Dash);
             Log(ConnectionRequest);
             Log(TextUtils.Dash);
             Log("src: " + request.Src.Name + " at port " + request.Src.Port);
@@ -27,6 +28,7 @@ namespace ConectionController
 
         public static void PrintRouteTableQuery(SimpleConnection request)
         {
+            Log(TextUtils.Dash);
             Log(RouteQry);
             Log("@ " + request.Domain);
             Log(TextUtils.Dash);
@@ -36,33 +38,37 @@ namespace ConectionController
 
         public static void PrintConnection(ConnectionRequest connection, bool details)
         {
+
+            Log(TextUtils.Dash);
             foreach (ConnectionStep step in connection.Steps)
             {
                 foreach (LrmPort port in step.Ports)
                 {
-                    Log("Element : " + step.Node + " at port " + port.Number);
                     if (details)
                     {
-                        Console.Write(" at vc index " + port.Index);
+                        Log("Element : " + step.Node + " at port " + port.Number + " at vc index " + port.Index);
                     }
+                    else Log("Element : " + step.Node + " at port " + port.Number);
                 }
-                Log("");
             }
+            Log(TextUtils.Dash);
         }
 
         public static void PrintSNPP(List<SNP> snpp)
         {
+
+            Log(TextUtils.Dash);
             foreach (SNP snp in snpp)
             {
                 foreach (string port in snp.Ports)
                 {
                     if (port != null)
                     {
-                        Log("Snpp : " + snp.Node + " at port " + port + " at domain " + snp.Domain);
+                        Log("SNPP : " + snp.Node + " at port " + port + " at domain " + snp.Domain);
                     }
                 }
-                Log("");
             }
+            Log(TextUtils.Dash);
         }
     }
 }

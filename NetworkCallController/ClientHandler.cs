@@ -291,6 +291,8 @@ namespace NetworkCallController
 
         private string connectionRequst(string initAddress, string foreignAddress, int initSignalPort, string initName, int foreignSignalPort, string foreignName)
         {
+            Console.WriteLine("--------------------");
+            Console.WriteLine("Call Request\n");
             int ccPort = ncc.getCCPort();
             // string response = sendCommand("connection-request|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "connection-request");
@@ -328,13 +330,14 @@ namespace NetworkCallController
 
         private string connectionTeardown(string initAddress, string foreignAddress, int initSignalPort, int foreignSignalPort)
         {
-            Console.WriteLine("Wszedłem w connection teardown");
+            Console.WriteLine("--------------------");
+            Console.WriteLine("Call Teardown\n");
             int ccPort = ncc.getCCPort();
             // string response = sendCommand("call-teardown|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "call-teardown");
-            Console.WriteLine("Chce wysłać przy teardown: " + JsonConvert.SerializeObject(toSend));
+            //Console.WriteLine("Chce wysłać przy teardown: " + JsonConvert.SerializeObject(toSend));
             string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
-            Console.WriteLine("teardown_odpowiedz: " + HandleJsonInput(response));
+            //Console.WriteLine("teardown_odpowiedz: " + HandleJsonInput(response));
             string translate =  HandleJsonInput(response);
 
             if (translate.Split('|')[0].Equals("error"))
@@ -389,7 +392,8 @@ namespace NetworkCallController
 
         private string sendCommand(string command, int port)
         {
-            Console.WriteLine("Debug:" + command);
+            Console.WriteLine("--------------------");
+            Console.WriteLine(command);
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddress, port);
@@ -404,10 +408,12 @@ namespace NetworkCallController
                 commandSocket.Connect(endPoint);
                 commandSocket.Send(msg);
                 bytes = new byte[1024];
-                Console.WriteLine("Czekam na odpowiedz");
+                //Console.WriteLine("Czekam na odpowiedz");
                 int bytesRec = commandSocket.Receive(bytes);
                 response += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                Console.WriteLine("Dostłem " + response);
+                Console.WriteLine(response); 
+                Console.WriteLine("--------------------");
+
 
                 commandSocket.Shutdown(SocketShutdown.Both);
                 commandSocket.Close();

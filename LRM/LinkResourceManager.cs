@@ -165,7 +165,6 @@ namespace LRM
         public void RunServer()
         {
             Console.WriteLine("####################################################################");
-
             Console.WriteLine("RC - start connecting");
             RcClinet.ConnectToRc();
             LrmServer.Start();
@@ -239,6 +238,8 @@ namespace LRM
         //TODO zrobić ogarnianie indeksów
         public void HandleConnectionRequest(string data, AsyncCommunication async, ReqType type)
         {
+
+            Console.WriteLine("--------------------");
             ConnectionRequest connection = JsonConvert.DeserializeObject<ConnectionRequest>(data);
 
             if (HighestCc == null)
@@ -278,7 +279,6 @@ namespace LRM
                     {
                         Console.WriteLine("LRM at " + actualDomain + " dellocated vc on " + port.Index + " index, on port " + step.Node);
                     }
-                    Console.WriteLine();
                 }
                 string stepId = connection.Id + step.Node + step.Ports.GetHashCode() as string;
 
@@ -298,6 +298,7 @@ namespace LRM
 
                 stepIndex++;
             }
+            Console.WriteLine("--------------------");
         }
 
         private int? AllocNextEmpty(string node, int port)
@@ -368,10 +369,9 @@ namespace LRM
                 {
                     LrmToken token = JsonConvert.DeserializeObject<LrmToken>(data);
                     LrmToken invertedToken = InvertToken(token);
-                    //Console.WriteLine("Trey serialize");
-                    //Console.WriteLine("--------------------------------------------------------------");
+                    Console.WriteLine("--------------------");
                     //Console.WriteLine(JsonConvert.SerializeObject(token) + " <> " + JsonConvert.SerializeObject(invertedToken));
-                    //Console.WriteLine("--------------------------------------------------------------");
+                    Console.WriteLine(JsonConvert.SerializeObject(token));
                     AssignToken(token);
                     AssignToken(invertedToken);
 

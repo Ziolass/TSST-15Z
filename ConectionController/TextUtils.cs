@@ -2,6 +2,6 @@
 {
     public class TextUtils
     {
-        public const string Dash = "------------------------------------";
+        public const string Dash = "--------------------";
     }
 }

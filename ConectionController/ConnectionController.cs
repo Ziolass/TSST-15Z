@@ -416,8 +416,9 @@ namespace Cc
         {
             List<ConnectionStep> steps = new List<ConnectionStep>();
             Console.WriteLine();
-            Console.WriteLine("SNPP :");
+
             Console.WriteLine(TextUtils.Dash);
+            Console.WriteLine("SNPP");
             ConsoleLogger.PrintSNPP(snpp.Steps);
 
             for (int i = 0; i < snpp.Steps.Count; i++)
@@ -498,8 +499,8 @@ namespace Cc
                 Id = actualConn.Id
             };
             Console.WriteLine();
-            Console.WriteLine("My domain snpp : ");
             Console.WriteLine(TextUtils.Dash);
+            Console.WriteLine("My domain snpp : ");
 
             ConsoleLogger.PrintConnection(req, false);
             return req;
@@ -545,7 +546,10 @@ namespace Cc
             Console.WriteLine();
             if (reqResp.Type == "DISCONNECTION_REQUEST")
             {
+
+                Console.WriteLine(TextUtils.Dash);
                 Console.WriteLine("Dellocated SNP");
+                ConsoleLogger.PrintConnection(reqResp, true);
                 if (actual != null && actual.SubConnections.Count == 0 && actual.DstGateway == null)
                 {
                     CcResponse resp = new CcResponse
@@ -568,9 +572,10 @@ namespace Cc
             }
             else if (reqResp.Type == "CONNECTION_REQUEST")
             {
+
+                Console.WriteLine(TextUtils.Dash);
                 Console.WriteLine("Allocated SNP");
-
-
+                ConsoleLogger.PrintConnection(reqResp, true);
                 if (actual.SubConnections.Count == 0 && actual.DstGateway == null)
                 {
                     CcResponse resp = new CcResponse
@@ -586,7 +591,6 @@ namespace Cc
                     {
                         NccServer.Send(JsonConvert.SerializeObject(resp));
                     }
-
                     return;
                 }
 
@@ -615,8 +619,8 @@ namespace Cc
 
                         SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
                         Console.WriteLine();
-                        Console.WriteLine("Connection Request to CC at " + domian);
-                        Console.WriteLine(TextUtils.Dash);
+                        Console.WriteLine("Connection Request to CC at " + domian + "\n");
+                        
                         ConsoleLogger.PrintConnectionRequest(request);
                     }
                 }
@@ -627,8 +631,6 @@ namespace Cc
                     PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
                 }
             }
-            Console.WriteLine(TextUtils.Dash);
-            ConsoleLogger.PrintConnection(reqResp, true);
         }
 
         private string TransformRequestType(string type)
