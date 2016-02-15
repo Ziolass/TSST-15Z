@@ -168,16 +168,8 @@ namespace Cc
                 {
                     case "connection-request":
                         {
-                            if (LrmClient == null)
-                            {
-
-                                return;
-                            }
-                            else
-                            {
-                                ConnectionRequest(request, null);
-                                return;
-                            }
+                            ConnectionRequest(request, null);
+                            return;
                         }
                     case "call-teardown":
                         {
@@ -391,6 +383,7 @@ namespace Cc
 
             NetworkConnection actual = Connections[id];
             SendConnectionReq(actual.ActualLevelConnection, ReqType.DISCONNECTION_REQUEST);
+            Connections.Remove(id);
         }
 
         private void HandleRoutingData(string data, AsyncCommunication async)
@@ -525,6 +518,7 @@ namespace Cc
 
         private void HandleLrmData(string data, AsyncCommunication async)
         {
+
             ConnectionRequest reqResp = JsonConvert.DeserializeObject<ConnectionRequest>(data);
             string connectionId = reqResp.Id;
             NetworkConnection actual = null;
@@ -543,68 +537,98 @@ namespace Cc
                     }
                 }
             }
-            actual.ActualLevelConnection = reqResp;
+            if (actual != null)
+            {
+                actual.ActualLevelConnection = reqResp;
+            }
 
             Console.WriteLine();
-            Console.WriteLine("Allocated snp");
-            Console.WriteLine(TextUtils.Dash);
-            ConsoleLogger.PrintConnection(reqResp, true);
-
-            if (actual.SubConnections.Count == 0 && actual.DstGateway == null)
+            if (reqResp.Type == "DISCONNECTION_REQUEST")
             {
-                CcResponse resp = new CcResponse
+                Console.WriteLine("Dellocated SNP");
+                if (actual != null && actual.SubConnections.Count == 0 && actual.DstGateway == null)
                 {
-                    Response = "OK|" + actual.Id + "|" + actual.MySubconnectionId + "|" + reqResp.Type
-                };
-
-                if (actual.PeerCoordination != null)
-                {
-                    actual.PeerCoordination.Send(JsonConvert.SerializeObject(resp));
-                }
-                else if (NccServer != null)
-                {
-                    NccServer.Send(JsonConvert.SerializeObject(resp));
-                }
-
-                return;
-            }
-
-            if (actual.SubConnections.Count > 0)
-            {
-                foreach (string subconnectionId in actual.SubConnections.Keys)
-                {
-                    Tuple<LrmSnp, LrmSnp> edges = actual.SubConnections[subconnectionId];
-
-                    if (reqResp.Type.Equals(ReqType.CONNECTION_REQUEST.ToString()))
+                    CcResponse resp = new CcResponse
                     {
-                        UpdateEdgeSnp(actual, edges);
-                    }
-
-                    string domian = actual.SubConnectionsDomians[subconnectionId];
-                    //Sprawdzać kolejność
-                    HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
-                    {
-                        Src = edges.Item1,
-                        Dst = edges.Item2,
-                        Id = connectionId + "|" + subconnectionId,
-                        Type = TransformRequestType(reqResp.Type)
+                        Response = "OK|" + actual.Id + "|" + actual.MySubconnectionId + "|" + reqResp.Type
                     };
 
+                    if (actual.PeerCoordination != null)
+                    {
+                        actual.PeerCoordination.Send(JsonConvert.SerializeObject(resp));
+                    }
+                    else if (NccServer != null)
+                    {
+                        NccServer.Send(JsonConvert.SerializeObject(resp));
+                    }
+
+                    return;
+                }
+                else NccServer.Send("OK|");
+            }
+            else if (reqResp.Type == "CONNECTION_REQUEST")
+            {
+                Console.WriteLine("Allocated SNP");
 
 
-                    SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
-                    Console.WriteLine();
-                    Console.WriteLine("Connection Request to CC at " + domian);
-                    Console.WriteLine(TextUtils.Dash);
-                    ConsoleLogger.PrintConnectionRequest(request);
+                if (actual.SubConnections.Count == 0 && actual.DstGateway == null)
+                {
+                    CcResponse resp = new CcResponse
+                    {
+                        Response = "OK|" + actual.Id + "|" + actual.MySubconnectionId + "|" + reqResp.Type
+                    };
+
+                    if (actual.PeerCoordination != null)
+                    {
+                        actual.PeerCoordination.Send(JsonConvert.SerializeObject(resp));
+                    }
+                    else if (NccServer != null)
+                    {
+                        NccServer.Send(JsonConvert.SerializeObject(resp));
+                    }
+
+                    return;
+                }
+
+                if (actual.SubConnections.Count > 0)
+                {
+                    foreach (string subconnectionId in actual.SubConnections.Keys)
+                    {
+                        Tuple<LrmSnp, LrmSnp> edges = actual.SubConnections[subconnectionId];
+
+                        if (reqResp.Type.Equals(ReqType.CONNECTION_REQUEST.ToString()))
+                        {
+                            UpdateEdgeSnp(actual, edges);
+                        }
+
+                        string domian = actual.SubConnectionsDomians[subconnectionId];
+                        //Sprawdzać kolejność
+                        HigherLevelConnectionRequest request = new HigherLevelConnectionRequest
+                        {
+                            Src = edges.Item1,
+                            Dst = edges.Item2,
+                            Id = connectionId + "|" + subconnectionId,
+                            Type = TransformRequestType(reqResp.Type)
+                        };
+
+
+
+                        SubnetworkCc[domian].SendToCc(JsonConvert.SerializeObject(request));
+                        Console.WriteLine();
+                        Console.WriteLine("Connection Request to CC at " + domian);
+                        Console.WriteLine(TextUtils.Dash);
+                        ConsoleLogger.PrintConnectionRequest(request);
+                    }
+                }
+                else
+                {
+                    HigherLevelConnectionRequest request = PreparePeerRequest(actual);
+                    string domain = actual.DstGateway.Domian;
+                    PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
                 }
             }
-            else
-            {
-                HigherLevelConnectionRequest request = PreparePeerRequest(actual);
-                string domain = actual.DstGateway.Domian;
-                PeerCoordinators[domain].SendToCc(JsonConvert.SerializeObject(request));
-            }
+            Console.WriteLine(TextUtils.Dash);
+            ConsoleLogger.PrintConnection(reqResp, true);
         }
 
         private string TransformRequestType(string type)

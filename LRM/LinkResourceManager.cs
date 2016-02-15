@@ -64,7 +64,7 @@ namespace LRM
                         HandleResourceLocationData(data, LrmRegister.FindNodeByConnection(async));
                         return;
                     }
-                    else if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()))
+                    else if (data.Contains(ReqType.CONNECTION_REQUEST.ToString()) && !data.Contains(ReqType.DISCONNECTION_REQUEST.ToString()))
                     {
                         HandleConnectionRequest(data, async, ReqType.ALLOC);
                         return;
@@ -270,7 +270,14 @@ namespace LRM
                         port.Index = index.Value.ToString();
                     }
                     string actualDomain = LrmRegister.ConnectedNodes[step.Node].DomiansHierarchy[0];
-                    Console.WriteLine("LRM at " + actualDomain + " allocated vc on " + port.Index + " index, on port " + step.Node);
+                    if (type == ReqType.ALLOC)
+                    {
+                        Console.WriteLine("LRM at " + actualDomain + " allocated vc on " + port.Index + " index, on port " + step.Node);
+                    }
+                    else if (type == ReqType.DELLOC)
+                    {
+                        Console.WriteLine("LRM at " + actualDomain + " dellocated vc on " + port.Index + " index, on port " + step.Node);
+                    }
                     Console.WriteLine();
                 }
                 string stepId = connection.Id + step.Node + step.Ports.GetHashCode() as string;

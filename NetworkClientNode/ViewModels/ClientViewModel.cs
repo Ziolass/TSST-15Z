@@ -22,6 +22,7 @@ namespace NetworkClientNode.ViewModels
         public string ClientToConnect { get; set; }
         public ExternalCommand SendMessage { get; set; }
         public ExternalCommand Connect { get; set; }
+        public ExternalCommand Disconnect { get; set; }
         private StreamDataViewModel selectedStream;
         public StreamDataViewModel SelectedStream
         {
@@ -92,10 +93,12 @@ namespace NetworkClientNode.ViewModels
 
                 this.SendMessage = new ExternalCommand(SendNewMessage, true);
                 this.Connect = new ExternalCommand(ConnectNew, true);
+                this.Disconnect = new ExternalCommand(TearDownConnection, true);
             }
             catch (Exception e)
             {
                 this.messageConsoleText += DateTime.Now + e.Message + "\n";
+                RisePropertyChange(this, "MessageConsoleText");
             }
         }
 
@@ -106,7 +109,16 @@ namespace NetworkClientNode.ViewModels
 
         private void OnConnectionEstablished(string connectionName)
         {
-            this.NextConnectionClient = connectionName;
+            App.Current.Dispatcher.Invoke((Action)delegate
+            {
+                if (this.Streams.Count > 0)
+                {
+                    this.Streams[this.Streams.Count - 1].ClientName = connectionName;
+                    this.Streams[this.Streams.Count - 1].riseChangesToView();
+                    RisePropertyChange(this, "Streams");
+                }
+                else this.NextConnectionClient = connectionName;
+            });
         }
         private void OnClientStreamRemove(List<StreamData> args)
         {
@@ -139,24 +151,41 @@ namespace NetworkClientNode.ViewModels
         {
             foreach (StreamData stream in args)
             {
+                this.messageConsoleText += DateTime.Now + ": Nowe po³¹czenie\n";
+                RisePropertyChange(this, "MessageConsoleText");
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
                     this.Streams.Add(new StreamDataViewModel(this.NextConnectionClient, stream));
+                    RisePropertyChange(this, "Streams");
                 });
             }
 
         }
+        private void TearDownConnection()
+        {
+            if (this.selectedStream.ClientName != null)
+            {
+
+                string result = Cpcc.callTeardown(this.selectedStream.ClientName);
+                this.messageConsoleText += DateTime.Now + ": " + result + "\n";
+                RisePropertyChange(this, "MessageRecivedText");
+                RisePropertyChange(this, "Streams");
+            }
+        }
+
         private void SendNewMessage()
         {
-            this.messageConsoleText += DateTime.Now + ": " + this.selectedStream.StreamData.ToString() + "\n";
             this.ClientSetUpProccess.ClientNode.SelectStream(this.selectedStream.StreamData);
             this.ClientSetUpProccess.ClientNode.SendData(this.MessageSendText);
         }
         private void ConnectNew()
         {
-            var test = Cpcc.callRequest(this.ClientToConnect);
-            this.messageConsoleText += DateTime.Now + ": " + test + "\n";
-            RisePropertyChange(this, "MessageRecivedText");
+            if (this.ClientToConnect != null)
+            {
+                var test = Cpcc.callRequest(this.ClientToConnect);
+                this.messageConsoleText += DateTime.Now + ": " + test + "\n";
+                RisePropertyChange(this, "MessageRecivedText");
+            }
         }
         public void RisePropertyChange(object sender, String property)
         {

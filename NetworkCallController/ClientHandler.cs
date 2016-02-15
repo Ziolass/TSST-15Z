@@ -245,20 +245,24 @@ namespace NetworkCallController
                         return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
                     }
                     return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
-                    */
+                    
+                    /*/
 
                     // zamiana kolejności coby Komando nie zabił
                     
                     // no to w sumie by wypadalo spytac ziomeczka czy chce wgl z nami gadac zeby nie bylo przykro
-                    if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
-                    {
-                        return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
-                    }
+                    
                     if(connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
                     {
                         return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
                     }
+
+                    if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
+                    {
+                        return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
+                    }
                     else return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
+                    
                 }
             }
 
@@ -267,15 +271,17 @@ namespace NetworkCallController
                 calledAddress = calledPartyPorts[1];
             }
 
-            if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
-            {
-                return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
-            }
+            
             if (connectionRequst(callingAddress, calledAddress, callingSignalingPort, callingPartyName, calledSignalingPort, calledPartyName).Split('|')[0].ToLower().Equals("ok"))
             {
-                return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
+                if (!callAccept(callingPartyName, calledSignalingPort, calledPartyName))
+                {
+                    return "error|" + calledPartyName + " nie wyrazil zgody na polaczenie";
+                }
+                else return "ok|polaczenie z " + calledPartyName + " zestawione pomyslnie";
             }
             else return "error|nie udalo sie zestawic polaczenia z " + calledPartyName;
+            
         }
 
         private void informOtherParty(int signallingPort, string teardownName)
@@ -288,9 +294,8 @@ namespace NetworkCallController
             int ccPort = ncc.getCCPort();
             // string response = sendCommand("connection-request|" + initAddress + "|" + foreignAddress, ccPort);
             HigherLevelConnectionRequest toSend = prepareToSend(initAddress, foreignAddress, "connection-request");
-            Console.WriteLine("dzialam dotad!");
-            string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
 
+            string response = sendCommand(JsonConvert.SerializeObject(toSend), ccPort);
             string translate = HandleJsonInput(response);
           
 
@@ -336,6 +341,7 @@ namespace NetworkCallController
             {
                 return "NCC nie moglo nawiazac polaczenia z CC";
             }
+            else ncc.getConnections().Remove(initAddress + "|" + foreignAddress);
             return translate;
         }
 

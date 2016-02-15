@@ -318,14 +318,17 @@ namespace RoutingController.Service
                 state.WorkSocket = handler;
                 Console.WriteLine("[SERVER] New connection from: " + handler.RemoteEndPoint);
 
-                while (true)
+                new Thread(delegate()
                 {
-                    receiveDone.Reset();
-                    handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReadCallback), state);
+                    while (true)
+                    {
+                        receiveDone.Reset();
+                        handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
+                            new AsyncCallback(ReadCallback), state);
 
-                    receiveDone.WaitOne();
-                }
+                        receiveDone.WaitOne();
+                    }
+                }).Start();
             }
             catch (Exception e)
             {

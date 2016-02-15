@@ -134,7 +134,7 @@ namespace NetworkNode
         {
             LrmReq request = JsonConvert.DeserializeObject<LrmReq>(data);
 
-            string textualRequest = request.ReqType;
+            string textualRequest = request.ReqType.ToString();
             ReqType reqType = (ReqType)Enum.Parse(typeof(ReqType), textualRequest);
 
             switch (reqType)

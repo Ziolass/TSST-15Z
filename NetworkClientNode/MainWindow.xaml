@@ -12,7 +12,7 @@
 
         <Label HorizontalAlignment="Left" VerticalAlignment="Top"  Content="Połącz z:" Margin="158,41,0,0"/>
 
-        <ListBox Width="143" Height="273" Margin="10,41,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Name="streamsList"                 
+        <ListBox Width="143" Height="242" Margin="10,41,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Name="streamsList"                 
                  ItemsSource="{Binding Streams, Source={StaticResource ClientViewModel}}" 
                  DisplayMemberPath="Id"   
                  SelectedItem="{Binding SelectedStream, UpdateSourceTrigger=PropertyChanged, Source={StaticResource ClientViewModel}}"/>
@@ -38,14 +38,24 @@
                 Width="75" 
                 Height="26"
                  Command="{Binding Connect, Source={StaticResource ClientViewModel}}"
+                 IsEnabled="{Binding Text.Length, ElementName=connectName}"
                 />
         <TextBox 
                  Height="26" 
                  Margin="218,41,90,0" 
                  TextWrapping="Wrap"
                  VerticalAlignment="Top"
-                Padding="5"
+            Name="connectName"
                  Text="{Binding ClientToConnect, Source={StaticResource ClientViewModel}}"
                  />
+        <Button Content="Rozłącz" 
+        	HorizontalAlignment="Left" 
+        	Margin="10,288,0,0" 
+        	VerticalAlignment="Top" 
+        	Width="143" 
+        	Height="26"
+        	Command="{Binding Disconnect, Source={StaticResource ClientViewModel}}"
+                 IsEnabled="{Binding SelectedItems.Count, ElementName=streamsList}"
+                />
     </Grid>
 </Window>

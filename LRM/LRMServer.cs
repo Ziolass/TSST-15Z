@@ -82,48 +82,48 @@ namespace LRM
         object subscribeLock = new object();
         private void SubscribeCallback(string data, AsyncCommunication ac)
         {
-            lock (LrmRegister)
+            lock (ac)
             {
                 try
-                 {
-                LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
-                
-                if (node.Node == null)
                 {
-                    return;
-                }
+                    LrmIntroduce node = JsonConvert.DeserializeObject<LrmIntroduce>(data);
 
-                if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
-                {
-                    if (LrmRegister.ConnectedNodes[node.Node].Async != null)
+                    if (node.Node == null)
                     {
-                        throw new DeviceAllreadyConnected();
+                        return;
                     }
-                    LrmRegister.ConnectedNodes[node.Node].Async = ac;
-                    LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
-                }
-                else
-                {
-                    LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
-                    {
-                        Name = node.Node,
-                        Async = ac,
-                        DomiansHierarchy = node.Domians
-                    });
-                }
 
-                if (NodeConnected != null)
-                {
-                    NodeConnected(node.Node);
+                    if (LrmRegister.ConnectedNodes.ContainsKey(node.Node))
+                    {
+                        if (LrmRegister.ConnectedNodes[node.Node].Async != null)
+                        {
+                            throw new DeviceAllreadyConnected();
+                        }
+                        LrmRegister.ConnectedNodes[node.Node].Async = ac;
+                        LrmRegister.ConnectedNodes[node.Node].DomiansHierarchy = node.Domians;
+                    }
+                    else
+                    {
+                        LrmRegister.ConnectedNodes.Add(node.Node, new VirtualNode
+                        {
+                            Name = node.Node,
+                            Async = ac,
+                            DomiansHierarchy = node.Domians
+                        });
+                    }
+
+                    if (NodeConnected != null)
+                    {
+                        NodeConnected(node.Node);
+                    }
                 }
-                }
-                 catch (JsonReaderException exp)
+                catch (JsonReaderException exp)
                 {
-                     Console.WriteLine("SubscribeCallback" + exp.Message + "\n" + data);
-                 }
-                 catch (Exception exp)
-                 {
-                     Console.WriteLine(exp.Message);
+                    Console.WriteLine("SubscribeCallback" + exp.Message + "\n" + data);
+                }
+                catch (Exception exp)
+                {
+                    Console.WriteLine(exp.Message);
                 }
 
             }

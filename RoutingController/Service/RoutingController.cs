@@ -158,6 +158,8 @@ namespace RoutingController.Service
         /// <exception cref="System.Exception">Error UpdateNetworkGraph: No domain name!</exception>
         public bool UpdateNetworkGraph(LocalTopologyRequest topology)
         {
+            this.NetworkGraphs = new List<NetworkGraph>();
+            this.Gateways = new Dictionary<NodeElement, string>();
             Dictionary<string, int> domainHierarchy = new Dictionary<string, int>(this.GetHierarchyOfDomain(topology));
 
             foreach (TopologyNode topologyNode in topology.Nodes)

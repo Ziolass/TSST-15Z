@@ -81,10 +81,8 @@ namespace LRM
 
                     if (bytesRead != StateObject.BufferSize)
                     {
-                        PacketsReceived.Set();
-
                         string allData = state.ResponseBuilder.ToString();
-
+                        PacketsReceived.Set();
                         if (SubscribeCallback != null && IdleState && allData.Contains("INTRODUCE"))
                         {
                             SubscribeCallback(allData, this);
