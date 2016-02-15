@@ -111,13 +111,13 @@ namespace NetworkClientNode.ViewModels
         {
             App.Current.Dispatcher.Invoke((Action)delegate
             {
-                if (this.Streams.Count > 0)
+                /*if (this.Streams.Count > 0)
                 {
                     this.Streams[this.Streams.Count - 1].ClientName = connectionName;
                     this.Streams[this.Streams.Count - 1].riseChangesToView();
-                    RisePropertyChange(this, "Streams");
+                    //RisePropertyChange(this, "Streams");
                 }
-                else this.NextConnectionClient = connectionName;
+                else*/ this.NextConnectionClient = connectionName;
             });
         }
         private void OnClientStreamRemove(List<StreamData> args)
@@ -155,8 +155,7 @@ namespace NetworkClientNode.ViewModels
                 RisePropertyChange(this, "MessageConsoleText");
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    this.Streams.Add(new StreamDataViewModel(this.NextConnectionClient, stream));
-                    RisePropertyChange(this, "Streams");
+                    this.Streams.Add(new StreamDataViewModel(this.NextConnectionClient, stream));                    
                 });
             }
 

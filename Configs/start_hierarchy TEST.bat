@@ -15,7 +15,7 @@ start cmd /c startConnectionController1.bat
 
 cd ..
 cd LRM
-::start cmd /c startLRM0.bat
+start cmd /c startLRM0.bat
 
 cd ..
 cd Directory
